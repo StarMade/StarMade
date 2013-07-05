@@ -1,0 +1,21 @@
+material 01-Default
+{
+	technique
+	{
+		pass
+		{
+			ambient 0.929412 0.929412 0.929412 1
+			diffuse 0.929412 0.929412 0.929412 1
+			specular 0 0 0 1 10
+			scene_blend one one_minus_src_alpha
+
+			texture_unit
+			{
+				texture arrow.png
+				transform 0.0208333 0 0 0 0 0.0208333 0 0 0 0 1 0 0 0 0 1
+			}
+		}
+
+	}
+
+}

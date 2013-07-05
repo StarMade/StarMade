@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<userDataTypes>
+   
+    <enum name="PhysicsType" type="string"> 
+        <enumItem name="Cube" value="box" /> 
+        <enumItem name="Cylinder" value="cylinder" />
+        <enumItem name="Tetrahedron" value="triangle" />
+        <enumItem name="Sphere" value="sphere" />
+        <enumItem name="Mesh" value="mesh" />
+        <enumItem name="Convex Hull" value="convexhull" />
+    </enum>
+    <enum name="ConstraintType" type="string"> 
+        <enumItem name="point2point" value="point2point" /> 
+        <enumItem name="hinge" value="hinge" />
+        <enumItem name="slide" value="slide" />
+        <enumItem name="dot6" value="dot6" />
+    </enum>
+    <enum name="WheelPosition" type="string">
+        <enumItem name="Front" value="front" />
+        <enumItem name="Back" value="back" />
+    </enum>
+    <enum name="CylinderOrientation" type="string">
+        <enumItem name="X" value="x" />
+        <enumItem name="Y" value="y" />
+        <enumItem name="Z" value="z" />
+    </enum>
+
+    <class name="PhysicsObject" usage="object"> 
+   		  <data name="Mass" displayName="Mass (0 for static object)" type="float" minValue="0" default="1"/>
+   		  <data name="ShapeType" displayName="Shape Type" type="PhysicsType" default="box"/>
+   		  <data name="CylinderOrientation" displayName="Orientation (Cylinder Only)" type="CylinderOrientation" default="x"/>
+    </class>
+    <class name="Vehicle Chassis" super ="PhysicsObject" usage="object">
+    </class>
+    <class name="Vehicle Wheel" usage="object">
+    	<data name="WheelPosition" displayName="Wheel Position" type="WheelPosition" defaultValue="front"/>
+    	<data name="FrictionSlip" displayName="Friction Slip" type="float" minValue="0" default="1000"/>
+    	<data name="SuspensionStiffness" displayName="Suspension Stiffness" minValue="0" type="float" default="20"/>
+    	<data name="WheelsDampingRelaxation" displayName="Wheels Damping Relaxation" minValue="0" type="float" default="2.3"/>
+    	<data name="WheelsDampingCompression" displayName="Wheels Damping Compression" minValue="0" type="float" default="4.4"/>
+    	<data name="RollInfluence" displayName="Roll Influence" type="float" minValue="0" default="0.1"/>
+    </class>
+    
+    <class name="Constraint" usage="object">
+    	<data name="ConstraintType" displayName="Constraint Type" type="ConstraintType" default="hinge"/>
+    	<data name="ObjectToObject" displayName="Object to Object (not fix)" type="bool" default="true"/>
+    	<data name="HingeLimitCheck" displayName="Hinge limit" type="bool" default="false"/>
+    	<data name="HingeLockCheck" displayName="Lock Hinge" type="bool" default="false"/>
+    	<data name="LinearLockCheck" displayName="Lock Linear" type="bool" default="false"/>
+    	<data name="LinearLimitCheck" displayName="Linear Limit" type="bool" default="false"/>
+    	<data name="UseLinearReferenceFrameA" displayName="Use Linear Reference for Frame A" type="bool" default="true"/>
+    	
+    	<data name="DisableCollisionsBetweenLinkedBodies" displayName="Disable collision between linked bodies" type="bool" default="false"/>
+    	<data name="FromObject" displayName="From Object" type="string" default=""/>
+    	<data name="ToObject" displayName="To Object" type="string" default="" visibilityParentName="ObjectToObject"/>
+    	<data name="HingeLimit" displayName="Hinge Limit (Min, Max) in Degrees" type="float2" minValue="-180" maxValue="180" default="-180.0,180.0" visibilityParentName="HingeLimitCheck"/>
+    	<data name="LinearLimit" displayName="Hinge Limit (Min, Max) in Degrees" type="float2" minValue="-180" maxValue="180" default="-180.0,180.0" visibilityParentName="LinearLimitCheck"/>
+    </class>
+</userDataTypes>

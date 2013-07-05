@@ -1,0 +1,19 @@
+<scene formatVersion="1.0" upAxis="y" unitsPerMeter="39.3701" minOgreVersion="1.8" ogreMaxVersion="2.4.1" author="OgreMax Scene Exporter (www.ogremax.com)" application="3DS Max">
+    <environment>
+        <colourAmbient r="0.333333" g="0.333333" b="0.333333" />
+        <colourBackground r="0" g="0" b="0" />
+        <clipping near="0" far="100000" />
+    </environment>
+    <nodes>
+        <node name="arrow">
+            <position x="0" y="-2.95192e-017" z="-6.75321e-010" />
+            <scale x="1" y="1" z="1" />
+            <rotation qx="0" qy="0" qz="0" qw="1" />
+            <entity name="arrow" castShadows="true" receiveShadows="true" meshFile="arrow.mesh">
+                <subentities>
+                    <subentity index="0" materialName="01-Default" />
+                </subentities>
+            </entity>
+        </node>
+    </nodes>
+</scene>

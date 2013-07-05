@@ -1,0 +1,22 @@
+
+material Material#27
+{
+	technique
+	{
+		pass
+		{
+			ambient 0.588 0.588 0.588 1
+			diffuse 0.788 0.788 0.788 1
+			specular 0.3 0.3 0.3 10 0
+
+			texture_unit
+			{
+				texture asteroid.jpg
+			}
+		}
+
+	}
+
+}
+
+

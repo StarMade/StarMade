@@ -1,0 +1,142 @@
+<scene formatVersion="1.0" upAxis="y" unitsPerMeter="3937.01" unitType="/0.01" minOgreVersion="1.7" ogreMaxVersion="2.2.7" author="OgreMax Scene Exporter (www.ogremax.com)" application="3DS Max">
+    <environment>
+        <colourAmbient r="0.333333" g="0.333333" b="0.333333" />
+        <colourBackground r="0" g="0" b="0" />
+        <clipping near="0" far="1e+007" />
+    </environment>
+    <nodes>
+        <node name="ex01">
+            <position x="412.317" y="19107.7" z="167.957" />
+            <scale x="2.72427" y="2.72427" z="2.72427" />
+            <rotation qx="0.424373" qy="0.513068" qz="0.463255" qw="0.584861" />
+        </node>
+        <node name="ex02">
+            <position x="412.317" y="19107.7" z="167.957" />
+            <scale x="2.72427" y="2.72427" z="2.72427" />
+            <rotation qx="0.424373" qy="0.513068" qz="0.463255" qw="0.584861" />
+        </node>
+        <node name="xx">
+            <position x="412.317" y="19107.7" z="167.957" />
+            <scale x="2.72427" y="2.72427" z="2.72427" />
+            <rotation qx="0.424373" qy="0.513068" qz="0.463255" qw="0.584861" />
+        </node>
+        <node name="xxxx">
+            <position x="412.317" y="19107.7" z="167.957" />
+            <scale x="2.72427" y="2.72427" z="2.72427" />
+            <rotation qx="0.424373" qy="0.513068" qz="0.463255" qw="0.584861" />
+        </node>
+        <node name="cate 1 human04">
+            <position x="12.6999" y="8934.44" z="-646.725" />
+            <scale x="1" y="1" z="1" />
+            <rotation qx="0.0261769" qy="0" qz="0" qw="0.999657" />
+            <entity name="cate 1 human04" castShadows="true" receiveShadows="true" meshFile="cate 1 human04.mesh">
+                <subentities>
+                    <subentity index="0" materialName="Metal_Chrome_Dark" />
+                </subentities>
+                <boneAttachments>
+                    <boneAttachment bone="cate Head">
+                        <position x="1067.42" y="387.048" z="-882.179" />
+                        <rotation qx="0.705391" qy="-0.0275721" qz="0.107036" qw="0.700147" />
+                        <scale x="1.06328" y="1.06328" z="1.06328" />
+                        <entity name="left eye" castShadows="true" receiveShadows="true" meshFile="left eye.mesh">
+                            <subentities>
+                                <subentity index="0" materialName="eye" />
+                                <subentity index="1" materialName="gl" />
+                                <subentity index="2" materialName="black" />
+                            </subentities>
+                        </entity>
+                    </boneAttachment>
+                    <boneAttachment bone="cate Head">
+                        <position x="1063.94" y="-384.329" z="-882.788" />
+                        <rotation qx="0.705391" qy="-0.027572" qz="0.107036" qw="0.700147" />
+                        <scale x="1.06328" y="1.06328" z="1.06328" />
+                        <entity name="right eye" castShadows="true" receiveShadows="true" meshFile="right eye.mesh">
+                            <subentities>
+                                <subentity index="0" materialName="eye" />
+                                <subentity index="1" materialName="gl" />
+                                <subentity index="2" materialName="black" />
+                            </subentities>
+                        </entity>
+                    </boneAttachment>
+                </boneAttachments>
+            </entity>
+        </node>
+        
+        <node name="boots2">
+            <position x="-4.79965" y="222.968" z="-916.234" />
+            <scale x="1" y="1" z="1" />
+            <rotation qx="0" qy="0" qz="0" qw="1" />
+            <entity name="boots2" castShadows="true" receiveShadows="true" meshFile="boots2.mesh">
+                <subentities>
+                    <subentity index="0" materialName="Metal_Chrome_Dark" />
+                </subentities>
+                <boneAttachments>
+                    <boneAttachment bone="cate Head">
+                        <position x="1067.42" y="387.048" z="-882.179" />
+                        <rotation qx="0.705391" qy="-0.0275721" qz="0.107036" qw="0.700147" />
+                        <scale x="1.06328" y="1.06328" z="1.06328" />
+                        <entity name="left eye" castShadows="true" receiveShadows="true" meshFile="left eye.mesh">
+                            <subentities>
+                                <subentity index="0" materialName="eye" />
+                                <subentity index="1" materialName="gl" />
+                                <subentity index="2" materialName="black" />
+                            </subentities>
+                        </entity>
+                    </boneAttachment>
+                    <boneAttachment bone="cate Head">
+                        <position x="1063.94" y="-384.329" z="-882.788" />
+                        <rotation qx="0.705391" qy="-0.027572" qz="0.107036" qw="0.700147" />
+                        <scale x="1.06328" y="1.06328" z="1.06328" />
+                        <entity name="right eye" castShadows="true" receiveShadows="true" meshFile="right eye.mesh">
+                            <subentities>
+                                <subentity index="0" materialName="eye" />
+                                <subentity index="1" materialName="gl" />
+                                <subentity index="2" materialName="black" />
+                            </subentities>
+                        </entity>
+                    </boneAttachment>
+                </boneAttachments>
+            </entity>
+        </node>
+        <node name="cate 1 human01">
+            <position x="12.6999" y="8934.44" z="-646.725" />
+            <scale x="1" y="1" z="1" />
+            <rotation qx="0.0261769" qy="0" qz="0" qw="0.999657" />
+            <entity name="cate 1 human01" castShadows="true" receiveShadows="true" meshFile="cate 1 human01.mesh">
+                <subentities>
+                    <subentity index="0" materialName="body" />
+                    <subentity index="1" materialName="teethflesh" />
+                    <subentity index="2" materialName="teeth" />
+                    <subentity index="3" materialName="wimp" />
+                    <subentity index="4" materialName="eyebrow" />
+                </subentities>
+                <boneAttachments>
+                    <boneAttachment bone="cate Head">
+                        <position x="1067.42" y="387.048" z="-882.179" />
+                        <rotation qx="0.705391" qy="-0.0275721" qz="0.107036" qw="0.700147" />
+                        <scale x="1.06328" y="1.06328" z="1.06328" />
+                        <entity name="left eye" castShadows="true" receiveShadows="true" meshFile="left eye.mesh">
+                            <subentities>
+                                <subentity index="0" materialName="eye" />
+                                <subentity index="1" materialName="gl" />
+                                <subentity index="2" materialName="black" />
+                            </subentities>
+                        </entity>
+                    </boneAttachment>
+                    <boneAttachment bone="cate Head">
+                        <position x="1063.94" y="-384.329" z="-882.788" />
+                        <rotation qx="0.705391" qy="-0.027572" qz="0.107036" qw="0.700147" />
+                        <scale x="1.06328" y="1.06328" z="1.06328" />
+                        <entity name="right eye" castShadows="true" receiveShadows="true" meshFile="right eye.mesh">
+                            <subentities>
+                                <subentity index="0" materialName="eye" />
+                                <subentity index="1" materialName="gl" />
+                                <subentity index="2" materialName="black" />
+                            </subentities>
+                        </entity>
+                    </boneAttachment>
+                </boneAttachments>
+            </entity>
+        </node>
+    </nodes>
+</scene>

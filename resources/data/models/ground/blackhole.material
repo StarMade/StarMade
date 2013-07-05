@@ -1,0 +1,11 @@
+material 11-Default
+{
+	technique
+	{
+		pass
+		{
+		}
+
+	}
+
+}
