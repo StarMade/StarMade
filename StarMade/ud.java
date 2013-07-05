@@ -1,0 +1,34 @@
+/*    */ import java.util.Random;
+/*    */ 
+/*    */ public final class ud extends tX
+/*    */ {
+/*    */   public ud(long paramLong)
+/*    */   {
+/* 11 */     super(paramLong);
+/*    */   }
+/*    */ 
+/*    */   protected final short a(float paramFloat)
+/*    */   {
+/* 16 */     short s = 73;
+/*    */ 
+/* 18 */     if ((paramFloat < 3.4F) && (this.jdField_a_of_type_JavaUtilRandom.nextFloat() > 0.3F))
+/* 19 */       s = 64;
+/* 20 */     else if ((paramFloat > 9.1D) && (this.jdField_a_of_type_JavaUtilRandom.nextFloat() > 0.68F)) {
+/* 21 */       s = 275;
+/*    */     }
+/* 23 */     return s;
+/*    */   }
+/*    */ 
+/*    */   public final void a()
+/*    */   {
+/* 28 */     this.jdField_a_of_type_ArrayOfUX = new uX[3];
+/* 29 */     this.jdField_a_of_type_ArrayOfUX[0] = new va(209, 6, 73);
+/* 30 */     this.jdField_a_of_type_ArrayOfUX[1] = new va(132, 6, 73);
+/* 31 */     this.jdField_a_of_type_ArrayOfUX[2] = new va(208, 8, 73);
+/*    */   }
+/*    */ }
+
+/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+ * Qualified Name:     ud
+ * JD-Core Version:    0.6.2
+ */

@@ -1,0 +1,46 @@
+package it.unimi.dsi.fastutil.longs;
+
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.objects.ObjectBidirectionalIterator;
+import it.unimi.dsi.fastutil.objects.ObjectSortedSet;
+import java.util.Map.Entry;
+import java.util.SortedMap;
+
+public abstract interface Long2IntSortedMap extends Long2IntMap, SortedMap<Long, Integer>
+{
+  public abstract ObjectSortedSet<Map.Entry<Long, Integer>> entrySet();
+
+  public abstract ObjectSortedSet<Long2IntMap.Entry> long2IntEntrySet();
+
+  public abstract LongSortedSet keySet();
+
+  public abstract IntCollection values();
+
+  public abstract LongComparator comparator();
+
+  public abstract Long2IntSortedMap subMap(Long paramLong1, Long paramLong2);
+
+  public abstract Long2IntSortedMap headMap(Long paramLong);
+
+  public abstract Long2IntSortedMap tailMap(Long paramLong);
+
+  public abstract Long2IntSortedMap subMap(long paramLong1, long paramLong2);
+
+  public abstract Long2IntSortedMap headMap(long paramLong);
+
+  public abstract Long2IntSortedMap tailMap(long paramLong);
+
+  public abstract long firstLongKey();
+
+  public abstract long lastLongKey();
+
+  public static abstract interface FastSortedEntrySet extends ObjectSortedSet<Long2IntMap.Entry>, Long2IntMap.FastEntrySet
+  {
+    public abstract ObjectBidirectionalIterator<Long2IntMap.Entry> fastIterator(Long2IntMap.Entry paramEntry);
+  }
+}
+
+/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+ * Qualified Name:     it.unimi.dsi.fastutil.longs.Long2IntSortedMap
+ * JD-Core Version:    0.6.2
+ */
