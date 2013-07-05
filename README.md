@@ -10,6 +10,7 @@ Contributing
 
 What we need contributions for:
 * Naming of fields, classes, methods, etc
+* Documentation of all the stuff! (saving/writing ship files, map formats, etc)
 
 For opening sources in Eclipse:
 * Fork the project
