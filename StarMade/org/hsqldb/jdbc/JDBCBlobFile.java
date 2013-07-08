@@ -30,7 +30,7 @@ public class JDBCBlobFile
   private boolean m_closed;
   private boolean m_deleteOnFree;
   private List m_streams = new ArrayList();
-
+  
   public long length()
     throws SQLException
   {
@@ -44,18 +44,19 @@ public class JDBCBlobFile
       throw Util.sqlException(localException);
     }
   }
-
+  
   public byte[] getBytes(long paramLong, int paramInt)
     throws SQLException
   {
     InputStream localInputStream = null;
-    ByteArrayOutputStream localByteArrayOutputStream = null;
+    localByteArrayOutputStream = null;
     int i = Math.min(8192, paramInt);
     try
     {
       localInputStream = getBinaryStream(paramLong, paramInt);
       localByteArrayOutputStream = new ByteArrayOutputStream(i);
       InOutUtil.copy(localInputStream, localByteArrayOutputStream, paramInt);
+      return localByteArrayOutputStream.toByteArray();
     }
     catch (SQLException localSQLException)
     {
@@ -67,31 +68,31 @@ public class JDBCBlobFile
     }
     finally
     {
-      if (localInputStream != null)
+      if (localInputStream != null) {
         try
         {
           localInputStream.close();
         }
-        catch (Exception localException3)
-        {
-        }
+        catch (Exception localException3) {}
+      }
     }
-    return localByteArrayOutputStream.toByteArray();
   }
-
+  
   public InputStream getBinaryStream()
     throws SQLException
   {
     return getBinaryStream(1L, 9223372036854775807L);
   }
-
+  
   public long position(byte[] paramArrayOfByte, long paramLong)
     throws SQLException
   {
-    if (paramLong < 1L)
+    if (paramLong < 1L) {
       throw Util.outOfRangeArgument("start: " + paramLong);
-    if ((paramArrayOfByte == null) || (paramArrayOfByte.length == 0) || (paramLong > length()))
+    }
+    if ((paramArrayOfByte == null) || (paramArrayOfByte.length == 0) || (paramLong > length())) {
       return -1L;
+    }
     InputStream localInputStream = null;
     try
     {
@@ -110,50 +111,55 @@ public class JDBCBlobFile
     }
     finally
     {
-      if (localInputStream != null)
+      if (localInputStream != null) {
         try
         {
           localInputStream.close();
         }
-        catch (Exception localException3)
-        {
-        }
+        catch (Exception localException3) {}
+      }
     }
   }
-
+  
   public long position(Blob paramBlob, long paramLong)
     throws SQLException
   {
-    if (paramLong < 1L)
+    if (paramLong < 1L) {
       throw Util.outOfRangeArgument("start: " + paramLong);
+    }
     long l;
-    if (((l = paramBlob == null ? 0L : paramBlob.length()) == 0L) || (paramLong > length()))
+    if (((l = paramBlob == null ? 0L : paramBlob.length()) == 0L) || (paramLong > length())) {
       return -1L;
-    if (l > 2147483647L)
+    }
+    if (l > 2147483647L) {
       throw Util.outOfRangeArgument("pattern.length(): " + l);
+    }
     byte[] arrayOfByte;
-    if ((paramBlob instanceof JDBCBlob))
+    if ((paramBlob instanceof JDBCBlob)) {
       arrayOfByte = ((JDBCBlob)paramBlob).data();
-    else
+    } else {
       arrayOfByte = paramBlob.getBytes(1L, (int)l);
+    }
     return position(arrayOfByte, paramLong);
   }
-
+  
   public int setBytes(long paramLong, byte[] paramArrayOfByte)
     throws SQLException
   {
     return setBytes(paramLong, paramArrayOfByte, 0, paramArrayOfByte == null ? 0 : paramArrayOfByte.length);
   }
-
+  
   public int setBytes(long paramLong, byte[] paramArrayOfByte, int paramInt1, int paramInt2)
     throws SQLException
   {
-    if (paramArrayOfByte == null)
+    if (paramArrayOfByte == null) {
       throw Util.nullArgument("bytes");
+    }
     OutputStream localOutputStream = setBinaryStream(paramLong);
     try
     {
       localOutputStream.write(paramArrayOfByte, paramInt1, paramInt2);
+      return paramInt2;
     }
     catch (Exception localException2)
     {
@@ -165,18 +171,16 @@ public class JDBCBlobFile
       {
         localOutputStream.close();
       }
-      catch (Exception localException3)
-      {
-      }
+      catch (Exception localException3) {}
     }
-    return paramInt2;
   }
-
+  
   public OutputStream setBinaryStream(long paramLong)
     throws SQLException
   {
-    if (paramLong < 1L)
+    if (paramLong < 1L) {
       throw Util.invalidArgument("pos: " + paramLong);
+    }
     checkClosed();
     createFile();
     OutputStreamAdapter local1;
@@ -206,18 +210,20 @@ public class JDBCBlobFile
     BufferedOutputStream localBufferedOutputStream = new BufferedOutputStream(local1);
     return localBufferedOutputStream;
   }
-
+  
   public void truncate(long paramLong)
     throws SQLException
   {
-    if (paramLong < 0L)
+    if (paramLong < 0L) {
       throw Util.invalidArgument("len: " + paramLong);
+    }
     checkClosed();
     RandomAccessFile localRandomAccessFile = null;
     try
     {
       localRandomAccessFile = new RandomAccessFile(this.m_file, "rw");
       localRandomAccessFile.setLength(paramLong);
+      return;
     }
     catch (Exception localException2)
     {
@@ -225,22 +231,22 @@ public class JDBCBlobFile
     }
     finally
     {
-      if (localRandomAccessFile != null)
+      if (localRandomAccessFile != null) {
         try
         {
           localRandomAccessFile.close();
         }
-        catch (Exception localException3)
-        {
-        }
+        catch (Exception localException3) {}
+      }
     }
   }
-
+  
   public synchronized void free()
     throws SQLException
   {
-    if (this.m_closed)
+    if (this.m_closed) {
       return;
+    }
     this.m_closed = true;
     ArrayList localArrayList = new ArrayList();
     localArrayList.addAll(this.m_streams);
@@ -249,38 +255,35 @@ public class JDBCBlobFile
     while (localIterator.hasNext())
     {
       Object localObject = localIterator.next();
-      if ((localObject instanceof InputStream))
+      if ((localObject instanceof InputStream)) {
         try
         {
           ((InputStream)localObject).close();
         }
-        catch (Exception localException2)
-        {
-        }
-      else if ((localObject instanceof OutputStream))
+        catch (Exception localException2) {}
+      } else if ((localObject instanceof OutputStream)) {
         try
         {
           ((OutputStream)localObject).close();
         }
-        catch (Exception localException3)
-        {
-        }
+        catch (Exception localException3) {}
+      }
     }
-    if (this.m_deleteOnFree)
+    if (this.m_deleteOnFree) {
       try
       {
         this.m_file.delete();
       }
-      catch (Exception localException1)
-      {
-      }
+      catch (Exception localException1) {}
+    }
   }
-
+  
   public InputStream getBinaryStream(long paramLong1, long paramLong2)
     throws SQLException
   {
-    if (paramLong1 < 1L)
+    if (paramLong1 < 1L) {
       throw Util.outOfRangeArgument("pos: " + paramLong1);
+    }
     checkClosed();
     InputStreamAdapter local2;
     try
@@ -308,22 +311,22 @@ public class JDBCBlobFile
     this.m_streams.add(local2);
     return local2;
   }
-
+  
   public File getFile()
   {
     return this.m_file;
   }
-
+  
   public boolean isDeleteOnFree()
   {
     return this.m_deleteOnFree;
   }
-
+  
   public void setDeleteOnFree(boolean paramBoolean)
   {
     this.m_deleteOnFree = paramBoolean;
   }
-
+  
   protected void finalize()
     throws Throwable
   {
@@ -336,13 +339,13 @@ public class JDBCBlobFile
       free();
     }
   }
-
+  
   public JDBCBlobFile()
     throws SQLException
   {
     this(true);
   }
-
+  
   public JDBCBlobFile(boolean paramBoolean)
     throws SQLException
   {
@@ -356,13 +359,13 @@ public class JDBCBlobFile
       throw Util.sqlException(localException);
     }
   }
-
+  
   public JDBCBlobFile(File paramFile)
     throws SQLException
   {
     this(paramFile, false);
   }
-
+  
   public JDBCBlobFile(File paramFile, boolean paramBoolean)
     throws SQLException
   {
@@ -377,7 +380,7 @@ public class JDBCBlobFile
     }
     checkIsFile(false);
   }
-
+  
   protected final void checkIsFile(boolean paramBoolean)
     throws SQLException
   {
@@ -391,7 +394,7 @@ public class JDBCBlobFile
     {
       throw Util.sqlException(localException1);
     }
-    if (bool1)
+    if (bool1) {
       try
       {
         bool2 = this.m_file.isFile();
@@ -400,22 +403,26 @@ public class JDBCBlobFile
       {
         throw Util.sqlException(localException2);
       }
+    }
     if (bool1)
     {
-      if (!bool2)
+      if (!bool2) {
         throw Util.invalidArgument("Is not a file: " + this.m_file);
+      }
     }
-    else if (paramBoolean)
+    else if (paramBoolean) {
       throw Util.invalidArgument("Does not exist: " + this.m_file);
+    }
   }
-
+  
   private void checkClosed()
     throws SQLException
   {
-    if (this.m_closed)
+    if (this.m_closed) {
       throw Util.sqlException(1251);
+    }
   }
-
+  
   private void createFile()
     throws SQLException
   {
@@ -433,103 +440,110 @@ public class JDBCBlobFile
     }
     checkIsFile(true);
   }
-
-  static class InputStreamAdapter extends InputStream
+  
+  static class InputStreamAdapter
+    extends InputStream
   {
     private final CountdownInputStream m_countdownInputStream;
-
+    
     InputStreamAdapter(File paramFile, long paramLong1, long paramLong2)
       throws FileNotFoundException, IOException
     {
-      if (paramFile == null)
+      if (paramFile == null) {
         throw new NullPointerException("file");
-      if (paramLong1 < 0L)
+      }
+      if (paramLong1 < 0L) {
         throw new IllegalArgumentException("pos: " + paramLong1);
-      if (paramLong2 < 0L)
+      }
+      if (paramLong2 < 0L) {
         throw new IllegalArgumentException("length: " + paramLong2);
+      }
       FileInputStream localFileInputStream = new FileInputStream(paramFile);
-      if (paramLong1 > 0L)
+      if (paramLong1 > 0L) {
         long l = localFileInputStream.skip(paramLong1);
+      }
       BufferedInputStream localBufferedInputStream = new BufferedInputStream(localFileInputStream);
       CountdownInputStream localCountdownInputStream = new CountdownInputStream(localBufferedInputStream);
       localCountdownInputStream.setCount(paramLong2);
       this.m_countdownInputStream = localCountdownInputStream;
     }
-
+    
     public int available()
       throws IOException
     {
       return this.m_countdownInputStream.available();
     }
-
+    
     public int read()
       throws IOException
     {
       return this.m_countdownInputStream.read();
     }
-
+    
     public int read(byte[] paramArrayOfByte)
       throws IOException
     {
       return this.m_countdownInputStream.read(paramArrayOfByte);
     }
-
+    
     public int read(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
       throws IOException
     {
       return this.m_countdownInputStream.read(paramArrayOfByte, paramInt1, paramInt2);
     }
-
+    
     public long skip(long paramLong)
       throws IOException
     {
       return this.m_countdownInputStream.skip(paramLong);
     }
-
+    
     public void close()
       throws IOException
     {
       this.m_countdownInputStream.close();
     }
   }
-
-  protected static class OutputStreamAdapter extends OutputStream
+  
+  protected static class OutputStreamAdapter
+    extends OutputStream
   {
     private final RandomAccessFile m_randomAccessFile;
-
+    
     public OutputStreamAdapter(File paramFile, long paramLong)
       throws FileNotFoundException, IOException
     {
-      if (paramLong < 0L)
+      if (paramLong < 0L) {
         throw new IllegalArgumentException("pos: " + paramLong);
+      }
       this.m_randomAccessFile = new RandomAccessFile(paramFile, "rw");
       this.m_randomAccessFile.seek(paramLong);
     }
-
+    
     public void write(int paramInt)
       throws IOException
     {
       this.m_randomAccessFile.write(paramInt);
     }
-
+    
     public void write(byte[] paramArrayOfByte)
       throws IOException
     {
       this.m_randomAccessFile.write(paramArrayOfByte);
     }
-
+    
     public void write(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
       throws IOException
     {
       this.m_randomAccessFile.write(paramArrayOfByte, paramInt1, paramInt2);
     }
-
+    
     public void flush()
       throws IOException
     {
       this.m_randomAccessFile.getFD().sync();
     }
-
+    
     public void close()
       throws IOException
     {
@@ -538,7 +552,8 @@ public class JDBCBlobFile
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.jdbc.JDBCBlobFile
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -20,22 +20,23 @@ import org.hsqldb.types.Collation;
 import org.hsqldb.types.Type;
 import org.hsqldb.types.UserTypeModifier;
 
-public class ParserDDL extends ParserRoutine
+public class ParserDDL
+  extends ParserRoutine
 {
   static final int[] schemaCommands = { 55, 121 };
   static final short[] startStatementTokens = { 55, 121, 4, 88 };
   static final short[] startStatementTokensSchema = { 55, 121 };
-
+  
   ParserDDL(Session paramSession, Scanner paramScanner)
   {
     super(paramSession, paramScanner);
   }
-
+  
   void reset(String paramString)
   {
     super.reset(paramString);
   }
-
+  
   StatementSchema compileCreate()
   {
     int i = 4;
@@ -44,7 +45,7 @@ public class ParserDDL extends ParserRoutine
     read();
     switch (this.token.tokenType)
     {
-    case 120:
+    case 120: 
       read();
       readThis(523);
       readIfThis(607);
@@ -52,107 +53,108 @@ public class ParserDDL extends ParserRoutine
       j = 1;
       i = 3;
       break;
-    case 630:
+    case 630: 
       read();
       readThis(278);
       j = 1;
       i = 3;
       break;
-    case 523:
+    case 523: 
       read();
       readThis(278);
       j = 1;
       i = 3;
       break;
-    case 607:
+    case 607: 
       read();
       readThis(278);
       j = 1;
       break;
-    case 570:
+    case 570: 
       read();
       readThis(278);
       j = 1;
       i = 5;
       break;
-    case 631:
+    case 631: 
       read();
       readThis(278);
       j = 1;
       i = 7;
       break;
-    case 278:
+    case 278: 
       read();
       j = 1;
       i = this.database.schemaManager.getDefaultTableType();
       break;
-    case 197:
+    case 197: 
       if (this.database.sqlSyntaxOra)
       {
         read();
         readThis(718);
         switch (this.token.tokenType)
         {
-        case 117:
-        case 215:
-        case 291:
-        case 535:
-        case 545:
+        case 117: 
+        case 215: 
+        case 291: 
+        case 535: 
+        case 545: 
           break;
-        default:
+        default: 
           throw unexpectedToken("OR");
         }
         bool = true;
       }
       break;
     }
-    if (j != 0)
+    if (j != 0) {
       return compileCreateTable(i);
+    }
     switch (this.token.tokenType)
     {
-    case 558:
+    case 558: 
       return compileCreateAlias();
-    case 505:
+    case 505: 
       return compileCreateSequence();
-    case 497:
+    case 497: 
       return compileCreateSchema();
-    case 291:
+    case 291: 
       return compileCreateTrigger(bool);
-    case 305:
+    case 305: 
       return compileCreateUser();
-    case 490:
+    case 490: 
       return compileCreateRole();
-    case 545:
+    case 545: 
       return compileCreateView(false, bool);
-    case 393:
+    case 393: 
       return compileCreateDomain();
-    case 535:
+    case 535: 
       return compileCreateType(bool);
-    case 35:
+    case 35: 
       return compileCreateCharacterSet();
-    case 358:
+    case 358: 
       return compileCreateCollation();
-    case 299:
+    case 299: 
       read();
       checkIsThis(597);
       return compileCreateIndex(true);
-    case 597:
+    case 597: 
       return compileCreateIndex(false);
-    case 117:
-    case 215:
-    case 559:
+    case 117: 
+    case 215: 
+    case 559: 
       return compileCreateProcedureOrFunction(bool);
     }
     throw unexpectedToken();
   }
-
+  
   Statement compileAlter()
   {
     read();
     Object localObject;
     switch (this.token.tokenType)
     {
-    case 597:
+    case 597: 
       read();
       localObject = readNewSchemaObjectName(20, true);
       ((HsqlNameManager.HsqlName)localObject).setSchemaIfNull(this.session.getCurrentSchemaHsqlName());
@@ -164,21 +166,22 @@ public class ParserDDL extends ParserRoutine
       }
       readThis(10);
       Index localIndex = (Index)this.database.schemaManager.getSchemaObject((HsqlNameManager.HsqlName)localObject);
-      if (localIndex == null)
+      if (localIndex == null) {
         throw Error.error(5501);
+      }
       Table localTable = (Table)this.database.schemaManager.getSchemaObject(localIndex.getName().parent);
       int[] arrayOfInt = readColumnList(localTable, true);
       String str = getLastPart();
       Object[] arrayOfObject = { localTable, arrayOfInt, localIndex.getName() };
       HsqlNameManager.HsqlName[] arrayOfHsqlName = { this.database.getCatalogName(), localTable.getName() };
       return new StatementSchema(str, 1069, arrayOfObject, null, arrayOfHsqlName);
-    case 497:
+    case 497: 
       read();
       localObject = readSchemaName();
       readThis(622);
       readThis(285);
       return compileRenameObject((HsqlNameManager.HsqlName)localObject, 2);
-    case 348:
+    case 348: 
       read();
       checkIsSimpleName();
       localObject = this.token.tokenString;
@@ -187,26 +190,26 @@ public class ParserDDL extends ParserRoutine
       readThis(622);
       readThis(285);
       return compileRenameObject(this.database.getCatalogName(), 1);
-    case 505:
+    case 505: 
       return compileAlterSequence();
-    case 278:
+    case 278: 
       return compileAlterTable();
-    case 305:
+    case 305: 
       return compileAlterUser();
-    case 393:
+    case 393: 
       return compileAlterDomain();
-    case 545:
+    case 545: 
       return compileCreateView(true, false);
-    case 508:
+    case 508: 
       return compileAlterSession();
-    case 259:
+    case 259: 
       return compileAlterSpecificRoutine();
-    case 491:
+    case 491: 
       return compileAlterRoutine();
     }
     throw unexpectedToken();
   }
-
+  
   Statement compileAlterRoutine()
   {
     readThis(491);
@@ -215,7 +218,7 @@ public class ParserDDL extends ParserRoutine
     readThis(285);
     return compileRenameObject(localRoutineSchema.getName(), localRoutineSchema.getName().type);
   }
-
+  
   Statement compileDrop()
   {
     int m = 0;
@@ -228,28 +231,28 @@ public class ParserDDL extends ParserRoutine
     int j;
     switch (i)
     {
-    case 597:
+    case 597: 
       read();
       k = 1077;
       j = 20;
       n = 1;
       break;
-    case 339:
+    case 339: 
       read();
       k = 24;
       j = 6;
       m = 1;
       break;
-    case 259:
+    case 259: 
       read();
       switch (this.token.tokenType)
       {
-      case 117:
-      case 215:
-      case 491:
+      case 117: 
+      case 215: 
+      case 491: 
         read();
         break;
-      default:
+      default: 
         throw unexpectedToken();
       }
       k = 30;
@@ -257,68 +260,68 @@ public class ParserDDL extends ParserRoutine
       m = 1;
       n = 1;
       break;
-    case 215:
+    case 215: 
       read();
       k = 30;
       j = 17;
       m = 1;
       n = 1;
       break;
-    case 117:
+    case 117: 
       read();
       k = 30;
       j = 16;
       m = 1;
       n = 1;
       break;
-    case 497:
+    case 497: 
       read();
       k = 31;
       j = 2;
       m = 1;
       n = 1;
       break;
-    case 505:
+    case 505: 
       read();
       k = 135;
       j = 7;
       m = 1;
       n = 1;
       break;
-    case 291:
+    case 291: 
       read();
       k = 34;
       j = 8;
       m = 0;
       n = 1;
       break;
-    case 305:
+    case 305: 
       read();
       k = 1079;
       j = 11;
       m = 1;
       break;
-    case 490:
+    case 490: 
       read();
       k = 29;
       j = 11;
       m = 1;
       break;
-    case 393:
+    case 393: 
       read();
       k = 27;
       j = 13;
       m = 1;
       n = 1;
       break;
-    case 535:
+    case 535: 
       read();
       k = 35;
       j = 12;
       m = 1;
       n = 1;
       break;
-    case 35:
+    case 35: 
       read();
       readThis(254);
       k = 25;
@@ -326,28 +329,28 @@ public class ParserDDL extends ParserRoutine
       m = 0;
       n = 1;
       break;
-    case 358:
+    case 358: 
       read();
       k = 26;
       j = 15;
       m = 0;
       n = 1;
       break;
-    case 545:
+    case 545: 
       read();
       k = 36;
       j = 4;
       m = 1;
       n = 1;
       break;
-    case 278:
+    case 278: 
       read();
       k = 32;
       j = 3;
       m = 1;
       n = 1;
       break;
-    default:
+    default: 
       throw unexpectedToken();
     }
     if ((n != 0) && (this.token.tokenType == 412))
@@ -368,23 +371,23 @@ public class ParserDDL extends ParserRoutine
     HsqlNameManager.HsqlName localHsqlName = null;
     switch (i)
     {
-    case 305:
+    case 305: 
       checkIsSimpleName();
       checkDatabaseUpdateAuthorisation();
       localObject = this.database.getUserManager().get(this.token.tokenString);
       read();
       break;
-    case 490:
+    case 490: 
       checkIsSimpleName();
       checkDatabaseUpdateAuthorisation();
       localObject = this.database.getGranteeManager().getRole(this.token.tokenString);
       read();
       break;
-    case 497:
+    case 497: 
       localHsqlName = readNewSchemaName();
       localObject = this.database.schemaManager.findSchema(localHsqlName.name);
       break;
-    case 278:
+    case 278: 
       int i2 = (this.token.namePrePrefix == null) && (("MODULE".equals(this.token.namePrefix)) || ("SESSION".equals(this.token.namePrefix))) ? 1 : 0;
       if (i2 != 0)
       {
@@ -403,7 +406,7 @@ public class ParserDDL extends ParserRoutine
       readThis(101);
       bool2 = true;
     }
-    if (m != 0)
+    if (m != 0) {
       if (this.token.tokenType == 347)
       {
         bool1 = true;
@@ -413,6 +416,7 @@ public class ParserDDL extends ParserRoutine
       {
         read();
       }
+    }
     HsqlNameManager.HsqlName[] arrayOfHsqlName;
     if (localObject == null)
     {
@@ -428,7 +432,7 @@ public class ParserDDL extends ParserRoutine
     StatementSchema localStatementSchema = new StatementSchema(str, k, arrayOfObject, null, arrayOfHsqlName);
     return localStatementSchema;
   }
-
+  
   Statement compileAlterTable()
   {
     read();
@@ -439,11 +443,11 @@ public class ParserDDL extends ParserRoutine
     read();
     switch (this.token.tokenType)
     {
-    case 622:
+    case 622: 
       read();
       readThis(285);
       return compileRenameObject(localTable.getName(), 3);
-    case 334:
+    case 334: 
       read();
       HsqlNameManager.HsqlName localHsqlName2 = null;
       if (this.token.tokenType == 48)
@@ -453,44 +457,46 @@ public class ParserDDL extends ParserRoutine
       }
       switch (this.token.tokenType)
       {
-      case 113:
+      case 113: 
         read();
         readThis(427);
         return compileAlterTableAddForeignKeyConstraint(localTable, localHsqlName2);
-      case 299:
+      case 299: 
         read();
         return compileAlterTableAddUniqueConstraint(localTable, localHsqlName2);
-      case 37:
+      case 37: 
         read();
         return compileAlterTableAddCheckConstraint(localTable, localHsqlName2);
-      case 214:
+      case 214: 
         read();
         readThis(427);
         return compileAlterTableAddPrimaryKey(localTable, localHsqlName2);
-      case 43:
-        if (localHsqlName2 != null)
+      case 43: 
+        if (localHsqlName2 != null) {
           throw unexpectedToken();
+        }
         read();
         checkIsSimpleName();
         return compileAlterTableAddColumn(localTable);
       }
-      if (localHsqlName2 != null)
+      if (localHsqlName2 != null) {
         throw unexpectedToken();
+      }
       checkIsSimpleName();
       return compileAlterTableAddColumn(localTable);
-    case 88:
+    case 88: 
       read();
       switch (this.token.tokenType)
       {
-      case 214:
+      case 214: 
         int i = 0;
         read();
         readThis(427);
         return compileAlterTableDropPrimaryKey(localTable);
-      case 48:
+      case 48: 
         read();
         return compileAlterTableDropConstraint(localTable);
-      case 43:
+      case 43: 
         read();
       }
       checkIsSimpleName();
@@ -507,10 +513,11 @@ public class ParserDDL extends ParserRoutine
         bool = true;
       }
       return compileAlterTableDropColumn(localTable, str2, bool);
-    case 4:
+    case 4: 
       read();
-      if (this.token.tokenType == 43)
+      if (this.token.tokenType == 43) {
         read();
+      }
       int j = localTable.getColumnIndex(this.token.tokenString);
       ColumnSchema localColumnSchema = localTable.getColumn(j);
       read();
@@ -518,7 +525,7 @@ public class ParserDDL extends ParserRoutine
     }
     throw unexpectedToken();
   }
-
+  
   private Statement compileAlterTableDropConstraint(Table paramTable)
   {
     boolean bool = false;
@@ -536,12 +543,13 @@ public class ParserDDL extends ParserRoutine
     Object[] arrayOfObject = { localSchemaObject.getName(), ValuePool.getInt(5), Boolean.valueOf(bool), Boolean.valueOf(false) };
     HsqlNameManager.HsqlName[] arrayOfHsqlName = this.database.schemaManager.getCatalogAndBaseTableNames(paramTable.getName());
     HsqlNameManager.HsqlName localHsqlName = ((Constraint)localSchemaObject).getMainTableName();
-    if ((localHsqlName != null) && (localHsqlName != paramTable.getName()))
+    if ((localHsqlName != null) && (localHsqlName != paramTable.getName())) {
       arrayOfHsqlName = (HsqlNameManager.HsqlName[])ArrayUtil.toAdjustedArray(arrayOfHsqlName, localHsqlName, arrayOfHsqlName.length, 1);
+    }
     StatementSchema localStatementSchema = new StatementSchema(str, 1078, arrayOfObject, null, arrayOfHsqlName);
     return localStatementSchema;
   }
-
+  
   private Statement compileAlterTableDropPrimaryKey(Table paramTable)
   {
     boolean bool = false;
@@ -554,8 +562,9 @@ public class ParserDDL extends ParserRoutine
       read();
       bool = true;
     }
-    if (!paramTable.hasPrimaryKey())
+    if (!paramTable.hasPrimaryKey()) {
       throw Error.error(5501);
+    }
     String str = getLastPart();
     Constraint localConstraint = paramTable.getPrimaryConstraint();
     Object[] arrayOfObject = { localConstraint.getName(), ValuePool.getInt(5), Boolean.valueOf(bool), Boolean.valueOf(false) };
@@ -563,7 +572,7 @@ public class ParserDDL extends ParserRoutine
     StatementSchema localStatementSchema = new StatementSchema(str, 1078, arrayOfObject, null, arrayOfHsqlName);
     return localStatementSchema;
   }
-
+  
   StatementSession compileDeclareLocalTableOrNull()
   {
     int i = super.getPosition();
@@ -580,8 +589,9 @@ public class ParserDDL extends ParserRoutine
       rewind(i);
       return null;
     }
-    if ((this.token.namePrePrefix != null) || ((this.token.namePrefix != null) && (!"MODULE".equals(this.token.namePrefix)) && (!"SESSION".equals(this.token.namePrefix))))
+    if ((this.token.namePrePrefix != null) || ((this.token.namePrefix != null) && (!"MODULE".equals(this.token.namePrefix)) && (!"SESSION".equals(this.token.namePrefix)))) {
       throw unexpectedToken();
+    }
     HsqlNameManager.HsqlName localHsqlName = readNewSchemaObjectName(3, false);
     localHsqlName.schema = SqlInvariants.MODULE_HSQLNAME;
     Table localTable = new Table(this.database, localHsqlName, 3);
@@ -590,13 +600,14 @@ public class ParserDDL extends ParserRoutine
     for (int j = 0; j < localHsqlArrayList.size(); j++)
     {
       Constraint localConstraint = (Constraint)localHsqlArrayList.get(j);
-      if (localConstraint.getConstraintType() == 0)
+      if (localConstraint.getConstraintType() == 0) {
         throw unexpectedToken("FOREIGN");
+      }
     }
     StatementSession localStatementSession = new StatementSession(1068, localStatementSchema.arguments);
     return localStatementSession;
   }
-
+  
   StatementSchema compileCreateTable(int paramInt)
   {
     boolean bool = false;
@@ -620,21 +631,22 @@ public class ParserDDL extends ParserRoutine
     Object localObject;
     switch (paramInt)
     {
-    case 6:
-    case 7:
+    case 6: 
+    case 7: 
       localObject = new TextTable(this.database, localHsqlName, paramInt);
       break;
-    default:
+    default: 
       localObject = new Table(this.database, localHsqlName, paramInt);
     }
     return compileCreateTableBody((Table)localObject, bool);
   }
-
+  
   StatementSchema compileCreateTableBody(Table paramTable, boolean paramBoolean)
   {
     HsqlArrayList localHsqlArrayList = new HsqlArrayList();
-    if (this.token.tokenType == 10)
+    if (this.token.tokenType == 10) {
       return readTableAsSubqueryDefinition(paramTable);
+    }
     int i = getPosition();
     readThis(786);
     Constraint localConstraint = new Constraint(null, null, 5);
@@ -642,40 +654,44 @@ public class ParserDDL extends ParserRoutine
     int j = 1;
     int k = 1;
     int m = 0;
-    while (m == 0)
+    while (m == 0) {
       switch (this.token.tokenType)
       {
-      case 154:
+      case 154: 
         localObject1 = readLikeTable(paramTable);
-        for (int n = 0; n < localObject1.length; n++)
+        for (int n = 0; n < localObject1.length; n++) {
           paramTable.addColumn(localObject1[n]);
+        }
         j = 0;
         k = 0;
         break;
-      case 37:
-      case 48:
-      case 113:
-      case 214:
-      case 299:
-        if (k == 0)
+      case 37: 
+      case 48: 
+      case 113: 
+      case 214: 
+      case 299: 
+        if (k == 0) {
           throw unexpectedToken();
+        }
         readConstraint(paramTable, localHsqlArrayList);
         j = 0;
         k = 0;
         break;
-      case 774:
-        if (k != 0)
+      case 774: 
+        if (k != 0) {
           throw unexpectedToken();
+        }
         read();
         k = 1;
         break;
-      case 772:
+      case 772: 
         read();
         m = 1;
         break;
-      default:
-        if (k == 0)
+      default: 
+        if (k == 0) {
           throw unexpectedToken();
+        }
         checkIsSchemaObjectName();
         localObject1 = this.database.nameManager.newColumnHsqlName(paramTable.getName(), this.token.tokenString, isDelimitedIdentifier());
         read();
@@ -693,14 +709,17 @@ public class ParserDDL extends ParserRoutine
         j = 0;
         k = 0;
       }
+    }
     if (this.token.tokenType == 194)
     {
-      if (!paramTable.isTemp())
+      if (!paramTable.isTemp()) {
         throw unexpectedToken();
+      }
       read();
       readThis(44);
-      if ((this.token.tokenType != 79) && (this.token.tokenType == 476))
+      if ((this.token.tokenType != 79) && (this.token.tokenType == 476)) {
         paramTable.persistenceScope = 23;
+      }
       read();
       readThis(245);
     }
@@ -713,8 +732,9 @@ public class ParserDDL extends ParserRoutine
       if (localObject3 != null)
       {
         Table localTable = this.database.schemaManager.findUserTable(null, ((HsqlNameManager.HsqlName)localObject3).name, ((HsqlNameManager.HsqlName)localObject3).schema.name);
-        if ((localTable != null) && (!localTable.isTemp()))
+        if ((localTable != null) && (!localTable.isTemp())) {
           ((OrderedHashSet)localObject1).add(paramTable.getName());
+        }
       }
     }
     String str = getLastPart();
@@ -723,7 +743,7 @@ public class ParserDDL extends ParserRoutine
     ((OrderedHashSet)localObject1).toArray((Object[])localObject3);
     return new StatementSchema(str, 77, (Object[])localObject2, null, (HsqlNameManager.HsqlName[])localObject3);
   }
-
+  
   private ColumnSchema[] readLikeTable(Table paramTable)
   {
     read();
@@ -732,30 +752,34 @@ public class ParserDDL extends ParserRoutine
     int k = 0;
     Table localTable = readTableName();
     OrderedIntHashSet localOrderedIntHashSet = new OrderedIntHashSet();
-    while (true)
+    for (;;)
     {
       int m = this.token.tokenType == 416 ? 1 : 0;
-      if ((m == 0) && (this.token.tokenType != 399))
+      if ((m == 0) && (this.token.tokenType != 399)) {
         break;
+      }
       read();
       switch (this.token.tokenType)
       {
-      case 407:
-        if (!localOrderedIntHashSet.add(this.token.tokenType))
+      case 407: 
+        if (!localOrderedIntHashSet.add(this.token.tokenType)) {
           throw unexpectedToken();
+        }
         i = m;
         break;
-      case 128:
-        if (!localOrderedIntHashSet.add(this.token.tokenType))
+      case 128: 
+        if (!localOrderedIntHashSet.add(this.token.tokenType)) {
           throw unexpectedToken();
+        }
         j = m;
         break;
-      case 381:
-        if (!localOrderedIntHashSet.add(this.token.tokenType))
+      case 381: 
+        if (!localOrderedIntHashSet.add(this.token.tokenType)) {
           throw unexpectedToken();
+        }
         k = m;
         break;
-      default:
+      default: 
         throw unexpectedToken();
       }
       read();
@@ -770,28 +794,33 @@ public class ParserDDL extends ParserRoutine
       localColumnSchema.setPrimaryKey(false);
       if (j != 0)
       {
-        if (localColumnSchema.isIdentity())
+        if (localColumnSchema.isIdentity()) {
           localColumnSchema.setIdentity(localColumnSchema.getIdentitySequence().duplicate());
+        }
       }
-      else
+      else {
         localColumnSchema.setIdentity(null);
-      if (k == 0)
+      }
+      if (k == 0) {
         localColumnSchema.setDefaultExpression(null);
-      if (i == 0)
+      }
+      if (i == 0) {
         localColumnSchema.setGeneratingExpression(null);
+      }
       arrayOfColumnSchema[n] = localColumnSchema;
     }
     return arrayOfColumnSchema;
   }
-
+  
   StatementSchema readTableAsSubqueryDefinition(Table paramTable)
   {
     HsqlNameManager.HsqlName[] arrayOfHsqlName1 = null;
     int i = 1;
     HsqlNameManager.HsqlName[] arrayOfHsqlName2 = null;
     StatementQuery localStatementQuery = null;
-    if (this.token.tokenType == 786)
+    if (this.token.tokenType == 786) {
       arrayOfHsqlName2 = readColumnNames(paramTable.getName());
+    }
     readThis(10);
     readThis(786);
     QueryExpression localQueryExpression = XreadQueryExpression();
@@ -811,23 +840,27 @@ public class ParserDDL extends ParserRoutine
     readThis(378);
     if (this.token.tokenType == 194)
     {
-      if (!paramTable.isTemp())
+      if (!paramTable.isTemp()) {
         throw unexpectedToken();
+      }
       read();
       readThis(44);
-      if ((this.token.tokenType != 79) && (this.token.tokenType == 476))
+      if ((this.token.tokenType != 79) && (this.token.tokenType == 476)) {
         paramTable.persistenceScope = 23;
+      }
       read();
       readThis(245);
     }
-    if (arrayOfHsqlName2 == null)
+    if (arrayOfHsqlName2 == null) {
       arrayOfHsqlName2 = localQueryExpression.getResultColumnNames();
-    else if (arrayOfHsqlName2.length != localQueryExpression.getColumnCount())
+    } else if (arrayOfHsqlName2.length != localQueryExpression.getColumnCount()) {
       throw Error.error(5593);
+    }
     TableUtil.setColumnsInSchemaTable(paramTable, arrayOfHsqlName2, localQueryExpression.getColumnTypes());
     paramTable.createPrimaryKey();
-    if ((paramTable.isTemp()) && (paramTable.hasLobColumn()))
+    if ((paramTable.isTemp()) && (paramTable.hasLobColumn())) {
       throw Error.error(5534);
+    }
     if (i != 0)
     {
       localStatementQuery = new StatementQuery(this.session, localQueryExpression, this.compileContext);
@@ -839,7 +872,7 @@ public class ParserDDL extends ParserRoutine
     StatementSchema localStatementSchema = new StatementSchema(str, 77, arrayOfObject, arrayOfHsqlName1, arrayOfHsqlName3);
     return localStatementSchema;
   }
-
+  
   static Table addTableConstraintDefinitions(Session paramSession, Table paramTable, HsqlArrayList paramHsqlArrayList1, HsqlArrayList paramHsqlArrayList2, boolean paramBoolean)
   {
     Constraint localConstraint1 = (Constraint)paramHsqlArrayList1.get(0);
@@ -851,40 +884,45 @@ public class ParserDDL extends ParserRoutine
     {
       Constraint localConstraint2 = new Constraint(localConstraint1.getName(), paramTable, paramTable.getPrimaryIndex(), 4);
       paramTable.addConstraint(localConstraint2);
-      if (paramBoolean)
+      if (paramBoolean) {
         paramSession.database.schemaManager.addSchemaObject(localConstraint2);
+      }
     }
     for (int i = 1; i < paramHsqlArrayList1.size(); i++)
     {
       localConstraint1 = (Constraint)paramHsqlArrayList1.get(i);
       switch (localConstraint1.constType)
       {
-      case 2:
+      case 2: 
         localConstraint1.setColumnsIndexes(paramTable);
-        if (paramTable.getUniqueConstraintForColumns(localConstraint1.core.mainCols) != null)
+        if (paramTable.getUniqueConstraintForColumns(localConstraint1.core.mainCols) != null) {
           throw Error.error(5522);
+        }
         localHsqlName = paramSession.database.nameManager.newAutoName("IDX", localConstraint1.getName().name, paramTable.getSchemaName(), paramTable.getName(), 20);
         Index localIndex = paramTable.createAndAddIndexStructure(localHsqlName, localConstraint1.core.mainCols, null, null, true, true, false);
         Constraint localConstraint3 = new Constraint(localConstraint1.getName(), paramTable, localIndex, 2);
         paramTable.addConstraint(localConstraint3);
-        if (paramBoolean)
+        if (paramBoolean) {
           paramSession.database.schemaManager.addSchemaObject(localConstraint3);
+        }
         break;
-      case 0:
+      case 0: 
         addForeignKey(paramSession, paramTable, localConstraint1, paramHsqlArrayList2);
         break;
-      case 3:
+      case 3: 
         try
         {
           localConstraint1.prepareCheckConstraint(paramSession, paramTable, false);
         }
         catch (HsqlException localHsqlException)
         {
-          if (!paramSession.isProcessingScript())
+          if (!paramSession.isProcessingScript()) {
             break label351;
+          }
         }
         continue;
-        label351: throw localHsqlException;
+        label351:
+        throw localHsqlException;
         paramTable.addConstraint(localConstraint1);
         if (localConstraint1.isNotNull())
         {
@@ -892,15 +930,15 @@ public class ParserDDL extends ParserRoutine
           localColumnSchema.setNullable(false);
           paramTable.setColumnTypeVars(localConstraint1.notNullColumnIndex);
         }
-        if (paramBoolean)
+        if (paramBoolean) {
           paramSession.database.schemaManager.addSchemaObject(localConstraint1);
+        }
         break;
-      case 1:
       }
     }
     return paramTable;
   }
-
+  
   static void addForeignKey(Session paramSession, Table paramTable, Constraint paramConstraint, HsqlArrayList paramHsqlArrayList)
   {
     HsqlNameManager.HsqlName localHsqlName1 = paramConstraint.getMainTableName();
@@ -913,8 +951,9 @@ public class ParserDDL extends ParserRoutine
       localObject = paramSession.database.schemaManager.findUserTable(paramSession, localHsqlName1.name, localHsqlName1.schema.name);
       if (localObject == null)
       {
-        if (paramHsqlArrayList == null)
+        if (paramHsqlArrayList == null) {
           throw Error.error(5501, localHsqlName1.name);
+        }
         paramHsqlArrayList.add(paramConstraint);
         return;
       }
@@ -924,13 +963,15 @@ public class ParserDDL extends ParserRoutine
     Object localObject = new TableWorks(paramSession, paramTable);
     ((TableWorks)localObject).checkCreateForeignKey(paramConstraint);
     Constraint localConstraint = paramConstraint.core.mainTable.getUniqueConstraintForColumns(paramConstraint.core.mainCols);
-    if (localConstraint == null)
+    if (localConstraint == null) {
       throw Error.error(5523);
+    }
     Index localIndex1 = localConstraint.getMainIndex();
     boolean bool = paramConstraint.core.mainTable.getSchemaName() != paramTable.getSchemaName();
     int i = paramSession.database.schemaManager.getTableIndex(paramTable);
-    if ((i != -1) && (i < paramSession.database.schemaManager.getTableIndex(paramConstraint.core.mainTable)))
+    if ((i != -1) && (i < paramSession.database.schemaManager.getTableIndex(paramConstraint.core.mainTable))) {
       bool = true;
+    }
     HsqlNameManager.HsqlName localHsqlName2 = paramSession.database.nameManager.newAutoName("IDX", paramTable.getSchemaName(), paramTable.getName(), 20);
     Index localIndex2 = paramTable.createAndAddIndexStructure(localHsqlName2, paramConstraint.core.refCols, null, null, false, true, bool);
     HsqlNameManager.HsqlName localHsqlName3 = paramSession.database.nameManager.newAutoName("REF", paramConstraint.getName().name, paramTable.getSchemaName(), paramTable.getName(), 20);
@@ -945,16 +986,17 @@ public class ParserDDL extends ParserRoutine
     paramConstraint.core.mainTable.addConstraint(new Constraint(localHsqlName3, paramConstraint));
     paramSession.database.schemaManager.addSchemaObject(paramConstraint);
   }
-
+  
   private Constraint readFKReferences(Table paramTable, HsqlNameManager.HsqlName paramHsqlName, OrderedHashSet paramOrderedHashSet)
   {
     OrderedHashSet localOrderedHashSet = null;
     readThis(222);
     HsqlNameManager.HsqlName localHsqlName2;
-    if (this.token.namePrefix == null)
+    if (this.token.namePrefix == null) {
       localHsqlName2 = paramTable.getSchemaName();
-    else
+    } else {
       localHsqlName2 = this.database.schemaManager.getSchemaHsqlName(this.token.namePrefix);
+    }
     HsqlNameManager.HsqlName localHsqlName1;
     if ((paramTable.getSchemaName() == localHsqlName2) && (paramTable.getName().name.equals(this.token.tokenString)))
     {
@@ -965,24 +1007,25 @@ public class ParserDDL extends ParserRoutine
     {
       localHsqlName1 = readFKTableName(localHsqlName2);
     }
-    if (this.token.tokenType == 786)
+    if (this.token.tokenType == 786) {
       localOrderedHashSet = readColumnNames(false);
+    }
     int i = 59;
     if (this.token.tokenType == 162)
     {
       read();
       switch (this.token.tokenType)
       {
-      case 511:
+      case 511: 
         read();
         break;
-      case 470:
+      case 470: 
         throw super.unsupportedFeature();
-      case 116:
+      case 116: 
         read();
         i = 61;
         break;
-      default:
+      default: 
         throw unexpectedToken();
       }
     }
@@ -992,8 +1035,9 @@ public class ParserDDL extends ParserRoutine
     while (this.token.tokenType == 194)
     {
       read();
-      if (!localOrderedIntHashSet.add(this.token.tokenType))
+      if (!localOrderedIntHashSet.add(this.token.tokenType)) {
         throw unexpectedToken();
+      }
       if (this.token.tokenType == 79)
       {
         read();
@@ -1002,15 +1046,15 @@ public class ParserDDL extends ParserRoutine
           read();
           switch (this.token.tokenType)
           {
-          case 78:
+          case 78: 
             read();
             j = 4;
             break;
-          case 186:
+          case 186: 
             read();
             j = 2;
             break;
-          default:
+          default: 
             throw unexpectedToken();
           }
         }
@@ -1037,15 +1081,15 @@ public class ParserDDL extends ParserRoutine
           read();
           switch (this.token.tokenType)
           {
-          case 78:
+          case 78: 
             read();
             k = 4;
             break;
-          case 186:
+          case 186: 
             read();
             k = 2;
             break;
-          default:
+          default: 
             throw unexpectedToken();
           }
         }
@@ -1069,24 +1113,26 @@ public class ParserDDL extends ParserRoutine
         throw unexpectedToken();
       }
     }
-    if (paramHsqlName == null)
+    if (paramHsqlName == null) {
       paramHsqlName = this.database.nameManager.newAutoName("FK", paramTable.getSchemaName(), paramTable.getName(), 5);
+    }
     return new Constraint(paramHsqlName, paramTable.getName(), paramOrderedHashSet, localHsqlName1, localOrderedHashSet, 0, j, k, i);
   }
-
+  
   private HsqlNameManager.HsqlName readFKTableName(HsqlNameManager.HsqlName paramHsqlName)
   {
     checkIsSchemaObjectName();
     Table localTable = this.database.schemaManager.findUserTable(this.session, this.token.tokenString, paramHsqlName.name);
     HsqlNameManager.HsqlName localHsqlName;
-    if (localTable == null)
+    if (localTable == null) {
       localHsqlName = this.database.nameManager.newHsqlName(paramHsqlName, this.token.tokenString, isDelimitedIdentifier(), 3);
-    else
+    } else {
       localHsqlName = localTable.getName();
+    }
     read();
     return localHsqlName;
   }
-
+  
   StatementSchema compileCreateView(boolean paramBoolean1, boolean paramBoolean2)
   {
     read();
@@ -1094,14 +1140,14 @@ public class ParserDDL extends ParserRoutine
     localHsqlName.setSchemaIfNull(this.session.getCurrentSchemaHsqlName());
     checkSchemaUpdateAuthorisation(localHsqlName.schema);
     HsqlNameManager.HsqlName[] arrayOfHsqlName1 = null;
-    if (this.token.tokenType == 786)
+    if (this.token.tokenType == 786) {
       try
       {
         arrayOfHsqlName1 = readColumnNames(localHsqlName);
       }
       catch (HsqlException localHsqlException1)
       {
-        if ((this.session.isProcessingScript()) && (this.database.getProperties().isVersion18()));
+        if ((this.session.isProcessingScript()) && (this.database.getProperties().isVersion18())) {}
         while (this.token.tokenType != 10)
         {
           read();
@@ -1109,6 +1155,7 @@ public class ParserDDL extends ParserRoutine
           throw localHsqlException1;
         }
       }
+    }
     readThis(10);
     startRecording();
     int i = getPosition();
@@ -1127,10 +1174,11 @@ public class ParserDDL extends ParserRoutine
     {
       read();
       j = 2;
-      if (readIfThis(157))
+      if (readIfThis(157)) {
         j = 1;
-      else
+      } else {
         readIfThis(28);
+      }
       readThis(37);
       readThis(455);
     }
@@ -1145,7 +1193,7 @@ public class ParserDDL extends ParserRoutine
     HsqlNameManager.HsqlName[] arrayOfHsqlName2 = this.database.schemaManager.catalogNameArray;
     return new StatementSchema(str, k, arrayOfObject, localStatementQuery.readTableNames, arrayOfHsqlName2);
   }
-
+  
   StatementSchema compileCreateSequence()
   {
     read();
@@ -1157,7 +1205,7 @@ public class ParserDDL extends ParserRoutine
     HsqlNameManager.HsqlName[] arrayOfHsqlName = this.database.schemaManager.catalogNameArray;
     return new StatementSchema(str, 133, arrayOfObject, null, arrayOfHsqlName);
   }
-
+  
   StatementSchema compileCreateDomain()
   {
     UserTypeModifier localUserTypeModifier = null;
@@ -1166,27 +1214,29 @@ public class ParserDDL extends ParserRoutine
     readIfThis(10);
     Type localType = readTypeDefinition(false, false).duplicate();
     Expression localExpression = null;
-    if (readIfThis(78))
+    if (readIfThis(78)) {
       localExpression = readDefaultClause(localType);
+    }
     localUserTypeModifier = new UserTypeModifier(localHsqlName, 13, localType);
     localUserTypeModifier.setDefaultClause(localExpression);
     localType.userTypeModifier = localUserTypeModifier;
     HsqlArrayList localHsqlArrayList = new HsqlArrayList();
     this.compileContext.currentDomain = localType;
-    while (true)
+    for (;;)
     {
       i = 0;
       switch (this.token.tokenType)
       {
-      case 37:
-      case 48:
+      case 37: 
+      case 48: 
         readConstraint(localType, localHsqlArrayList);
         break;
-      default:
+      default: 
         i = 1;
       }
-      if (i != 0)
+      if (i != 0) {
         break;
+      }
     }
     this.compileContext.currentDomain = null;
     for (int i = 0; i < localHsqlArrayList.size(); i++)
@@ -1200,7 +1250,7 @@ public class ParserDDL extends ParserRoutine
     HsqlNameManager.HsqlName[] arrayOfHsqlName = this.database.schemaManager.catalogNameArray;
     return new StatementSchema(str, 23, (Object[])localObject, null, arrayOfHsqlName);
   }
-
+  
   StatementSchema compileCreateType(boolean paramBoolean)
   {
     read();
@@ -1215,7 +1265,7 @@ public class ParserDDL extends ParserRoutine
     HsqlNameManager.HsqlName[] arrayOfHsqlName = this.database.schemaManager.catalogNameArray;
     return new StatementSchema(str, 83, arrayOfObject, null, arrayOfHsqlName);
   }
-
+  
   StatementSchema compileCreateCharacterSet()
   {
     read();
@@ -1239,7 +1289,7 @@ public class ParserDDL extends ParserRoutine
     HsqlNameManager.HsqlName[] arrayOfHsqlName = this.database.schemaManager.catalogNameArray;
     return new StatementSchema(str2, 8, arrayOfObject, null, arrayOfHsqlName);
   }
-
+  
   StatementSchema compileCreateCollation()
   {
     read();
@@ -1263,8 +1313,9 @@ public class ParserDDL extends ParserRoutine
       localBoolean = Boolean.TRUE;
     }
     Charset localCharset = (Charset)this.database.schemaManager.getSchemaObject(localHsqlName2);
-    if (localCharset == null)
+    if (localCharset == null) {
       throw Error.error(5501, localHsqlName2.getSchemaQualifiedStatementName());
+    }
     Collation localCollation1;
     try
     {
@@ -1274,22 +1325,24 @@ public class ParserDDL extends ParserRoutine
     {
       localCollation1 = (Collation)this.database.schemaManager.getSchemaObject(localHsqlName3);
     }
-    if (localCollation1 == null)
+    if (localCollation1 == null) {
       throw Error.error(5501, localHsqlName3.getSchemaQualifiedStatementName());
+    }
     Collation localCollation2 = new Collation(localHsqlName1, localCollation1, localCharset, localBoolean);
     String str = getLastPart();
     Object[] arrayOfObject = { localCollation2 };
     HsqlNameManager.HsqlName[] arrayOfHsqlName = this.database.schemaManager.catalogNameArray;
     return new StatementSchema(str, 10, arrayOfObject, null, arrayOfHsqlName);
   }
-
+  
   StatementSchema compileCreateAlias()
   {
     HsqlNameManager.HsqlName localHsqlName = null;
     Routine[] arrayOfRoutine = null;
     String str2 = null;
-    if (!this.session.isProcessingScript())
+    if (!this.session.isProcessingScript()) {
       throw super.unsupportedFeature();
+    }
     read();
     String str1;
     try
@@ -1316,7 +1369,7 @@ public class ParserDDL extends ParserRoutine
     HsqlNameManager.HsqlName[] arrayOfHsqlName = this.database.schemaManager.catalogNameArray;
     return new StatementSchema((String)localObject1, 1072, (Object[])localObject2, null, arrayOfHsqlName);
   }
-
+  
   StatementSchema compileCreateTrigger(boolean paramBoolean)
   {
     Object localObject1 = null;
@@ -1331,28 +1384,28 @@ public class ParserDDL extends ParserRoutine
     int k;
     switch (this.token.tokenType)
     {
-    case 422:
+    case 422: 
       k = TriggerDef.getTiming(422);
       read();
       readThis(191);
       break;
-    case 336:
-    case 343:
+    case 336: 
+    case 343: 
       k = TriggerDef.getTiming(this.token.tokenType);
       read();
       break;
-    default:
+    default: 
       throw unexpectedToken();
     }
     int m;
     switch (this.token.tokenType)
     {
-    case 79:
-    case 135:
+    case 79: 
+    case 135: 
       m = TriggerDef.getOperationType(this.token.tokenType);
       read();
       break;
-    case 303:
+    case 303: 
       m = TriggerDef.getOperationType(this.token.tokenType);
       read();
       if ((this.token.tokenType == 191) && (k != 6))
@@ -1362,7 +1415,7 @@ public class ParserDDL extends ParserRoutine
         readColumnNameList(localOrderedHashSet, null, false);
       }
       break;
-    default:
+    default: 
       throw unexpectedToken();
     }
     readThis(194);
@@ -1377,21 +1430,26 @@ public class ParserDDL extends ParserRoutine
     checkSchemaUpdateAuthorisation(localHsqlName1.schema);
     if (k == 6)
     {
-      if ((!localTable.isView()) || (((View)localTable).getCheckOption() == 2))
+      if ((!localTable.isView()) || (((View)localTable).getCheckOption() == 2)) {
         throw Error.error(5538, localHsqlName1.schema.name);
+      }
     }
-    else if (localTable.isView())
+    else if (localTable.isView()) {
       throw Error.error(5538, localHsqlName1.schema.name);
-    if (localHsqlName1.schema != localTable.getSchemaName())
+    }
+    if (localHsqlName1.schema != localTable.getSchemaName()) {
       throw Error.error(5505, localHsqlName1.schema.name);
+    }
     localHsqlName1.parent = localTable.getName();
     this.database.schemaManager.checkSchemaObjectNotExists(localHsqlName1);
     if (localOrderedHashSet != null)
     {
       arrayOfInt = localTable.getColumnIndexes(localOrderedHashSet);
-      for (int n = 0; n < arrayOfInt.length; n++)
-        if (arrayOfInt[n] == -1)
+      for (int n = 0; n < arrayOfInt.length; n++) {
+        if (arrayOfInt[n] == -1) {
           throw Error.error(5544, (String)localOrderedHashSet.get(n));
+        }
+      }
     }
     Expression localExpression = null;
     String str2 = null;
@@ -1407,28 +1465,32 @@ public class ParserDDL extends ParserRoutine
     if (this.token.tokenType == 223)
     {
       read();
-      if ((this.token.tokenType != 193) && (this.token.tokenType != 179))
+      if ((this.token.tokenType != 193) && (this.token.tokenType != 179)) {
         throw unexpectedToken();
-      while (true)
+      }
+      for (;;)
       {
         Object localObject6;
         if (this.token.tokenType == 193)
         {
-          if (m == 50)
+          if (m == 50) {
             throw unexpectedToken();
+          }
           read();
           if (this.token.tokenType == 278)
           {
-            if ((Boolean.TRUE.equals(localObject1)) || (str2 != null) || (k == 4))
+            if ((Boolean.TRUE.equals(localObject1)) || (str2 != null) || (k == 4)) {
               throw unexpectedToken();
+            }
             read();
             readIfThis(10);
             checkIsSimpleName();
             read();
             str2 = this.token.tokenString;
             localObject6 = str2;
-            if ((((String)localObject6).equals(localObject3)) || (((String)localObject6).equals(localObject4)) || (((String)localObject6).equals(localObject5)))
+            if ((((String)localObject6).equals(localObject3)) || (((String)localObject6).equals(localObject4)) || (((String)localObject6).equals(localObject5))) {
               throw unexpectedToken();
+            }
             localObject1 = Boolean.FALSE;
             localObject7 = this.database.nameManager.newHsqlName(localTable.getSchemaName(), (String)localObject6, isDelimitedIdentifier(), 10);
             localObject8 = new Table(localTable, (HsqlNameManager.HsqlName)localObject7);
@@ -1438,16 +1500,18 @@ public class ParserDDL extends ParserRoutine
           }
           else
           {
-            if ((Boolean.FALSE.equals(localObject1)) || (localObject4 != null))
+            if ((Boolean.FALSE.equals(localObject1)) || (localObject4 != null)) {
               throw unexpectedToken();
+            }
             readIfThis(243);
             readIfThis(10);
             checkIsSimpleName();
             localObject4 = HsqlNameManager.getSimpleName(this.token.tokenString, this.token.isDelimitedIdentifier);
             read();
             localObject6 = ((HsqlNameManager.SimpleName)localObject4).name;
-            if ((((String)localObject6).equals(localObject3)) || (((String)localObject6).equals(str2)) || (((String)localObject6).equals(localObject5)))
+            if ((((String)localObject6).equals(localObject3)) || (((String)localObject6).equals(str2)) || (((String)localObject6).equals(localObject5))) {
               throw unexpectedToken();
+            }
             localObject1 = Boolean.TRUE;
             localObject7 = new RangeVariable(localTable.columnList, (HsqlNameManager.SimpleName)localObject4, false, 2);
             ((RangeVariable)localObject7).rangePosition = 0;
@@ -1457,15 +1521,18 @@ public class ParserDDL extends ParserRoutine
         }
         else
         {
-          if (this.token.tokenType != 179)
+          if (this.token.tokenType != 179) {
             break;
-          if (m == 19)
+          }
+          if (m == 19) {
             throw unexpectedToken();
+          }
           read();
           if (this.token.tokenType == 278)
           {
-            if ((Boolean.TRUE.equals(localObject1)) || (localObject3 != null) || (k == 4))
+            if ((Boolean.TRUE.equals(localObject1)) || (localObject3 != null) || (k == 4)) {
               throw unexpectedToken();
+            }
             read();
             readIfThis(10);
             checkIsSimpleName();
@@ -1473,8 +1540,9 @@ public class ParserDDL extends ParserRoutine
             read();
             localObject1 = Boolean.FALSE;
             localObject6 = localObject3;
-            if ((((String)localObject6).equals(str2)) || (((String)localObject6).equals(localObject4)) || (((String)localObject6).equals(localObject5)))
+            if ((((String)localObject6).equals(str2)) || (((String)localObject6).equals(localObject4)) || (((String)localObject6).equals(localObject5))) {
               throw unexpectedToken();
+            }
             localObject7 = this.database.nameManager.newHsqlName(localTable.getSchemaName(), (String)localObject6, isDelimitedIdentifier(), 10);
             localObject8 = new Table(localTable, (HsqlNameManager.HsqlName)localObject7);
             localObject9 = new RangeVariable((Table)localObject8, null, null, null, this.compileContext);
@@ -1483,16 +1551,18 @@ public class ParserDDL extends ParserRoutine
           }
           else
           {
-            if ((Boolean.FALSE.equals(localObject1)) || (localObject5 != null))
+            if ((Boolean.FALSE.equals(localObject1)) || (localObject5 != null)) {
               throw unexpectedToken();
+            }
             readIfThis(243);
             readIfThis(10);
             checkIsSimpleName();
             localObject5 = HsqlNameManager.getSimpleName(this.token.tokenString, this.token.isDelimitedIdentifier);
             read();
             localObject6 = ((HsqlNameManager.SimpleName)localObject5).name;
-            if ((((String)localObject6).equals(str2)) || (((String)localObject6).equals(localObject3)) || (((String)localObject6).equals(localObject4)))
+            if ((((String)localObject6).equals(str2)) || (((String)localObject6).equals(localObject3)) || (((String)localObject6).equals(localObject4))) {
               throw unexpectedToken();
+            }
             localObject1 = Boolean.TRUE;
             localObject7 = new RangeVariable(localTable.columnList, (HsqlNameManager.SimpleName)localObject5, false, 2);
             ((RangeVariable)localObject7).rangePosition = 1;
@@ -1502,22 +1572,25 @@ public class ParserDDL extends ParserRoutine
         }
       }
     }
-    if ((Boolean.TRUE.equals(localObject1)) && (this.token.tokenType != 112))
+    if ((Boolean.TRUE.equals(localObject1)) && (this.token.tokenType != 112)) {
       throw unexpectedTokenRequire("FOR");
+    }
     if (this.token.tokenType == 112)
     {
       read();
       readThis(90);
       if (this.token.tokenType == 243)
       {
-        if (Boolean.FALSE.equals(localObject1))
+        if (Boolean.FALSE.equals(localObject1)) {
           throw unexpectedToken();
+        }
         localObject1 = Boolean.TRUE;
       }
       else if (this.token.tokenType == 517)
       {
-        if ((Boolean.TRUE.equals(localObject1)) || (k == 4))
+        if ((Boolean.TRUE.equals(localObject1)) || (k == 4)) {
           throw unexpectedToken();
+        }
         localObject1 = Boolean.FALSE;
       }
       else
@@ -1551,11 +1624,13 @@ public class ParserDDL extends ParserRoutine
       localObject7 = localExpression.resolveColumnReferences(this.session, new RangeGroup.RangeGroupSimple(arrayOfRangeVariable), arrayOfRangeGroup, null);
       ExpressionColumn.checkColumnsResolved((HsqlList)localObject7);
       localExpression.resolveTypes(this.session, null);
-      if (localExpression.getDataType() != Type.SQL_BOOLEAN)
+      if (localExpression.getDataType() != Type.SQL_BOOLEAN) {
         throw Error.error(5568);
+      }
     }
-    if (localObject1 == null)
+    if (localObject1 == null) {
       localObject1 = Boolean.FALSE;
+    }
     if (this.token.tokenType == 25)
     {
       i1 = getPosition();
@@ -1566,8 +1641,9 @@ public class ParserDDL extends ParserRoutine
         checkIsDelimitedIdentifier();
         String str1 = this.token.tokenString;
         read();
-        if (this.token.tokenType == 786)
+        if (this.token.tokenType == 786) {
           throw unexpectedToken();
+        }
         localObject2 = new TriggerDef(localHsqlName1, k, m, ((Boolean)localObject1).booleanValue(), localTable, arrayOfTable, arrayOfRangeVariable, localExpression, str3, arrayOfInt, str1, bool, j);
         localObject7 = getLastPart();
         localObject8 = new Object[] { localObject2, localHsqlName2 };
@@ -1579,17 +1655,19 @@ public class ParserDDL extends ParserRoutine
         rewind(i1);
       }
     }
-    if (i != 0)
+    if (i != 0) {
       throw unexpectedToken("QUEUE");
-    if (bool)
+    }
+    if (bool) {
       throw unexpectedToken("NOWAIT");
+    }
     Routine localRoutine = compileTriggerRoutine(localTable, arrayOfRangeVariable, k, m);
     Object localObject2 = new TriggerDefSQL(localHsqlName1, k, m, ((Boolean)localObject1).booleanValue(), localTable, arrayOfTable, arrayOfRangeVariable, localExpression, str3, arrayOfInt, localRoutine);
     String str4 = getLastPart();
     Object localObject8 = { localObject2, localHsqlName2 };
     return new StatementSchema(str4, 80, (Object[])localObject8, null, new HsqlNameManager.HsqlName[] { this.database.getCatalogName(), localTable.getName() });
   }
-
+  
   Routine compileTriggerRoutine(Table paramTable, RangeVariable[] paramArrayOfRangeVariable, int paramInt1, int paramInt2)
   {
     int i = paramInt1 == 4 ? 3 : 4;
@@ -1598,8 +1676,9 @@ public class ParserDDL extends ParserRoutine
     StatementCompound localStatementCompound = new StatementCompound(12, null);
     localStatementCompound.rangeVariables = paramArrayOfRangeVariable;
     Statement localStatement = compileSQLProcedureStatementOrNull(localRoutine, null);
-    if (localStatement == null)
+    if (localStatement == null) {
       throw unexpectedToken();
+    }
     Token[] arrayOfToken = getRecordedStatement();
     String str = Token.getSQL(arrayOfToken);
     localStatement.setSQL(str);
@@ -1607,7 +1686,7 @@ public class ParserDDL extends ParserRoutine
     localRoutine.resolve(this.session);
     return localRoutine;
   }
-
+  
   ColumnSchema readColumnDefinitionOrNull(Table paramTable, HsqlNameManager.HsqlName paramHsqlName, HsqlArrayList paramHsqlArrayList)
   {
     int i = 0;
@@ -1621,25 +1700,25 @@ public class ParserDDL extends ParserRoutine
     NumberSequence localNumberSequence = null;
     switch (this.token.tokenType)
     {
-    case 407:
+    case 407: 
       read();
       readThis(337);
       i = 1;
       bool1 = true;
       throw unexpectedToken("GENERATED");
-    case 128:
+    case 128: 
       read();
       j = 1;
       k = 1;
       localObject = Type.SQL_INTEGER;
       localNumberSequence = new NumberSequence(null, 0L, 1L, (Type)localObject);
       break;
-    case 774:
+    case 774: 
       return null;
-    case 772:
+    case 772: 
       return null;
-    default:
-      if (this.token.isUndelimitedIdentifier)
+    default: 
+      if (this.token.isUndelimitedIdentifier) {
         if ("SERIAL".equals(this.token.tokenString))
         {
           if (this.database.sqlSyntaxMys)
@@ -1669,30 +1748,33 @@ public class ParserDDL extends ParserRoutine
           localNumberSequence = new NumberSequence(null, 1L, 1L, (Type)localObject);
           break;
         }
+      }
       localObject = readTypeDefinition(true, true);
     }
     if ((i == 0) && (j == 0))
     {
-      if (this.database.sqlSyntaxMys)
+      if (this.database.sqlSyntaxMys) {
         switch (this.token.tokenType)
         {
-        case 186:
+        case 186: 
           read();
           break;
-        case 183:
+        case 183: 
           read();
           readThis(186);
           bool2 = false;
           break;
         }
+      }
       switch (this.token.tokenType)
       {
-      case 319:
-        if (this.database.sqlSyntaxDb2)
+      case 319: 
+        if (this.database.sqlSyntaxDb2) {
           read();
-        else
+        } else {
           throw unexpectedToken();
-      case 78:
+        }
+      case 78: 
         read();
         localExpression2 = readDefaultClause((Type)localObject);
         if ((localExpression2.opType == 12) && (this.database.sqlSyntaxPgs))
@@ -1702,7 +1784,7 @@ public class ParserDDL extends ParserRoutine
           j = 1;
         }
         break;
-      case 407:
+      case 407: 
         read();
         if (this.token.tokenType == 24)
         {
@@ -1730,23 +1812,26 @@ public class ParserDDL extends ParserRoutine
         }
         else if (this.token.tokenType == 786)
         {
-          if (!bool1)
+          if (!bool1) {
             throw super.unexpectedTokenRequire("IDENTITY");
+          }
           i = 1;
         }
         else if (this.token.tokenType == 505)
         {
-          if (bool1)
+          if (bool1) {
             throw unexpectedToken();
+          }
           read();
-          if ((this.token.namePrefix != null) && (!this.token.namePrefix.equals(paramTable.getSchemaName().name)))
+          if ((this.token.namePrefix != null) && (!this.token.namePrefix.equals(paramTable.getSchemaName().name))) {
             throw super.unexpectedToken(this.token.namePrefix);
+          }
           localNumberSequence = this.database.schemaManager.getSequence(this.token.tokenString, paramTable.getSchemaName().name, true);
           j = 1;
           read();
         }
         break;
-      case 128:
+      case 128: 
         read();
         j = 1;
         k = 1;
@@ -1775,8 +1860,9 @@ public class ParserDDL extends ParserRoutine
       k = 1;
       localNumberSequence = new NumberSequence(null, 0L, 1L, (Type)localObject);
     }
-    if (j != 0)
+    if (j != 0) {
       localColumnSchema.setIdentity(localNumberSequence);
+    }
     if ((k != 0) && (!localColumnSchema.isPrimaryKey()))
     {
       OrderedHashSet localOrderedHashSet = new OrderedHashSet();
@@ -1800,19 +1886,20 @@ public class ParserDDL extends ParserRoutine
     }
     return localColumnSchema;
   }
-
+  
   private void readSequenceOptions(NumberSequence paramNumberSequence, boolean paramBoolean1, boolean paramBoolean2, boolean paramBoolean3)
   {
     OrderedIntHashSet localOrderedIntHashSet = new OrderedIntHashSet();
-    while (true)
+    for (;;)
     {
       int i = 0;
-      if (localOrderedIntHashSet.contains(this.token.tokenType))
+      if (localOrderedIntHashSet.contains(this.token.tokenType)) {
         throw unexpectedToken();
+      }
       long l;
       switch (this.token.tokenType)
       {
-      case 10:
+      case 10: 
         if (paramBoolean1)
         {
           localOrderedIntHashSet.add(this.token.tokenType);
@@ -1825,16 +1912,17 @@ public class ParserDDL extends ParserRoutine
           throw unexpectedToken();
         }
         break;
-      case 267:
+      case 267: 
         localOrderedIntHashSet.add(this.token.tokenType);
         read();
         readThis(319);
         l = readBigint();
         paramNumberSequence.setStartValueNoCheck(l);
-        if (paramBoolean3)
+        if (paramBoolean3) {
           readIfThis(774);
+        }
         break;
-      case 484:
+      case 484: 
         if (!paramBoolean2)
         {
           i = 1;
@@ -1854,46 +1942,48 @@ public class ParserDDL extends ParserRoutine
           }
         }
         break;
-      case 417:
+      case 417: 
         localOrderedIntHashSet.add(this.token.tokenType);
         read();
         readThis(24);
         l = readBigint();
         paramNumberSequence.setIncrement(l);
         break;
-      case 180:
+      case 180: 
         read();
-        if (localOrderedIntHashSet.contains(this.token.tokenType))
+        if (localOrderedIntHashSet.contains(this.token.tokenType)) {
           throw unexpectedToken();
-        if (this.token.tokenType == 438)
+        }
+        if (this.token.tokenType == 438) {
           paramNumberSequence.setDefaultMaxValue();
-        else if (this.token.tokenType == 442)
+        } else if (this.token.tokenType == 442) {
           paramNumberSequence.setDefaultMinValue();
-        else if (this.token.tokenType == 71)
+        } else if (this.token.tokenType == 71) {
           paramNumberSequence.setCycle(false);
-        else
+        } else {
           throw unexpectedToken();
+        }
         localOrderedIntHashSet.add(this.token.tokenType);
         read();
         break;
-      case 438:
+      case 438: 
         localOrderedIntHashSet.add(this.token.tokenType);
         read();
         l = readBigint();
         paramNumberSequence.setMaxValueNoCheck(l);
         break;
-      case 442:
+      case 442: 
         localOrderedIntHashSet.add(this.token.tokenType);
         read();
         l = readBigint();
         paramNumberSequence.setMinValueNoCheck(l);
         break;
-      case 71:
+      case 71: 
         localOrderedIntHashSet.add(this.token.tokenType);
         read();
         paramNumberSequence.setCycle(true);
         break;
-      default:
+      default: 
         if ((this.database.sqlSyntaxOra) && (isSimpleName()))
         {
           if ((this.token.tokenString.equals("NOCACHE")) || (this.token.tokenString.equals("NOCYCLE")) || (this.token.tokenString.equals("NOMAXVALUE")) || (this.token.tokenString.equals("NOMINVALUE")) || (this.token.tokenString.equals("NOORDER")) || (this.token.tokenString.equals("ORDER")))
@@ -1910,12 +2000,13 @@ public class ParserDDL extends ParserRoutine
         }
         i = 1;
       }
-      if (i != 0)
+      if (i != 0) {
         break;
+      }
     }
     paramNumberSequence.checkValues();
   }
-
+  
   private void readConstraint(SchemaObject paramSchemaObject, HsqlArrayList paramHsqlArrayList)
   {
     HsqlNameManager.HsqlName localHsqlName = null;
@@ -1928,61 +2019,69 @@ public class ParserDDL extends ParserRoutine
     Object localObject2;
     switch (this.token.tokenType)
     {
-    case 214:
-      if (paramSchemaObject.getName().type != 3)
+    case 214: 
+      if (paramSchemaObject.getName().type != 3) {
         throw unexpectedTokenRequire("CHECK");
+      }
       read();
       readThis(427);
       localObject1 = (Constraint)paramHsqlArrayList.get(0);
-      if (((Constraint)localObject1).constType == 4)
+      if (((Constraint)localObject1).constType == 4) {
         throw Error.error(5532);
-      if (localHsqlName == null)
+      }
+      if (localHsqlName == null) {
         localHsqlName = this.database.nameManager.newAutoName("PK", paramSchemaObject.getSchemaName(), paramSchemaObject.getName(), 5);
+      }
       localObject2 = readColumnNames(false);
       Constraint localConstraint = new Constraint(localHsqlName, (OrderedHashSet)localObject2, 4);
       paramHsqlArrayList.set(0, localConstraint);
       break;
-    case 299:
-      if (paramSchemaObject.getName().type != 3)
+    case 299: 
+      if (paramSchemaObject.getName().type != 3) {
         throw unexpectedTokenRequire("CHECK");
+      }
       read();
       localObject1 = readColumnNames(false);
-      if (localHsqlName == null)
+      if (localHsqlName == null) {
         localHsqlName = this.database.nameManager.newAutoName("CT", paramSchemaObject.getSchemaName(), paramSchemaObject.getName(), 5);
+      }
       localObject2 = new Constraint(localHsqlName, (OrderedHashSet)localObject1, 2);
       paramHsqlArrayList.add(localObject2);
       break;
-    case 113:
-      if (paramSchemaObject.getName().type != 3)
+    case 113: 
+      if (paramSchemaObject.getName().type != 3) {
         throw unexpectedTokenRequire("CHECK");
+      }
       read();
       readThis(427);
       localObject1 = readColumnNames(false);
       localObject2 = readFKReferences((Table)paramSchemaObject, localHsqlName, (OrderedHashSet)localObject1);
       paramHsqlArrayList.add(localObject2);
       break;
-    case 37:
+    case 37: 
       read();
-      if (localHsqlName == null)
+      if (localHsqlName == null) {
         localHsqlName = this.database.nameManager.newAutoName("CT", paramSchemaObject.getSchemaName(), paramSchemaObject.getName(), 5);
+      }
       localObject1 = new Constraint(localHsqlName, null, 3);
       readCheckConstraintCondition((Constraint)localObject1);
       paramHsqlArrayList.add(localObject1);
       break;
-    default:
-      if (localHsqlName != null)
+    default: 
+      if (localHsqlName != null) {
         throw super.unexpectedToken();
+      }
       break;
     }
   }
-
+  
   void readColumnConstraints(Table paramTable, ColumnSchema paramColumnSchema, HsqlArrayList paramHsqlArrayList)
   {
     int i = 0;
     int j = 0;
     int k = 0;
     int m = 0;
-    while (true)
+    for (;;)
     {
       HsqlNameManager.HsqlName localHsqlName = null;
       if (this.token.tokenType == 48)
@@ -1994,45 +2093,50 @@ public class ParserDDL extends ParserRoutine
       Object localObject2;
       switch (this.token.tokenType)
       {
-      case 214:
-        if ((k != 0) || (m != 0))
+      case 214: 
+        if ((k != 0) || (m != 0)) {
           throw unexpectedToken();
+        }
         read();
         readThis(427);
         localObject1 = (Constraint)paramHsqlArrayList.get(0);
-        if (((Constraint)localObject1).constType == 4)
+        if (((Constraint)localObject1).constType == 4) {
           throw Error.error(5532);
+        }
         localObject2 = new OrderedHashSet();
         ((OrderedHashSet)localObject2).add(paramColumnSchema.getName().name);
-        if (localHsqlName == null)
+        if (localHsqlName == null) {
           localHsqlName = this.database.nameManager.newAutoName("PK", paramTable.getSchemaName(), paramTable.getName(), 5);
+        }
         Constraint localConstraint = new Constraint(localHsqlName, (OrderedHashSet)localObject2, 4);
         paramHsqlArrayList.set(0, localConstraint);
         paramColumnSchema.setPrimaryKey(true);
         m = 1;
         break;
-      case 299:
+      case 299: 
         read();
         localObject1 = new OrderedHashSet();
         ((OrderedHashSet)localObject1).add(paramColumnSchema.getName().name);
-        if (localHsqlName == null)
+        if (localHsqlName == null) {
           localHsqlName = this.database.nameManager.newAutoName("CT", paramTable.getSchemaName(), paramTable.getName(), 5);
+        }
         localObject2 = new Constraint(localHsqlName, (OrderedHashSet)localObject1, 2);
         paramHsqlArrayList.add(localObject2);
         break;
-      case 113:
+      case 113: 
         read();
         readThis(427);
-      case 222:
+      case 222: 
         localObject1 = new OrderedHashSet();
         ((OrderedHashSet)localObject1).add(paramColumnSchema.getName().name);
         localObject2 = readFKReferences(paramTable, localHsqlName, (OrderedHashSet)localObject1);
         paramHsqlArrayList.add(localObject2);
         break;
-      case 37:
+      case 37: 
         read();
-        if (localHsqlName == null)
+        if (localHsqlName == null) {
           localHsqlName = this.database.nameManager.newAutoName("CT", paramTable.getSchemaName(), paramTable.getName(), 5);
+        }
         localObject1 = new Constraint(localHsqlName, null, 3);
         readCheckConstraintCondition((Constraint)localObject1);
         localObject2 = ((Constraint)localObject1).getCheckColumnExpressions();
@@ -2041,42 +2145,49 @@ public class ParserDDL extends ParserRoutine
           ExpressionColumn localExpressionColumn = (ExpressionColumn)((OrderedHashSet)localObject2).get(n);
           if (paramColumnSchema.getName().name.equals(localExpressionColumn.getColumnName()))
           {
-            if ((localExpressionColumn.getSchemaName() != null) && (localExpressionColumn.getSchemaName() != paramTable.getSchemaName().name))
+            if ((localExpressionColumn.getSchemaName() != null) && (localExpressionColumn.getSchemaName() != paramTable.getSchemaName().name)) {
               throw Error.error(5505);
+            }
           }
-          else
+          else {
             throw Error.error(5501);
+          }
         }
         paramHsqlArrayList.add(localObject1);
         break;
-      case 183:
-        if ((j != 0) || (k != 0))
+      case 183: 
+        if ((j != 0) || (k != 0)) {
           throw unexpectedToken();
+        }
         read();
         readThis(186);
-        if (localHsqlName == null)
+        if (localHsqlName == null) {
           localHsqlName = this.database.nameManager.newAutoName("CT", paramTable.getSchemaName(), paramTable.getName(), 5);
+        }
         localObject1 = new Constraint(localHsqlName, null, 3);
         ((Constraint)localObject1).check = new ExpressionLogical(paramColumnSchema);
         paramHsqlArrayList.add(localObject1);
         j = 1;
         break;
-      case 186:
-        if ((j != 0) || (k != 0) || (m != 0))
+      case 186: 
+        if ((j != 0) || (k != 0) || (m != 0)) {
           throw unexpectedToken();
-        if (localHsqlName != null)
+        }
+        if (localHsqlName != null) {
           throw unexpectedToken();
+        }
         read();
         k = 1;
         break;
-      default:
+      default: 
         i = 1;
       }
-      if (i != 0)
+      if (i != 0) {
         break;
+      }
     }
   }
-
+  
   void readCheckConstraintCondition(Constraint paramConstraint)
   {
     readThis(786);
@@ -2088,7 +2199,7 @@ public class ParserDDL extends ParserRoutine
     readThis(772);
     paramConstraint.check = localExpression;
   }
-
+  
   StatementSchema compileCreateIndex(boolean paramBoolean)
   {
     String[] arrayOfString = null;
@@ -2108,23 +2219,25 @@ public class ParserDDL extends ParserRoutine
     HsqlNameManager.HsqlName localHsqlName2 = localTable.getSchemaName();
     localHsqlName1.setSchemaIfNull(localHsqlName2);
     localHsqlName1.parent = localTable.getName();
-    if (localHsqlName1.schema != localHsqlName2)
+    if (localHsqlName1.schema != localHsqlName2) {
       throw Error.error(5505);
+    }
     localHsqlName1.schema = localTable.getSchemaName();
     int[] arrayOfInt = readColumnList(localTable, true);
     String str = getLastPart();
     Object[] arrayOfObject = { localTable, arrayOfInt, localHsqlName1, Boolean.valueOf(paramBoolean), arrayOfString };
     return new StatementSchema(str, 1073, arrayOfObject, null, new HsqlNameManager.HsqlName[] { this.database.getCatalogName(), localTable.getName() });
   }
-
+  
   StatementSchema compileCreateSchema()
   {
     HsqlNameManager.HsqlName localHsqlName1 = null;
     String str1 = null;
     HsqlNameManager.HsqlName localHsqlName2 = null;
     read();
-    if (this.token.tokenType != 15)
+    if (this.token.tokenType != 15) {
       localHsqlName1 = readNewSchemaName();
+    }
     if (this.token.tokenType == 15)
     {
       read();
@@ -2134,23 +2247,29 @@ public class ParserDDL extends ParserRoutine
       if (localHsqlName1 == null)
       {
         localGrantee = this.database.getGranteeManager().get(str1);
-        if (localGrantee == null)
+        if (localGrantee == null) {
           throw Error.error(4001, str1);
+        }
         localHsqlName1 = this.database.nameManager.newHsqlName(localGrantee.getName().name, isDelimitedIdentifier(), 2);
         SqlInvariants.checkSchemaNameNotSystem(this.token.tokenString);
       }
     }
-    if ("PUBLIC".equals(str1))
+    if ("PUBLIC".equals(str1)) {
       throw Error.error(4002, str1);
+    }
     Grantee localGrantee = str1 == null ? this.session.getGrantee() : this.database.getGranteeManager().get(str1);
-    if (localGrantee == null)
+    if (localGrantee == null) {
       throw Error.error(4001, str1);
-    if (!this.session.getGrantee().isSchemaCreator())
+    }
+    if (!this.session.getGrantee().isSchemaCreator()) {
       throw Error.error(2051, this.session.getGrantee().getName().getNameString());
-    if (((localGrantee instanceof User)) && (((User)localGrantee).isExternalOnly))
+    }
+    if (((localGrantee instanceof User)) && (((User)localGrantee).isExternalOnly)) {
       throw Error.error(2000, this.session.getGrantee().getName().getNameString());
-    if (this.database.schemaManager.schemaExists(localHsqlName1.name))
+    }
+    if (this.database.schemaManager.schemaExists(localHsqlName1.name)) {
       throw Error.error(5504, localHsqlName1.name);
+    }
     if (localHsqlName1.name.equals("SYSTEM_LOBS"))
     {
       localHsqlName1 = SqlInvariants.LOBS_SCHEMA_HSQLNAME;
@@ -2176,7 +2295,7 @@ public class ParserDDL extends ParserRoutine
     do
     {
       i = 0;
-      for (int j = 0; j < arrayOfStatementSchema.length - 1; j++)
+      for (int j = 0; j < arrayOfStatementSchema.length - 1; j++) {
         if (arrayOfStatementSchema[j].order > arrayOfStatementSchema[(j + 1)].order)
         {
           StatementSchema localStatementSchema2 = arrayOfStatementSchema[(j + 1)];
@@ -2184,11 +2303,11 @@ public class ParserDDL extends ParserRoutine
           arrayOfStatementSchema[j] = localStatementSchema2;
           i = 1;
         }
-    }
-    while (i != 0);
+      }
+    } while (i != 0);
     return new StatementSchemaDefinition(arrayOfStatementSchema);
   }
-
+  
   void getCompiledStatementBody(HsqlList paramHsqlList)
   {
     int k = 0;
@@ -2198,91 +2317,91 @@ public class ParserDDL extends ParserRoutine
       int i = getPosition();
       switch (this.token.tokenType)
       {
-      case 55:
+      case 55: 
         read();
         int j;
         String str;
         switch (this.token.tokenType)
         {
-        case 299:
-        case 305:
-        case 497:
+        case 299: 
+        case 305: 
+        case 497: 
           throw unexpectedToken();
-        case 597:
+        case 597: 
           j = 1073;
           str = getStatement(i, startStatementTokensSchema);
           localStatementSchema = new StatementSchema(str, j);
           break;
-        case 505:
+        case 505: 
           localStatementSchema = compileCreateSequence();
           localStatementSchema.sql = getLastPart(i);
           break;
-        case 490:
+        case 490: 
           localStatementSchema = compileCreateRole();
           localStatementSchema.sql = getLastPart(i);
           break;
-        case 393:
+        case 393: 
           j = 23;
           str = getStatement(i, startStatementTokensSchema);
           localStatementSchema = new StatementSchema(str, j);
           break;
-        case 535:
+        case 535: 
           localStatementSchema = compileCreateType(false);
           localStatementSchema.sql = getLastPart(i);
           break;
-        case 35:
+        case 35: 
           localStatementSchema = compileCreateCharacterSet();
           localStatementSchema.sql = getLastPart(i);
           break;
-        case 339:
+        case 339: 
           throw unexpectedToken();
-        case 120:
-        case 278:
-        case 523:
-        case 570:
-        case 607:
-        case 630:
-        case 631:
+        case 120: 
+        case 278: 
+        case 523: 
+        case 570: 
+        case 607: 
+        case 630: 
+        case 631: 
           j = 77;
           str = getStatement(i, startStatementTokensSchema);
           localStatementSchema = new StatementSchema(str, j);
           break;
-        case 291:
+        case 291: 
           j = 80;
           str = getStatement(i, startStatementTokensSchema);
           localStatementSchema = new StatementSchema(str, j);
           break;
-        case 545:
+        case 545: 
           j = 84;
           str = getStatement(i, startStatementTokensSchema);
           localStatementSchema = new StatementSchema(str, j);
           break;
-        case 117:
+        case 117: 
           j = 14;
           str = getStatementForRoutine(i, startStatementTokensSchema);
           localStatementSchema = new StatementSchema(str, j);
           break;
-        case 215:
+        case 215: 
           j = 14;
           str = getStatementForRoutine(i, startStatementTokensSchema);
           localStatementSchema = new StatementSchema(str, j);
           break;
-        default:
+        default: 
           throw unexpectedToken();
         }
         break;
-      case 121:
+      case 121: 
         localStatementSchema = compileGrantOrRevoke();
         localStatementSchema.sql = getLastPart(i);
         break;
-      case 791:
+      case 791: 
         read();
         k = 1;
         break;
-      case 848:
+      case 848: 
         k = 1;
         break;
-      default:
+      default: 
         throw unexpectedToken();
       }
       if (localStatementSchema != null)
@@ -2292,7 +2411,7 @@ public class ParserDDL extends ParserRoutine
       }
     }
   }
-
+  
   StatementSchema compileCreateRole()
   {
     read();
@@ -2302,7 +2421,7 @@ public class ParserDDL extends ParserRoutine
     HsqlNameManager.HsqlName[] arrayOfHsqlName = this.database.schemaManager.catalogNameArray;
     return new StatementSchema(str, 61, arrayOfObject, null, arrayOfHsqlName);
   }
-
+  
   StatementSchema compileCreateUser()
   {
     Boolean localBoolean1 = Boolean.FALSE;
@@ -2311,8 +2430,9 @@ public class ParserDDL extends ParserRoutine
     read();
     HsqlNameManager.HsqlName localHsqlName = readNewUserIdentifier();
     readThis(615);
-    if (readIfThis(586))
+    if (readIfThis(586)) {
       localBoolean2 = Boolean.TRUE;
+    }
     String str1 = readPassword();
     if (this.token.tokenType == 335)
     {
@@ -2325,7 +2445,7 @@ public class ParserDDL extends ParserRoutine
     HsqlNameManager.HsqlName[] arrayOfHsqlName = this.database.schemaManager.catalogNameArray;
     return new StatementSchema(str2, 1074, arrayOfObject, null, arrayOfHsqlName);
   }
-
+  
   HsqlNameManager.HsqlName readNewUserIdentifier()
   {
     checkIsSimpleName();
@@ -2340,29 +2460,30 @@ public class ParserDDL extends ParserRoutine
     read();
     return localHsqlName;
   }
-
+  
   String readPassword()
   {
     String str = this.token.tokenString;
-    if ((isUndelimitedSimpleName()) || (isDelimitedSimpleName()))
+    if ((isUndelimitedSimpleName()) || (isDelimitedSimpleName())) {
       read();
-    else
+    } else {
       readQuotedString();
+    }
     return str;
   }
-
+  
   Statement compileRenameObject(HsqlNameManager.HsqlName paramHsqlName, int paramInt)
   {
     HsqlNameManager.HsqlName localHsqlName = readNewSchemaObjectName(paramInt, true);
     String str = getLastPart();
     switch (paramInt)
     {
-    case 1:
+    case 1: 
       break;
-    case 2:
+    case 2: 
       checkSchemaUpdateAuthorisation(this.session, paramHsqlName);
       break;
-    default:
+    default: 
       paramHsqlName.setSchemaIfNull(this.session.getCurrentSchemaHsqlName());
       checkSchemaUpdateAuthorisation(this.session, paramHsqlName.schema);
     }
@@ -2370,11 +2491,12 @@ public class ParserDDL extends ParserRoutine
     HsqlNameManager.HsqlName[] arrayOfHsqlName = this.database.schemaManager.getCatalogNameArray();
     return new StatementSchema(str, 1192, arrayOfObject, null, arrayOfHsqlName);
   }
-
+  
   Statement compileAlterTableAddUniqueConstraint(Table paramTable, HsqlNameManager.HsqlName paramHsqlName)
   {
-    if (paramHsqlName == null)
+    if (paramHsqlName == null) {
       paramHsqlName = this.database.nameManager.newAutoName("CT", paramTable.getSchemaName(), paramTable.getName(), 5);
+    }
     int[] arrayOfInt = readColumnList(paramTable, false);
     HsqlNameManager.HsqlName localHsqlName = this.database.nameManager.newAutoName("IDX", paramHsqlName.name, paramTable.getSchemaName(), paramTable.getName(), 20);
     Index localIndex = paramTable.createIndexStructure(localHsqlName, arrayOfInt, null, null, true, true, false);
@@ -2384,11 +2506,12 @@ public class ParserDDL extends ParserRoutine
     HsqlNameManager.HsqlName[] arrayOfHsqlName = this.database.schemaManager.getCatalogAndBaseTableNames(paramTable.getName());
     return new StatementSchema(str, 4, arrayOfObject, null, arrayOfHsqlName);
   }
-
+  
   Statement compileAlterTableAddForeignKeyConstraint(Table paramTable, HsqlNameManager.HsqlName paramHsqlName)
   {
-    if (paramHsqlName == null)
+    if (paramHsqlName == null) {
       paramHsqlName = this.database.nameManager.newAutoName("FK", paramTable.getSchemaName(), paramTable.getName(), 5);
+    }
     OrderedHashSet localOrderedHashSet = readColumnNames(false);
     Constraint localConstraint = readFKReferences(paramTable, paramHsqlName, localOrderedHashSet);
     HsqlNameManager.HsqlName localHsqlName = localConstraint.getMainTableName();
@@ -2397,15 +2520,17 @@ public class ParserDDL extends ParserRoutine
     String str = getLastPart();
     Object[] arrayOfObject = { Integer.valueOf(1082), paramTable, localConstraint };
     HsqlNameManager.HsqlName[] arrayOfHsqlName = this.database.schemaManager.getCatalogAndBaseTableNames(paramTable.getName());
-    if ((localHsqlName != null) && (localHsqlName != paramTable.getName()))
+    if ((localHsqlName != null) && (localHsqlName != paramTable.getName())) {
       arrayOfHsqlName = (HsqlNameManager.HsqlName[])ArrayUtil.toAdjustedArray(arrayOfHsqlName, localHsqlName, arrayOfHsqlName.length, 1);
+    }
     return new StatementSchema(str, 4, arrayOfObject, null, arrayOfHsqlName);
   }
-
+  
   Statement compileAlterTableAddCheckConstraint(Table paramTable, HsqlNameManager.HsqlName paramHsqlName)
   {
-    if (paramHsqlName == null)
+    if (paramHsqlName == null) {
       paramHsqlName = this.database.nameManager.newAutoName("CT", paramTable.getSchemaName(), paramTable.getName(), 5);
+    }
     Constraint localConstraint = new Constraint(paramHsqlName, null, 3);
     readCheckConstraintCondition(localConstraint);
     String str = getLastPart();
@@ -2413,7 +2538,7 @@ public class ParserDDL extends ParserRoutine
     HsqlNameManager.HsqlName[] arrayOfHsqlName = { this.database.getCatalogName(), paramTable.getName() };
     return new StatementSchema(str, 4, arrayOfObject, null, arrayOfHsqlName);
   }
-
+  
   Statement compileAlterTableAddColumn(Table paramTable)
   {
     int i = paramTable.getColumnCount();
@@ -2424,8 +2549,9 @@ public class ParserDDL extends ParserRoutine
     HsqlNameManager.HsqlName localHsqlName = this.database.nameManager.newColumnHsqlName(paramTable.getName(), this.token.tokenString, isDelimitedIdentifier());
     read();
     ColumnSchema localColumnSchema = readColumnDefinitionOrNull(paramTable, localHsqlName, localHsqlArrayList);
-    if (localColumnSchema == null)
+    if (localColumnSchema == null) {
       throw Error.error(5000);
+    }
     if (this.token.tokenType == 343)
     {
       read();
@@ -2437,11 +2563,12 @@ public class ParserDDL extends ParserRoutine
     HsqlNameManager.HsqlName[] arrayOfHsqlName = this.database.schemaManager.getCatalogAndBaseTableNames(paramTable.getName());
     return new StatementSchema(str, 4, arrayOfObject, null, arrayOfHsqlName);
   }
-
+  
   Statement compileAlterTableAddPrimaryKey(Table paramTable, HsqlNameManager.HsqlName paramHsqlName)
   {
-    if (paramHsqlName == null)
+    if (paramHsqlName == null) {
       paramHsqlName = this.session.database.nameManager.newAutoName("PK", paramTable.getSchemaName(), paramTable.getName(), 5);
+    }
     OrderedHashSet localOrderedHashSet = readColumnNames(false);
     Constraint localConstraint = new Constraint(paramHsqlName, localOrderedHashSet, 4);
     localConstraint.setColumnsIndexes(paramTable);
@@ -2450,18 +2577,19 @@ public class ParserDDL extends ParserRoutine
     HsqlNameManager.HsqlName[] arrayOfHsqlName = this.database.schemaManager.getCatalogAndBaseTableNames(paramTable.getName());
     return new StatementSchema(str, 4, arrayOfObject, null, arrayOfHsqlName);
   }
-
+  
   Statement compileAlterTableDropColumn(Table paramTable, String paramString, boolean paramBoolean)
   {
     int i = paramTable.getColumnIndex(paramString);
-    if (paramTable.getColumnCount() == 1)
+    if (paramTable.getColumnCount() == 1) {
       throw Error.error(5591);
+    }
     String str = getLastPart();
     Object[] arrayOfObject = { paramTable.getColumn(i).getName(), ValuePool.getInt(9), Boolean.valueOf(paramBoolean), Boolean.valueOf(false) };
     HsqlNameManager.HsqlName[] arrayOfHsqlName = this.database.schemaManager.getCatalogAndBaseTableNames(paramTable.getName());
     return new StatementSchema(str, 1076, arrayOfObject, null, arrayOfHsqlName);
   }
-
+  
   Statement compileAlterColumn(Table paramTable, ColumnSchema paramColumnSchema, int paramInt)
   {
     HsqlNameManager.HsqlName[] arrayOfHsqlName = this.database.schemaManager.getCatalogAndBaseTableNames(paramTable.getName());
@@ -2470,11 +2598,11 @@ public class ParserDDL extends ParserRoutine
     Object localObject2;
     switch (this.token.tokenType)
     {
-    case 622:
+    case 622: 
       read();
       readThis(285);
       return compileAlterColumnRename(paramTable, paramColumnSchema);
-    case 88:
+    case 88: 
       read();
       if (this.token.tokenType == 78)
       {
@@ -2491,75 +2619,81 @@ public class ParserDDL extends ParserRoutine
         return new StatementSchema((String)localObject1, 4, (Object[])localObject2, null, arrayOfHsqlName);
       }
       throw unexpectedToken();
-    case 254:
+    case 254: 
       read();
       switch (this.token.tokenType)
       {
-      case 378:
+      case 378: 
         read();
         readThis(535);
         return compileAlterColumnDataType(paramTable, paramColumnSchema);
-      case 78:
+      case 78: 
         read();
         localObject1 = paramColumnSchema.getDataType();
         localObject2 = readDefaultClause((Type)localObject1);
         String str = getLastPart();
         Object[] arrayOfObject = { Integer.valueOf(1087), paramTable, paramColumnSchema, Integer.valueOf(paramInt), localObject2 };
         return new StatementSchema(str, 4, arrayOfObject, null, arrayOfHsqlName);
-      case 183:
+      case 183: 
         read();
         readThis(186);
         return compileAlterColumnSetNullability(paramTable, paramColumnSchema, false);
-      case 186:
+      case 186: 
         read();
         return compileAlterColumnSetNullability(paramTable, paramColumnSchema, true);
-      case 407:
+      case 407: 
         return compileAlterColumnAddSequence(paramTable, paramColumnSchema, paramInt);
       }
       rewind(i);
       read();
-    case 407:
+    case 407: 
       return compileAlterColumnAddSequence(paramTable, paramColumnSchema, paramInt);
     }
     if ((this.token.tokenType == 254) || (this.token.tokenType == 484))
     {
-      if (!paramColumnSchema.isIdentity())
+      if (!paramColumnSchema.isIdentity()) {
         throw Error.error(5535);
+      }
       return compileAlterColumnSequenceOptions(paramTable, paramColumnSchema, paramInt);
     }
     return compileAlterColumnDataTypeIdentity(paramTable, paramColumnSchema);
   }
-
+  
   private Statement compileAlterColumnDataTypeIdentity(Table paramTable, ColumnSchema paramColumnSchema)
   {
-    if (paramColumnSchema.isGenerated())
+    if (paramColumnSchema.isGenerated()) {
       throw Error.error(5561);
+    }
     NumberSequence localNumberSequence = paramColumnSchema.getIdentitySequence();
     Type localType = paramColumnSchema.getDataType();
     if (this.token.tokenType == 128)
     {
       read();
-      if (!localType.isIntegralType())
+      if (!localType.isIntegralType()) {
         throw Error.error(5561);
-      if (localNumberSequence == null)
+      }
+      if (localNumberSequence == null) {
         localNumberSequence = new NumberSequence(null, localType);
+      }
     }
     else
     {
       localType = readTypeDefinition(false, true);
       switch (this.token.tokenType)
       {
-      case 128:
-        if (!localType.isIntegralType())
+      case 128: 
+        if (!localType.isIntegralType()) {
           throw Error.error(5561);
+        }
         read();
-        if (localNumberSequence == null)
+        if (localNumberSequence == null) {
           localNumberSequence = new NumberSequence(null, localType);
+        }
         break;
-      case 407:
+      case 407: 
         localNumberSequence = readSequence(paramColumnSchema);
         break;
-      default:
+      default: 
         localNumberSequence = null;
       }
     }
@@ -2568,20 +2702,22 @@ public class ParserDDL extends ParserRoutine
     HsqlNameManager.HsqlName[] arrayOfHsqlName = this.database.schemaManager.getCatalogAndBaseTableNames(paramTable.getName());
     return new StatementSchema(str, 4, arrayOfObject, null, arrayOfHsqlName);
   }
-
+  
   private Statement compileAlterColumnDataType(Table paramTable, ColumnSchema paramColumnSchema)
   {
-    if (paramColumnSchema.isGenerated())
+    if (paramColumnSchema.isGenerated()) {
       throw Error.error(5561);
+    }
     Type localType = readTypeDefinition(false, true);
-    if ((paramColumnSchema.isIdentity()) && (!localType.isIntegralType()))
+    if ((paramColumnSchema.isIdentity()) && (!localType.isIntegralType())) {
       throw Error.error(5561);
+    }
     String str = getLastPart();
     Object[] arrayOfObject = { Integer.valueOf(1084), paramTable, paramColumnSchema, localType };
     HsqlNameManager.HsqlName[] arrayOfHsqlName = this.database.schemaManager.getCatalogAndBaseTableNames(paramTable.getName());
     return new StatementSchema(str, 4, arrayOfObject, null, arrayOfHsqlName);
   }
-
+  
   private Statement compileAlterColumnSetNullability(Table paramTable, ColumnSchema paramColumnSchema, boolean paramBoolean)
   {
     String str = getLastPart();
@@ -2589,7 +2725,7 @@ public class ParserDDL extends ParserRoutine
     HsqlNameManager.HsqlName[] arrayOfHsqlName = this.database.schemaManager.getCatalogAndBaseTableNames(paramTable.getName());
     return new StatementSchema(str, 4, arrayOfObject, null, arrayOfHsqlName);
   }
-
+  
   Statement compileAlterSequence()
   {
     read();
@@ -2610,20 +2746,22 @@ public class ParserDDL extends ParserRoutine
     HsqlNameManager.HsqlName[] arrayOfHsqlName = this.database.schemaManager.getCatalogNameArray();
     return new StatementSchema(str, 134, arrayOfObject, null, arrayOfHsqlName);
   }
-
+  
   StatementSchema compileAlterColumnAddSequence(Table paramTable, ColumnSchema paramColumnSchema, int paramInt)
   {
-    if (!paramColumnSchema.getDataType().isIntegralType())
+    if (!paramColumnSchema.getDataType().isIntegralType()) {
       throw Error.error(5525);
-    if (paramColumnSchema.isIdentity())
+    }
+    if (paramColumnSchema.isIdentity()) {
       throw Error.error(5525);
+    }
     NumberSequence localNumberSequence = readSequence(paramColumnSchema);
     String str = getLastPart();
     Object[] arrayOfObject = { Integer.valueOf(1085), paramTable, paramColumnSchema, Integer.valueOf(paramInt), localNumberSequence };
     HsqlNameManager.HsqlName[] arrayOfHsqlName = this.database.schemaManager.getCatalogAndBaseTableNames(paramTable.getName());
     return new StatementSchema(str, 4, arrayOfObject, null, arrayOfHsqlName);
   }
-
+  
   NumberSequence readSequence(ColumnSchema paramColumnSchema)
   {
     readThis(407);
@@ -2651,20 +2789,21 @@ public class ParserDDL extends ParserRoutine
     localNumberSequence.checkValues();
     return localNumberSequence;
   }
-
+  
   StatementSchema compileAlterColumnSequenceOptions(Table paramTable, ColumnSchema paramColumnSchema, int paramInt)
   {
     OrderedIntHashSet localOrderedIntHashSet = new OrderedIntHashSet();
     NumberSequence localNumberSequence = paramColumnSchema.getIdentitySequence().duplicate();
-    while (true)
+    for (;;)
     {
       int i = 0;
       long l;
       switch (this.token.tokenType)
       {
-      case 484:
-        if (!localOrderedIntHashSet.add(this.token.tokenType))
+      case 484: 
+        if (!localOrderedIntHashSet.add(this.token.tokenType)) {
           throw unexpectedToken();
+        }
         read();
         if (readIfThis(319))
         {
@@ -2676,61 +2815,68 @@ public class ParserDDL extends ParserRoutine
           localNumberSequence.reset();
         }
         break;
-      case 254:
+      case 254: 
         read();
         switch (this.token.tokenType)
         {
-        case 417:
-          if (!localOrderedIntHashSet.add(this.token.tokenType))
+        case 417: 
+          if (!localOrderedIntHashSet.add(this.token.tokenType)) {
             throw unexpectedToken();
+          }
           read();
           readThis(24);
           l = readBigint();
           localNumberSequence.setIncrement(l);
           break;
-        case 180:
+        case 180: 
           read();
-          if (this.token.tokenType == 438)
+          if (this.token.tokenType == 438) {
             localNumberSequence.setDefaultMaxValue();
-          else if (this.token.tokenType == 442)
+          } else if (this.token.tokenType == 442) {
             localNumberSequence.setDefaultMinValue();
-          else if (this.token.tokenType == 71)
+          } else if (this.token.tokenType == 71) {
             localNumberSequence.setCycle(false);
-          else
+          } else {
             throw unexpectedToken();
-          if (!localOrderedIntHashSet.add(this.token.tokenType))
+          }
+          if (!localOrderedIntHashSet.add(this.token.tokenType)) {
             throw unexpectedToken();
+          }
           read();
           break;
-        case 438:
-          if (!localOrderedIntHashSet.add(this.token.tokenType))
+        case 438: 
+          if (!localOrderedIntHashSet.add(this.token.tokenType)) {
             throw unexpectedToken();
+          }
           read();
           l = readBigint();
           localNumberSequence.setMaxValueNoCheck(l);
           break;
-        case 442:
-          if (!localOrderedIntHashSet.add(this.token.tokenType))
+        case 442: 
+          if (!localOrderedIntHashSet.add(this.token.tokenType)) {
             throw unexpectedToken();
+          }
           read();
           l = readBigint();
           localNumberSequence.setMinValueNoCheck(l);
           break;
-        case 71:
-          if (!localOrderedIntHashSet.add(this.token.tokenType))
+        case 71: 
+          if (!localOrderedIntHashSet.add(this.token.tokenType)) {
             throw unexpectedToken();
+          }
           read();
           localNumberSequence.setCycle(true);
           break;
-        default:
+        default: 
           throw super.unexpectedToken();
         }
         break;
-      default:
+      default: 
         i = 1;
       }
-      if (i != 0)
+      if (i != 0) {
         break;
+      }
     }
     localNumberSequence.checkValues();
     String str = getLastPart();
@@ -2738,20 +2884,21 @@ public class ParserDDL extends ParserRoutine
     HsqlNameManager.HsqlName[] arrayOfHsqlName = { this.database.getCatalogName(), paramTable.getName() };
     return new StatementSchema(str, 4, arrayOfObject, null, arrayOfHsqlName);
   }
-
+  
   private Statement compileAlterColumnRename(Table paramTable, ColumnSchema paramColumnSchema)
   {
     checkIsSimpleName();
     HsqlNameManager.HsqlName localHsqlName = readNewSchemaObjectName(9, true);
-    if (paramTable.findColumn(localHsqlName.name) > -1)
+    if (paramTable.findColumn(localHsqlName.name) > -1) {
       throw Error.error(5504, localHsqlName.name);
+    }
     this.database.schemaManager.checkColumnIsReferenced(paramTable.getName(), paramColumnSchema.getName());
     String str = getLastPart();
     Object[] arrayOfObject = { paramColumnSchema.getName(), localHsqlName };
     HsqlNameManager.HsqlName[] arrayOfHsqlName = { this.database.getCatalogName(), paramTable.getName() };
     return new StatementSchema(str, 1192, arrayOfObject, null, arrayOfHsqlName);
   }
-
+  
   Statement compileAlterSchemaRename()
   {
     HsqlNameManager.HsqlName localHsqlName1 = readSchemaName();
@@ -2764,49 +2911,52 @@ public class ParserDDL extends ParserRoutine
     HsqlNameManager.HsqlName[] arrayOfHsqlName = this.database.schemaManager.getCatalogNameArray();
     return new StatementSchema(str, 1192, arrayOfObject, null, arrayOfHsqlName);
   }
-
+  
   Statement compileAlterUser()
   {
     read();
     HsqlNameManager.HsqlName localHsqlName1 = readNewUserIdentifier();
     User localUser = this.database.getUserManager().get(localHsqlName1.name);
-    if (localHsqlName1.name.equals("PUBLIC"))
+    if (localHsqlName1.name.equals("PUBLIC")) {
       throw Error.error(5503);
+    }
     readThis(254);
     Object[] arrayOfObject;
     switch (this.token.tokenType)
     {
-    case 157:
+    case 157: 
       read();
       Boolean localBoolean = processTrueOrFalseObject();
       arrayOfObject = new Object[] { localUser, localBoolean };
       return new StatementCommand(1060, arrayOfObject);
-    case 615:
+    case 615: 
       read();
       boolean bool = false;
-      if (readIfThis(586))
+      if (readIfThis(586)) {
         bool = Boolean.TRUE.booleanValue();
+      }
       String str1 = readPassword();
       arrayOfObject = new Object[] { localUser, str1, Boolean.valueOf(bool) };
       StatementCommand localStatementCommand = new StatementCommand(1062, arrayOfObject);
       String str2 = localUser.getSetPasswordDigestSQL();
       localStatementCommand.setSQL(str2);
       return localStatementCommand;
-    case 598:
+    case 598: 
       read();
       readThis(497);
       HsqlNameManager.HsqlName localHsqlName2;
-      if (this.token.tokenType == 78)
+      if (this.token.tokenType == 78) {
         localHsqlName2 = null;
-      else
+      } else {
         localHsqlName2 = this.database.schemaManager.getSchemaHsqlName(this.token.tokenString);
+      }
       read();
       arrayOfObject = new Object[] { localUser, localHsqlName2 };
       return new StatementCommand(1061, arrayOfObject);
     }
     throw unexpectedToken();
   }
-
+  
   Statement compileAlterDomain()
   {
     read();
@@ -2820,11 +2970,11 @@ public class ParserDDL extends ParserRoutine
     Object localObject4;
     switch (this.token.tokenType)
     {
-    case 622:
+    case 622: 
       read();
       readThis(285);
       return compileRenameObject(localType.getName(), 13);
-    case 88:
+    case 88: 
       read();
       if (this.token.tokenType == 78)
       {
@@ -2846,7 +2996,7 @@ public class ParserDDL extends ParserRoutine
         return new StatementSchema((String)localObject2, 3, (Object[])localObject3, null, (HsqlNameManager.HsqlName[])localObject4);
       }
       throw unexpectedToken();
-    case 254:
+    case 254: 
       read();
       readThis(78);
       localObject1 = readDefaultClause(localType);
@@ -2854,7 +3004,7 @@ public class ParserDDL extends ParserRoutine
       localObject3 = new Object[] { Integer.valueOf(1083), localType, localObject1 };
       localObject4 = this.database.schemaManager.getCatalogAndBaseTableNames(localType.getName());
       return new StatementSchema((String)localObject2, 3, (Object[])localObject3, null, (HsqlNameManager.HsqlName[])localObject4);
-    case 334:
+    case 334: 
       read();
       if ((this.token.tokenType == 48) || (this.token.tokenType == 37))
       {
@@ -2872,33 +3022,34 @@ public class ParserDDL extends ParserRoutine
     }
     throw unexpectedToken();
   }
-
+  
   private boolean isGrantToken()
   {
     switch (this.token.tokenType)
     {
-    case 2:
-    case 79:
-    case 100:
-    case 135:
-    case 222:
-    case 251:
-    case 303:
-    case 540:
+    case 2: 
+    case 79: 
+    case 100: 
+    case 135: 
+    case 222: 
+    case 251: 
+    case 303: 
+    case 540: 
       return true;
     }
     return false;
   }
-
+  
   StatementSchema compileGrantOrRevoke()
   {
     boolean bool = this.token.tokenType == 121;
     read();
-    if ((isGrantToken()) || ((!bool) && ((this.token.tokenType == 121) || (this.token.tokenType == 411))))
+    if ((isGrantToken()) || ((!bool) && ((this.token.tokenType == 121) || (this.token.tokenType == 411)))) {
       return compileRightGrantOrRevoke(bool);
+    }
     return compileRoleGrantOrRevoke(bool);
   }
-
+  
   private StatementSchema compileRightGrantOrRevoke(boolean paramBoolean)
   {
     OrderedHashSet localOrderedHashSet = new OrderedHashSet();
@@ -2911,7 +3062,7 @@ public class ParserDDL extends ParserRoutine
     int m = 0;
     boolean bool1 = false;
     boolean bool2 = false;
-    if (!paramBoolean)
+    if (!paramBoolean) {
       if (this.token.tokenType == 121)
       {
         read();
@@ -2923,11 +3074,13 @@ public class ParserDDL extends ParserRoutine
       {
         throw unsupportedFeature();
       }
+    }
     if (this.token.tokenType == 2)
     {
       read();
-      if (this.token.tokenType == 478)
+      if (this.token.tokenType == 478) {
         read();
+      }
       localRight = Right.fullRights;
       m = 1;
     }
@@ -2944,136 +3097,156 @@ public class ParserDDL extends ParserRoutine
         read();
         switch (i2)
         {
-        case 135:
-        case 222:
-        case 251:
-        case 303:
-          if (this.token.tokenType == 786)
+        case 135: 
+        case 222: 
+        case 251: 
+        case 303: 
+          if (this.token.tokenType == 786) {
             localObject = readColumnNames(false);
-        case 291:
-          if (localRight == null)
+          }
+        case 291: 
+          if (localRight == null) {
             localRight = new Right();
+          }
           localRight.set(i1, (OrderedHashSet)localObject);
           i = 1;
           break;
-        case 79:
-          if (localRight == null)
+        case 79: 
+          if (localRight == null) {
             localRight = new Right();
+          }
           localRight.set(i1, null);
           i = 1;
           break;
-        case 540:
-          if (i != 0)
+        case 540: 
+          if (i != 0) {
             throw unexpectedToken();
+          }
           localRight = Right.fullRights;
           j = 1;
           n = 0;
           break;
-        case 100:
-          if (i != 0)
+        case 100: 
+          if (i != 0) {
             throw unexpectedToken();
+          }
           localRight = Right.fullRights;
           k = 1;
           n = 0;
           break;
-        default:
-          if (this.token.tokenType != 774)
+        default: 
+          if (this.token.tokenType != 774) {
             break label405;
+          }
           read();
         }
       }
     }
-    label405: readThis(194);
+    label405:
+    readThis(194);
     int n = 0;
     switch (this.token.tokenType)
     {
-    case 574:
-      if ((k == 0) && (m == 0))
+    case 574: 
+      if ((k == 0) && (m == 0)) {
         throw unexpectedToken();
+      }
       read();
-      if ((!isSimpleName()) || (!isDelimitedIdentifier()))
+      if ((!isSimpleName()) || (!isDelimitedIdentifier())) {
         throw Error.error(5569);
+      }
       n = 16;
       localHsqlName = readNewSchemaObjectName(16, false);
       break;
-    case 259:
-      if ((k == 0) && (m == 0))
+    case 259: 
+      if ((k == 0) && (m == 0)) {
         throw unexpectedToken();
+      }
       read();
       switch (this.token.tokenType)
       {
-      case 117:
-      case 215:
-      case 491:
+      case 117: 
+      case 215: 
+      case 491: 
         read();
         break;
-      default:
+      default: 
         throw unexpectedToken();
       }
       n = 24;
       break;
-    case 117:
-      if ((k == 0) && (m == 0))
+    case 117: 
+      if ((k == 0) && (m == 0)) {
         throw unexpectedToken();
+      }
       read();
       n = 16;
       break;
-    case 215:
-      if ((k == 0) && (m == 0))
+    case 215: 
+      if ((k == 0) && (m == 0)) {
         throw unexpectedToken();
+      }
       read();
       n = 17;
       break;
-    case 491:
-      if ((k == 0) && (m == 0))
+    case 491: 
+      if ((k == 0) && (m == 0)) {
         throw unexpectedToken();
+      }
       read();
       n = 18;
       break;
-    case 535:
-      if ((j == 0) && (m == 0))
+    case 535: 
+      if ((j == 0) && (m == 0)) {
         throw unexpectedToken();
+      }
       read();
       n = 12;
       break;
-    case 393:
-      if ((j == 0) && (m == 0))
+    case 393: 
+      if ((j == 0) && (m == 0)) {
         throw unexpectedToken();
+      }
       read();
       n = 13;
       break;
-    case 505:
-      if ((j == 0) && (m == 0))
+    case 505: 
+      if ((j == 0) && (m == 0)) {
         throw unexpectedToken();
+      }
       read();
       n = 7;
       break;
-    case 35:
-      if ((j == 0) && (m == 0))
+    case 35: 
+      if ((j == 0) && (m == 0)) {
         throw unexpectedToken();
+      }
       read();
       readThis(254);
       n = 14;
       break;
-    case 278:
-    default:
-      if ((i == 0) && (m == 0))
+    case 278: 
+    default: 
+      if ((i == 0) && (m == 0)) {
         throw unexpectedToken();
+      }
       readIfThis(278);
       n = 3;
     }
     localHsqlName = readNewSchemaObjectName(n, false);
-    if (paramBoolean)
+    if (paramBoolean) {
       readThis(285);
-    else
+    } else {
       readThis(115);
-    while (true)
+    }
+    for (;;)
     {
       checkIsSimpleName();
       localOrderedHashSet.add(this.token.tokenString);
       read();
-      if (this.token.tokenType != 774)
+      if (this.token.tokenType != 774) {
         break;
+      }
       read();
     }
     if (paramBoolean)
@@ -3096,8 +3269,9 @@ public class ParserDDL extends ParserRoutine
         else
         {
           readThis(64);
-          if (this.session.getRole() == null)
+          if (this.session.getRole() == null) {
             throw Error.error(2200);
+          }
           localGrantee = this.session.getRole();
         }
       }
@@ -3118,39 +3292,44 @@ public class ParserDDL extends ParserRoutine
     StatementSchema localStatementSchema = new StatementSchema(str, i2, (Object[])localObject, null, arrayOfHsqlName);
     return localStatementSchema;
   }
-
+  
   private StatementSchema compileRoleGrantOrRevoke(boolean paramBoolean)
   {
     Grantee localGrantee = this.session.getGrantee();
     OrderedHashSet localOrderedHashSet1 = new OrderedHashSet();
     OrderedHashSet localOrderedHashSet2 = new OrderedHashSet();
     boolean bool = false;
-    if ((!paramBoolean) && (this.token.tokenType == 335))
+    if ((!paramBoolean) && (this.token.tokenType == 335)) {
       throw unsupportedFeature();
-    while (true)
+    }
+    for (;;)
     {
       checkIsSimpleName();
       localOrderedHashSet1.add(this.token.tokenString);
       read();
-      if (this.token.tokenType != 774)
+      if (this.token.tokenType != 774) {
         break;
+      }
       read();
     }
-    if (paramBoolean)
+    if (paramBoolean) {
       readThis(285);
-    else
+    } else {
       readThis(115);
-    while (true)
+    }
+    for (;;)
     {
       checkIsSimpleName();
       localOrderedHashSet2.add(this.token.tokenString);
       read();
-      if (this.token.tokenType != 774)
+      if (this.token.tokenType != 774) {
         break;
+      }
       read();
     }
-    if ((paramBoolean) && (this.token.tokenType == 319))
+    if ((paramBoolean) && (this.token.tokenType == 319)) {
       throw unsupportedFeature();
+    }
     if (this.token.tokenType == 410)
     {
       read();
@@ -3162,12 +3341,13 @@ public class ParserDDL extends ParserRoutine
       else
       {
         readThis(64);
-        if (this.session.getRole() == null)
+        if (this.session.getRole() == null) {
           throw Error.error(2200);
+        }
         localGrantee = this.session.getRole();
       }
     }
-    if (!paramBoolean)
+    if (!paramBoolean) {
       if (this.token.tokenType == 347)
       {
         bool = true;
@@ -3177,6 +3357,7 @@ public class ParserDDL extends ParserRoutine
       {
         readThis(485);
       }
+    }
     String str = getLastPart();
     int i = paramBoolean ? 49 : 129;
     Object[] arrayOfObject = { localOrderedHashSet2, localOrderedHashSet1, localGrantee, Boolean.valueOf(bool) };
@@ -3184,28 +3365,31 @@ public class ParserDDL extends ParserRoutine
     StatementSchema localStatementSchema = new StatementSchema(str, i, arrayOfObject, null, arrayOfHsqlName);
     return localStatementSchema;
   }
-
+  
   void checkSchemaUpdateAuthorisation(HsqlNameManager.HsqlName paramHsqlName)
   {
-    if (this.session.isProcessingLog)
+    if (this.session.isProcessingLog) {
       return;
+    }
     SqlInvariants.checkSchemaNameNotSystem(paramHsqlName.name);
     if (this.isSchemaDefinition)
     {
-      if (paramHsqlName != this.session.getCurrentSchemaHsqlName())
+      if (paramHsqlName != this.session.getCurrentSchemaHsqlName()) {
         throw Error.error(5505);
+      }
     }
-    else
+    else {
       this.session.getGrantee().checkSchemaUpdateOrGrantRights(paramHsqlName.name);
+    }
     this.session.checkDDLWrite();
   }
-
+  
   void checkDatabaseUpdateAuthorisation()
   {
     this.session.checkAdmin();
     this.session.checkDDLWrite();
   }
-
+  
   StatementSchema compileComment()
   {
     readThis(576);
@@ -3213,32 +3397,35 @@ public class ParserDDL extends ParserRoutine
     HsqlNameManager.HsqlName localHsqlName;
     switch (this.token.tokenType)
     {
-    case 278:
-    case 491:
+    case 278: 
+    case 491: 
       int i = this.token.tokenType == 491 ? 18 : 3;
       read();
       checkIsSchemaObjectName();
       localHsqlName = this.database.nameManager.newHsqlName(this.token.tokenString, this.token.isDelimitedIdentifier, i);
-      if (this.token.namePrefix == null)
+      if (this.token.namePrefix == null) {
         localHsqlName.schema = this.session.getCurrentSchemaHsqlName();
-      else
+      } else {
         localHsqlName.schema = this.database.nameManager.newHsqlName(this.token.namePrefix, this.token.isDelimitedPrefix, 2);
+      }
       read();
       break;
-    case 43:
+    case 43: 
       read();
       checkIsSchemaObjectName();
       localHsqlName = this.database.nameManager.newHsqlName(this.token.tokenString, this.token.isDelimitedIdentifier, 9);
-      if (this.token.namePrefix == null)
+      if (this.token.namePrefix == null) {
         throw Error.error(5501);
+      }
       localHsqlName.parent = this.database.nameManager.newHsqlName(this.token.namePrefix, this.token.isDelimitedPrefix, 3);
-      if (this.token.namePrePrefix == null)
+      if (this.token.namePrePrefix == null) {
         localHsqlName.parent.schema = this.session.getCurrentSchemaHsqlName();
-      else
+      } else {
         localHsqlName.parent.schema = this.database.nameManager.newHsqlName(this.token.namePrePrefix, this.token.isDelimitedPrePrefix, 3);
+      }
       read();
       break;
-    default:
+    default: 
       throw unexpectedToken();
     }
     readThis(142);
@@ -3246,7 +3433,7 @@ public class ParserDDL extends ParserRoutine
     Object[] arrayOfObject = { localHsqlName, str };
     return new StatementSchema(null, 1071, arrayOfObject);
   }
-
+  
   Statement compileAlterSession()
   {
     read();
@@ -3257,18 +3444,18 @@ public class ParserDDL extends ParserRoutine
       int i = this.token.tokenType;
       switch (this.token.tokenType)
       {
-      case 2:
+      case 2: 
         read();
         break;
-      case 236:
+      case 236: 
         read();
         readThis(510);
         break;
-      case 278:
+      case 278: 
         read();
         readThis(378);
         break;
-      default:
+      default: 
         throw unexpectedTokenRequire("ALL,RESULT,TABLE");
       }
       Object[] arrayOfObject1 = { Long.valueOf(this.session.getId()), Integer.valueOf(i) };
@@ -3276,28 +3463,30 @@ public class ParserDDL extends ParserRoutine
     }
     long l = readBigint();
     Session localSession = this.database.sessionManager.getSession(l);
-    if (localSession == null)
+    if (localSession == null) {
       throw Error.error(4500);
+    }
     int j = this.token.tokenType;
     switch (this.token.tokenType)
     {
-    case 39:
+    case 39: 
       read();
       break;
-    case 233:
+    case 233: 
       read();
       break;
-    default:
+    default: 
       throw unexpectedToken();
     }
     Object[] arrayOfObject2 = { Long.valueOf(l), Integer.valueOf(j) };
     return new StatementCommand(1005, arrayOfObject2);
   }
-
+  
   boolean processTrueOrFalse()
   {
-    if (this.token.namePrefix != null)
+    if (this.token.namePrefix != null) {
       throw unexpectedToken();
+    }
     if (this.token.tokenType == 294)
     {
       read();
@@ -3310,22 +3499,25 @@ public class ParserDDL extends ParserRoutine
     }
     throw unexpectedToken();
   }
-
+  
   Boolean processTrueOrFalseObject()
   {
     return Boolean.valueOf(processTrueOrFalse());
   }
-
+  
   void checkSchemaUpdateAuthorisation(Session paramSession, HsqlNameManager.HsqlName paramHsqlName)
   {
-    if (paramSession.isProcessingLog)
+    if (paramSession.isProcessingLog) {
       return;
-    if (SqlInvariants.isSystemSchemaName(paramHsqlName.name))
+    }
+    if (SqlInvariants.isSystemSchemaName(paramHsqlName.name)) {
       throw Error.error(5503);
+    }
     if (paramSession.parser.isSchemaDefinition)
     {
-      if (paramHsqlName == paramSession.getCurrentSchemaHsqlName())
+      if (paramHsqlName == paramSession.getCurrentSchemaHsqlName()) {
         return;
+      }
       Error.error(5505, paramHsqlName.name);
     }
     paramSession.getGrantee().checkSchemaUpdateOrGrantRights(paramHsqlName.name);
@@ -3333,7 +3525,8 @@ public class ParserDDL extends ParserRoutine
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.ParserDDL
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

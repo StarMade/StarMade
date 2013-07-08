@@ -26,7 +26,8 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
-public class TableSorter extends AbstractTableModel
+public class TableSorter
+  extends AbstractTableModel
 {
   protected TableModel tableModel;
   public static final int DESCENDING = -1;
@@ -37,16 +38,19 @@ public class TableSorter extends AbstractTableModel
   {
     public int compare(Object paramAnonymousObject1, Object paramAnonymousObject2)
     {
-      if (paramAnonymousObject1 == paramAnonymousObject2)
+      if (paramAnonymousObject1 == paramAnonymousObject2) {
         return 0;
+      }
       if (paramAnonymousObject1 == null)
       {
-        if (paramAnonymousObject2 == null)
+        if (paramAnonymousObject2 == null) {
           return 0;
+        }
         return -1;
       }
-      if (paramAnonymousObject2 == null)
+      if (paramAnonymousObject2 == null) {
         return 1;
+      }
       return ((Comparable)paramAnonymousObject1).compareTo(paramAnonymousObject2);
     }
   };
@@ -64,59 +68,60 @@ public class TableSorter extends AbstractTableModel
   private TableModelListener tableModelListener = new TableModelHandler(null);
   private Map columnComparators = new HashMap();
   private List sortingColumns = new ArrayList();
-
-  public TableSorter()
-  {
-  }
-
+  
+  public TableSorter() {}
+  
   public TableSorter(TableModel paramTableModel)
   {
     this();
     setTableModel(paramTableModel);
   }
-
+  
   public TableSorter(TableModel paramTableModel, JTableHeader paramJTableHeader)
   {
     this();
     setTableHeader(paramJTableHeader);
     setTableModel(paramTableModel);
   }
-
+  
   private void clearSortingState()
   {
     this.viewToModel = null;
     this.modelToView = null;
   }
-
+  
   public TableModel getTableModel()
   {
     return this.tableModel;
   }
-
+  
   public void setTableModel(TableModel paramTableModel)
   {
-    if (this.tableModel != null)
+    if (this.tableModel != null) {
       this.tableModel.removeTableModelListener(this.tableModelListener);
+    }
     this.tableModel = paramTableModel;
-    if (this.tableModel != null)
+    if (this.tableModel != null) {
       this.tableModel.addTableModelListener(this.tableModelListener);
+    }
     clearSortingState();
     fireTableStructureChanged();
   }
-
+  
   public JTableHeader getTableHeader()
   {
     return this.tableHeader;
   }
-
+  
   public void setTableHeader(JTableHeader paramJTableHeader)
   {
     if (this.tableHeader != null)
     {
       this.tableHeader.removeMouseListener(this.mouseListener);
       TableCellRenderer localTableCellRenderer = this.tableHeader.getDefaultRenderer();
-      if ((localTableCellRenderer instanceof SortableHeaderRenderer))
+      if ((localTableCellRenderer instanceof SortableHeaderRenderer)) {
         this.tableHeader.setDefaultRenderer(((SortableHeaderRenderer)localTableCellRenderer).tableCellRenderer);
+      }
     }
     this.tableHeader = paramJTableHeader;
     if (this.tableHeader != null)
@@ -125,168 +130,178 @@ public class TableSorter extends AbstractTableModel
       this.tableHeader.setDefaultRenderer(new SortableHeaderRenderer(this.tableHeader.getDefaultRenderer()));
     }
   }
-
+  
   public boolean isSorting()
   {
     return this.sortingColumns.size() != 0;
   }
-
+  
   private Directive getDirective(int paramInt)
   {
     for (int i = 0; i < this.sortingColumns.size(); i++)
     {
       Directive localDirective = (Directive)this.sortingColumns.get(i);
-      if (localDirective.column == paramInt)
+      if (localDirective.column == paramInt) {
         return localDirective;
+      }
     }
     return EMPTY_DIRECTIVE;
   }
-
+  
   public int getSortingStatus(int paramInt)
   {
     return getDirective(paramInt).direction;
   }
-
+  
   private void sortingStatusChanged()
   {
     clearSortingState();
     fireTableDataChanged();
-    if (this.tableHeader != null)
+    if (this.tableHeader != null) {
       this.tableHeader.repaint();
+    }
   }
-
+  
   public void setSortingStatus(int paramInt1, int paramInt2)
   {
     Directive localDirective = getDirective(paramInt1);
-    if (localDirective != EMPTY_DIRECTIVE)
+    if (localDirective != EMPTY_DIRECTIVE) {
       this.sortingColumns.remove(localDirective);
-    if (paramInt2 != 0)
+    }
+    if (paramInt2 != 0) {
       this.sortingColumns.add(new Directive(paramInt1, paramInt2));
+    }
     sortingStatusChanged();
   }
-
+  
   protected Icon getHeaderRendererIcon(int paramInt1, int paramInt2)
   {
     Directive localDirective = getDirective(paramInt1);
-    if (localDirective == EMPTY_DIRECTIVE)
+    if (localDirective == EMPTY_DIRECTIVE) {
       return null;
+    }
     return new Arrow(localDirective.direction == -1, paramInt2, this.sortingColumns.indexOf(localDirective));
   }
-
+  
   private void cancelSorting()
   {
     this.sortingColumns.clear();
     sortingStatusChanged();
   }
-
+  
   public void setColumnComparator(Class paramClass, Comparator paramComparator)
   {
-    if (paramComparator == null)
+    if (paramComparator == null) {
       this.columnComparators.remove(paramClass);
-    else
+    } else {
       this.columnComparators.put(paramClass, paramComparator);
+    }
   }
-
+  
   protected Comparator getComparator(int paramInt)
   {
     Class localClass = this.tableModel.getColumnClass(paramInt);
     Comparator localComparator = (Comparator)this.columnComparators.get(localClass);
-    if (localComparator != null)
+    if (localComparator != null) {
       return localComparator;
-    if (Comparable.class.isAssignableFrom(localClass))
+    }
+    if (Comparable.class.isAssignableFrom(localClass)) {
       return COMPARABLE_COMPARATOR;
+    }
     return LEXICAL_COMPARATOR;
   }
-
+  
   private Row[] getViewToModel()
   {
     if (this.viewToModel == null)
     {
       int i = this.tableModel.getRowCount();
       this.viewToModel = new Row[i];
-      for (int j = 0; j < i; j++)
+      for (int j = 0; j < i; j++) {
         this.viewToModel[j] = new Row(j);
-      if (isSorting())
+      }
+      if (isSorting()) {
         Arrays.sort(this.viewToModel);
+      }
     }
     return this.viewToModel;
   }
-
+  
   public int modelIndex(int paramInt)
   {
     return getViewToModel()[paramInt].modelIndex;
   }
-
+  
   private int[] getModelToView()
   {
     if (this.modelToView == null)
     {
       int i = getViewToModel().length;
       this.modelToView = new int[i];
-      for (int j = 0; j < i; j++)
+      for (int j = 0; j < i; j++) {
         this.modelToView[modelIndex(j)] = j;
+      }
     }
     return this.modelToView;
   }
-
+  
   public int getRowCount()
   {
     return this.tableModel == null ? 0 : this.tableModel.getRowCount();
   }
-
+  
   public int getColumnCount()
   {
     return this.tableModel == null ? 0 : this.tableModel.getColumnCount();
   }
-
+  
   public String getColumnName(int paramInt)
   {
     return this.tableModel.getColumnName(paramInt);
   }
-
+  
   public Class getColumnClass(int paramInt)
   {
     return this.tableModel.getColumnClass(paramInt);
   }
-
+  
   public boolean isCellEditable(int paramInt1, int paramInt2)
   {
     return this.tableModel.isCellEditable(modelIndex(paramInt1), paramInt2);
   }
-
+  
   public Object getValueAt(int paramInt1, int paramInt2)
   {
     return this.tableModel.getValueAt(modelIndex(paramInt1), paramInt2);
   }
-
+  
   public void setValueAt(Object paramObject, int paramInt1, int paramInt2)
   {
     this.tableModel.setValueAt(paramObject, modelIndex(paramInt1), paramInt2);
   }
-
+  
   private static class Directive
   {
     private int column;
     private int direction;
-
+    
     public Directive(int paramInt1, int paramInt2)
     {
       this.column = paramInt1;
       this.direction = paramInt2;
     }
   }
-
+  
   private class SortableHeaderRenderer
     implements TableCellRenderer
   {
     private TableCellRenderer tableCellRenderer;
-
-    public SortableHeaderRenderer(TableCellRenderer arg2)
+    
+    public SortableHeaderRenderer(TableCellRenderer paramTableCellRenderer)
     {
-      Object localObject;
-      this.tableCellRenderer = localObject;
+      this.tableCellRenderer = paramTableCellRenderer;
     }
-
+    
     public Component getTableCellRendererComponent(JTable paramJTable, Object paramObject, boolean paramBoolean1, boolean paramBoolean2, int paramInt1, int paramInt2)
     {
       Component localComponent = this.tableCellRenderer.getTableCellRendererComponent(paramJTable, paramObject, paramBoolean1, paramBoolean2, paramInt1, paramInt2);
@@ -300,21 +315,21 @@ public class TableSorter extends AbstractTableModel
       return localComponent;
     }
   }
-
+  
   private static class Arrow
     implements Icon
   {
     private boolean descending;
     private int size;
     private int priority;
-
+    
     public Arrow(boolean paramBoolean, int paramInt1, int paramInt2)
     {
       this.descending = paramBoolean;
       this.size = paramInt1;
       this.priority = paramInt2;
     }
-
+    
     public void paintIcon(Component paramComponent, Graphics paramGraphics, int paramInt1, int paramInt2)
     {
       Color localColor = paramComponent == null ? Color.gray : paramComponent.getBackground();
@@ -329,32 +344,32 @@ public class TableSorter extends AbstractTableModel
       paramGraphics.setColor(localColor.brighter());
       paramGraphics.drawLine(i / 2, j, i, 0);
       paramGraphics.drawLine(i / 2, j + k, i, k);
-      if (this.descending)
+      if (this.descending) {
         paramGraphics.setColor(localColor.darker().darker());
-      else
+      } else {
         paramGraphics.setColor(localColor.brighter().brighter());
+      }
       paramGraphics.drawLine(i, 0, 0, 0);
       paramGraphics.setColor(localColor);
       paramGraphics.translate(-paramInt1, -paramInt2);
     }
-
+    
     public int getIconWidth()
     {
       return this.size;
     }
-
+    
     public int getIconHeight()
     {
       return this.size;
     }
   }
-
-  private class MouseHandler extends MouseAdapter
+  
+  private class MouseHandler
+    extends MouseAdapter
   {
-    private MouseHandler()
-    {
-    }
-
+    private MouseHandler() {}
+    
     public void mouseClicked(MouseEvent paramMouseEvent)
     {
       JTableHeader localJTableHeader = (JTableHeader)paramMouseEvent.getSource();
@@ -364,22 +379,21 @@ public class TableSorter extends AbstractTableModel
       if (j != -1)
       {
         int k = TableSorter.this.getSortingStatus(j);
-        if (!paramMouseEvent.isControlDown())
+        if (!paramMouseEvent.isControlDown()) {
           TableSorter.this.cancelSorting();
+        }
         k += (paramMouseEvent.isShiftDown() ? -1 : 1);
         k = (k + 4) % 3 - 1;
         TableSorter.this.setSortingStatus(j, k);
       }
     }
   }
-
+  
   private class TableModelHandler
     implements TableModelListener
   {
-    private TableModelHandler()
-    {
-    }
-
+    private TableModelHandler() {}
+    
     public void tableChanged(TableModelEvent paramTableModelEvent)
     {
       if (!TableSorter.this.isSorting())
@@ -405,18 +419,17 @@ public class TableSorter extends AbstractTableModel
       TableSorter.this.fireTableDataChanged();
     }
   }
-
+  
   private class Row
     implements Comparable
   {
     private int modelIndex;
-
-    public Row(int arg2)
+    
+    public Row(int paramInt)
     {
-      int i;
-      this.modelIndex = i;
+      this.modelIndex = paramInt;
     }
-
+    
     public int compareTo(Object paramObject)
     {
       int i = this.modelIndex;
@@ -429,23 +442,26 @@ public class TableSorter extends AbstractTableModel
         Object localObject1 = TableSorter.this.tableModel.getValueAt(i, k);
         Object localObject2 = TableSorter.this.tableModel.getValueAt(j, k);
         int m = 0;
-        if ((localObject1 == null) && (localObject2 == null))
+        if ((localObject1 == null) && (localObject2 == null)) {
           m = 0;
-        else if (localObject1 == null)
+        } else if (localObject1 == null) {
           m = -1;
-        else if (localObject2 == null)
+        } else if (localObject2 == null) {
           m = 1;
-        else
+        } else {
           m = TableSorter.this.getComparator(k).compare(localObject1, localObject2);
-        if (m != 0)
+        }
+        if (m != 0) {
           return localDirective.direction == -1 ? -m : m;
+        }
       }
       return 0;
     }
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.util.TableSorter
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

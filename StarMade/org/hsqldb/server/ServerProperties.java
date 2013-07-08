@@ -12,7 +12,8 @@ import org.hsqldb.lib.OrderedHashSet;
 import org.hsqldb.lib.Set;
 import org.hsqldb.persist.HsqlProperties;
 
-public class ServerProperties extends HsqlProperties
+public class ServerProperties
+  extends HsqlProperties
 {
   static final int SERVER_PROPERTY = 0;
   static final int SERVER_MULTI_PROPERTY = 1;
@@ -46,7 +47,7 @@ public class ServerProperties extends HsqlProperties
   protected boolean initialised = false;
   IntKeyHashMap idToAliasMap = new IntKeyHashMap();
   IntKeyHashMap idToPathMap = new IntKeyHashMap();
-
+  
   public ServerProperties(int paramInt, File paramFile)
     throws IOException
   {
@@ -58,23 +59,24 @@ public class ServerProperties extends HsqlProperties
     }
     finally
     {
-      if (localFileInputStream != null)
+      if (localFileInputStream != null) {
         localFileInputStream.close();
+      }
     }
     this.protocol = paramInt;
   }
-
+  
   ServerProperties(int paramInt)
   {
     this.protocol = paramInt;
   }
-
+  
   ServerProperties(int paramInt, String paramString1, String paramString2)
   {
     super(paramString1, paramString2);
     this.protocol = paramInt;
   }
-
+  
   public void validate()
   {
     Enumeration localEnumeration = this.stringProps.propertyNames();
@@ -82,8 +84,9 @@ public class ServerProperties extends HsqlProperties
     {
       localObject = (String)localEnumeration.nextElement();
       Object[] arrayOfObject = (Object[])meta.get(localObject);
-      if (arrayOfObject == null)
+      if (arrayOfObject == null) {
         arrayOfObject = getPrefixedMetadata((String)localObject);
+      }
       String str1;
       if (arrayOfObject == null)
       {
@@ -106,16 +109,19 @@ public class ServerProperties extends HsqlProperties
           String str2 = getProperty((String)localObject);
           if (str2 == null)
           {
-            if (arrayOfObject[4] == null)
+            if (arrayOfObject[4] == null) {
               str1 = "missing value for property: " + (String)localObject;
-            else
+            } else {
               setProperty((String)localObject, arrayOfObject[4].toString());
+            }
           }
-          else
+          else {
             str1 = HsqlProperties.validateProperty((String)localObject, str2, arrayOfObject);
+          }
         }
-        if (str1 != null)
+        if (str1 != null) {
           super.addError(0, str1);
+        }
       }
     }
     Object localObject = this.idToAliasMap.keySet().iterator();
@@ -123,35 +129,39 @@ public class ServerProperties extends HsqlProperties
     while (((Iterator)localObject).hasNext())
     {
       i = ((Iterator)localObject).nextInt();
-      if (!this.idToPathMap.containsKey(i))
+      if (!this.idToPathMap.containsKey(i)) {
         addError(0, "no path for database id: " + i);
+      }
     }
     localObject = this.idToPathMap.keySet().iterator();
     while (((Iterator)localObject).hasNext())
     {
       i = ((Iterator)localObject).nextInt();
-      if (!this.idToAliasMap.containsKey(i))
+      if (!this.idToAliasMap.containsKey(i)) {
         addError(0, "no alias for database id: " + i);
+      }
     }
     this.initialised = true;
   }
-
+  
   Object[] getPrefixedMetadata(String paramString)
   {
     for (int i = 0; i < prefixes.size(); i++)
     {
       String str = (String)prefixes.get(i);
-      if (paramString.startsWith(str))
+      if (paramString.startsWith(str)) {
         return (Object[])meta.get(str);
+      }
     }
     return null;
   }
-
+  
   String validateMultiProperty(String paramString, Object[] paramArrayOfObject)
   {
     String str1 = (String)paramArrayOfObject[0];
-    if ((paramArrayOfObject[0].equals("server.database")) && ("server.database".equals(paramString)))
+    if ((paramArrayOfObject[0].equals("server.database")) && ("server.database".equals(paramString))) {
       paramString = paramString + ".0";
+    }
     int i;
     try
     {
@@ -167,30 +177,33 @@ public class ServerProperties extends HsqlProperties
     {
       str2 = this.stringProps.getProperty(paramString).toLowerCase();
       localObject = this.idToAliasMap.put(i, str2);
-      if (localObject != null)
+      if (localObject != null) {
         return "duplicate database enumerator: " + paramString;
+      }
     }
     else if (paramArrayOfObject[0].equals("server.database"))
     {
       str2 = this.stringProps.getProperty(paramString);
       localObject = this.idToPathMap.put(i, str2);
-      if (localObject != null)
+      if (localObject != null) {
         return "duplicate database enumerator: " + paramString;
+      }
     }
     return null;
   }
-
+  
   String validateSystemProperty(String paramString, Object[] paramArrayOfObject)
   {
     String str1 = (String)paramArrayOfObject[0];
     String str2 = paramString.substring(str1.length() + 1);
     String str3 = this.stringProps.getProperty(paramString);
-    if (str3 == null)
+    if (str3 == null) {
       return "value required for property: " + paramString;
+    }
     System.setProperty(str2, str3);
     return null;
   }
-
+  
   static
   {
     meta.put("server.database", getMeta("server.database", 1, null));
@@ -215,7 +228,8 @@ public class ServerProperties extends HsqlProperties
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.server.ServerProperties
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

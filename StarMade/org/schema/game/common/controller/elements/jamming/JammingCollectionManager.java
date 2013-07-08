@@ -1,83 +1,81 @@
-/*    */ package org.schema.game.common.controller.elements.jamming;
-/*    */ 
-/*    */ import ct;
-/*    */ import dj;
-/*    */ import fe;
-/*    */ import java.util.Iterator;
-/*    */ import java.util.List;
-/*    */ import ld;
-/*    */ import org.schema.game.common.controller.SegmentController;
-/*    */ import org.schema.game.common.controller.elements.ElementCollectionManager;
-/*    */ import org.schema.game.common.controller.elements.ShipManagerContainer;
-/*    */ 
-/*    */ public class JammingCollectionManager extends ElementCollectionManager
-/*    */ {
-/*    */   private float totalJam;
-/*    */ 
-/*    */   public JammingCollectionManager(SegmentController paramSegmentController)
-/*    */   {
-/* 21 */     super((short)15, paramSegmentController);
-/*    */   }
-/*    */ 
-/*    */   public int getMargin()
-/*    */   {
-/* 26 */     return 0;
-/*    */   }
-/*    */ 
-/*    */   public float getTotalJam()
-/*    */   {
-/* 33 */     return this.totalJam;
-/*    */   }
-/*    */ 
-/*    */   protected Class getType()
-/*    */   {
-/* 40 */     return JammingUnit.class;
-/*    */   }
-/*    */ 
-/*    */   protected void onChangedCollection()
-/*    */   {
-/* 48 */     refreshMaxJam();
-/*    */ 
-/* 51 */     if (!getSegmentController().isOnServer()) {
-/* 52 */       ((ct)getSegmentController().getState()).a().a().a(this);
-/*    */     }
-/*    */ 
-/* 55 */     if (getCollection().isEmpty())
-/*    */     {
-/*    */       JammingElementManager localJammingElementManager;
-/* 58 */       if ((
-/* 58 */         localJammingElementManager = ((ShipManagerContainer)((ld)getSegmentController()).a()).getJammingElementManager())
-/* 58 */         .isJamming())
-/* 59 */         localJammingElementManager.stopJamming();
-/*    */     }
-/*    */   }
-/*    */ 
-/*    */   private void refreshMaxJam()
-/*    */   {
-/* 66 */     setTotalJam(0.0F);
-/* 67 */     for (Iterator localIterator = getCollection().iterator(); localIterator.hasNext(); )
-/*    */     {
-/*    */       JammingUnit localJammingUnit;
-/* 67 */       (
-/* 69 */         localJammingUnit = (JammingUnit)localIterator.next())
-/* 69 */         .refreshJammingCapabilities();
-/*    */ 
-/* 71 */       setTotalJam(getTotalJam() + localJammingUnit.jam);
-/*    */     }
-/*    */   }
-/*    */ 
-/*    */   public void setTotalJam(float paramFloat)
-/*    */   {
-/* 79 */     this.totalJam = paramFloat;
-/*    */   }
-/*    */ 
-/*    */   public boolean needsUpdate()
-/*    */   {
-/* 84 */     return false;
-/*    */   }
-/*    */ }
+/*  1:   */package org.schema.game.common.controller.elements.jamming;
+/*  2:   */
+/*  3:   */import ct;
+/*  4:   */import dj;
+/*  5:   */import fe;
+/*  6:   */import java.util.Iterator;
+/*  7:   */import java.util.List;
+/*  8:   */import ld;
+/*  9:   */import org.schema.game.common.controller.SegmentController;
+/* 10:   */import org.schema.game.common.controller.elements.ElementCollectionManager;
+/* 11:   */import org.schema.game.common.controller.elements.ShipManagerContainer;
+/* 12:   */
+/* 14:   */public class JammingCollectionManager
+/* 15:   */  extends ElementCollectionManager
+/* 16:   */{
+/* 17:   */  private float totalJam;
+/* 18:   */  
+/* 19:   */  public JammingCollectionManager(SegmentController paramSegmentController)
+/* 20:   */  {
+/* 21:21 */    super((short)15, paramSegmentController);
+/* 22:   */  }
+/* 23:   */  
+/* 24:   */  public int getMargin()
+/* 25:   */  {
+/* 26:26 */    return 0;
+/* 27:   */  }
+/* 28:   */  
+/* 31:   */  public float getTotalJam()
+/* 32:   */  {
+/* 33:33 */    return this.totalJam;
+/* 34:   */  }
+/* 35:   */  
+/* 38:   */  protected Class getType()
+/* 39:   */  {
+/* 40:40 */    return JammingUnit.class;
+/* 41:   */  }
+/* 42:   */  
+/* 46:   */  protected void onChangedCollection()
+/* 47:   */  {
+/* 48:48 */    refreshMaxJam();
+/* 49:   */    
+/* 51:51 */    if (!getSegmentController().isOnServer()) {
+/* 52:52 */      ((ct)getSegmentController().getState()).a().a().a(this);
+/* 53:   */    }
+/* 54:   */    
+/* 55:55 */    if (getCollection().isEmpty())
+/* 56:   */    {
+/* 57:   */      JammingElementManager localJammingElementManager;
+/* 58:58 */      if ((localJammingElementManager = ((ShipManagerContainer)((ld)getSegmentController()).a()).getJammingElementManager()).isJamming()) {
+/* 59:59 */        localJammingElementManager.stopJamming();
+/* 60:   */      }
+/* 61:   */    }
+/* 62:   */  }
+/* 63:   */  
+/* 64:   */  private void refreshMaxJam()
+/* 65:   */  {
+/* 66:66 */    setTotalJam(0.0F);
+/* 67:67 */    for (Iterator localIterator = getCollection().iterator(); localIterator.hasNext();) {
+/* 68:   */      JammingUnit localJammingUnit;
+/* 69:69 */      (localJammingUnit = (JammingUnit)localIterator.next()).refreshJammingCapabilities();
+/* 70:   */      
+/* 71:71 */      setTotalJam(getTotalJam() + localJammingUnit.jam);
+/* 72:   */    }
+/* 73:   */  }
+/* 74:   */  
+/* 77:   */  public void setTotalJam(float paramFloat)
+/* 78:   */  {
+/* 79:79 */    this.totalJam = paramFloat;
+/* 80:   */  }
+/* 81:   */  
+/* 82:   */  public boolean needsUpdate()
+/* 83:   */  {
+/* 84:84 */    return false;
+/* 85:   */  }
+/* 86:   */}
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.schema.game.common.controller.elements.jamming.JammingCollectionManager
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -30,37 +30,40 @@ public class SqlInvariants
   public static final HsqlNameManager.HsqlName DUAL_TABLE_HSQLNAME = HsqlNameManager.newSystemObjectName("DUAL", 2);
   public static final HsqlNameManager.HsqlName DUAL_COLUMN_HSQLNAME = HsqlNameManager.newSystemObjectName("DUMMY", 2);
   public static final HsqlNameManager.HsqlName SYSTEM_INDEX_HSQLNAME = HsqlNameManager.newSystemObjectName("IDX", 20);
-
+  
   public static final void checkSchemaNameNotSystem(String paramString)
   {
-    if (isSystemSchemaName(paramString))
+    if (isSystemSchemaName(paramString)) {
       throw Error.error(5503, paramString);
+    }
   }
-
+  
   public static final boolean isSystemSchemaName(String paramString)
   {
     return ("DEFINITION_SCHEMA".equals(paramString)) || ("INFORMATION_SCHEMA".equals(paramString)) || ("SYSTEM_SCHEMA".equals(paramString)) || ("SQLJ".equals(paramString));
   }
-
+  
   public static final boolean isLobsSchemaName(String paramString)
   {
     return "SYSTEM_LOBS".equals(paramString);
   }
-
+  
   public static final boolean isSchemaNameSystem(HsqlNameManager.HsqlName paramHsqlName)
   {
-    if (paramHsqlName.schema != null)
+    if (paramHsqlName.schema != null) {
       paramHsqlName = paramHsqlName.schema;
+    }
     return (INFORMATION_SCHEMA_HSQLNAME.equals(paramHsqlName)) || (SYSTEM_SCHEMA_HSQLNAME.equals(paramHsqlName)) || (SQLJ_SCHEMA_HSQLNAME.equals(paramHsqlName));
   }
-
+  
   static
   {
     SYSTEM_SUBQUERY_HSQLNAME.setSchemaIfNull(SYSTEM_SCHEMA_HSQLNAME);
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.SqlInvariants
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

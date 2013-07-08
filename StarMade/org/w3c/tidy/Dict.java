@@ -54,7 +54,7 @@ public class Dict
   protected int model;
   private Parser parser;
   private TagCheck chkattrs;
-
+  
   public Dict(String paramString, short paramShort, int paramInt, Parser paramParser, TagCheck paramTagCheck)
   {
     this.name = paramString;
@@ -63,44 +63,45 @@ public class Dict
     this.parser = paramParser;
     this.chkattrs = paramTagCheck;
   }
-
+  
   public TagCheck getChkattrs()
   {
     return this.chkattrs;
   }
-
+  
   public int getModel()
   {
     return this.model;
   }
-
+  
   public String getName()
   {
     return this.name;
   }
-
+  
   public Parser getParser()
   {
     return this.parser;
   }
-
+  
   public void setChkattrs(TagCheck paramTagCheck)
   {
     this.chkattrs = paramTagCheck;
   }
-
+  
   public short getVersions()
   {
     return this.versions;
   }
-
+  
   public void setParser(Parser paramParser)
   {
     this.parser = paramParser;
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.w3c.tidy.Dict
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

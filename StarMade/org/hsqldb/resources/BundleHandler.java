@@ -15,7 +15,7 @@ public final class BundleHandler
   private static HsqlArrayList bundleList = new HsqlArrayList();
   private static final String prefix = "org/hsqldb/resources/";
   private static final Method newGetBundleMethod = getNewGetBundleMethod();
-
+  
   public static Locale getLocale()
   {
     synchronized (mutex)
@@ -23,18 +23,19 @@ public final class BundleHandler
       return locale;
     }
   }
-
+  
   public static void setLocale(Locale paramLocale)
     throws IllegalArgumentException
   {
     synchronized (mutex)
     {
-      if (paramLocale == null)
+      if (paramLocale == null) {
         throw new IllegalArgumentException("null locale");
+      }
       locale = paramLocale;
     }
   }
-
+  
   public static int getBundleHandle(String paramString, ClassLoader paramClassLoader)
   {
     String str1 = "org/hsqldb/resources/" + paramString;
@@ -53,21 +54,22 @@ public final class BundleHandler
     }
     return localInteger == null ? -1 : localInteger.intValue();
   }
-
+  
   public static String getString(int paramInt, String paramString)
   {
     ResourceBundle localResourceBundle;
     synchronized (mutex)
     {
-      if ((paramInt < 0) || (paramInt >= bundleList.size()) || (paramString == null))
+      if ((paramInt < 0) || (paramInt >= bundleList.size()) || (paramString == null)) {
         localResourceBundle = null;
-      else
+      } else {
         localResourceBundle = (ResourceBundle)bundleList.get(paramInt);
+      }
     }
     String str;
-    if (localResourceBundle == null)
+    if (localResourceBundle == null) {
       str = null;
-    else
+    } else {
       try
       {
         str = localResourceBundle.getString(paramString);
@@ -76,9 +78,10 @@ public final class BundleHandler
       {
         str = null;
       }
+    }
     return str;
   }
-
+  
   private static Method getNewGetBundleMethod()
   {
     ResourceBundle localResourceBundle = ResourceBundle.class;
@@ -87,31 +90,30 @@ public final class BundleHandler
     {
       return localResourceBundle.getMethod("getBundle", arrayOfClass);
     }
-    catch (Exception localException)
-    {
-    }
+    catch (Exception localException) {}
     return null;
   }
-
+  
   public static ResourceBundle getBundle(String paramString, Locale paramLocale, ClassLoader paramClassLoader)
     throws NullPointerException, MissingResourceException
   {
-    if (paramClassLoader == null)
+    if (paramClassLoader == null) {
       return ResourceBundle.getBundle(paramString, paramLocale);
-    if (newGetBundleMethod == null)
+    }
+    if (newGetBundleMethod == null) {
       return ResourceBundle.getBundle(paramString, paramLocale);
+    }
     try
     {
       return (ResourceBundle)newGetBundleMethod.invoke(null, new Object[] { paramString, paramLocale, paramClassLoader });
     }
-    catch (Exception localException)
-    {
-    }
+    catch (Exception localException) {}
     return ResourceBundle.getBundle(paramString, paramLocale);
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.resources.BundleHandler
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

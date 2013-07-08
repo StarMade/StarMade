@@ -14,7 +14,8 @@ import org.hsqldb.error.Error;
 import org.hsqldb.lib.FileAccess.FileSync;
 import org.hsqldb.rowio.RowOutputTextLog;
 
-public class ScriptWriterText extends ScriptWriterBase
+public class ScriptWriterText
+  extends ScriptWriterBase
 {
   RowOutputTextLog rowOut;
   public static final String ISO_8859_1 = "ISO-8859-1";
@@ -30,17 +31,17 @@ public class ScriptWriterText extends ScriptWriterBase
   static byte[] BYTES_C_ID_INIT;
   static byte[] BYTES_C_ID_TERM;
   static byte[] BYTES_SCHEMA;
-
+  
   public ScriptWriterText(Database paramDatabase, OutputStream paramOutputStream, FileAccess.FileSync paramFileSync, boolean paramBoolean)
   {
     super(paramDatabase, paramOutputStream, paramFileSync, paramBoolean);
   }
-
+  
   public ScriptWriterText(Database paramDatabase, String paramString, boolean paramBoolean1, boolean paramBoolean2, boolean paramBoolean3)
   {
     super(paramDatabase, paramString, paramBoolean1, paramBoolean2, paramBoolean3);
   }
-
+  
   public ScriptWriterText(Database paramDatabase, String paramString, boolean paramBoolean1, boolean paramBoolean2)
   {
     super(paramDatabase, paramString, paramBoolean1, true, false);
@@ -57,22 +58,22 @@ public class ScriptWriterText extends ScriptWriterBase
       }
     }
   }
-
+  
   protected void initBuffers()
   {
     this.rowOut = new RowOutputTextLog();
   }
-
+  
   protected void writeDataTerm()
     throws IOException
-  {
-  }
-
+  {}
+  
   protected void writeSessionIdAndSchema(Session paramSession)
     throws IOException
   {
-    if (paramSession == null)
+    if (paramSession == null) {
       return;
+    }
     if (paramSession != this.currentSession)
     {
       this.rowOut.reset();
@@ -90,14 +91,14 @@ public class ScriptWriterText extends ScriptWriterBase
       writeRowOutToFile();
     }
   }
-
+  
   private void writeSchemaStatement(HsqlNameManager.HsqlName paramHsqlName)
   {
     this.rowOut.write(BYTES_SCHEMA);
     this.rowOut.writeString(paramHsqlName.statementName);
     this.rowOut.write(BYTES_LINE_SEP);
   }
-
+  
   public void writeLogStatement(Session paramSession, String paramString)
     throws IOException
   {
@@ -109,7 +110,7 @@ public class ScriptWriterText extends ScriptWriterBase
     writeRowOutToFile();
     this.needsSync = true;
   }
-
+  
   protected void writeRow(Session paramSession, Row paramRow, Table paramTable)
     throws IOException
   {
@@ -125,35 +126,38 @@ public class ScriptWriterText extends ScriptWriterBase
     this.rowOut.write(BYTES_LINE_SEP);
     writeRowOutToFile();
   }
-
+  
   protected void writeTableInit(Table paramTable)
     throws IOException
   {
-    if (paramTable.isEmpty(this.currentSession))
+    if (paramTable.isEmpty(this.currentSession)) {
       return;
-    if (this.schemaToLog == this.currentSession.loggedSchema)
+    }
+    if (this.schemaToLog == this.currentSession.loggedSchema) {
       return;
+    }
     this.rowOut.reset();
     writeSchemaStatement(paramTable.getName().schema);
     writeRowOutToFile();
     this.currentSession.loggedSchema = this.schemaToLog;
   }
-
+  
   public void writeOtherStatement(Session paramSession, String paramString)
     throws IOException
   {
     writeLogStatement(paramSession, paramString);
-    if (this.writeDelay == 0)
+    if (this.writeDelay == 0) {
       sync();
+    }
   }
-
+  
   public void writeInsertStatement(Session paramSession, Row paramRow, Table paramTable)
     throws IOException
   {
     this.schemaToLog = paramTable.getName().schema;
     writeRow(paramSession, paramRow, paramTable);
   }
-
+  
   public void writeDeleteStatement(Session paramSession, Table paramTable, Object[] paramArrayOfObject)
     throws IOException
   {
@@ -168,7 +172,7 @@ public class ScriptWriterText extends ScriptWriterBase
     this.rowOut.write(BYTES_LINE_SEP);
     writeRowOutToFile();
   }
-
+  
   public void writeSequenceStatement(Session paramSession, NumberSequence paramNumberSequence)
     throws IOException
   {
@@ -185,7 +189,7 @@ public class ScriptWriterText extends ScriptWriterBase
     writeRowOutToFile();
     this.needsSync = true;
   }
-
+  
   public void writeCommitStatement(Session paramSession)
     throws IOException
   {
@@ -195,17 +199,19 @@ public class ScriptWriterText extends ScriptWriterBase
     this.rowOut.write(BYTES_LINE_SEP);
     writeRowOutToFile();
     this.needsSync = true;
-    if (this.writeDelay == 0)
+    if (this.writeDelay == 0) {
       sync();
+    }
   }
-
+  
   protected void finishStream()
     throws IOException
   {
-    if (this.isCompressed)
+    if (this.isCompressed) {
       ((GZIPOutputStream)this.fileStreamOut).finish();
+    }
   }
-
+  
   void writeRowOutToFile()
     throws IOException
   {
@@ -216,7 +222,7 @@ public class ScriptWriterText extends ScriptWriterBase
       this.lineCount += 1L;
     }
   }
-
+  
   static
   {
     String str = System.getProperty("line.separator", "\n");
@@ -242,7 +248,8 @@ public class ScriptWriterText extends ScriptWriterBase
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.scriptio.ScriptWriterText
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

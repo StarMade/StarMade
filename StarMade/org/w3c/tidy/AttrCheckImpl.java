@@ -41,14 +41,15 @@ public final class AttrCheckImpl
   public static final AttrCheck MEDIA = null;
   public static final AttrCheck LINKTYPES = null;
   public static final AttrCheck TRULES = null;
-
+  
   public static class CheckLang
     implements AttrCheck
   {
     public void check(Lexer paramLexer, Node paramNode, AttVal paramAttVal)
     {
-      if ("lang".equals(paramAttVal.attribute))
+      if ("lang".equals(paramAttVal.attribute)) {
         paramLexer.constrainVersion(-1025);
+      }
       if (paramAttVal.value == null)
       {
         paramLexer.report.attrError(paramLexer, paramNode, paramAttVal, (short)50);
@@ -56,12 +57,12 @@ public final class AttrCheckImpl
       }
     }
   }
-
+  
   public static class CheckTextDir
     implements AttrCheck
   {
     private static final String[] VALID_VALUES = { "rtl", "ltr" };
-
+    
     public void check(Lexer paramLexer, Node paramNode, AttVal paramAttVal)
     {
       if (paramAttVal.value == null)
@@ -70,16 +71,17 @@ public final class AttrCheckImpl
         return;
       }
       paramAttVal.checkLowerCaseAttrValue(paramLexer, paramNode);
-      if (!TidyUtils.isInValuesIgnoreCase(VALID_VALUES, paramAttVal.value))
+      if (!TidyUtils.isInValuesIgnoreCase(VALID_VALUES, paramAttVal.value)) {
         paramLexer.report.attrError(paramLexer, paramNode, paramAttVal, (short)51);
+      }
     }
   }
-
+  
   public static class CheckScroll
     implements AttrCheck
   {
     private static final String[] VALID_VALUES = { "no", "yes", "auto" };
-
+    
     public void check(Lexer paramLexer, Node paramNode, AttVal paramAttVal)
     {
       if (paramAttVal.value == null)
@@ -88,16 +90,17 @@ public final class AttrCheckImpl
         return;
       }
       paramAttVal.checkLowerCaseAttrValue(paramLexer, paramNode);
-      if (!TidyUtils.isInValuesIgnoreCase(VALID_VALUES, paramAttVal.value))
+      if (!TidyUtils.isInValuesIgnoreCase(VALID_VALUES, paramAttVal.value)) {
         paramLexer.report.attrError(paramLexer, paramNode, paramAttVal, (short)51);
+      }
     }
   }
-
+  
   public static class CheckVType
     implements AttrCheck
   {
     private static final String[] VALID_VALUES = { "data", "object", "ref" };
-
+    
     public void check(Lexer paramLexer, Node paramNode, AttVal paramAttVal)
     {
       if (paramAttVal.value == null)
@@ -106,16 +109,17 @@ public final class AttrCheckImpl
         return;
       }
       paramAttVal.checkLowerCaseAttrValue(paramLexer, paramNode);
-      if (!TidyUtils.isInValuesIgnoreCase(VALID_VALUES, paramAttVal.value))
+      if (!TidyUtils.isInValuesIgnoreCase(VALID_VALUES, paramAttVal.value)) {
         paramLexer.report.attrError(paramLexer, paramNode, paramAttVal, (short)51);
+      }
     }
   }
-
+  
   public static class CheckColor
     implements AttrCheck
   {
     private static final Map COLORS = new HashMap();
-
+    
     public void check(Lexer paramLexer, Node paramNode, AttVal paramAttVal)
     {
       int i = 1;
@@ -141,8 +145,9 @@ public final class AttrCheckImpl
           }
           if (str.equalsIgnoreCase((String)localEntry.getValue()))
           {
-            if (paramLexer.configuration.replaceColor)
+            if (paramLexer.configuration.replaceColor) {
               paramAttVal.value = ((String)localEntry.getKey());
+            }
             k = 1;
             break;
           }
@@ -151,8 +156,9 @@ public final class AttrCheckImpl
         {
           if (str.equalsIgnoreCase((String)localEntry.getKey()))
           {
-            if (paramLexer.configuration.replaceColor)
+            if (paramLexer.configuration.replaceColor) {
               paramAttVal.value = ((String)localEntry.getKey());
+            }
             k = 1;
             break;
           }
@@ -164,27 +170,31 @@ public final class AttrCheckImpl
           break;
         }
       }
-      if ((k == 0) && (j == 0))
+      if ((k == 0) && (j == 0)) {
         if (str.charAt(0) == '#')
         {
-          for (int m = 1; m < 7; m++)
+          for (int m = 1; m < 7; m++) {
             if ((!TidyUtils.isDigit(str.charAt(m))) && ("abcdef".indexOf(Character.toLowerCase(str.charAt(m))) == -1))
             {
               paramLexer.report.attrError(paramLexer, paramNode, paramAttVal, (short)51);
               j = 1;
               break;
             }
-          if ((j == 0) && (i != 0))
-            for (m = 1; m < 7; m++)
+          }
+          if ((j == 0) && (i != 0)) {
+            for (m = 1; m < 7; m++) {
               paramAttVal.value = str.toUpperCase();
+            }
+          }
         }
         else
         {
           paramLexer.report.attrError(paramLexer, paramNode, paramAttVal, (short)51);
           j = 1;
         }
+      }
     }
-
+    
     static
     {
       COLORS.put("black", "#000000");
@@ -205,7 +215,7 @@ public final class AttrCheckImpl
       COLORS.put("aqua", "#00FFFF");
     }
   }
-
+  
   public static class CheckName
     implements AttrCheck
   {
@@ -220,14 +230,15 @@ public final class AttrCheckImpl
       {
         paramLexer.constrainVersion(-1025);
         Node localNode;
-        if (((localNode = paramLexer.configuration.tt.getNodeByAnchor(paramAttVal.value)) != null) && (localNode != paramNode))
+        if (((localNode = paramLexer.configuration.tt.getNodeByAnchor(paramAttVal.value)) != null) && (localNode != paramNode)) {
           paramLexer.report.attrError(paramLexer, paramNode, paramAttVal, (short)66);
-        else
+        } else {
           paramLexer.configuration.tt.anchorList = paramLexer.configuration.tt.addAnchor(paramAttVal.value, paramNode);
+        }
       }
     }
   }
-
+  
   public static class CheckId
     implements AttrCheck
   {
@@ -242,12 +253,13 @@ public final class AttrCheckImpl
       char c = str.charAt(0);
       if ((str.length() == 0) || (!Character.isLetter(str.charAt(0))))
       {
-        if ((paramLexer.isvoyager) && ((TidyUtils.isXMLLetter(c)) || (c == '_') || (c == ':')))
+        if ((paramLexer.isvoyager) && ((TidyUtils.isXMLLetter(c)) || (c == '_') || (c == ':'))) {
           paramLexer.report.attrError(paramLexer, paramNode, paramAttVal, (short)71);
-        else
+        } else {
           paramLexer.report.attrError(paramLexer, paramNode, paramAttVal, (short)51);
+        }
       }
-      else
+      else {
         for (int i = 1; i < str.length(); i++)
         {
           c = str.charAt(i);
@@ -262,14 +274,16 @@ public final class AttrCheckImpl
             break;
           }
         }
+      }
       Node localNode;
-      if (((localNode = paramLexer.configuration.tt.getNodeByAnchor(paramAttVal.value)) != null) && (localNode != paramNode))
+      if (((localNode = paramLexer.configuration.tt.getNodeByAnchor(paramAttVal.value)) != null) && (localNode != paramNode)) {
         paramLexer.report.attrError(paramLexer, paramNode, paramAttVal, (short)66);
-      else
+      } else {
         paramLexer.configuration.tt.anchorList = paramLexer.configuration.tt.addAnchor(paramAttVal.value, paramNode);
+      }
     }
   }
-
+  
   public static class CheckNumber
     implements AttrCheck
   {
@@ -280,12 +294,14 @@ public final class AttrCheckImpl
         paramLexer.report.attrError(paramLexer, paramNode, paramAttVal, (short)50);
         return;
       }
-      if ((("cols".equalsIgnoreCase(paramAttVal.attribute)) || ("rows".equalsIgnoreCase(paramAttVal.attribute))) && (paramNode.tag == paramLexer.configuration.tt.tagFrameset))
+      if ((("cols".equalsIgnoreCase(paramAttVal.attribute)) || ("rows".equalsIgnoreCase(paramAttVal.attribute))) && (paramNode.tag == paramLexer.configuration.tt.tagFrameset)) {
         return;
+      }
       String str = paramAttVal.value;
       int i = 0;
-      if ((paramNode.tag == paramLexer.configuration.tt.tagFont) && ((str.startsWith("+")) || (str.startsWith("-"))))
+      if ((paramNode.tag == paramLexer.configuration.tt.tagFont) && ((str.startsWith("+")) || (str.startsWith("-")))) {
         i++;
+      }
       while (i < str.length())
       {
         char c = str.charAt(i);
@@ -298,12 +314,12 @@ public final class AttrCheckImpl
       }
     }
   }
-
+  
   public static class CheckScope
     implements AttrCheck
   {
     private static final String[] VALID_VALUES = { "row", "rowgroup", "col", "colgroup" };
-
+    
     public void check(Lexer paramLexer, Node paramNode, AttVal paramAttVal)
     {
       if (paramAttVal.value == null)
@@ -312,16 +328,17 @@ public final class AttrCheckImpl
         return;
       }
       paramAttVal.checkLowerCaseAttrValue(paramLexer, paramNode);
-      if (!TidyUtils.isInValuesIgnoreCase(VALID_VALUES, paramAttVal.value))
+      if (!TidyUtils.isInValuesIgnoreCase(VALID_VALUES, paramAttVal.value)) {
         paramLexer.report.attrError(paramLexer, paramNode, paramAttVal, (short)51);
+      }
     }
   }
-
+  
   public static class CheckShape
     implements AttrCheck
   {
     private static final String[] VALID_VALUES = { "rect", "default", "circle", "poly" };
-
+    
     public void check(Lexer paramLexer, Node paramNode, AttVal paramAttVal)
     {
       if (paramAttVal.value == null)
@@ -330,16 +347,17 @@ public final class AttrCheckImpl
         return;
       }
       paramAttVal.checkLowerCaseAttrValue(paramLexer, paramNode);
-      if (!TidyUtils.isInValuesIgnoreCase(VALID_VALUES, paramAttVal.value))
+      if (!TidyUtils.isInValuesIgnoreCase(VALID_VALUES, paramAttVal.value)) {
         paramLexer.report.attrError(paramLexer, paramNode, paramAttVal, (short)51);
+      }
     }
   }
-
+  
   public static class CheckClear
     implements AttrCheck
   {
     private static final String[] VALID_VALUES = { "none", "left", "right", "all" };
-
+    
     public void check(Lexer paramLexer, Node paramNode, AttVal paramAttVal)
     {
       if (paramAttVal.value == null)
@@ -349,16 +367,17 @@ public final class AttrCheckImpl
         return;
       }
       paramAttVal.checkLowerCaseAttrValue(paramLexer, paramNode);
-      if (!TidyUtils.isInValuesIgnoreCase(VALID_VALUES, paramAttVal.value))
+      if (!TidyUtils.isInValuesIgnoreCase(VALID_VALUES, paramAttVal.value)) {
         paramLexer.report.attrError(paramLexer, paramNode, paramAttVal, (short)51);
+      }
     }
   }
-
+  
   public static class CheckFsubmit
     implements AttrCheck
   {
     private static final String[] VALID_VALUES = { "get", "post" };
-
+    
     public void check(Lexer paramLexer, Node paramNode, AttVal paramAttVal)
     {
       if (paramAttVal.value == null)
@@ -367,16 +386,17 @@ public final class AttrCheckImpl
         return;
       }
       paramAttVal.checkLowerCaseAttrValue(paramLexer, paramNode);
-      if (!TidyUtils.isInValuesIgnoreCase(VALID_VALUES, paramAttVal.value))
+      if (!TidyUtils.isInValuesIgnoreCase(VALID_VALUES, paramAttVal.value)) {
         paramLexer.report.attrError(paramLexer, paramNode, paramAttVal, (short)51);
+      }
     }
   }
-
+  
   public static class CheckTarget
     implements AttrCheck
   {
     private static final String[] VALID_VALUES = { "_blank", "_self", "_parent", "_top" };
-
+    
     public void check(Lexer paramLexer, Node paramNode, AttVal paramAttVal)
     {
       paramLexer.constrainVersion(-5);
@@ -386,13 +406,15 @@ public final class AttrCheckImpl
         return;
       }
       String str = paramAttVal.value;
-      if (Character.isLetter(str.charAt(0)))
+      if (Character.isLetter(str.charAt(0))) {
         return;
-      if (!TidyUtils.isInValuesIgnoreCase(VALID_VALUES, str))
+      }
+      if (!TidyUtils.isInValuesIgnoreCase(VALID_VALUES, str)) {
         paramLexer.report.attrError(paramLexer, paramNode, paramAttVal, (short)51);
+      }
     }
   }
-
+  
   public static class CheckLength
     implements AttrCheck
   {
@@ -403,8 +425,9 @@ public final class AttrCheckImpl
         paramLexer.report.attrError(paramLexer, paramNode, paramAttVal, (short)50);
         return;
       }
-      if (("width".equalsIgnoreCase(paramAttVal.attribute)) && ((paramNode.tag == paramLexer.configuration.tt.tagCol) || (paramNode.tag == paramLexer.configuration.tt.tagColgroup)))
+      if (("width".equalsIgnoreCase(paramAttVal.attribute)) && ((paramNode.tag == paramLexer.configuration.tt.tagCol) || (paramNode.tag == paramLexer.configuration.tt.tagColgroup))) {
         return;
+      }
       String str = paramAttVal.value;
       if ((str.length() == 0) || ((!Character.isDigit(str.charAt(0))) && ('%' != str.charAt(0))))
       {
@@ -413,34 +436,36 @@ public final class AttrCheckImpl
       else
       {
         TagTable localTagTable = paramLexer.configuration.tt;
-        for (int i = 1; i < str.length(); i++)
+        for (int i = 1; i < str.length(); i++) {
           if (((!Character.isDigit(str.charAt(i))) && ((paramNode.tag == localTagTable.tagTd) || (paramNode.tag == localTagTable.tagTh))) || ((!Character.isDigit(str.charAt(i))) && (str.charAt(i) != '%')))
           {
             paramLexer.report.attrError(paramLexer, paramNode, paramAttVal, (short)51);
             break;
           }
+        }
       }
     }
   }
-
+  
   public static class CheckBool
     implements AttrCheck
   {
     public void check(Lexer paramLexer, Node paramNode, AttVal paramAttVal)
     {
-      if (paramAttVal.value == null)
+      if (paramAttVal.value == null) {
         return;
+      }
       paramAttVal.checkLowerCaseAttrValue(paramLexer, paramNode);
     }
   }
-
+  
   public static class CheckValign
     implements AttrCheck
   {
     private static final String[] VALID_VALUES = { "top", "middle", "bottom", "baseline" };
     private static final String[] VALID_VALUES_IMG = { "left", "right" };
     private static final String[] VALID_VALUES_PROPRIETARY = { "texttop", "absmiddle", "absbottom", "textbottom" };
-
+    
     public void check(Lexer paramLexer, Node paramNode, AttVal paramAttVal)
     {
       if (paramAttVal.value == null)
@@ -450,12 +475,14 @@ public final class AttrCheckImpl
       }
       paramAttVal.checkLowerCaseAttrValue(paramLexer, paramNode);
       String str = paramAttVal.value;
-      if (TidyUtils.isInValuesIgnoreCase(VALID_VALUES, str))
+      if (TidyUtils.isInValuesIgnoreCase(VALID_VALUES, str)) {
         return;
+      }
       if (TidyUtils.isInValuesIgnoreCase(VALID_VALUES_IMG, str))
       {
-        if ((paramNode.tag == null) || ((paramNode.tag.model & 0x10000) == 0))
+        if ((paramNode.tag == null) || ((paramNode.tag.model & 0x10000) == 0)) {
           paramLexer.report.attrError(paramLexer, paramNode, paramAttVal, (short)51);
+        }
       }
       else if (TidyUtils.isInValuesIgnoreCase(VALID_VALUES_PROPRIETARY, str))
       {
@@ -468,12 +495,12 @@ public final class AttrCheckImpl
       }
     }
   }
-
+  
   public static class CheckAlign
     implements AttrCheck
   {
     private static final String[] VALID_VALUES = { "left", "center", "right", "justify" };
-
+    
     public void check(Lexer paramLexer, Node paramNode, AttVal paramAttVal)
     {
       if ((paramNode.tag != null) && ((paramNode.tag.model & 0x10000) != 0))
@@ -487,19 +514,18 @@ public final class AttrCheckImpl
         return;
       }
       paramAttVal.checkLowerCaseAttrValue(paramLexer, paramNode);
-      if (!TidyUtils.isInValuesIgnoreCase(VALID_VALUES, paramAttVal.value))
+      if (!TidyUtils.isInValuesIgnoreCase(VALID_VALUES, paramAttVal.value)) {
         paramLexer.report.attrError(paramLexer, paramNode, paramAttVal, (short)51);
+      }
     }
   }
-
+  
   public static class CheckScript
     implements AttrCheck
   {
-    public void check(Lexer paramLexer, Node paramNode, AttVal paramAttVal)
-    {
-    }
+    public void check(Lexer paramLexer, Node paramNode, AttVal paramAttVal) {}
   }
-
+  
   public static class CheckUrl
     implements AttrCheck
   {
@@ -518,10 +544,11 @@ public final class AttrCheckImpl
       for (k = 0; k < str.length(); k++)
       {
         c = str.charAt(k);
-        if (c == '\\')
+        if (c == '\\') {
           j = 1;
-        else if ((c > '~') || (c <= ' ') || (c == '<') || (c == '>'))
+        } else if ((c > '~') || (c <= ' ') || (c == '<') || (c == '>')) {
           i = 1;
+        }
       }
       if ((paramLexer.configuration.fixBackslash) && (j != 0))
       {
@@ -546,17 +573,20 @@ public final class AttrCheckImpl
         }
         paramAttVal.value = localStringBuffer.toString();
       }
-      if (j != 0)
-        if (paramLexer.configuration.fixBackslash)
+      if (j != 0) {
+        if (paramLexer.configuration.fixBackslash) {
           paramLexer.report.attrError(paramLexer, paramNode, paramAttVal, (short)62);
-        else
+        } else {
           paramLexer.report.attrError(paramLexer, paramNode, paramAttVal, (short)61);
+        }
+      }
       if (i != 0)
       {
-        if (paramLexer.configuration.fixUri)
+        if (paramLexer.configuration.fixUri) {
           paramLexer.report.attrError(paramLexer, paramNode, paramAttVal, (short)64);
-        else
+        } else {
           paramLexer.report.attrError(paramLexer, paramNode, paramAttVal, (short)63);
+        }
         Lexer tmp350_349 = paramLexer;
         tmp350_349.badChars = ((short)(tmp350_349.badChars | 0x51));
       }
@@ -564,7 +594,8 @@ public final class AttrCheckImpl
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.w3c.tidy.AttrCheckImpl
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

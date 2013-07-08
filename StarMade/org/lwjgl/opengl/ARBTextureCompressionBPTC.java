@@ -8,7 +8,8 @@ public final class ARBTextureCompressionBPTC
   public static final int GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_ARB = 36495;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.opengl.ARBTextureCompressionBPTC
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -75,7 +75,8 @@ public abstract interface ResultConstants
   public static final int RETURN_GENERATED_KEYS_COL_INDEXES = 21;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.result.ResultConstants
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

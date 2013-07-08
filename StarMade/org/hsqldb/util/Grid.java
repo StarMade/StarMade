@@ -13,7 +13,8 @@ import java.awt.Scrollbar;
 import java.awt.SystemColor;
 import java.util.Vector;
 
-class Grid extends Panel
+class Grid
+  extends Panel
 {
   private Dimension dMinimum;
   protected Font fFont = new Font("Dialog", 0, 12);
@@ -40,7 +41,7 @@ class Grid extends Panel
   private boolean bDrag;
   private int iXDrag;
   private int iColDrag;
-
+  
   public Grid()
   {
     setLayout(null);
@@ -49,22 +50,22 @@ class Grid extends Panel
     this.sbVert = new Scrollbar(1);
     add(this.sbVert);
   }
-
+  
   String[] getHead()
   {
     return this.sColHead;
   }
-
+  
   Vector getData()
   {
     return this.vData;
   }
-
+  
   public void setMinimumSize(Dimension paramDimension)
   {
     this.dMinimum = paramDimension;
   }
-
+  
   public void setBounds(int paramInt1, int paramInt2, int paramInt3, int paramInt4)
   {
     super.setBounds(paramInt1, paramInt2, paramInt3, paramInt4);
@@ -78,7 +79,7 @@ class Grid extends Panel
     this.iImage = null;
     repaint();
   }
-
+  
   public void setHead(String[] paramArrayOfString)
   {
     this.iColCount = paramArrayOfString.length;
@@ -93,35 +94,39 @@ class Grid extends Panel
     this.iRowHeight = 0;
     this.vData = new Vector();
   }
-
+  
   public void addRow(String[] paramArrayOfString)
   {
-    if (paramArrayOfString.length != this.iColCount)
+    if (paramArrayOfString.length != this.iColCount) {
       return;
+    }
     String[] arrayOfString = new String[this.iColCount];
     for (int i = 0; i < this.iColCount; i++)
     {
       arrayOfString[i] = paramArrayOfString[i];
-      if (arrayOfString[i] == null)
+      if (arrayOfString[i] == null) {
         arrayOfString[i] = "(null)";
+      }
     }
     this.vData.addElement(arrayOfString);
     this.iRowCount += 1;
   }
-
+  
   public void update()
   {
     adjustScroll();
     repaint();
   }
-
+  
   void adjustScroll()
   {
-    if (this.iRowHeight == 0)
+    if (this.iRowHeight == 0) {
       return;
+    }
     int i = 0;
-    for (int j = 0; j < this.iColCount; j++)
+    for (int j = 0; j < this.iColCount; j++) {
       i += this.iColWidth[j];
+    }
     this.iGridWidth = i;
     this.iGridHeight = (this.iRowHeight * (this.iRowCount + 1));
     this.sbHoriz.setValues(this.iX, this.iWidth, 0, this.iGridWidth);
@@ -131,16 +136,16 @@ class Grid extends Panel
     this.iX = this.sbHoriz.getValue();
     this.iY = (this.iRowHeight * this.sbVert.getValue());
   }
-
+  
   public boolean handleEvent(Event paramEvent)
   {
     switch (paramEvent.id)
     {
-    case 601:
-    case 602:
-    case 603:
-    case 604:
-    case 605:
+    case 601: 
+    case 602: 
+    case 603: 
+    case 604: 
+    case 605: 
       this.iX = this.sbHoriz.getValue();
       this.iY = (this.iRowHeight * this.sbVert.getValue());
       repaint();
@@ -148,18 +153,20 @@ class Grid extends Panel
     }
     return super.handleEvent(paramEvent);
   }
-
+  
   public void paint(Graphics paramGraphics)
   {
-    if (paramGraphics == null)
+    if (paramGraphics == null) {
       return;
+    }
     if (this.sColHead.length == 0)
     {
       super.paint(paramGraphics);
       return;
     }
-    if ((this.iWidth <= 0) || (this.iHeight <= 0))
+    if ((this.iWidth <= 0) || (this.iHeight <= 0)) {
       return;
+    }
     paramGraphics.setColor(SystemColor.control);
     paramGraphics.fillRect(this.iWidth, this.iHeight, this.iSbWidth, this.iSbHeight);
     if (this.iImage == null)
@@ -167,14 +174,16 @@ class Grid extends Panel
       this.iImage = createImage(this.iWidth, this.iHeight);
       this.gImage = this.iImage.getGraphics();
       this.gImage.setFont(this.fFont);
-      if (this.fMetrics == null)
+      if (this.fMetrics == null) {
         this.fMetrics = this.gImage.getFontMetrics();
+      }
     }
     if (this.iRowHeight == 0)
     {
       this.iRowHeight = getMaxHeight(this.fMetrics);
-      for (i = 0; i < this.iColCount; i++)
+      for (i = 0; i < this.iColCount; i++) {
         calcAutoWidth(i);
+      }
       adjustScroll();
     }
     this.gImage.setColor(Color.white);
@@ -232,20 +241,21 @@ class Grid extends Panel
     }
     paramGraphics.drawImage(this.iImage, 0, 0, this);
   }
-
+  
   public void update(Graphics paramGraphics)
   {
     paint(paramGraphics);
   }
-
+  
   public boolean mouseMove(Event paramEvent, int paramInt1, int paramInt2)
   {
     if (paramInt2 <= this.iRowHeight)
     {
       int i = paramInt1;
       paramInt1 += this.iX - this.iGridWidth;
-      for (int j = this.iColCount - 1; (j >= 0) && ((paramInt1 <= -7) || (paramInt1 >= 7)); j--)
+      for (int j = this.iColCount - 1; (j >= 0) && ((paramInt1 <= -7) || (paramInt1 >= 7)); j--) {
         paramInt1 += this.iColWidth[j];
+      }
       if (j >= 0)
       {
         if (!this.bDrag)
@@ -260,21 +270,22 @@ class Grid extends Panel
     }
     return mouseExit(paramEvent, paramInt1, paramInt2);
   }
-
+  
   public boolean mouseDrag(Event paramEvent, int paramInt1, int paramInt2)
   {
     if ((this.bDrag) && (paramInt1 < this.iWidth))
     {
       int i = paramInt1 - this.iXDrag;
-      if (i < 0)
+      if (i < 0) {
         i = 0;
+      }
       this.iColWidth[this.iColDrag] = i;
       adjustScroll();
       repaint();
     }
     return true;
   }
-
+  
   public boolean mouseExit(Event paramEvent, int paramInt1, int paramInt2)
   {
     if (this.bDrag)
@@ -284,27 +295,27 @@ class Grid extends Panel
     }
     return true;
   }
-
+  
   public Dimension preferredSize()
   {
     return this.dMinimum;
   }
-
+  
   public Dimension getPreferredSize()
   {
     return this.dMinimum;
   }
-
+  
   public Dimension getMinimumSize()
   {
     return this.dMinimum;
   }
-
+  
   public Dimension minimumSize()
   {
     return this.dMinimum;
   }
-
+  
   private void calcAutoWidth(int paramInt)
   {
     int i = 10;
@@ -316,24 +327,25 @@ class Grid extends Panel
     }
     this.iColWidth[paramInt] = (i + 6);
   }
-
+  
   private String getDisplay(int paramInt1, int paramInt2)
   {
     return ((String[])(String[])this.vData.elementAt(paramInt2))[paramInt1];
   }
-
+  
   private String get(int paramInt1, int paramInt2)
   {
     return ((String[])(String[])this.vData.elementAt(paramInt2))[paramInt1];
   }
-
+  
   private static int getMaxHeight(FontMetrics paramFontMetrics)
   {
     return paramFontMetrics.getHeight() + 4;
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.util.Grid
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

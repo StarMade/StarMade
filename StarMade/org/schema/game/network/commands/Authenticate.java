@@ -5,18 +5,16 @@ import org.schema.schine.network.client.ClientStateInterface;
 import org.schema.schine.network.server.ServerProcessor;
 import org.schema.schine.network.server.ServerStateInterface;
 
-public class Authenticate extends Command
+public class Authenticate
+  extends Command
 {
-  public void clientAnswerProcess(Object[] paramArrayOfObject, ClientStateInterface paramClientStateInterface, short paramShort)
-  {
-  }
-
-  public void serverProcess(ServerProcessor paramServerProcessor, Object[] paramArrayOfObject, ServerStateInterface paramServerStateInterface, short paramShort)
-  {
-  }
+  public void clientAnswerProcess(Object[] paramArrayOfObject, ClientStateInterface paramClientStateInterface, short paramShort) {}
+  
+  public void serverProcess(ServerProcessor paramServerProcessor, Object[] paramArrayOfObject, ServerStateInterface paramServerStateInterface, short paramShort) {}
 }
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.schema.game.network.commands.Authenticate
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

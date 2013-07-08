@@ -6,45 +6,50 @@ import java.util.Map;
 public abstract class EncodingNameMapper
 {
   private static Map encodingNameMap = new HashMap();
-
+  
   public static String toIana(String paramString)
   {
-    if (paramString == null)
+    if (paramString == null) {
       return null;
+    }
     String[] arrayOfString = (String[])encodingNameMap.get(handlecommonAlias(paramString));
-    if (arrayOfString != null)
+    if (arrayOfString != null) {
       return arrayOfString[0];
+    }
     return null;
   }
-
+  
   private static String handlecommonAlias(String paramString)
   {
     String str = paramString.toUpperCase();
-    if ((str.startsWith("CSIBM")) || (str.startsWith("CCSID")))
+    if ((str.startsWith("CSIBM")) || (str.startsWith("CCSID"))) {
       str = str.substring(5);
-    else if ((str.startsWith("IBM-")) || (str.startsWith("IBM0")) || (str.startsWith("CP-0")))
+    } else if ((str.startsWith("IBM-")) || (str.startsWith("IBM0")) || (str.startsWith("CP-0"))) {
       str = str.substring(4);
-    else if ((str.startsWith("IBM")) || (str.startsWith("CP0")) || (str.startsWith("CP-")))
+    } else if ((str.startsWith("IBM")) || (str.startsWith("CP0")) || (str.startsWith("CP-"))) {
       str = str.substring(3);
-    else if (str.startsWith("CP"))
+    } else if (str.startsWith("CP")) {
       str = str.substring(2);
-    else if (str.startsWith("WINDOWS-"))
+    } else if (str.startsWith("WINDOWS-")) {
       str = str.substring(8);
-    else if (str.startsWith("ISO_"))
+    } else if (str.startsWith("ISO_")) {
       str = "ISO-" + str.substring(4);
+    }
     return str;
   }
-
+  
   public static String toJava(String paramString)
   {
-    if (paramString == null)
+    if (paramString == null) {
       return null;
+    }
     String[] arrayOfString = (String[])encodingNameMap.get(handlecommonAlias(paramString));
-    if (arrayOfString != null)
+    if (arrayOfString != null) {
       return arrayOfString[1];
+    }
     return null;
   }
-
+  
   static
   {
     encodingNameMap.put("ISO-8859-1", new String[] { "ISO-8859-1", "ISO8859_1" });
@@ -225,7 +230,8 @@ public abstract class EncodingNameMapper
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.w3c.tidy.EncodingNameMapper
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

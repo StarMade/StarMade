@@ -18,35 +18,35 @@ import javax.security.cert.X509Certificate;
 import org.hsqldb.error.Error;
 import org.hsqldb.lib.StringConverter;
 
-public final class HsqlSocketFactorySecure extends HsqlSocketFactory
+public final class HsqlSocketFactorySecure
+  extends HsqlSocketFactory
   implements HandshakeCompletedListener
 {
   protected Object socketFactory;
   protected Object serverSocketFactory;
   protected final Object socket_factory_mutex = new Object();
   protected final Object server_socket_factory_mutex = new Object();
-
+  
   protected HsqlSocketFactorySecure()
     throws Exception
   {
-    if (Security.getProvider("SunJSSE") == null)
+    if (Security.getProvider("SunJSSE") == null) {
       try
       {
         Provider localProvider = (Provider)Class.forName("com.sun.net.ssl.internal.ssl.Provider").newInstance();
         Security.addProvider(localProvider);
       }
-      catch (Exception localException)
-      {
-      }
+      catch (Exception localException) {}
+    }
   }
-
+  
   public void configureSocket(Socket paramSocket)
   {
     super.configureSocket(paramSocket);
     SSLSocket localSSLSocket = (SSLSocket)paramSocket;
     localSSLSocket.addHandshakeCompletedListener(this);
   }
-
+  
   public ServerSocket createServerSocket(int paramInt)
     throws Exception
   {
@@ -61,7 +61,7 @@ public final class HsqlSocketFactorySecure extends HsqlSocketFactory
     }
     return localSSLServerSocket;
   }
-
+  
   public ServerSocket createServerSocket(int paramInt, String paramString)
     throws Exception
   {
@@ -77,16 +77,17 @@ public final class HsqlSocketFactorySecure extends HsqlSocketFactory
     }
     return localSSLServerSocket;
   }
-
+  
   private static void dump(String paramString, String[] paramArrayOfString)
   {
     Error.printSystemOut(paramString);
     Error.printSystemOut("----------------------------");
-    for (int i = 0; i < paramArrayOfString.length; i++)
+    for (int i = 0; i < paramArrayOfString.length; i++) {
       Error.printSystemOut(String.valueOf(paramArrayOfString[i]));
+    }
     Error.printSystemOut("----------------------------");
   }
-
+  
   public Socket createSocket(String paramString, int paramInt)
     throws Exception
   {
@@ -96,12 +97,12 @@ public final class HsqlSocketFactorySecure extends HsqlSocketFactory
     verify(paramString, localSSLSocket.getSession());
     return localSSLSocket;
   }
-
+  
   public boolean isSecure()
   {
     return true;
   }
-
+  
   protected SSLServerSocketFactory getServerSocketFactoryImpl()
     throws Exception
   {
@@ -117,7 +118,7 @@ public final class HsqlSocketFactorySecure extends HsqlSocketFactory
     }
     return (SSLServerSocketFactory)localObject1;
   }
-
+  
   protected SSLSocketFactory getSocketFactoryImpl()
     throws Exception
   {
@@ -133,7 +134,7 @@ public final class HsqlSocketFactorySecure extends HsqlSocketFactory
     }
     return (SSLSocketFactory)localObject1;
   }
-
+  
   protected void verify(String paramString, SSLSession paramSSLSession)
     throws Exception
   {
@@ -142,17 +143,20 @@ public final class HsqlSocketFactorySecure extends HsqlSocketFactory
     Principal localPrincipal = localX509Certificate.getSubjectDN();
     String str1 = String.valueOf(localPrincipal);
     int i = str1.indexOf("CN=");
-    if (i < 0)
+    if (i < 0) {
       throw new UnknownHostException(Error.getMessage(63));
+    }
     i += 3;
     int j = str1.indexOf(',', i);
     String str2 = str1.substring(i, j > -1 ? j : str1.length());
-    if (str2.length() < 1)
+    if (str2.length() < 1) {
       throw new UnknownHostException(Error.getMessage(64));
-    if (!str2.equalsIgnoreCase(paramString))
+    }
+    if (!str2.equalsIgnoreCase(paramString)) {
       throw new UnknownHostException(Error.getMessage(65, 0, new Object[] { str2, paramString }));
+    }
   }
-
+  
   public void handshakeCompleted(HandshakeCompletedEvent paramHandshakeCompletedEvent)
   {
     if (Error.TRACESYSTEMOUT)
@@ -170,7 +174,8 @@ public final class HsqlSocketFactorySecure extends HsqlSocketFactory
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.server.HsqlSocketFactorySecure
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

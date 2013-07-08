@@ -90,85 +90,85 @@ public class JDBCSQLXML
   private boolean readable;
   private String systemId;
   private boolean writable;
-
+  
   protected JDBCSQLXML()
   {
     setReadable(false);
     setWritable(true);
   }
-
+  
   protected JDBCSQLXML(byte[] paramArrayOfByte)
     throws SQLException
   {
     this(paramArrayOfByte, null);
   }
-
+  
   protected JDBCSQLXML(char[] paramArrayOfChar)
     throws SQLException
   {
     this(paramArrayOfChar, 0, paramArrayOfChar.length, null);
   }
-
+  
   protected JDBCSQLXML(Document paramDocument)
     throws SQLException
   {
     this(new DOMSource(paramDocument));
   }
-
+  
   protected JDBCSQLXML(InputStream paramInputStream)
     throws SQLException
   {
     this(paramInputStream, null);
   }
-
+  
   protected JDBCSQLXML(Reader paramReader)
     throws SQLException
   {
     this(paramReader, null);
   }
-
+  
   public JDBCSQLXML(Source paramSource)
     throws SQLException
   {
     init(paramSource);
   }
-
+  
   protected JDBCSQLXML(String paramString)
     throws SQLException
   {
     this(new StreamSource(new StringReader(paramString)));
   }
-
+  
   protected JDBCSQLXML(byte[] paramArrayOfByte, String paramString)
     throws SQLException
   {
     this(new StreamSource(new ByteArrayInputStream(paramArrayOfByte), paramString));
   }
-
+  
   protected JDBCSQLXML(char[] paramArrayOfChar, String paramString)
     throws SQLException
   {
     this(paramArrayOfChar, 0, paramArrayOfChar.length, paramString);
   }
-
+  
   protected JDBCSQLXML(InputStream paramInputStream, String paramString)
     throws SQLException
   {
     this(new StreamSource(paramInputStream, paramString));
   }
-
+  
   protected JDBCSQLXML(Reader paramReader, String paramString)
     throws SQLException
   {
     this(new StreamSource(paramReader, paramString));
   }
-
+  
   protected JDBCSQLXML(String paramString1, String paramString2)
     throws SQLException
   {
     this(new StreamSource(new StringReader(paramString1), paramString2));
   }
-
+  
   protected JDBCSQLXML(byte[] paramArrayOfByte, boolean paramBoolean, String paramString1, String paramString2)
     throws SQLException
   {
@@ -176,19 +176,19 @@ public class JDBCSQLXML
     this.systemId = paramString1;
     this.publicId = paramString2;
   }
-
+  
   protected JDBCSQLXML(char[] paramArrayOfChar, int paramInt1, int paramInt2, String paramString)
     throws SQLException
   {
     this(new StreamSource(new CharArrayReader(paramArrayOfChar, paramInt1, paramInt2), paramString));
   }
-
+  
   public void free()
     throws SQLException
   {
     close();
   }
-
+  
   public synchronized InputStream getBinaryStream()
     throws SQLException
   {
@@ -199,7 +199,7 @@ public class JDBCSQLXML
     setWritable(false);
     return localInputStream;
   }
-
+  
   public synchronized OutputStream setBinaryStream()
     throws SQLException
   {
@@ -210,7 +210,7 @@ public class JDBCSQLXML
     setReadable(true);
     return localOutputStream;
   }
-
+  
   public synchronized Reader getCharacterStream()
     throws SQLException
   {
@@ -221,7 +221,7 @@ public class JDBCSQLXML
     setWritable(false);
     return localReader;
   }
-
+  
   public synchronized Writer setCharacterStream()
     throws SQLException
   {
@@ -232,7 +232,7 @@ public class JDBCSQLXML
     setWritable(false);
     return localWriter;
   }
-
+  
   public synchronized String getString()
     throws SQLException
   {
@@ -243,18 +243,19 @@ public class JDBCSQLXML
     setWritable(false);
     return str;
   }
-
+  
   public synchronized void setString(String paramString)
     throws SQLException
   {
-    if (paramString == null)
+    if (paramString == null) {
       throw Util.nullArgument("value");
+    }
     checkWritable();
     setStringImpl(paramString);
     setReadable(true);
     setWritable(false);
   }
-
+  
   public synchronized <T extends Source> T getSource(Class<T> paramClass)
     throws SQLException
   {
@@ -265,7 +266,7 @@ public class JDBCSQLXML
     setWritable(false);
     return localSource;
   }
-
+  
   public synchronized <T extends Result> T setResult(Class<T> paramClass)
     throws SQLException
   {
@@ -276,7 +277,7 @@ public class JDBCSQLXML
     setWritable(false);
     return localResult;
   }
-
+  
   protected static ExecutorService getExecutorService()
   {
     if (executorService == null)
@@ -290,11 +291,11 @@ public class JDBCSQLXML
     }
     return executorService;
   }
-
+  
   protected static TransformerFactory getTransformerFactory()
     throws SQLException
   {
-    if (transformerFactory == null)
+    if (transformerFactory == null) {
       try
       {
         transformerFactory = TransformerFactory.newInstance();
@@ -303,13 +304,14 @@ public class JDBCSQLXML
       {
         throw Exceptions.transformFailed(localTransformerFactoryConfigurationError);
       }
+    }
     return transformerFactory;
   }
-
+  
   protected static Transformer getIdentityTransformer()
     throws SQLException
   {
-    if (identityTransformer == null)
+    if (identityTransformer == null) {
       try
       {
         identityTransformer = getTransformerFactory().newTransformer();
@@ -318,13 +320,14 @@ public class JDBCSQLXML
       {
         throw Exceptions.transformFailed(localTransformerConfigurationException);
       }
+    }
     return identityTransformer;
   }
-
+  
   protected static DOMImplementationRegistry getDOMImplementationRegistry()
     throws SQLException
   {
-    if (domImplementationRegistry == null)
+    if (domImplementationRegistry == null) {
       try
       {
         domImplementationRegistry = DOMImplementationRegistry.newInstance();
@@ -345,14 +348,16 @@ public class JDBCSQLXML
       {
         throw Exceptions.domInstantiation(localIllegalAccessException);
       }
+    }
     return domImplementationRegistry;
   }
-
+  
   protected static DOMImplementation getDOMImplementation()
     throws SQLException
   {
-    if (domImplementation == null)
+    if (domImplementation == null) {
       domImplementation = getDOMImplementationRegistry().getDOMImplementation(domFeatures);
+    }
     if (domImplementation == null)
     {
       RuntimeException localRuntimeException = new RuntimeException("Not supported: " + domFeatures);
@@ -360,7 +365,7 @@ public class JDBCSQLXML
     }
     return domImplementation;
   }
-
+  
   protected static Document createDocument(String paramString1, String paramString2, DocumentType paramDocumentType)
     throws SQLException
   {
@@ -373,18 +378,19 @@ public class JDBCSQLXML
       throw Exceptions.domInstantiation(localDOMException);
     }
   }
-
+  
   protected static Document createDocument()
     throws SQLException
   {
     return createDocument(null, null, null);
   }
-
+  
   protected void init(Source paramSource)
     throws SQLException
   {
-    if (paramSource == null)
+    if (paramSource == null) {
       throw Util.nullArgument("source");
+    }
     Transformer localTransformer = getIdentityTransformer();
     StreamResult localStreamResult = new StreamResult();
     ByteArrayOutputStream localByteArrayOutputStream = new ByteArrayOutputStream();
@@ -419,26 +425,28 @@ public class JDBCSQLXML
     setReadable(true);
     setWritable(false);
   }
-
+  
   protected void setGZipData(byte[] paramArrayOfByte)
     throws SQLException
   {
-    if (paramArrayOfByte == null)
+    if (paramArrayOfByte == null) {
       throw Util.nullArgument("data");
+    }
     this.gzdata = paramArrayOfByte;
   }
-
+  
   protected byte[] gZipData()
   {
     return this.gzdata;
   }
-
+  
   protected byte[] getGZipData()
     throws SQLException
   {
     byte[] arrayOfByte = gZipData();
-    if (arrayOfByte != null)
+    if (arrayOfByte != null) {
       return arrayOfByte;
+    }
     Object localObject1;
     if (this.domResult != null)
     {
@@ -462,12 +470,15 @@ public class JDBCSQLXML
         throw Exceptions.transformFailed(localIOException2);
       }
     }
-    if (this.outputStream == null)
+    if (this.outputStream == null) {
       throw Exceptions.notReadable("No Data.");
-    if (!this.outputStream.isClosed())
+    }
+    if (!this.outputStream.isClosed()) {
       throw Exceptions.notReadable("Stream used for writing must be closed but is still open.");
-    if (this.outputStream.isFreed())
+    }
+    if (this.outputStream.isFreed()) {
       throw Exceptions.notReadable("Stream used for writing was freed and is no longer valid.");
+    }
     try
     {
       setGZipData(this.outputStream.toByteArray());
@@ -483,7 +494,7 @@ public class JDBCSQLXML
       freeOutputStream();
     }
   }
-
+  
   protected synchronized void close()
   {
     this.closed = true;
@@ -494,23 +505,21 @@ public class JDBCSQLXML
     freeDomResult();
     this.gzdata = null;
   }
-
+  
   protected void freeInputStream()
   {
-    if (this.inputStream != null)
+    if (this.inputStream != null) {
       try
       {
         this.inputStream.close();
       }
-      catch (IOException localIOException)
-      {
-      }
-      finally
+      catch (IOException localIOException) {}finally
       {
         this.inputStream = null;
       }
+    }
   }
-
+  
   protected void freeOutputStream()
   {
     if (this.outputStream != null)
@@ -519,54 +528,55 @@ public class JDBCSQLXML
       {
         this.outputStream.free();
       }
-      catch (IOException localIOException)
-      {
-      }
+      catch (IOException localIOException) {}
       this.outputStream = null;
     }
   }
-
+  
   protected synchronized void checkClosed()
     throws SQLException
   {
-    if (this.closed)
+    if (this.closed) {
       throw Exceptions.inFreedState();
+    }
   }
-
+  
   protected synchronized void checkReadable()
     throws SQLException
   {
-    if (!isReadable())
+    if (!isReadable()) {
       throw Exceptions.notReadable();
+    }
   }
-
+  
   protected synchronized void setReadable(boolean paramBoolean)
   {
     this.readable = paramBoolean;
   }
-
+  
   protected synchronized void checkWritable()
     throws SQLException
   {
-    if (!isWritable())
+    if (!isWritable()) {
       throw Exceptions.notWritable();
+    }
   }
-
+  
   protected synchronized void setWritable(boolean paramBoolean)
   {
     this.writable = paramBoolean;
   }
-
+  
   public synchronized boolean isReadable()
   {
     return this.readable;
   }
-
+  
   public synchronized boolean isWritable()
   {
     return this.writable;
   }
-
+  
   protected InputStream getBinaryStreamImpl()
     throws SQLException
   {
@@ -581,13 +591,13 @@ public class JDBCSQLXML
       throw Exceptions.transformFailed(localIOException);
     }
   }
-
+  
   protected Reader getCharacterStreamImpl()
     throws SQLException
   {
     return new InputStreamReader(getBinaryStreamImpl());
   }
-
+  
   protected String getStringImpl()
     throws SQLException
   {
@@ -600,7 +610,7 @@ public class JDBCSQLXML
       throw Exceptions.transformFailed(localIOException);
     }
   }
-
+  
   protected OutputStream setBinaryStreamImpl()
     throws SQLException
   {
@@ -615,36 +625,40 @@ public class JDBCSQLXML
       throw Exceptions.resultInstantiation(localIOException);
     }
   }
-
+  
   protected Writer setCharacterStreamImpl()
     throws SQLException
   {
     return new OutputStreamWriter(setBinaryStreamImpl());
   }
-
+  
   protected void setStringImpl(String paramString)
     throws SQLException
   {
     init(new StreamSource(new StringReader(paramString)));
   }
-
+  
   protected <T extends Source> T getSourceImpl(Class<T> paramClass)
     throws SQLException
   {
     if (!JAXBSource.class.isAssignableFrom(paramClass))
     {
-      if (StreamSource.class.isAssignableFrom(paramClass))
+      if (StreamSource.class.isAssignableFrom(paramClass)) {
         return createStreamSource(paramClass);
-      if ((paramClass == null) || (DOMSource.class.isAssignableFrom(paramClass)))
+      }
+      if ((paramClass == null) || (DOMSource.class.isAssignableFrom(paramClass))) {
         return createDOMSource(paramClass);
-      if (SAXSource.class.isAssignableFrom(paramClass))
+      }
+      if (SAXSource.class.isAssignableFrom(paramClass)) {
         return createSAXSource(paramClass);
-      if (StAXSource.class.isAssignableFrom(paramClass))
+      }
+      if (StAXSource.class.isAssignableFrom(paramClass)) {
         return createStAXSource(paramClass);
+      }
     }
     throw Util.invalidArgument("sourceClass: " + paramClass);
   }
-
+  
   protected <T extends Source> T createStreamSource(Class<T> paramClass)
     throws SQLException
   {
@@ -673,7 +687,7 @@ public class JDBCSQLXML
     localStreamSource.setReader(localReader);
     return localStreamSource;
   }
-
+  
   protected <T extends Source> T createDOMSource(Class<T> paramClass)
     throws SQLException
   {
@@ -715,7 +729,7 @@ public class JDBCSQLXML
     localDOMSource.setSystemId(localDOMResult.getSystemId());
     return localDOMSource;
   }
-
+  
   protected <T extends Source> T createSAXSource(Class<T> paramClass)
     throws SQLException
   {
@@ -745,7 +759,7 @@ public class JDBCSQLXML
     localSAXSource.setInputSource(localInputSource);
     return localSAXSource;
   }
-
+  
   protected <T extends Source> T createStAXSource(Class<T> paramClass)
     throws SQLException
   {
@@ -813,7 +827,7 @@ public class JDBCSQLXML
     }
     return localStAXSource;
   }
-
+  
   protected <T extends Result> T createResult(Class<T> paramClass)
     throws SQLException
   {
@@ -822,18 +836,22 @@ public class JDBCSQLXML
     setReadable(true);
     if (!JAXBResult.class.isAssignableFrom(paramClass))
     {
-      if ((paramClass == null) || (StreamResult.class.isAssignableFrom(paramClass)))
+      if ((paramClass == null) || (StreamResult.class.isAssignableFrom(paramClass))) {
         return createStreamResult(paramClass);
-      if (DOMResult.class.isAssignableFrom(paramClass))
+      }
+      if (DOMResult.class.isAssignableFrom(paramClass)) {
         return createDOMResult(paramClass);
-      if (SAXResult.class.isAssignableFrom(paramClass))
+      }
+      if (SAXResult.class.isAssignableFrom(paramClass)) {
         return createSAXResult(paramClass);
-      if (StAXResult.class.isAssignableFrom(paramClass))
+      }
+      if (StAXResult.class.isAssignableFrom(paramClass)) {
         return createStAXResult(paramClass);
+      }
     }
     throw Util.invalidArgument("resultClass: " + paramClass);
   }
-
+  
   protected <T extends Result> T createStreamResult(Class<T> paramClass)
     throws SQLException
   {
@@ -862,7 +880,7 @@ public class JDBCSQLXML
     localStreamResult.setOutputStream(localOutputStream);
     return localStreamResult;
   }
-
+  
   protected <T extends Result> T createDOMResult(Class<T> paramClass)
     throws SQLException
   {
@@ -889,7 +907,7 @@ public class JDBCSQLXML
       throw Exceptions.resultInstantiation(localClassCastException);
     }
   }
-
+  
   protected <T extends Result> T createSAXResult(Class<T> paramClass)
     throws SQLException
   {
@@ -928,7 +946,7 @@ public class JDBCSQLXML
     this.domResult.setNode(localSAX2DOMBuilder.getDocument());
     return localSAXResult;
   }
-
+  
   protected <T extends Result> T createStAXResult(Class<T> paramClass)
     throws SQLException
   {
@@ -986,12 +1004,12 @@ public class JDBCSQLXML
     }
     return localStAXResult;
   }
-
+  
   protected void freeDomResult()
   {
     this.domResult = null;
   }
-
+  
   static
   {
     Charset localCharset = null;
@@ -999,11 +1017,9 @@ public class JDBCSQLXML
     {
       localCharset = Charset.forName("UTF8");
     }
-    catch (Exception localException)
-    {
-    }
+    catch (Exception localException) {}
   }
-
+  
   public static class SAX2XMLStreamWriter
     implements ContentHandler, Closeable
   {
@@ -1011,14 +1027,15 @@ public class JDBCSQLXML
     private boolean closed;
     private Locator locator;
     private XMLStreamWriter writer;
-
+    
     public SAX2XMLStreamWriter(XMLStreamWriter paramXMLStreamWriter)
     {
-      if (paramXMLStreamWriter == null)
+      if (paramXMLStreamWriter == null) {
         throw new NullPointerException("writer");
+      }
       this.writer = paramXMLStreamWriter;
     }
-
+    
     public void startDocument()
       throws SAXException
     {
@@ -1032,7 +1049,7 @@ public class JDBCSQLXML
         throw new SAXException(localXMLStreamException);
       }
     }
-
+    
     public void endDocument()
       throws SAXException
     {
@@ -1047,7 +1064,7 @@ public class JDBCSQLXML
         throw new SAXException(localXMLStreamException);
       }
     }
-
+    
     public void characters(char[] paramArrayOfChar, int paramInt1, int paramInt2)
       throws SAXException
     {
@@ -1061,7 +1078,7 @@ public class JDBCSQLXML
         throw new SAXException(localXMLStreamException);
       }
     }
-
+    
     public void startElement(String paramString1, String paramString2, String paramString3, Attributes paramAttributes)
       throws SAXException
     {
@@ -1079,15 +1096,16 @@ public class JDBCSQLXML
         }
         this.namespaces.clear();
         j = paramAttributes.getLength();
-        for (k = 0; k < j; k++)
+        for (k = 0; k < j; k++) {
           this.writer.writeAttribute(paramAttributes.getURI(k), paramAttributes.getLocalName(k), paramAttributes.getValue(k));
+        }
       }
       catch (XMLStreamException localXMLStreamException)
       {
         throw new SAXException(localXMLStreamException);
       }
     }
-
+    
     public void endElement(String paramString1, String paramString2, String paramString3)
       throws SAXException
     {
@@ -1101,7 +1119,7 @@ public class JDBCSQLXML
         throw new SAXException(localXMLStreamException);
       }
     }
-
+    
     public void startPrefixMapping(String paramString1, String paramString2)
       throws SAXException
     {
@@ -1116,19 +1134,19 @@ public class JDBCSQLXML
         throw new SAXException(localXMLStreamException);
       }
     }
-
+    
     public void endPrefixMapping(String paramString)
       throws SAXException
     {
       checkClosed();
     }
-
+    
     public void ignorableWhitespace(char[] paramArrayOfChar, int paramInt1, int paramInt2)
       throws SAXException
     {
       characters(paramArrayOfChar, paramInt1, paramInt2);
     }
-
+    
     public void processingInstruction(String paramString1, String paramString2)
       throws SAXException
     {
@@ -1142,23 +1160,23 @@ public class JDBCSQLXML
         throw new SAXException(localXMLStreamException);
       }
     }
-
+    
     public void setDocumentLocator(Locator paramLocator)
     {
       this.locator = paramLocator;
     }
-
+    
     public Locator getDocumentLocator()
     {
       return this.locator;
     }
-
+    
     public void skippedEntity(String paramString)
       throws SAXException
     {
       checkClosed();
     }
-
+    
     public void comment(char[] paramArrayOfChar, int paramInt1, int paramInt2)
       throws SAXException
     {
@@ -1172,17 +1190,17 @@ public class JDBCSQLXML
         throw new SAXException(localXMLStreamException);
       }
     }
-
+    
     public XMLStreamWriter getWriter()
     {
       return this.writer;
     }
-
+    
     protected List<QualifiedName> getNamespaces()
     {
       return this.namespaces;
     }
-
+    
     public void close()
       throws IOException
     {
@@ -1205,33 +1223,33 @@ public class JDBCSQLXML
         }
       }
     }
-
+    
     public boolean isClosed()
     {
       return this.closed;
     }
-
+    
     protected void checkClosed()
       throws SAXException
     {
-      if (isClosed())
+      if (isClosed()) {
         throw new SAXException("content handler is closed.");
+      }
     }
-
+    
     protected class QualifiedName
     {
       public final String namespaceName;
       public final String prefix;
-
-      public QualifiedName(String paramString1, String arg3)
+      
+      public QualifiedName(String paramString1, String paramString2)
       {
         this.prefix = paramString1;
-        Object localObject;
-        this.namespaceName = localObject;
+        this.namespaceName = paramString2;
       }
     }
   }
-
+  
   protected static class SAX2DOMBuilder
     implements ContentHandler, Closeable
   {
@@ -1240,7 +1258,7 @@ public class JDBCSQLXML
     private Node currentNode;
     private Document document;
     private Locator locator;
-
+    
     public SAX2DOMBuilder()
       throws ParserConfigurationException
     {
@@ -1251,75 +1269,79 @@ public class JDBCSQLXML
       this.document = localDocumentBuilder.newDocument();
       this.currentNode = this.document;
     }
-
+    
     public void setDocumentLocator(Locator paramLocator)
     {
       this.locator = paramLocator;
     }
-
+    
     public Locator getDocumentLocator()
     {
       return this.locator;
     }
-
+    
     public void startDocument()
       throws SAXException
     {
       checkClosed();
     }
-
+    
     public void endDocument()
       throws SAXException
     {
       checkClosed();
       close();
     }
-
+    
     public void startPrefixMapping(String paramString1, String paramString2)
       throws SAXException
     {
       checkClosed();
     }
-
+    
     public void endPrefixMapping(String paramString)
       throws SAXException
     {
       checkClosed();
     }
-
+    
     public void startElement(String paramString1, String paramString2, String paramString3, Attributes paramAttributes)
       throws SAXException
     {
       checkClosed();
       Element localElement;
-      if ((paramString1 == null) || (paramString1.length() == 0))
+      if ((paramString1 == null) || (paramString1.length() == 0)) {
         localElement = getDocument().createElement(paramString3);
-      else
+      } else {
         localElement = getDocument().createElementNS(paramString1, paramString3);
-      if (paramAttributes != null)
+      }
+      if (paramAttributes != null) {
         for (int i = 0; i < paramAttributes.getLength(); i++)
         {
           String str1 = paramAttributes.getURI(i);
           String str2 = paramAttributes.getQName(i);
           String str3 = paramAttributes.getValue(i);
-          if ((str1 == null) || (str1.length() == 0))
+          if ((str1 == null) || (str1.length() == 0)) {
             localElement.setAttribute(str2, str3);
-          else
+          } else {
             localElement.setAttributeNS(str1, str2, str3);
+          }
         }
+      }
       getCurrentNode().appendChild(localElement);
       setCurrentNode(localElement);
-      if (getCurrentElement() == null)
+      if (getCurrentElement() == null) {
         setCurrentElement(localElement);
+      }
     }
-
+    
     public void endElement(String paramString1, String paramString2, String paramString3)
       throws SAXException
     {
       checkClosed();
       setCurrentNode(getCurrentNode().getParentNode());
     }
-
+    
     public void characters(char[] paramArrayOfChar, int paramInt1, int paramInt2)
       throws SAXException
     {
@@ -1336,13 +1358,13 @@ public class JDBCSQLXML
         getCurrentNode().appendChild(localText);
       }
     }
-
+    
     public void ignorableWhitespace(char[] paramArrayOfChar, int paramInt1, int paramInt2)
       throws SAXException
     {
       characters(paramArrayOfChar, paramInt1, paramInt2);
     }
-
+    
     public void processingInstruction(String paramString1, String paramString2)
       throws SAXException
     {
@@ -1350,7 +1372,7 @@ public class JDBCSQLXML
       ProcessingInstruction localProcessingInstruction = getDocument().createProcessingInstruction(paramString1, paramString2);
       getCurrentNode().appendChild(localProcessingInstruction);
     }
-
+    
     public void skippedEntity(String paramString)
       throws SAXException
     {
@@ -1358,12 +1380,12 @@ public class JDBCSQLXML
       EntityReference localEntityReference = getDocument().createEntityReference(paramString);
       getCurrentNode().appendChild(localEntityReference);
     }
-
+    
     public void close()
     {
       this.closed = true;
     }
-
+    
     public void free()
     {
       close();
@@ -1372,45 +1394,46 @@ public class JDBCSQLXML
       this.currentNode = null;
       this.locator = null;
     }
-
+    
     public boolean isClosed()
     {
       return this.closed;
     }
-
+    
     protected void checkClosed()
       throws SAXException
     {
-      if (isClosed())
+      if (isClosed()) {
         throw new SAXException("content handler is closed.");
+      }
     }
-
+    
     public Document getDocument()
     {
       return this.document;
     }
-
+    
     protected Element getCurrentElement()
     {
       return this.currentElement;
     }
-
+    
     protected void setCurrentElement(Element paramElement)
     {
       this.currentElement = paramElement;
     }
-
+    
     protected Node getCurrentNode()
     {
       return this.currentNode;
     }
-
+    
     protected void setCurrentNode(Node paramNode)
     {
       this.currentNode = paramNode;
     }
   }
-
+  
   protected static class Exceptions
   {
     static SQLException domInstantiation(Throwable paramThrowable)
@@ -1418,51 +1441,51 @@ public class JDBCSQLXML
       Exception localException = (paramThrowable instanceof Exception) ? (Exception)paramThrowable : new Exception(paramThrowable);
       return Util.sqlException(458, "SQLXML DOM instantiation failed: " + paramThrowable, localException);
     }
-
+    
     static SQLException sourceInstantiation(Throwable paramThrowable)
     {
       Exception localException = (paramThrowable instanceof Exception) ? (Exception)paramThrowable : new Exception(paramThrowable);
       return Util.sqlException(458, "SQLXML Source instantiation failed: " + paramThrowable, localException);
     }
-
+    
     static SQLException resultInstantiation(Throwable paramThrowable)
     {
       Exception localException = (paramThrowable instanceof Exception) ? (Exception)paramThrowable : new Exception(paramThrowable);
       return Util.sqlException(458, "SQLXML Result instantiation failed: " + paramThrowable, localException);
     }
-
+    
     static SQLException parseFailed(Throwable paramThrowable)
     {
       Exception localException = (paramThrowable instanceof Exception) ? (Exception)paramThrowable : new Exception(paramThrowable);
       return Util.sqlException(458, "parse failed: " + paramThrowable, localException);
     }
-
+    
     static SQLException transformFailed(Throwable paramThrowable)
     {
       Exception localException = (paramThrowable instanceof Exception) ? (Exception)paramThrowable : new Exception(paramThrowable);
       return Util.sqlException(458, "transform failed: " + paramThrowable, localException);
     }
-
+    
     static SQLException notReadable()
     {
       return Util.sqlException(467, "SQLXML in not readable state");
     }
-
+    
     static SQLException notReadable(String paramString)
     {
       return Util.sqlException(467, "SQLXML in not readable state: " + paramString);
     }
-
+    
     static SQLException notWritable()
     {
       return Util.sqlException(467, "SQLXML in not writable state");
     }
-
+    
     static SQLException directUpdateByLocatorNotSupported()
     {
       return Util.sqlException(1500, "SQLXML direct update by locator");
     }
-
+    
     static SQLException inFreedState()
     {
       return Util.sqlException(458, "SQLXML in freed state");
@@ -1470,7 +1493,8 @@ public class JDBCSQLXML
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.jdbc.JDBCSQLXML
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

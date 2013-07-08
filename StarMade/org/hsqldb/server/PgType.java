@@ -86,42 +86,44 @@ public class PgType
   protected static final PgType hourSecIntervalSingleton = new PgType(Type.SQL_INTERVAL_HOUR_TO_SECOND, 704, 16);
   protected static final PgType minSecIntervalSingleton = new PgType(Type.SQL_INTERVAL_MINUTE_TO_SECOND, 704, 16);
   protected static final PgType secIntervalSingleton = new PgType(Type.SQL_INTERVAL_SECOND, 704, 16);
-
+  
   public int getOid()
   {
     return this.oid;
   }
-
+  
   public int getTypeWidth()
   {
     return this.typeWidth;
   }
-
+  
   public int getLPConstraint()
   {
     return this.lpConstraint;
   }
-
+  
   protected PgType(Type paramType, int paramInt)
   {
     this(paramType, paramInt, null, null);
   }
-
+  
   protected PgType(Type paramType, int paramInt1, int paramInt2)
   {
     this(paramType, paramInt1, new Integer(paramInt2), null);
   }
-
+  
   protected PgType(Type paramType, int paramInt, Integer paramInteger, long paramLong)
     throws RecoverableOdbcFailure
   {
     this(paramType, paramInt, paramInteger, new Integer((int)paramLong));
-    if (paramLong < 0L)
+    if (paramLong < 0L) {
       throw new RecoverableOdbcFailure("Length/Precision value is below minimum value of 0");
-    if (paramLong > 2147483647L)
+    }
+    if (paramLong > 2147483647L) {
       throw new RecoverableOdbcFailure("Length/Precision value is above maximum value of 2147483647");
+    }
   }
-
+  
   protected PgType(Type paramType, int paramInt, Integer paramInteger1, Integer paramInteger2)
   {
     this.hType = paramType;
@@ -129,125 +131,129 @@ public class PgType
     this.typeWidth = (paramInteger1 == null ? -1 : paramInteger1.intValue());
     this.lpConstraint = (paramInteger2 == null ? -1 : paramInteger2.intValue());
   }
-
+  
   public static PgType getPgType(Type paramType, boolean paramBoolean)
     throws RecoverableOdbcFailure
   {
     switch (paramType.typeCode)
     {
-    case -6:
+    case -6: 
       return tinyIntSingleton;
-    case 5:
+    case 5: 
       return int2singleton;
-    case 4:
+    case 4: 
       return int4singleton;
-    case 25:
+    case 25: 
       return int8singleton;
-    case 2:
-    case 3:
+    case 2: 
+    case 3: 
       return new PgType(paramType, 1700, null, (paramType.precision << 16) + paramType.scale + 4L);
-    case 6:
-    case 7:
-    case 8:
+    case 6: 
+    case 7: 
+    case 8: 
       return doubleSingleton;
-    case 16:
+    case 16: 
       return boolSingleton;
-    case 1:
-      if (paramBoolean)
+    case 1: 
+      if (paramBoolean) {
         return new PgType(paramType, 1042, null, paramType.precision + 4L);
+      }
       return unknownSingleton;
-    case 12:
-    case 100:
-      if (paramType.precision < 0L)
+    case 12: 
+    case 100: 
+      if (paramType.precision < 0L) {
         throw new RecoverableOdbcFailure("Length/Precision value is below minimum value of 0");
-      if (paramType.precision > 2147483647L)
+      }
+      if (paramType.precision > 2147483647L) {
         throw new RecoverableOdbcFailure("Length/Precision value is above maximum value of 2147483647");
+      }
       return (paramType.precision != 0L) && (paramBoolean) ? new PgType(paramType, 1043, null, paramType.precision + 4L) : textSingleton;
-    case 40:
+    case 40: 
       throw new RecoverableOdbcFailure("Driver doesn't support type 'CLOB' yet");
-    case 30:
+    case 30: 
       return new PgType(paramType, 9998, null, paramType.precision);
-    case 60:
-    case 61:
+    case 60: 
+    case 61: 
       return new PgType(paramType, 17, null, paramType.precision);
-    case 1111:
+    case 1111: 
       throw new RecoverableOdbcFailure("Driver doesn't support type 'OTHER' yet");
-    case 14:
+    case 14: 
       return bitSingleton;
-    case 15:
+    case 15: 
       return bitVaryingSingleton;
-    case 91:
+    case 91: 
       return dateSingleton;
-    case 92:
+    case 92: 
       return new PgType(paramType, 1083, new Integer(8), paramType.precision);
-    case 94:
+    case 94: 
       return new PgType(paramType, 1266, new Integer(12), paramType.precision);
-    case 93:
+    case 93: 
       return new PgType(paramType, 1114, new Integer(8), paramType.precision);
-    case 95:
+    case 95: 
       return new PgType(paramType, 1296, new Integer(8), paramType.precision);
-    case 101:
-    case 102:
-    case 107:
+    case 101: 
+    case 102: 
+    case 107: 
       throw new RecoverableOdbcFailure("Driver doesn't support month-resolution 'INTERVAL's yet");
-    case 103:
-    case 104:
-    case 105:
-    case 108:
-    case 109:
-    case 111:
+    case 103: 
+    case 104: 
+    case 105: 
+    case 108: 
+    case 109: 
+    case 111: 
       throw new RecoverableOdbcFailure("Driver doesn't support non-second-resolution 'INTERVAL's yet");
-    case 110:
+    case 110: 
       ignoredConstraintWarning(paramType);
       return daySecIntervalSingleton;
-    case 112:
+    case 112: 
       ignoredConstraintWarning(paramType);
       return hourSecIntervalSingleton;
-    case 113:
+    case 113: 
       ignoredConstraintWarning(paramType);
       return minSecIntervalSingleton;
-    case 106:
+    case 106: 
       ignoredConstraintWarning(paramType);
       return secIntervalSingleton;
     }
     throw new RecoverableOdbcFailure("Unsupported type: " + paramType.getNameString());
   }
-
+  
   public Object getParameter(String paramString, Session paramSession)
     throws SQLException, RecoverableOdbcFailure
   {
-    if (paramString == null)
+    if (paramString == null) {
       return null;
+    }
     Object localObject = paramString;
     switch (this.hType.typeCode)
     {
-    case 16:
+    case 16: 
       if (paramString.length() == 1)
       {
         switch (paramString.charAt(0))
         {
-        case '1':
-        case 'T':
-        case 'Y':
-        case 't':
-        case 'y':
+        case '1': 
+        case 'T': 
+        case 'Y': 
+        case 't': 
+        case 'y': 
           return Boolean.TRUE;
         }
         return Boolean.FALSE;
       }
       return Boolean.valueOf(paramString);
-    case 30:
-    case 60:
-    case 61:
+    case 30: 
+    case 60: 
+    case 61: 
       throw new RecoverableOdbcFailure("This data type should be transmitted to server in binary format: " + this.hType.getNameString());
-    case 40:
-    case 1111:
+    case 40: 
+    case 1111: 
       throw new RecoverableOdbcFailure("Type not supported yet: " + this.hType.getNameString());
-    case 91:
-    case 92:
-    case 93:
-    case 94:
-    case 95:
+    case 91: 
+    case 92: 
+    case 93: 
+    case 94: 
+    case 95: 
       try
       {
         localObject = this.hType.convertToType(paramSession, localObject, Type.SQL_VARCHAR);
@@ -256,15 +262,15 @@ public class PgType
       {
         throwError(localHsqlException1);
       }
-    case -6:
-    case 2:
-    case 3:
-    case 4:
-    case 5:
-    case 6:
-    case 7:
-    case 8:
-    case 25:
+    case -6: 
+    case 2: 
+    case 3: 
+    case 4: 
+    case 5: 
+    case 6: 
+    case 7: 
+    case 8: 
+    case 25: 
       try
       {
         localObject = this.hType.convertToType(paramSession, localObject, Type.SQL_VARCHAR);
@@ -273,7 +279,7 @@ public class PgType
       {
         throwError(localHsqlException2);
       }
-    default:
+    default: 
       try
       {
         localObject = this.hType.convertToDefaultType(paramSession, localObject);
@@ -285,34 +291,35 @@ public class PgType
     }
     return localObject;
   }
-
+  
   public String valueString(Object paramObject)
   {
     String str = this.hType.convertToString(paramObject);
     switch (this.hType.typeCode)
     {
-    case 16:
+    case 16: 
       return String.valueOf(((Boolean)paramObject).booleanValue() ? 't' : 'f');
-    case 60:
-    case 61:
+    case 60: 
+    case 61: 
       str = OdbcUtil.hexCharsToOctalOctets(str);
     }
     return str;
   }
-
+  
   static final void throwError(HsqlException paramHsqlException)
     throws SQLException
   {
     throw Util.sqlException(paramHsqlException.getMessage(), paramHsqlException.getSQLState(), paramHsqlException.getErrorCode(), paramHsqlException);
   }
-
+  
   private static void ignoredConstraintWarning(Type paramType)
   {
-    if ((paramType.precision == 0L) && (paramType.scale == 0));
+    if ((paramType.precision == 0L) && (paramType.scale == 0)) {}
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.server.PgType
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

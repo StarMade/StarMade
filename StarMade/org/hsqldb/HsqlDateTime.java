@@ -30,23 +30,49 @@ public class HsqlDateTime
   private static final String[] javaDateTokens = { "yyyy", "'*IYYY'", "yyyy", "'*IY'", "yy", "G", "G", "G", "G", "MMM", "MMMMM", "MM", "EEEE", "EE", "'*WW'", "w", "dd", "D", "'*W'", "HH", "KK", "KK", "mm", "ss", "aaa", "aaa", "aaa", "aaa", "S" };
   private static final int[] sqlIntervalCodes = { -1, -1, 101, -1, 101, -1, -1, -1, -1, 102, 102, 102, -1, -1, 262, -1, 103, 103, -1, 104, -1, 104, 105, 106, -1, -1, -1, -1, -1 };
   private static final char e = 'ð¿¿';
-
+  
+  /* Error */
   public static long getDateSeconds(String paramString)
   {
-    try
-    {
-      synchronized (sdfd)
-      {
-        Date localDate = sdfd.parse(paramString);
-        return localDate.getTime() / 1000L;
-      }
-    }
-    catch (Exception localException)
-    {
-    }
-    throw Error.error(3407);
+    // Byte code:
+    //   0: getstatic 3	org/hsqldb/HsqlDateTime:sdfd	Ljava/text/SimpleDateFormat;
+    //   3: dup
+    //   4: astore_1
+    //   5: monitorenter
+    //   6: getstatic 3	org/hsqldb/HsqlDateTime:sdfd	Ljava/text/SimpleDateFormat;
+    //   9: aload_0
+    //   10: invokevirtual 4	java/text/SimpleDateFormat:parse	(Ljava/lang/String;)Ljava/util/Date;
+    //   13: astore_2
+    //   14: aload_2
+    //   15: invokevirtual 5	java/util/Date:getTime	()J
+    //   18: ldc2_w 6
+    //   21: ldiv
+    //   22: aload_1
+    //   23: monitorexit
+    //   24: lreturn
+    //   25: astore_3
+    //   26: aload_1
+    //   27: monitorexit
+    //   28: aload_3
+    //   29: athrow
+    //   30: astore_1
+    //   31: sipush 3407
+    //   34: invokestatic 9	org/hsqldb/error/Error:error	(I)Lorg/hsqldb/HsqlException;
+    //   37: athrow
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	38	0	paramString	String
+    //   30	1	1	localException	Exception
+    //   13	2	2	localDate	Date
+    //   25	4	3	localObject1	Object
+    // Exception table:
+    //   from	to	target	type
+    //   6	24	25	finally
+    //   25	28	25	finally
+    //   0	24	30	java/lang/Exception
+    //   25	30	30	java/lang/Exception
   }
-
+  
   public static String getDateString(long paramLong)
   {
     synchronized (sdfd)
@@ -55,23 +81,49 @@ public class HsqlDateTime
       return sdfd.format(sysDate);
     }
   }
-
+  
+  /* Error */
   public static long getTimestampSeconds(String paramString)
   {
-    try
-    {
-      synchronized (sdfts)
-      {
-        Date localDate = sdfts.parse(paramString);
-        return localDate.getTime() / 1000L;
-      }
-    }
-    catch (Exception localException)
-    {
-    }
-    throw Error.error(3407);
+    // Byte code:
+    //   0: getstatic 13	org/hsqldb/HsqlDateTime:sdfts	Ljava/text/SimpleDateFormat;
+    //   3: dup
+    //   4: astore_1
+    //   5: monitorenter
+    //   6: getstatic 13	org/hsqldb/HsqlDateTime:sdfts	Ljava/text/SimpleDateFormat;
+    //   9: aload_0
+    //   10: invokevirtual 4	java/text/SimpleDateFormat:parse	(Ljava/lang/String;)Ljava/util/Date;
+    //   13: astore_2
+    //   14: aload_2
+    //   15: invokevirtual 5	java/util/Date:getTime	()J
+    //   18: ldc2_w 6
+    //   21: ldiv
+    //   22: aload_1
+    //   23: monitorexit
+    //   24: lreturn
+    //   25: astore_3
+    //   26: aload_1
+    //   27: monitorexit
+    //   28: aload_3
+    //   29: athrow
+    //   30: astore_1
+    //   31: sipush 3407
+    //   34: invokestatic 9	org/hsqldb/error/Error:error	(I)Lorg/hsqldb/HsqlException;
+    //   37: athrow
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	38	0	paramString	String
+    //   30	1	1	localException	Exception
+    //   13	2	2	localDate	Date
+    //   25	4	3	localObject1	Object
+    // Exception table:
+    //   from	to	target	type
+    //   6	24	25	finally
+    //   25	28	25	finally
+    //   0	24	30	java/lang/Exception
+    //   25	30	30	java/lang/Exception
   }
-
+  
   public static void getTimestampString(StringBuffer paramStringBuffer, long paramLong, int paramInt1, int paramInt2)
   {
     synchronized (sdfts)
@@ -85,7 +137,7 @@ public class HsqlDateTime
       }
     }
   }
-
+  
   public static String getTimestampString(long paramLong)
   {
     synchronized (sdfts)
@@ -94,14 +146,15 @@ public class HsqlDateTime
       return sdfts.format(sysDate);
     }
   }
-
+  
   public static synchronized long getCurrentDateMillis(long paramLong)
   {
-    if (paramLong - currentDateMillis >= 86400000L)
+    if (paramLong - currentDateMillis >= 86400000L) {
       currentDateMillis = getNormalisedDate(paramLong);
+    }
     return currentDateMillis;
   }
-
+  
   public static String getSystemTimeString()
   {
     synchronized (sdftsSys)
@@ -110,7 +163,7 @@ public class HsqlDateTime
       return sdftsSys.format(sysDate);
     }
   }
-
+  
   private static void resetToDate(Calendar paramCalendar)
   {
     paramCalendar.set(11, 0);
@@ -118,7 +171,7 @@ public class HsqlDateTime
     paramCalendar.set(13, 0);
     paramCalendar.set(14, 0);
   }
-
+  
   private static void resetToTime(Calendar paramCalendar)
   {
     paramCalendar.set(1, 1970);
@@ -126,7 +179,7 @@ public class HsqlDateTime
     paramCalendar.set(5, 1);
     paramCalendar.set(14, 0);
   }
-
+  
   public static long convertMillisToCalendar(Calendar paramCalendar, long paramLong)
   {
     paramCalendar.clear();
@@ -140,7 +193,7 @@ public class HsqlDateTime
       }
     }
   }
-
+  
   public static long convertMillisFromCalendar(Calendar paramCalendar, long paramLong)
   {
     synchronized (tempCalGMT)
@@ -154,22 +207,22 @@ public class HsqlDateTime
       }
     }
   }
-
+  
   public static void setTimeInMillis(Calendar paramCalendar, long paramLong)
   {
     paramCalendar.setTimeInMillis(paramLong);
   }
-
+  
   public static long getTimeInMillis(Calendar paramCalendar)
   {
     return paramCalendar.getTimeInMillis();
   }
-
+  
   public static long convertToNormalisedTime(long paramLong)
   {
     return convertToNormalisedTime(paramLong, tempCalGMT);
   }
-
+  
   public static long convertToNormalisedTime(long paramLong, Calendar paramCalendar)
   {
     synchronized (paramCalendar)
@@ -180,7 +233,7 @@ public class HsqlDateTime
       return paramLong - l;
     }
   }
-
+  
   public static long convertToNormalisedDate(long paramLong, Calendar paramCalendar)
   {
     synchronized (paramCalendar)
@@ -190,7 +243,7 @@ public class HsqlDateTime
       return getTimeInMillis(paramCalendar);
     }
   }
-
+  
   public static long getNormalisedTime(long paramLong)
   {
     Calendar localCalendar = tempCalGMT;
@@ -201,7 +254,7 @@ public class HsqlDateTime
       return getTimeInMillis(localCalendar);
     }
   }
-
+  
   public static long getNormalisedTime(Calendar paramCalendar, long paramLong)
   {
     synchronized (paramCalendar)
@@ -211,7 +264,7 @@ public class HsqlDateTime
       return getTimeInMillis(paramCalendar);
     }
   }
-
+  
   public static long getNormalisedDate(long paramLong)
   {
     synchronized (tempCalGMT)
@@ -221,7 +274,7 @@ public class HsqlDateTime
       return getTimeInMillis(tempCalGMT);
     }
   }
-
+  
   public static long getNormalisedDate(Calendar paramCalendar, long paramLong)
   {
     synchronized (paramCalendar)
@@ -231,17 +284,17 @@ public class HsqlDateTime
       return getTimeInMillis(paramCalendar);
     }
   }
-
+  
   public static int getZoneSeconds(Calendar paramCalendar)
   {
     return (paramCalendar.get(15) + paramCalendar.get(16)) / 1000;
   }
-
+  
   public static int getZoneMillis(Calendar paramCalendar, long paramLong)
   {
     return paramCalendar.getTimeZone().getOffset(paramLong);
   }
-
+  
   public static int getDateTimePart(long paramLong, int paramInt)
   {
     synchronized (tempCalGMT)
@@ -250,7 +303,7 @@ public class HsqlDateTime
       return tempCalGMT.get(paramInt);
     }
   }
-
+  
   public static long getTruncatedPart(long paramLong, int paramInt)
   {
     synchronized (tempCalGMT)
@@ -258,20 +311,20 @@ public class HsqlDateTime
       tempCalGMT.setTimeInMillis(paramLong);
       switch (paramInt)
       {
-      case 262:
+      case 262: 
         int i = tempCalGMT.get(1);
         int j = tempCalGMT.get(3);
         tempCalGMT.clear();
         tempCalGMT.set(1, i);
         tempCalGMT.set(3, j);
         break;
-      default:
+      default: 
         zeroFromPart(tempCalGMT, paramInt);
       }
       return tempCalGMT.getTimeInMillis();
     }
   }
-
+  
   public static long getRoundedPart(long paramLong, int paramInt)
   {
     synchronized (tempCalGMT)
@@ -279,36 +332,43 @@ public class HsqlDateTime
       tempCalGMT.setTimeInMillis(paramLong);
       switch (paramInt)
       {
-      case 101:
-        if (tempCalGMT.get(2) > 6)
+      case 101: 
+        if (tempCalGMT.get(2) > 6) {
           tempCalGMT.add(1, 1);
+        }
         break;
-      case 102:
-        if (tempCalGMT.get(5) > 15)
+      case 102: 
+        if (tempCalGMT.get(5) > 15) {
           tempCalGMT.add(2, 1);
+        }
         break;
-      case 103:
-        if (tempCalGMT.get(11) > 11)
+      case 103: 
+        if (tempCalGMT.get(11) > 11) {
           tempCalGMT.add(5, 1);
+        }
         break;
-      case 104:
-        if (tempCalGMT.get(12) > 29)
+      case 104: 
+        if (tempCalGMT.get(12) > 29) {
           tempCalGMT.add(11, 1);
+        }
         break;
-      case 105:
-        if (tempCalGMT.get(13) > 29)
+      case 105: 
+        if (tempCalGMT.get(13) > 29) {
           tempCalGMT.add(12, 1);
+        }
         break;
-      case 106:
-        if (tempCalGMT.get(14) > 499)
+      case 106: 
+        if (tempCalGMT.get(14) > 499) {
           tempCalGMT.add(13, 1);
+        }
         break;
-      case 262:
+      case 262: 
         int i = tempCalGMT.get(1);
         int j = tempCalGMT.get(3);
         int k = tempCalGMT.get(7);
-        if (k > 3)
+        if (k > 3) {
           j++;
+        }
         tempCalGMT.clear();
         tempCalGMT.set(1, i);
         tempCalGMT.set(3, j);
@@ -318,38 +378,41 @@ public class HsqlDateTime
       return tempCalGMT.getTimeInMillis();
     }
   }
-
+  
   static void zeroFromPart(Calendar paramCalendar, int paramInt)
   {
     switch (paramInt)
     {
-    case 101:
+    case 101: 
       paramCalendar.set(2, 0);
-    case 102:
+    case 102: 
       paramCalendar.set(5, 1);
-    case 103:
+    case 103: 
       paramCalendar.set(11, 0);
-    case 104:
+    case 104: 
       paramCalendar.set(12, 0);
-    case 105:
+    case 105: 
       paramCalendar.set(13, 0);
-    case 106:
+    case 106: 
       paramCalendar.set(14, 0);
     }
   }
-
+  
   public static Date toDate(String paramString1, String paramString2, SimpleDateFormat paramSimpleDateFormat)
   {
     String str = toJavaDatePattern(paramString2);
     int i = str.indexOf("*IY");
-    if (i >= 0)
+    if (i >= 0) {
       throw Error.error(3472);
+    }
     i = str.indexOf("*WW");
-    if (i >= 0)
+    if (i >= 0) {
       throw Error.error(3472);
+    }
     i = str.indexOf("*W");
-    if (i >= 0)
+    if (i >= 0) {
       throw Error.error(3472);
+    }
     Date localDate;
     try
     {
@@ -362,7 +425,7 @@ public class HsqlDateTime
     }
     return localDate;
   }
-
+  
   public static String toFormattedDate(Date paramDate, String paramString, SimpleDateFormat paramSimpleDateFormat)
   {
     String str1 = toJavaDatePattern(paramString);
@@ -392,11 +455,13 @@ public class HsqlDateTime
       }
       m = localCalendar.get(1);
       int n = localCalendar.get(3);
-      if ((n == 1) && (localCalendar.get(6) > 360))
+      if ((n == 1) && (localCalendar.get(6) > 360)) {
         m++;
+      }
       String str3 = String.valueOf(m);
-      if (j == 3)
+      if (j == 3) {
         str3 = str3.substring(str3.length() - 2);
+      }
       StringBuilder localStringBuilder2 = new StringBuilder(str2);
       localStringBuilder2.replace(i, i + j, str3);
       str2 = localStringBuilder2.toString();
@@ -426,7 +491,7 @@ public class HsqlDateTime
     }
     return str2;
   }
-
+  
   public static String toJavaDatePattern(String paramString)
   {
     int i = paramString.length();
@@ -437,10 +502,11 @@ public class HsqlDateTime
       int j = k == i ? 65535 : paramString.charAt(k);
       if (localTokenizer.isInQuotes())
       {
-        if (localTokenizer.isQuoteChar(j))
+        if (localTokenizer.isQuoteChar(j)) {
           j = 39;
-        else if (j == 39)
+        } else if (j == 39) {
           localStringBuffer.append(j);
+        }
         localStringBuffer.append(j);
       }
       else if (!localTokenizer.next(j, k))
@@ -467,12 +533,13 @@ public class HsqlDateTime
         localTokenizer.reset();
       }
     }
-    if (localTokenizer.isInQuotes())
+    if (localTokenizer.isInQuotes()) {
       throw Error.error(3407);
+    }
     String str = localStringBuffer.toString();
     return str;
   }
-
+  
   public static int toStandardIntervalPart(String paramString)
   {
     int i = paramString.length();
@@ -483,14 +550,15 @@ public class HsqlDateTime
       if (!localTokenizer.next(c, j))
       {
         int k = localTokenizer.getLastMatch();
-        if (k >= 0)
+        if (k >= 0) {
           return sqlIntervalCodes[k];
+        }
         return -1;
       }
     }
     return -1;
   }
-
+  
   static
   {
     tempCalGMT.setLenient(false);
@@ -501,7 +569,7 @@ public class HsqlDateTime
     sdfts.setCalendar(new GregorianCalendar(TimeZone.getTimeZone("GMT"), defaultLocale));
     sdfts.setLenient(false);
   }
-
+  
   static class Tokenizer
   {
     private int lastMatched;
@@ -515,12 +583,12 @@ public class HsqlDateTime
     private final char[] literalChars = defaultLiterals;
     private static char[] defaultLiterals = { ' ', ',', '-', '.', '/', ':', ';' };
     char[][] tokens = HsqlDateTime.dateTokens;
-
+    
     public Tokenizer()
     {
       reset();
     }
-
+    
     public void reset()
     {
       this.lastMatched = -1;
@@ -529,32 +597,32 @@ public class HsqlDateTime
       this.consumed = false;
       this.matched = false;
     }
-
+    
     public int length()
     {
       return this.offset;
     }
-
+    
     public int getLastMatch()
     {
       return this.lastMatched;
     }
-
+    
     public boolean isConsumed()
     {
       return this.consumed;
     }
-
+    
     public boolean wasMatched()
     {
       return this.matched;
     }
-
+    
     public boolean isInQuotes()
     {
       return this.isInQuotes;
     }
-
+    
     public boolean isQuoteChar(char paramChar)
     {
       if (this.quoteChar == paramChar)
@@ -564,22 +632,22 @@ public class HsqlDateTime
       }
       return false;
     }
-
+    
     public boolean isLiteral(char paramChar)
     {
       return ArrayUtil.isInSortedArray(paramChar, this.literalChars);
     }
-
+    
     private boolean isZeroBit(int paramInt)
     {
       return (this.state & 1L << paramInt) == 0L;
     }
-
+    
     private void setBit(int paramInt)
     {
       this.state |= 1L << paramInt;
     }
-
+    
     public boolean next(char paramChar, int paramInt)
     {
       int i = ++this.offset;
@@ -587,12 +655,13 @@ public class HsqlDateTime
       int k = 0;
       this.matched = false;
       int m = this.tokens.length;
-      while (true)
+      for (;;)
       {
         m--;
-        if (m < 0)
+        if (m < 0) {
           break;
-        if (isZeroBit(m))
+        }
+        if (isZeroBit(m)) {
           if (this.tokens[m][i] == paramChar)
           {
             if (this.tokens[m].length == j)
@@ -608,15 +677,18 @@ public class HsqlDateTime
               k++;
             }
           }
-          else
+          else {
             setBit(m);
+          }
+        }
       }
       return k > 0;
     }
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.HsqlDateTime
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

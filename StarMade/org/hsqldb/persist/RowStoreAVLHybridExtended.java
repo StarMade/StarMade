@@ -9,20 +9,22 @@ import org.hsqldb.index.Index;
 import org.hsqldb.index.NodeAVL;
 import org.hsqldb.navigator.RowIterator;
 
-public class RowStoreAVLHybridExtended extends RowStoreAVLHybrid
+public class RowStoreAVLHybridExtended
+  extends RowStoreAVLHybrid
 {
   public RowStoreAVLHybridExtended(Session paramSession, PersistentStoreCollection paramPersistentStoreCollection, TableBase paramTableBase, boolean paramBoolean)
   {
     super(paramSession, paramPersistentStoreCollection, paramTableBase, paramBoolean);
   }
-
+  
   public CachedObject getNewCachedObject(Session paramSession, Object paramObject, boolean paramBoolean)
   {
-    if (this.indexList != this.table.getIndexList())
+    if (this.indexList != this.table.getIndexList()) {
       resetAccessorKeys(this.table.getIndexList());
+    }
     return super.getNewCachedObject(paramSession, paramObject, paramBoolean);
   }
-
+  
   public void indexRow(Session paramSession, Row paramRow)
   {
     NodeAVL localNodeAVL = ((RowAVL)paramRow).getNode(0);
@@ -39,13 +41,13 @@ public class RowStoreAVLHybridExtended extends RowStoreAVLHybrid
     }
     super.indexRow(paramSession, paramRow);
   }
-
+  
   public void delete(Session paramSession, Row paramRow)
   {
     paramRow = ((Table)this.table).getDeleteRowFromLog(paramSession, paramRow.getData());
     super.delete(paramSession, paramRow);
   }
-
+  
   public CachedObject getAccessor(Index paramIndex)
   {
     int i = paramIndex.getPosition();
@@ -56,7 +58,7 @@ public class RowStoreAVLHybridExtended extends RowStoreAVLHybrid
     }
     return this.accessorList[i];
   }
-
+  
   public synchronized void resetAccessorKeys(Index[] paramArrayOfIndex)
   {
     if ((this.indexList.length == 0) || (this.accessorList[0] == null))
@@ -72,7 +74,7 @@ public class RowStoreAVLHybridExtended extends RowStoreAVLHybrid
     }
     super.resetAccessorKeys(paramArrayOfIndex);
   }
-
+  
   private void resetAccessorKeysForCached()
   {
     RowStoreAVLHybridExtended localRowStoreAVLHybridExtended = new RowStoreAVLHybridExtended(this.session, this.manager, this.table, true);
@@ -89,7 +91,8 @@ public class RowStoreAVLHybridExtended extends RowStoreAVLHybrid
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.persist.RowStoreAVLHybridExtended
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

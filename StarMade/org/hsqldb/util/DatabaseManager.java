@@ -37,7 +37,8 @@ import java.util.Vector;
 import org.hsqldb.lib.RCData;
 import org.hsqldb.lib.java.JavaSystem;
 
-public class DatabaseManager extends Applet
+public class DatabaseManager
+  extends Applet
   implements ActionListener, WindowListener, KeyListener
 {
   static final String NL = System.getProperty("line.separator");
@@ -71,19 +72,19 @@ public class DatabaseManager extends Applet
   static String defPassword = "";
   static String defScript;
   static String defDirectory;
-
+  
   public void connect(Connection paramConnection)
   {
-    if (paramConnection == null)
+    if (paramConnection == null) {
       return;
-    if (this.cConn != null)
+    }
+    if (this.cConn != null) {
       try
       {
         this.cConn.close();
       }
-      catch (SQLException localSQLException1)
-      {
-      }
+      catch (SQLException localSQLException1) {}
+    }
     this.cConn = paramConnection;
     try
     {
@@ -96,7 +97,7 @@ public class DatabaseManager extends Applet
       localSQLException2.printStackTrace();
     }
   }
-
+  
   public void init()
   {
     DatabaseManager localDatabaseManager = new DatabaseManager();
@@ -112,7 +113,7 @@ public class DatabaseManager extends Applet
       localException.printStackTrace();
     }
   }
-
+  
   public static void threadedDBM()
   {
     System.getProperties().put("sun.java2d.noddraw", "true");
@@ -132,11 +133,12 @@ public class DatabaseManager extends Applet
     {
       localException.printStackTrace();
     }
-    if (localConnection == null)
+    if (localConnection == null) {
       return;
+    }
     localDatabaseManager.connect(localConnection);
   }
-
+  
   public static void main(String[] paramArrayOfString)
   {
     System.getProperties().put("sun.java2d.noddraw", "true");
@@ -149,10 +151,12 @@ public class DatabaseManager extends Applet
     {
       String str1 = paramArrayOfString[k];
       String str2 = paramArrayOfString[k].toLowerCase();
-      if (str2.startsWith("--"))
+      if (str2.startsWith("--")) {
         str2 = str2.substring(1);
-      if ((!str2.equals("-noexit")) && (!str2.equals("-help")) && (k == paramArrayOfString.length - 1))
+      }
+      if ((!str2.equals("-noexit")) && (!str2.equals("-help")) && (k == paramArrayOfString.length - 1)) {
         throw new IllegalArgumentException(new StringBuilder().append("No value for argument ").append(str1).toString());
+      }
       k++;
       if (str2.equals("-driver"))
       {
@@ -212,19 +216,22 @@ public class DatabaseManager extends Applet
     Connection localConnection = null;
     try
     {
-      if ((i != 0) && (j != 0))
+      if ((i != 0) && (j != 0)) {
         throw new IllegalArgumentException("You may not specify both (urlid) AND (url/user/password).");
+      }
       if (i != 0)
       {
         localConnection = ConnectionDialog.createConnection(defDriver, defURL, defUser, defPassword);
       }
       else if (j != 0)
       {
-        if (str3 == null)
+        if (str3 == null) {
           throw new IllegalArgumentException("You must specify an 'urlid' to use an RC file");
+        }
         i = 1;
-        if (str4 == null)
+        if (str4 == null) {
           str4 = new StringBuilder().append(System.getProperty("user.home")).append("/dbmanager.rc").toString();
+        }
         localConnection = new RCData(new File(str4), str3).getConnection(null, System.getProperty("javax.net.ssl.trustStore"));
       }
       else
@@ -236,16 +243,17 @@ public class DatabaseManager extends Applet
     {
       localException.printStackTrace();
     }
-    if (localConnection == null)
+    if (localConnection == null) {
       return;
+    }
     localDatabaseManager.connect(localConnection);
   }
-
+  
   private static void showUsage()
   {
     System.out.println("Usage: java DatabaseManager [--options]\nwhere options include:\n    --help                show this message\n    --driver <classname>  jdbc driver class\n    --url <name>          jdbc url\n    --user <name>         username used for connection\n    --password <password> password for this user\n    --urlid <urlid>       use url/user/password/driver in rc file\n    --rcfile <file>       (defaults to 'dbmanager.rc' in home dir)\n    --dir <path>          default directory\n    --script <file>       reads from script file\n    --noexit              do not call system.exit()");
   }
-
+  
   void insertTestData()
   {
     try
@@ -254,8 +262,9 @@ public class DatabaseManager extends Applet
       refreshTree();
       this.txtCommand.setText(DatabaseManagerCommon.createTestData(this.sStatement));
       refreshTree();
-      for (int i = 0; i < DatabaseManagerCommon.testDataSql.length; i++)
+      for (int i = 0; i < DatabaseManagerCommon.testDataSql.length; i++) {
         addToRecent(DatabaseManagerCommon.testDataSql[i]);
+      }
       execute();
     }
     catch (SQLException localSQLException)
@@ -263,7 +272,7 @@ public class DatabaseManager extends Applet
       localSQLException.printStackTrace();
     }
   }
-
+  
   public void main()
   {
     this.fMain = new Frame("HSQL Database Manager");
@@ -312,43 +321,42 @@ public class DatabaseManager extends Applet
     this.fMain.show();
     if (defScript != null)
     {
-      if (defDirectory != null)
+      if (defDirectory != null) {
         defScript = new StringBuilder().append(defDirectory).append(File.separator).append(defScript).toString();
+      }
       this.txtCommand.setText(DatabaseManagerCommon.readFile(defScript));
     }
     this.txtCommand.requestFocus();
   }
-
+  
   void addMenu(MenuBar paramMenuBar, String paramString, String[] paramArrayOfString)
   {
     Menu localMenu = new Menu(paramString);
-    if ((paramString.equals("Tools")) && (!TT_AVAILABLE))
+    if ((paramString.equals("Tools")) && (!TT_AVAILABLE)) {
       localMenu.setEnabled(false);
+    }
     addMenuItems(localMenu, paramArrayOfString);
     paramMenuBar.add(localMenu);
   }
-
+  
   void addMenuItems(Menu paramMenu, String[] paramArrayOfString)
   {
     for (int i = 0; i < paramArrayOfString.length; i++)
     {
       MenuItem localMenuItem = new MenuItem(paramArrayOfString[i].substring(1));
       int j = paramArrayOfString[i].charAt(0);
-      if (j != 45)
+      if (j != 45) {
         localMenuItem.setShortcut(new MenuShortcut(j));
+      }
       localMenuItem.addActionListener(this);
       paramMenu.add(localMenuItem);
     }
   }
-
-  public void keyPressed(KeyEvent paramKeyEvent)
-  {
-  }
-
-  public void keyReleased(KeyEvent paramKeyEvent)
-  {
-  }
-
+  
+  public void keyPressed(KeyEvent paramKeyEvent) {}
+  
+  public void keyReleased(KeyEvent paramKeyEvent) {}
+  
   public void keyTyped(KeyEvent paramKeyEvent)
   {
     if ((paramKeyEvent.getKeyChar() == '\n') && (paramKeyEvent.isControlDown()))
@@ -357,13 +365,14 @@ public class DatabaseManager extends Applet
       execute();
     }
   }
-
+  
   public void actionPerformed(ActionEvent paramActionEvent)
   {
     String str1 = paramActionEvent.getActionCommand();
-    if ((str1 == null) && ((paramActionEvent.getSource() instanceof MenuItem)))
+    if ((str1 == null) && ((paramActionEvent.getSource() instanceof MenuItem))) {
       str1 = ((MenuItem)paramActionEvent.getSource()).getLabel();
-    if (str1 != null)
+    }
+    if (str1 != null) {
       if (str1.equals("Execute"))
       {
         execute();
@@ -434,8 +443,9 @@ public class DatabaseManager extends Applet
         if (str1.equals("Open Script..."))
         {
           localFileDialog = new FileDialog(this.fMain, "Open Script", 0);
-          if (defDirectory != null)
+          if (defDirectory != null) {
             localFileDialog.setDirectory(defDirectory);
+          }
           localFileDialog.show();
           str2 = localFileDialog.getFile();
           if (str2 != null)
@@ -456,23 +466,27 @@ public class DatabaseManager extends Applet
         else if (str1.equals("Save Script..."))
         {
           localFileDialog = new FileDialog(this.fMain, "Save Script", 1);
-          if (defDirectory != null)
+          if (defDirectory != null) {
             localFileDialog.setDirectory(defDirectory);
+          }
           localFileDialog.show();
           str2 = localFileDialog.getFile();
-          if (str2 != null)
+          if (str2 != null) {
             DatabaseManagerCommon.writeFile(new StringBuilder().append(localFileDialog.getDirectory()).append(str2).toString(), this.txtCommand.getText());
+          }
         }
         else if (str1.equals("Save Result csv..."))
         {
           localFileDialog = new FileDialog(this.fMain, "Save Result CSV", 1);
-          if (defDirectory != null)
+          if (defDirectory != null) {
             localFileDialog.setDirectory(defDirectory);
+          }
           localFileDialog.show();
           str2 = localFileDialog.getDirectory();
           localObject = localFileDialog.getFile();
-          if (str2 != null)
+          if (str2 != null) {
             localObject = new StringBuilder().append(str2).append("/").append((String)localObject).toString();
+          }
           if (localObject != null)
           {
             showResultInText();
@@ -482,8 +496,9 @@ public class DatabaseManager extends Applet
         else if (str1.equals("Save Result..."))
         {
           localFileDialog = new FileDialog(this.fMain, "Save Result", 1);
-          if (defDirectory != null)
+          if (defDirectory != null) {
             localFileDialog.setDirectory(defDirectory);
+          }
           localFileDialog.show();
           str2 = localFileDialog.getFile();
           if (str2 != null)
@@ -506,9 +521,7 @@ public class DatabaseManager extends Applet
           {
             this.cConn.setAutoCommit(true);
           }
-          catch (SQLException localSQLException1)
-          {
-          }
+          catch (SQLException localSQLException1) {}
         }
         else if (str1.equals("AutoCommit off"))
         {
@@ -516,9 +529,7 @@ public class DatabaseManager extends Applet
           {
             this.cConn.setAutoCommit(false);
           }
-          catch (SQLException localSQLException2)
-          {
-          }
+          catch (SQLException localSQLException2) {}
         }
         else
         {
@@ -534,8 +545,9 @@ public class DatabaseManager extends Applet
           {
             localDimension = this.tTree.getMinimumSize();
             localDimension.width -= 20;
-            if (localDimension.width >= 0)
+            if (localDimension.width >= 0) {
               this.tTree.setMinimumSize(localDimension);
+            }
             this.fMain.pack();
           }
           else if (str1.equals("Enlarge Command"))
@@ -555,9 +567,7 @@ public class DatabaseManager extends Applet
             {
               this.cConn.commit();
             }
-            catch (SQLException localSQLException3)
-            {
-            }
+            catch (SQLException localSQLException3) {}
           }
           else if (str1.equals("Insert test data"))
           {
@@ -569,9 +579,7 @@ public class DatabaseManager extends Applet
             {
               this.cConn.rollback();
             }
-            catch (SQLException localSQLException4)
-            {
-            }
+            catch (SQLException localSQLException4) {}
           }
           else if (str1.equals("Disable MaxRows"))
           {
@@ -579,9 +587,7 @@ public class DatabaseManager extends Applet
             {
               this.sStatement.setMaxRows(0);
             }
-            catch (SQLException localSQLException5)
-            {
-            }
+            catch (SQLException localSQLException5) {}
           }
           else if (str1.equals("Set MaxRows to 100"))
           {
@@ -589,9 +595,7 @@ public class DatabaseManager extends Applet
             {
               this.sStatement.setMaxRows(100);
             }
-            catch (SQLException localSQLException6)
-            {
-            }
+            catch (SQLException localSQLException6) {}
           }
           else if (str1.equals("SELECT"))
           {
@@ -647,8 +651,9 @@ public class DatabaseManager extends Applet
           }
         }
       }
+    }
   }
-
+  
   void showHelp(String[] paramArrayOfString)
   {
     this.txtCommand.setText(paramArrayOfString[0]);
@@ -660,59 +665,48 @@ public class DatabaseManager extends Applet
     this.txtCommand.requestFocus();
     this.txtCommand.setCaretPosition(paramArrayOfString[0].length());
   }
-
-  public void windowActivated(WindowEvent paramWindowEvent)
-  {
-  }
-
-  public void windowDeactivated(WindowEvent paramWindowEvent)
-  {
-  }
-
-  public void windowClosed(WindowEvent paramWindowEvent)
-  {
-  }
-
+  
+  public void windowActivated(WindowEvent paramWindowEvent) {}
+  
+  public void windowDeactivated(WindowEvent paramWindowEvent) {}
+  
+  public void windowClosed(WindowEvent paramWindowEvent) {}
+  
   public void windowClosing(WindowEvent paramWindowEvent)
   {
     try
     {
-      if (this.cConn != null)
+      if (this.cConn != null) {
         this.cConn.close();
+      }
     }
-    catch (Exception localException)
-    {
-    }
+    catch (Exception localException) {}
     this.fMain.dispose();
-    if (bMustExit)
+    if (bMustExit) {
       System.exit(0);
+    }
   }
-
-  public void windowDeiconified(WindowEvent paramWindowEvent)
-  {
-  }
-
-  public void windowIconified(WindowEvent paramWindowEvent)
-  {
-  }
-
-  public void windowOpened(WindowEvent paramWindowEvent)
-  {
-  }
-
+  
+  public void windowDeiconified(WindowEvent paramWindowEvent) {}
+  
+  public void windowIconified(WindowEvent paramWindowEvent) {}
+  
+  public void windowOpened(WindowEvent paramWindowEvent) {}
+  
   void clear()
   {
     this.ifHuge = "";
     this.txtCommand.setText(this.ifHuge);
   }
-
+  
   void execute()
   {
     String str1 = null;
-    if (4096 <= this.ifHuge.length())
+    if (4096 <= this.ifHuge.length()) {
       str1 = this.ifHuge;
-    else
+    } else {
       str1 = this.txtCommand.getText();
+    }
     if (str1.startsWith("-->>>TEST<<<--"))
     {
       testPerformance();
@@ -722,8 +716,9 @@ public class DatabaseManager extends Applet
     this.lTime = System.currentTimeMillis();
     try
     {
-      if (this.sStatement == null)
+      if (this.sStatement == null) {
         return;
+      }
       this.sStatement.execute(str1);
       this.lTime = (System.currentTimeMillis() - this.lTime);
       int i = this.sStatement.getUpdateCount();
@@ -766,7 +761,7 @@ public class DatabaseManager extends Applet
     updateResult();
     System.gc();
   }
-
+  
   void updateResult()
   {
     if (this.iResult == 0)
@@ -788,7 +783,7 @@ public class DatabaseManager extends Applet
     this.txtCommand.selectAll();
     this.txtCommand.requestFocus();
   }
-
+  
   void formatResultSet(ResultSet paramResultSet)
   {
     Object localObject;
@@ -806,31 +801,32 @@ public class DatabaseManager extends Applet
       localObject = paramResultSet.getMetaData();
       int i = ((ResultSetMetaData)localObject).getColumnCount();
       String[] arrayOfString = new String[i];
-      for (int j = 1; j <= i; j++)
+      for (int j = 1; j <= i; j++) {
         arrayOfString[(j - 1)] = ((ResultSetMetaData)localObject).getColumnLabel(j);
+      }
       this.gResult.setHead(arrayOfString);
       while (paramResultSet.next())
       {
-        for (j = 1; j <= i; j++)
+        for (j = 1; j <= i; j++) {
           try
           {
             arrayOfString[(j - 1)] = paramResultSet.getString(j);
-            if (paramResultSet.wasNull())
+            if (paramResultSet.wasNull()) {
               arrayOfString[(j - 1)] = "(null)";
+            }
           }
           catch (SQLException localSQLException2)
           {
             arrayOfString[(j - 1)] = "(binary data)";
           }
+        }
         this.gResult.addRow(arrayOfString);
       }
       paramResultSet.close();
     }
-    catch (SQLException localSQLException1)
-    {
-    }
+    catch (SQLException localSQLException1) {}
   }
-
+  
   void testPerformance()
   {
     String str1 = this.txtCommand.getText();
@@ -839,8 +835,9 @@ public class DatabaseManager extends Applet
     for (int i = 0; i < str1.length(); i++)
     {
       c = str1.charAt(i);
-      if (c != '\n')
+      if (c != '\n') {
         localStringBuffer.append(c);
+      }
     }
     str1 = localStringBuffer.toString();
     String[] arrayOfString = new String[4];
@@ -900,7 +897,7 @@ public class DatabaseManager extends Applet
     this.lTime = (System.currentTimeMillis() - this.lTime);
     updateResult();
   }
-
+  
   void saveAsCsv(String paramString)
   {
     try
@@ -919,8 +916,9 @@ public class DatabaseManager extends Applet
         for (int m = 0; m < arrayOfString2.length; m++)
         {
           String str = arrayOfString2[m];
-          if (str.equals("(null)"))
+          if (str.equals("(null)")) {
             str = "";
+          }
           arrayOfString3[m] = str;
         }
         localCSVWriter.writeData(arrayOfString3);
@@ -932,7 +930,7 @@ public class DatabaseManager extends Applet
       throw new RuntimeException(new StringBuilder().append("IOError: ").append(localIOException.getMessage()).toString());
     }
   }
-
+  
   void showResultInText()
   {
     String[] arrayOfString1 = this.gResult.getHead();
@@ -940,8 +938,9 @@ public class DatabaseManager extends Applet
     int[] arrayOfInt = new int[i];
     Vector localVector = this.gResult.getData();
     int j = localVector.size();
-    for (int k = 0; k < i; k++)
+    for (int k = 0; k < i; k++) {
       arrayOfInt[k] = arrayOfString1[k].length();
+    }
     String[] arrayOfString2;
     int n;
     for (k = 0; k < j; k++)
@@ -950,22 +949,25 @@ public class DatabaseManager extends Applet
       for (m = 0; m < i; m++)
       {
         n = arrayOfString2[m].length();
-        if (n > arrayOfInt[m])
+        if (n > arrayOfInt[m]) {
           arrayOfInt[m] = n;
+        }
       }
     }
     StringBuffer localStringBuffer = new StringBuffer();
     for (int m = 0; m < i; m++)
     {
       localStringBuffer.append(arrayOfString1[m]);
-      for (n = arrayOfString1[m].length(); n <= arrayOfInt[m]; n++)
+      for (n = arrayOfString1[m].length(); n <= arrayOfInt[m]; n++) {
         localStringBuffer.append(' ');
+      }
     }
     localStringBuffer.append(NL);
     for (m = 0; m < i; m++)
     {
-      for (n = 0; n < arrayOfInt[m]; n++)
+      for (n = 0; n < arrayOfInt[m]; n++) {
         localStringBuffer.append('-');
+      }
       localStringBuffer.append(' ');
     }
     localStringBuffer.append(NL);
@@ -975,32 +977,37 @@ public class DatabaseManager extends Applet
       for (n = 0; n < i; n++)
       {
         localStringBuffer.append(arrayOfString2[n]);
-        for (int i1 = arrayOfString2[n].length(); i1 <= arrayOfInt[n]; i1++)
+        for (int i1 = arrayOfString2[n].length(); i1 <= arrayOfInt[n]; i1++) {
           localStringBuffer.append(' ');
+        }
       }
       localStringBuffer.append(NL);
     }
     localStringBuffer.append(new StringBuilder().append(NL).append(j).append(" row(s) in ").append(this.lTime).append(" ms").toString());
     this.txtResult.setText(localStringBuffer.toString());
   }
-
+  
   private void addToRecent(String paramString)
   {
-    for (int i = 0; i < 24; i++)
-      if (paramString.equals(this.sRecent[i]))
+    for (int i = 0; i < 24; i++) {
+      if (paramString.equals(this.sRecent[i])) {
         return;
-    if (this.sRecent[this.iRecent] != null)
+      }
+    }
+    if (this.sRecent[this.iRecent] != null) {
       this.mRecent.remove(this.iRecent);
+    }
     this.sRecent[this.iRecent] = paramString;
-    if (paramString.length() > 43)
+    if (paramString.length() > 43) {
       paramString = new StringBuilder().append(paramString.substring(0, 40)).append("...").toString();
+    }
     MenuItem localMenuItem = new MenuItem(paramString);
     localMenuItem.setActionCommand(new StringBuilder().append("#").append(this.iRecent).toString());
     localMenuItem.addActionListener(this);
     this.mRecent.insert(localMenuItem, this.iRecent);
     this.iRecent = ((this.iRecent + 1) % 24);
   }
-
+  
   private void initGUI()
   {
     Panel localPanel1 = new Panel();
@@ -1030,16 +1037,17 @@ public class DatabaseManager extends Applet
     this.fMain.add("Center", localPanel1);
     this.tTree = new Tree();
     Dimension localDimension = Toolkit.getDefaultToolkit().getScreenSize();
-    if (localDimension.width >= 640)
+    if (localDimension.width >= 640) {
       this.tTree.setMinimumSize(new Dimension(200, 100));
-    else
+    } else {
       this.tTree.setMinimumSize(new Dimension(80, 100));
+    }
     this.gResult.setMinimumSize(new Dimension(200, 300));
     this.fMain.add("West", this.tTree);
     doLayout();
     this.fMain.pack();
   }
-
+  
   protected void refreshTree()
   {
     boolean bool1 = false;
@@ -1077,10 +1085,12 @@ public class DatabaseManager extends Applet
         String str3 = new StringBuilder().append("tab-").append(str1).append("-").toString();
         this.tTree.addRow(str3, str1, "+", i);
         String str4 = (String)localVector3.elementAt(m);
-        if ((str2 != null) && (!str2.trim().equals("")))
+        if ((str2 != null) && (!str2.trim().equals(""))) {
           this.tTree.addRow(new StringBuilder().append(str3).append("s").toString(), new StringBuilder().append("schema: ").append(str2).toString());
-        if ((str4 != null) && (!str4.trim().equals("")))
+        }
+        if ((str4 != null) && (!str4.trim().equals(""))) {
           this.tTree.addRow(new StringBuilder().append(str3).append("r").toString(), new StringBuilder().append(" ").append(str4).toString());
+        }
         ResultSet localResultSet2 = this.dMeta.getColumns(null, str2, str1, null);
         try
         {
@@ -1131,6 +1141,12 @@ public class DatabaseManager extends Applet
       this.tTree.addRow("pd", new StringBuilder().append("Driver: ").append(this.dMeta.getDriverName()).toString());
       this.tTree.addRow("pp", new StringBuilder().append("Product: ").append(this.dMeta.getDatabaseProductName()).toString());
       this.tTree.addRow("pv", new StringBuilder().append("Version: ").append(this.dMeta.getDatabaseProductVersion()).toString());
+      try
+      {
+        this.cConn.setAutoCommit(bool1);
+      }
+      catch (SQLException localSQLException1) {}
+      this.tTree.update();
     }
     catch (SQLException localSQLException2)
     {
@@ -1144,13 +1160,10 @@ public class DatabaseManager extends Applet
       {
         this.cConn.setAutoCommit(bool1);
       }
-      catch (SQLException localSQLException4)
-      {
-      }
+      catch (SQLException localSQLException4) {}
     }
-    this.tTree.update();
   }
-
+  
   static
   {
     try
@@ -1158,13 +1171,12 @@ public class DatabaseManager extends Applet
       Class.forName(new StringBuilder().append(DatabaseManager.class.getPackage().getName()).append(".Transfer").toString());
       TT_AVAILABLE = true;
     }
-    catch (Throwable localThrowable)
-    {
-    }
+    catch (Throwable localThrowable) {}
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.util.DatabaseManager
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

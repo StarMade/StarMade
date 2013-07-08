@@ -1,36 +1,38 @@
-/*    */ package org.jaxen.expr;
-/*    */ 
-/*    */ import org.jaxen.Context;
-/*    */ import org.jaxen.JaxenException;
-/*    */ import org.jaxen.function.NumberFunction;
-/*    */ 
-/*    */ class DefaultMultiplyExpr extends DefaultMultiplicativeExpr
-/*    */ {
-/*    */   private static final long serialVersionUID = 2760053878102260365L;
-/*    */ 
-/*    */   DefaultMultiplyExpr(Expr lhs, Expr rhs)
-/*    */   {
-/* 64 */     super(lhs, rhs);
-/*    */   }
-/*    */ 
-/*    */   public String getOperator()
-/*    */   {
-/* 70 */     return "*";
-/*    */   }
-/*    */ 
-/*    */   public Object evaluate(Context context) throws JaxenException
-/*    */   {
-/* 75 */     Number lhsValue = NumberFunction.evaluate(getLHS().evaluate(context), context.getNavigator());
-/*    */ 
-/* 77 */     Number rhsValue = NumberFunction.evaluate(getRHS().evaluate(context), context.getNavigator());
-/*    */ 
-/* 80 */     double result = lhsValue.doubleValue() * rhsValue.doubleValue();
-/*    */ 
-/* 82 */     return new Double(result);
-/*    */   }
-/*    */ }
+/*  1:   */package org.jaxen.expr;
+/*  2:   */
+/*  3:   */import org.jaxen.Context;
+/*  4:   */import org.jaxen.JaxenException;
+/*  5:   */import org.jaxen.function.NumberFunction;
+/*  6:   */
+/* 57:   */class DefaultMultiplyExpr
+/* 58:   */  extends DefaultMultiplicativeExpr
+/* 59:   */{
+/* 60:   */  private static final long serialVersionUID = 2760053878102260365L;
+/* 61:   */  
+/* 62:   */  DefaultMultiplyExpr(Expr lhs, Expr rhs)
+/* 63:   */  {
+/* 64:64 */    super(lhs, rhs);
+/* 65:   */  }
+/* 66:   */  
+/* 68:   */  public String getOperator()
+/* 69:   */  {
+/* 70:70 */    return "*";
+/* 71:   */  }
+/* 72:   */  
+/* 73:   */  public Object evaluate(Context context) throws JaxenException
+/* 74:   */  {
+/* 75:75 */    Number lhsValue = NumberFunction.evaluate(getLHS().evaluate(context), context.getNavigator());
+/* 76:   */    
+/* 77:77 */    Number rhsValue = NumberFunction.evaluate(getRHS().evaluate(context), context.getNavigator());
+/* 78:   */    
+/* 80:80 */    double result = lhsValue.doubleValue() * rhsValue.doubleValue();
+/* 81:   */    
+/* 82:82 */    return new Double(result);
+/* 83:   */  }
+/* 84:   */}
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.jaxen.expr.DefaultMultiplyExpr
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

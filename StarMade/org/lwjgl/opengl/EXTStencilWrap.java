@@ -6,7 +6,8 @@ public final class EXTStencilWrap
   public static final int GL_DECR_WRAP_EXT = 34056;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.opengl.EXTStencilWrap
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -77,7 +77,7 @@ public class Database
   public static final int CLOSEMODE_NORMAL = 2;
   public static final int CLOSEMODE_COMPACT = 3;
   public static final int CLOSEMODE_SCRIPT = 4;
-
+  
   Database(String paramString1, String paramString2, String paramString3, HsqlProperties paramHsqlProperties)
   {
     setState(4);
@@ -94,14 +94,15 @@ public class Database
     this.shutdownOnNoConnection = this.urlProperties.isPropertyTrue("shutdown");
     this.lobManager = new LobManager(this);
   }
-
+  
   synchronized void open()
   {
-    if (!isShutdown())
+    if (!isShutdown()) {
       return;
+    }
     reopen();
   }
-
+  
   void reopen()
   {
     boolean bool = false;
@@ -145,20 +146,23 @@ public class Database
       clearStructures();
       DatabaseManager.removeDatabase(this);
       HsqlException localHsqlException;
-      if (!(localThrowable instanceof HsqlException))
+      if (!(localThrowable instanceof HsqlException)) {
         localHsqlException = Error.error(458, localThrowable);
+      }
       this.logger.logSevereEvent("could not reopen database", localHsqlException);
       throw ((HsqlException)localHsqlException);
     }
     setState(1);
   }
-
+  
   void clearStructures()
   {
-    if (this.schemaManager != null)
+    if (this.schemaManager != null) {
       this.schemaManager.release();
-    if (this.checkpointRunner != null)
+    }
+    if (this.checkpointRunner != null) {
       this.checkpointRunner.stop();
+    }
     this.granteeManager = null;
     this.userManager = null;
     this.nameManager = null;
@@ -167,258 +171,260 @@ public class Database
     this.dbInfo = null;
     this.checkpointRunner = null;
   }
-
+  
   public int getDatabaseID()
   {
     return this.databaseID;
   }
-
+  
   public String getUniqueName()
   {
     return this.databaseUniqueName;
   }
-
+  
   public void setUniqueName(String paramString)
   {
     this.databaseUniqueName = paramString;
   }
-
+  
   public String getType()
   {
     return this.databaseType;
   }
-
+  
   public String getPath()
   {
     return this.path;
   }
-
+  
   public HsqlNameManager.HsqlName getCatalogName()
   {
     return this.nameManager.getCatalogName();
   }
-
+  
   public HsqlDatabaseProperties getProperties()
   {
     return this.databaseProperties;
   }
-
+  
   public SessionManager getSessionManager()
   {
     return this.sessionManager;
   }
-
+  
   public boolean isReadOnly()
   {
     return this.databaseReadOnly;
   }
-
+  
   boolean isShutdown()
   {
     return this.dbState == 4;
   }
-
+  
   synchronized Session connect(String paramString1, String paramString2, String paramString3, int paramInt)
   {
-    if (paramString1.equalsIgnoreCase("SA"))
+    if (paramString1.equalsIgnoreCase("SA")) {
       paramString1 = "SA";
+    }
     User localUser = this.userManager.getUser(paramString1, paramString2);
     Session localSession = this.sessionManager.newSession(this, localUser, this.databaseReadOnly, true, paramString3, paramInt);
     return localSession;
   }
-
+  
   public void setReadOnly()
   {
     this.databaseReadOnly = true;
     this.filesReadOnly = true;
   }
-
+  
   public void setFilesReadOnly()
   {
     this.filesReadOnly = true;
   }
-
+  
   public boolean isFilesReadOnly()
   {
     return this.filesReadOnly;
   }
-
+  
   public boolean isFilesInJar()
   {
     return this.filesInJar;
   }
-
+  
   public UserManager getUserManager()
   {
     return this.userManager;
   }
-
+  
   public GranteeManager getGranteeManager()
   {
     return this.granteeManager;
   }
-
+  
   public void setReferentialIntegrity(boolean paramBoolean)
   {
     this.isReferentialIntegrity = paramBoolean;
   }
-
+  
   public boolean isReferentialIntegrity()
   {
     return this.isReferentialIntegrity;
   }
-
+  
   public int getResultMaxMemoryRows()
   {
     return this.resultMaxMemoryRows;
   }
-
+  
   public void setResultMaxMemoryRows(int paramInt)
   {
     this.resultMaxMemoryRows = paramInt;
   }
-
+  
   public void setStrictNames(boolean paramBoolean)
   {
     this.sqlEnforceNames = paramBoolean;
   }
-
+  
   public void setRegularNames(boolean paramBoolean)
   {
     this.sqlRegularNames = paramBoolean;
     this.nameManager.setSqlRegularNames(paramBoolean);
   }
-
+  
   public void setStrictColumnSize(boolean paramBoolean)
   {
     this.sqlEnforceSize = paramBoolean;
   }
-
+  
   public void setStrictReferences(boolean paramBoolean)
   {
     this.sqlEnforceRefs = paramBoolean;
   }
-
+  
   public void setStrictTypes(boolean paramBoolean)
   {
     this.sqlEnforceTypes = paramBoolean;
   }
-
+  
   public void setStrictTDCD(boolean paramBoolean)
   {
     this.sqlEnforceTDCD = paramBoolean;
   }
-
+  
   public void setStrictTDCU(boolean paramBoolean)
   {
     this.sqlEnforceTDCU = paramBoolean;
   }
-
+  
   public void setTranslateTTI(boolean paramBoolean)
   {
     this.sqlTranslateTTI = paramBoolean;
   }
-
+  
   public void setNullsFirst(boolean paramBoolean)
   {
     this.sqlNullsFirst = paramBoolean;
   }
-
+  
   public void setConcatNulls(boolean paramBoolean)
   {
     this.sqlConcatNulls = paramBoolean;
   }
-
+  
   public void setUniqueNulls(boolean paramBoolean)
   {
     this.sqlUniqueNulls = paramBoolean;
   }
-
+  
   public void setConvertTrunc(boolean paramBoolean)
   {
     this.sqlConvertTruncate = paramBoolean;
   }
-
+  
   public void setDoubleNaN(boolean paramBoolean)
   {
     this.sqlDoubleNaN = paramBoolean;
   }
-
+  
   public void setAvgScale(int paramInt)
   {
     this.sqlAvgScale = paramInt;
   }
-
+  
   public void setLongVarIsLob(boolean paramBoolean)
   {
     this.sqlLongvarIsLob = paramBoolean;
   }
-
+  
   public void setSyntaxDb2(boolean paramBoolean)
   {
     this.sqlSyntaxDb2 = paramBoolean;
   }
-
+  
   public void setSyntaxMss(boolean paramBoolean)
   {
     this.sqlSyntaxMss = paramBoolean;
   }
-
+  
   public void setSyntaxMys(boolean paramBoolean)
   {
     this.sqlSyntaxMys = paramBoolean;
   }
-
+  
   public void setSyntaxOra(boolean paramBoolean)
   {
     this.sqlSyntaxOra = paramBoolean;
   }
-
+  
   public void setSyntaxPgs(boolean paramBoolean)
   {
     this.sqlSyntaxPgs = paramBoolean;
   }
-
+  
   protected void finalize()
   {
-    if (getState() != 1)
+    if (getState() != 1) {
       return;
+    }
     try
     {
       close(1);
     }
-    catch (HsqlException localHsqlException)
-    {
-    }
+    catch (HsqlException localHsqlException) {}
   }
-
+  
   void closeIfLast()
   {
-    if ((this.sessionManager.isEmpty()) && (this.dbState == 1))
-      if (this.shutdownOnNoConnection)
+    if ((this.sessionManager.isEmpty()) && (this.dbState == 1)) {
+      if (this.shutdownOnNoConnection) {
         try
         {
           close(2);
         }
-        catch (HsqlException localHsqlException)
-        {
-        }
-      else
+        catch (HsqlException localHsqlException) {}
+      } else {
         this.logger.synchLog();
+      }
+    }
   }
-
+  
   public void close(int paramInt)
   {
     HsqlException localHsqlException = null;
     synchronized (this)
     {
-      if (getState() != 1)
+      if (getState() != 1) {
         return;
+      }
       setState(3);
     }
     this.sessionManager.closeAllSessions();
-    if (this.filesReadOnly)
+    if (this.filesReadOnly) {
       paramInt = 1;
+    }
     this.logger.closePersistence(paramInt);
     this.lobManager.close();
     this.sessionManager.close();
@@ -435,10 +441,11 @@ public class Database
     }
     catch (Throwable localThrowable)
     {
-      if ((localThrowable instanceof HsqlException))
+      if ((localThrowable instanceof HsqlException)) {
         localHsqlException = (HsqlException)localThrowable;
-      else
+      } else {
         localHsqlException = Error.error(458, localThrowable);
+      }
     }
     this.lobManager = null;
     this.logger.releaseLock();
@@ -446,37 +453,38 @@ public class Database
     clearStructures();
     DatabaseManager.removeDatabase(this);
     FrameworkLogger.clearLoggers("hsqldb.db." + getUniqueName());
-    if (localHsqlException != null)
+    if (localHsqlException != null) {
       throw localHsqlException;
+    }
   }
-
+  
   private void setState(int paramInt)
   {
     this.dbState = paramInt;
   }
-
+  
   int getState()
   {
     return this.dbState;
   }
-
+  
   String getStateString()
   {
     int i = getState();
     switch (i)
     {
-    case 3:
+    case 3: 
       return "DATABASE_CLOSING";
-    case 1:
+    case 1: 
       return "DATABASE_ONLINE";
-    case 2:
+    case 2: 
       return "DATABASE_OPENING";
-    case 4:
+    case 4: 
       return "DATABASE_SHUTDOWN";
     }
     return "UNKNOWN";
   }
-
+  
   public String[] getSettingsSQL()
   {
     HsqlArrayList localHsqlArrayList = new HsqlArrayList();
@@ -488,8 +496,9 @@ public class Database
       localHsqlArrayList.add(localStringBuffer.toString());
       localStringBuffer.setLength(0);
     }
-    if (!this.collation.isDefaultCollation())
+    if (!this.collation.isDefaultCollation()) {
       localHsqlArrayList.add(this.collation.getDatabaseCollationSQL());
+    }
     Object localObject = this.schemaManager.getTables("SYSTEM_LOBS");
     for (int i = 0; i < ((HashMappedList)localObject).size(); i++)
     {
@@ -509,7 +518,7 @@ public class Database
     localHsqlArrayList.toArray(arrayOfString);
     return arrayOfString;
   }
-
+  
   public Result getScript(boolean paramBoolean)
   {
     Result localResult = Result.newSingleColumnResult("COMMAND");
@@ -538,11 +547,12 @@ public class Database
     addRows(localResult, arrayOfString);
     return localResult;
   }
-
+  
   private static void addRows(Result paramResult, String[] paramArrayOfString)
   {
-    if (paramArrayOfString == null)
+    if (paramArrayOfString == null) {
       return;
+    }
     for (int i = 0; i < paramArrayOfString.length; i++)
     {
       String[] arrayOfString = new String[1];
@@ -550,32 +560,30 @@ public class Database
       paramResult.initialiseNavigator().add(arrayOfString);
     }
   }
-
+  
   public String getURI()
   {
     return this.databaseType + this.canonicalPath;
   }
-
+  
   public String getCanonicalPath()
   {
     return this.canonicalPath;
   }
-
+  
   public HsqlProperties getURLProperties()
   {
     return this.urlProperties;
   }
-
+  
   class CheckpointRunner
     implements Runnable
   {
     private volatile boolean waiting;
     private Object timerTask;
-
-    CheckpointRunner()
-    {
-    }
-
+    
+    CheckpointRunner() {}
+    
     public void run()
     {
       try
@@ -587,24 +595,24 @@ public class Database
         localSession.close();
         this.waiting = false;
       }
-      catch (Exception localException)
-      {
-      }
+      catch (Exception localException) {}
     }
-
+    
     public void start()
     {
-      if (!Database.this.logger.isLogged())
+      if (!Database.this.logger.isLogged()) {
         return;
+      }
       synchronized (this)
       {
-        if (this.waiting)
+        if (this.waiting) {
           return;
+        }
         this.waiting = true;
       }
       this.timerTask = DatabaseManager.getTimer().scheduleAfter(0L, this);
     }
-
+    
     public void stop()
     {
       HsqlTimer.cancel(this.timerTask);
@@ -614,7 +622,8 @@ public class Database
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.Database
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

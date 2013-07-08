@@ -12,23 +12,21 @@ public final class HsqlTimer
   protected final ThreadFactory threadFactory = paramThreadFactory == null ? this : paramThreadFactory;
   protected volatile boolean isShutdown;
   static int nowCount = 0;
-
+  
   public HsqlTimer()
   {
     this(null);
   }
-
-  public HsqlTimer(ThreadFactory paramThreadFactory)
-  {
-  }
-
+  
+  public HsqlTimer(ThreadFactory paramThreadFactory) {}
+  
   public int compare(Object paramObject1, Object paramObject2)
   {
     long l1 = ((Task)paramObject1).getNextScheduled();
     long l2 = ((Task)paramObject2).getNextScheduled();
     return l1 == l2 ? 0 : l1 < l2 ? -1 : 1;
   }
-
+  
   public Thread newThread(Runnable paramRunnable)
   {
     Thread localThread = new Thread(paramRunnable);
@@ -36,17 +34,18 @@ public final class HsqlTimer
     localThread.setDaemon(true);
     return localThread;
   }
-
+  
   public synchronized Thread getThread()
   {
     return this.taskRunnerThread;
   }
-
+  
   public synchronized void restart()
     throws IllegalStateException
   {
-    if (this.isShutdown)
+    if (this.isShutdown) {
       throw new IllegalStateException("isShutdown==true");
+    }
     if (this.taskRunnerThread == null)
     {
       this.taskRunnerThread = this.threadFactory.newThread(this.taskRunner);
@@ -57,47 +56,55 @@ public final class HsqlTimer
       this.taskQueue.unpark();
     }
   }
-
+  
   public Object scheduleAfter(long paramLong, Runnable paramRunnable)
     throws IllegalArgumentException
   {
-    if (paramRunnable == null)
+    if (paramRunnable == null) {
       throw new IllegalArgumentException("runnable == null");
+    }
     return addTask(now() + paramLong, paramRunnable, 0L, false);
   }
-
+  
   public Object scheduleAt(Date paramDate, Runnable paramRunnable)
     throws IllegalArgumentException
   {
-    if (paramDate == null)
+    if (paramDate == null) {
       throw new IllegalArgumentException("date == null");
-    if (paramRunnable == null)
+    }
+    if (paramRunnable == null) {
       throw new IllegalArgumentException("runnable == null");
+    }
     return addTask(paramDate.getTime(), paramRunnable, 0L, false);
   }
-
+  
   public Object schedulePeriodicallyAt(Date paramDate, long paramLong, Runnable paramRunnable, boolean paramBoolean)
     throws IllegalArgumentException
   {
-    if (paramDate == null)
+    if (paramDate == null) {
       throw new IllegalArgumentException("date == null");
-    if (paramLong <= 0L)
+    }
+    if (paramLong <= 0L) {
       throw new IllegalArgumentException("period <= 0");
-    if (paramRunnable == null)
+    }
+    if (paramRunnable == null) {
       throw new IllegalArgumentException("runnable == null");
+    }
     return addTask(paramDate.getTime(), paramRunnable, paramLong, paramBoolean);
   }
-
+  
   public Object schedulePeriodicallyAfter(long paramLong1, long paramLong2, Runnable paramRunnable, boolean paramBoolean)
     throws IllegalArgumentException
   {
-    if (paramLong2 <= 0L)
+    if (paramLong2 <= 0L) {
       throw new IllegalArgumentException("period <= 0");
-    if (paramRunnable == null)
+    }
+    if (paramRunnable == null) {
       throw new IllegalArgumentException("runnable == null");
+    }
     return addTask(now() + paramLong1, paramRunnable, paramLong2, paramBoolean);
   }
-
+  
   public synchronized void shutdown()
   {
     if (!this.isShutdown)
@@ -106,35 +113,37 @@ public final class HsqlTimer
       this.taskQueue.cancelAllTasks();
     }
   }
-
+  
   public synchronized void shutDown()
   {
     shutdown();
   }
-
+  
   public synchronized void shutdownImmediately()
   {
     if (!this.isShutdown)
     {
       Thread localThread = this.taskRunnerThread;
       this.isShutdown = true;
-      if ((localThread != null) && (localThread.isAlive()))
+      if ((localThread != null) && (localThread.isAlive())) {
         localThread.interrupt();
+      }
       this.taskQueue.cancelAllTasks();
     }
   }
-
+  
   public static void cancel(Object paramObject)
   {
-    if ((paramObject instanceof Task))
+    if ((paramObject instanceof Task)) {
       ((Task)paramObject).cancel();
+    }
   }
-
+  
   public static boolean isCancelled(Object paramObject)
   {
     return (paramObject instanceof Task) ? ((Task)paramObject).isCancelled() : true;
   }
-
+  
   public static boolean isFixedRate(Object paramObject)
   {
     if ((paramObject instanceof Task))
@@ -144,7 +153,7 @@ public final class HsqlTimer
     }
     return false;
   }
-
+  
   public static boolean isFixedDelay(Object paramObject)
   {
     if ((paramObject instanceof Task))
@@ -154,12 +163,12 @@ public final class HsqlTimer
     }
     return false;
   }
-
+  
   public static boolean isPeriodic(Object paramObject)
   {
     return ((Task)paramObject).period > 0L;
   }
-
+  
   public static Date getLastScheduled(Object paramObject)
   {
     if ((paramObject instanceof Task))
@@ -170,12 +179,12 @@ public final class HsqlTimer
     }
     return null;
   }
-
+  
   public static Object setPeriod(Object paramObject, long paramLong)
   {
     return (paramObject instanceof Task) ? ((Task)paramObject).setPeriod(paramLong) : paramObject;
   }
-
+  
   public static Date getNextScheduled(Object paramObject)
   {
     if ((paramObject instanceof Task))
@@ -186,29 +195,28 @@ public final class HsqlTimer
     }
     return null;
   }
-
+  
   protected Task addTask(long paramLong1, Runnable paramRunnable, long paramLong2, boolean paramBoolean)
   {
-    if (this.isShutdown)
+    if (this.isShutdown) {
       throw new IllegalStateException("shutdown");
+    }
     Task localTask = new Task(paramLong1, paramRunnable, paramLong2, paramBoolean);
     this.taskQueue.addTask(localTask);
     restart();
     return localTask;
   }
-
+  
   protected synchronized void clearThread()
   {
     try
     {
       this.taskRunnerThread.setContextClassLoader(null);
     }
-    catch (Throwable localThrowable)
-    {
-    }
+    catch (Throwable localThrowable) {}
     this.taskRunnerThread = null;
   }
-
+  
   protected Task nextTask()
   {
     try
@@ -216,60 +224,63 @@ public final class HsqlTimer
       Task localTask;
       long l1;
       long l2;
-      while ((!this.isShutdown) || (Thread.interrupted()))
+      while ((!this.isShutdown) || (Thread.interrupted())) {
         synchronized (this.taskQueue)
         {
           localTask = this.taskQueue.peekTask();
-          if (localTask == null)
+          if (localTask == null) {
             break;
+          }
           l1 = System.currentTimeMillis();
           l2 = localTask.next;
           long l3 = l2 - l1;
-          if (l3 > 0L)
+          if (l3 > 0L) {
             this.taskQueue.park(l3);
-          else
+          } else {
             this.taskQueue.removeTask();
+          }
         }
+      }
       long l4 = localTask.period;
       if (l4 > 0L)
       {
         if (localTask.relative)
         {
           long l5 = l1 - l2;
-          if (l5 > l4)
+          if (l5 > l4) {
             l4 = 0L;
-          else if (l5 > 0L)
+          } else if (l5 > 0L) {
             l4 -= l5;
+          }
         }
         localTask.updateSchedule(l1, l1 + l4);
         this.taskQueue.addTask(localTask);
       }
       return localTask;
     }
-    catch (InterruptedException localInterruptedException)
-    {
-    }
+    catch (InterruptedException localInterruptedException) {}
     return null;
   }
-
+  
   static long now()
   {
     nowCount += 1;
     return System.currentTimeMillis();
   }
-
-  protected static class TaskQueue extends HsqlArrayHeap
+  
+  protected static class TaskQueue
+    extends HsqlArrayHeap
   {
     TaskQueue(int paramInt, Comparator paramComparator)
     {
       super(paramComparator);
     }
-
+    
     void addTask(HsqlTimer.Task paramTask)
     {
       super.add(paramTask);
     }
-
+    
     void cancelAllTasks()
     {
       Object[] arrayOfObject;
@@ -281,23 +292,25 @@ public final class HsqlTimer
         this.heap = new Object[1];
         this.count = 0;
       }
-      for (??? = 0; ??? < localObject1; ???++)
+      for (??? = 0; ??? < localObject1; ???++) {
         ((HsqlTimer.Task)arrayOfObject[???]).cancelled = true;
+      }
     }
-
+    
     synchronized void park(long paramLong)
       throws InterruptedException
     {
       wait(paramLong);
     }
-
+    
     synchronized HsqlTimer.Task peekTask()
     {
-      while ((this.heap[0] != null) && (((HsqlTimer.Task)this.heap[0]).isCancelled()))
+      while ((this.heap[0] != null) && (((HsqlTimer.Task)this.heap[0]).isCancelled())) {
         super.remove();
+      }
       return (HsqlTimer.Task)this.heap[0];
     }
-
+    
     synchronized void signalTaskCancelled(HsqlTimer.Task paramTask)
     {
       if (paramTask == this.heap[0])
@@ -306,18 +319,18 @@ public final class HsqlTimer
         notify();
       }
     }
-
+    
     HsqlTimer.Task removeTask()
     {
       return (HsqlTimer.Task)super.remove();
     }
-
+    
     synchronized void unpark()
     {
       notify();
     }
   }
-
+  
   protected class Task
   {
     Runnable runnable;
@@ -327,29 +340,29 @@ public final class HsqlTimer
     boolean cancelled = false;
     private Object cancel_mutex = new Object();
     final boolean relative;
-
-    Task(long arg2, Runnable paramLong1, long arg5, boolean arg7)
+    
+    Task(long paramLong1, Runnable paramRunnable, long paramLong2, boolean paramBoolean)
     {
-      this.next = ???;
-      this.runnable = paramLong1;
-      Object localObject;
-      this.period = localObject;
-      boolean bool1;
-      this.relative = bool1;
+      this.next = paramLong1;
+      this.runnable = paramRunnable;
+      this.period = paramLong2;
+      this.relative = paramBoolean;
     }
-
+    
     void cancel()
     {
       int i = 0;
       synchronized (this.cancel_mutex)
       {
-        if (!this.cancelled)
+        if (!this.cancelled) {
           this.cancelled = (i = 1);
+        }
       }
-      if (i != 0)
+      if (i != 0) {
         HsqlTimer.this.taskQueue.signalTaskCancelled(this);
+      }
     }
-
+    
     boolean isCancelled()
     {
       synchronized (this.cancel_mutex)
@@ -357,27 +370,28 @@ public final class HsqlTimer
         return this.cancelled;
       }
     }
-
+    
     synchronized long getLastScheduled()
     {
       return this.last;
     }
-
+    
     synchronized long getNextScheduled()
     {
       return this.next;
     }
-
+    
     synchronized void updateSchedule(long paramLong1, long paramLong2)
     {
       this.last = paramLong1;
       this.next = paramLong2;
     }
-
+    
     synchronized Object setPeriod(long paramLong)
     {
-      if ((this.period == paramLong) || (isCancelled()))
+      if ((this.period == paramLong) || (isCancelled())) {
         return this;
+      }
       if (paramLong > this.period)
       {
         this.period = paramLong;
@@ -387,23 +401,22 @@ public final class HsqlTimer
       return HsqlTimer.this.addTask(HsqlTimer.now(), this.runnable, paramLong, this.relative);
     }
   }
-
+  
   protected class TaskRunner
     implements Runnable
   {
-    protected TaskRunner()
-    {
-    }
-
+    protected TaskRunner() {}
+    
     public void run()
     {
       try
       {
-        while (true)
+        for (;;)
         {
           HsqlTimer.Task localTask = HsqlTimer.this.nextTask();
-          if (localTask == null)
+          if (localTask == null) {
             break;
+          }
           localTask.runnable.run();
         }
       }
@@ -415,7 +428,8 @@ public final class HsqlTimer
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.lib.HsqlTimer
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

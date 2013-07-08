@@ -9,7 +9,8 @@ public final class NVFragmentProgram2
   public static final int GL_MAX_PROGRAM_LOOP_COUNT_NV = 35064;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.opengl.NVFragmentProgram2
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

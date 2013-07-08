@@ -9,7 +9,8 @@ import org.hsqldb.lib.StopWatch;
 import org.hsqldb.store.BaseHashMap;
 import org.hsqldb.store.BaseHashMap.BaseHashIterator;
 
-public class Cache extends BaseHashMap
+public class Cache
+  extends BaseHashMap
 {
   final DataFileCache dataFileCache;
   private int capacity;
@@ -21,7 +22,7 @@ public class Cache extends BaseHashMap
   StopWatch saveAllTimer = new StopWatch(false);
   StopWatch sortTimer = new StopWatch(false);
   int saveRowCount = 0;
-
+  
   Cache(DataFileCache paramDataFileCache)
   {
     super(paramDataFileCache.capacity(), 3, 0, true);
@@ -35,16 +36,14 @@ public class Cache extends BaseHashMap
     this.objectIterator = new BaseHashMap.BaseHashIterator(this, true);
     this.comparator = this.rowComparator;
   }
-
-  void resize(int paramInt, long paramLong)
-  {
-  }
-
+  
+  void resize(int paramInt, long paramLong) {}
+  
   long getTotalCachedBlockSize()
   {
     return this.cacheBytesLength;
   }
-
+  
   public synchronized CachedObject get(long paramLong)
   {
     if (this.accessCount > 2146435071)
@@ -54,21 +53,23 @@ public class Cache extends BaseHashMap
       updateObjectAccessCounts();
     }
     int i = getObjectLookup(paramLong);
-    if (i == -1)
+    if (i == -1) {
       return null;
+    }
     this.accessTable[i] = (++this.accessCount);
     CachedObject localCachedObject = (CachedObject)this.objectKeyTable[i];
     return localCachedObject;
   }
-
+  
   synchronized void put(long paramLong, CachedObject paramCachedObject)
   {
     int i = paramCachedObject.getStorageSize();
     if ((size() >= this.capacity) || (i + this.cacheBytesLength > this.bytesCapacity))
     {
       cleanUp();
-      if (size() >= this.capacity)
+      if (size() >= this.capacity) {
         forceCleanUp();
+      }
     }
     if (this.accessCount > 2146435071)
     {
@@ -80,23 +81,24 @@ public class Cache extends BaseHashMap
     paramCachedObject.setInMemory(true);
     this.cacheBytesLength += i;
   }
-
+  
   synchronized CachedObject release(long paramLong)
   {
     CachedObject localCachedObject = (CachedObject)super.addOrRemoveObject(null, paramLong, true);
-    if (localCachedObject == null)
+    if (localCachedObject == null) {
       return null;
+    }
     this.cacheBytesLength -= localCachedObject.getStorageSize();
     localCachedObject.setInMemory(false);
     return localCachedObject;
   }
-
+  
   synchronized void replace(long paramLong, CachedObject paramCachedObject)
   {
     int i = super.getLookup(paramLong);
     this.objectKeyTable[i] = paramCachedObject;
   }
-
+  
   private void updateAccessCounts()
   {
     for (int j = 0; j < this.objectKeyTable.length; j++)
@@ -105,12 +107,13 @@ public class Cache extends BaseHashMap
       if (localCachedObject != null)
       {
         int i = localCachedObject.getAccessCount();
-        if (i > this.accessTable[j])
+        if (i > this.accessTable[j]) {
           this.accessTable[j] = i;
+        }
       }
     }
   }
-
+  
   private void updateObjectAccessCounts()
   {
     for (int j = 0; j < this.objectKeyTable.length; j++)
@@ -123,7 +126,7 @@ public class Cache extends BaseHashMap
       }
     }
   }
-
+  
   private synchronized void cleanUp()
   {
     updateAccessCounts();
@@ -137,7 +140,7 @@ public class Cache extends BaseHashMap
       int m = this.objectIterator.getAccessCount();
       int n = (localCachedObject.isNew()) && (localCachedObject.getStorageSize() >= 4096) ? 1 : 0;
       int i1 = m <= j ? 1 : 0;
-      if ((i1 != 0) || (n != 0))
+      if ((i1 != 0) || (n != 0)) {
         synchronized (localCachedObject)
         {
           if (localCachedObject.isKeepInMemory())
@@ -146,8 +149,9 @@ public class Cache extends BaseHashMap
           }
           else
           {
-            if (localCachedObject.hasChanged())
+            if (localCachedObject.hasChanged()) {
               this.rowTable[(k++)] = localCachedObject;
+            }
             if (i1 != 0)
             {
               localCachedObject.setInMemory(false);
@@ -157,6 +161,7 @@ public class Cache extends BaseHashMap
             }
           }
         }
+      }
       if (k == this.rowTable.length)
       {
         saveRows(k);
@@ -166,7 +171,7 @@ public class Cache extends BaseHashMap
     super.setAccessCountFloor(j);
     saveRows(k);
   }
-
+  
   synchronized void forceCleanUp()
   {
     this.objectIterator.reset();
@@ -184,11 +189,12 @@ public class Cache extends BaseHashMap
       }
     }
   }
-
+  
   private synchronized void saveRows(int paramInt)
   {
-    if (paramInt == 0)
+    if (paramInt == 0) {
       return;
+    }
     long l = this.saveAllTimer.elapsedTime();
     this.rowComparator.setType(1);
     this.sortTimer.zero();
@@ -201,7 +207,7 @@ public class Cache extends BaseHashMap
     this.saveAllTimer.stop();
     logSaveRowsEvent(paramInt, l);
   }
-
+  
   synchronized void saveAll()
   {
     int i = 0;
@@ -222,12 +228,12 @@ public class Cache extends BaseHashMap
     }
     saveRows(i);
   }
-
+  
   void logSynchEvent()
   {
     this.dataFileCache.logDetailEvent("cache sync");
   }
-
+  
   void logSaveRowsEvent(int paramInt, long paramLong)
   {
     StringBuffer localStringBuffer = new StringBuffer();
@@ -240,19 +246,19 @@ public class Cache extends BaseHashMap
     localStringBuffer.append(this.dataFileCache.database.txManager.getGlobalChangeTimestamp());
     this.dataFileCache.logDetailEvent(localStringBuffer.toString());
   }
-
+  
   public synchronized void clear()
   {
     super.clear();
     this.cacheBytesLength = 0L;
   }
-
+  
   public Iterator getIterator()
   {
     this.objectIterator.reset();
     return this.objectIterator;
   }
-
+  
   static final class CachedObjectComparator
     implements ObjectComparator
   {
@@ -260,34 +266,34 @@ public class Cache extends BaseHashMap
     static final int COMPARE_POSITION = 1;
     static final int COMPARE_SIZE = 2;
     private int compareType = 1;
-
+    
     void setType(int paramInt)
     {
       this.compareType = paramInt;
     }
-
+    
     public int compare(Object paramObject1, Object paramObject2)
     {
       long l;
       switch (this.compareType)
       {
-      case 1:
+      case 1: 
         l = ((CachedObject)paramObject1).getPos() - ((CachedObject)paramObject2).getPos();
         break;
-      case 2:
+      case 2: 
         l = ((CachedObject)paramObject1).getStorageSize() - ((CachedObject)paramObject2).getStorageSize();
         break;
-      default:
+      default: 
         return 0;
       }
       return l > 0L ? 1 : l == 0L ? 0 : -1;
     }
-
+    
     public int hashCode(Object paramObject)
     {
       return paramObject.hashCode();
     }
-
+    
     public long longKey(Object paramObject)
     {
       return ((CachedObject)paramObject).getPos();
@@ -295,7 +301,8 @@ public class Cache extends BaseHashMap
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.persist.Cache
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

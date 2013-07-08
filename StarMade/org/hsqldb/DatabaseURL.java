@@ -18,17 +18,17 @@ public class DatabaseURL
   public static final String S_URL_INTERNAL = "jdbc:default:connection";
   public static final String url_connection_type = "connection_type";
   public static final String url_database = "database";
-
+  
   public static boolean isFileBasedDatabaseType(String paramString)
   {
     return (paramString == "file:") || (paramString == "res:");
   }
-
+  
   public static boolean isInProcessDatabaseType(String paramString)
   {
     return (paramString == "file:") || (paramString == "res:") || (paramString == "mem:");
   }
-
+  
   public static HsqlProperties parseURL(String paramString, boolean paramBoolean1, boolean paramBoolean2)
   {
     String str1 = paramString.toLowerCase(Locale.ENGLISH);
@@ -39,32 +39,35 @@ public class DatabaseURL
     String str3 = null;
     int j = 0;
     int k = 0;
-    if (paramBoolean1)
-      if (str1.startsWith("jdbc:hsqldb:"))
+    if (paramBoolean1) {
+      if (str1.startsWith("jdbc:hsqldb:")) {
         i = "jdbc:hsqldb:".length();
-      else
+      } else {
         return localHsqlProperties1;
+      }
+    }
     String str6;
     String str7;
-    while (true)
+    for (;;)
     {
       m = paramString.indexOf("${");
-      if (m == -1)
+      if (m == -1) {
         break;
+      }
       n = paramString.indexOf("}", m);
-      if (n == -1)
+      if (n == -1) {
         break;
+      }
       str6 = paramString.substring(m + 2, n);
       str7 = null;
       try
       {
         str7 = System.getProperty(str6);
       }
-      catch (SecurityException localSecurityException2)
-      {
-      }
-      if (str7 == null)
+      catch (SecurityException localSecurityException2) {}
+      if (str7 == null) {
         break;
+      }
       paramString = paramString.substring(0, m) + str7 + paramString.substring(n + 1);
       str1 = paramString.toLowerCase(Locale.ENGLISH);
     }
@@ -122,12 +125,13 @@ public class DatabaseURL
       j = 443;
       k = 1;
     }
-    if (str3 == null)
+    if (str3 == null) {
       str3 = "file:";
-    else if (str3 == ".")
+    } else if (str3 == ".") {
       str3 = "mem:";
-    else
+    } else {
       i += str3.length();
+    }
     localHsqlProperties1.setProperty("connection_type", str3);
     String str4;
     if (k != 0)
@@ -136,33 +140,38 @@ public class DatabaseURL
       str7 = null;
       String str8 = null;
       int i1 = paramString.indexOf('/', i);
-      if ((i1 > 0) && (i1 < m))
+      if ((i1 > 0) && (i1 < m)) {
         str6 = paramString.substring(i1, m);
-      else
+      } else {
         i1 = m;
+      }
       int i2;
       if (paramString.charAt(i) == '[')
       {
         i2 = paramString.indexOf(']', i + 2);
-        if ((i2 < 0) || (i2 >= i1))
+        if ((i2 < 0) || (i2 >= i1)) {
           return null;
+        }
         str7 = str1.substring(i + 1, i2);
-        if (i1 > i2 + 1)
+        if (i1 > i2 + 1) {
           str8 = paramString.substring(i2 + 1, i1);
+        }
       }
       else
       {
         i2 = paramString.indexOf(':', i + 1);
-        if ((i2 > -1) && (i2 < i1))
+        if ((i2 > -1) && (i2 < i1)) {
           str8 = paramString.substring(i2, i1);
-        else
+        } else {
           i2 = -1;
+        }
         str7 = str1.substring(i, i2 > 0 ? i2 : i1);
       }
       if (str8 != null)
       {
-        if ((str8.length() < 2) || (str8.charAt(0) != ':'))
+        if ((str8.length() < 2) || (str8.charAt(0) != ':')) {
           return null;
+        }
         try
         {
           j = Integer.parseInt(str8.substring(1));
@@ -203,10 +212,11 @@ public class DatabaseURL
       if ((!paramBoolean2) && (localHsqlProperties2 != null))
       {
         String str9 = localHsqlProperties2.getProperty("filepath");
-        if ((str9 != null) && (str4.length() != 0))
+        if ((str9 != null) && (str4.length() != 0)) {
           str4 = str4 + ";" + str9;
-        else if ((paramString.indexOf("mem:") == m + 1) || (paramString.indexOf("file:") == m + 1))
+        } else if ((paramString.indexOf("mem:") == m + 1) || (paramString.indexOf("file:") == m + 1)) {
           str4 = str4 + paramString.substring(m);
+        }
       }
     }
     else
@@ -218,8 +228,9 @@ public class DatabaseURL
       else if (str3 == "res:")
       {
         str4 = paramString.substring(i, m);
-        if (str4.indexOf('/') != 0)
+        if (str4.indexOf('/') != 0) {
           str4 = '/' + str4;
+        }
       }
       else
       {
@@ -231,14 +242,13 @@ public class DatabaseURL
           {
             str6 = System.getProperty("user.home");
           }
-          catch (SecurityException localSecurityException1)
-          {
-          }
+          catch (SecurityException localSecurityException1) {}
           str4 = str6 + str4.substring(1);
         }
       }
-      if (str4.length() == 0)
+      if (str4.length() == 0) {
         return null;
+      }
     }
     i = str4.indexOf("&password=");
     if (i != -1)
@@ -259,7 +269,8 @@ public class DatabaseURL
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.DatabaseURL
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

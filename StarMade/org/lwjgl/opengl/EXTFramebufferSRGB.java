@@ -8,7 +8,8 @@ public final class EXTFramebufferSRGB
   public static final int GL_FRAMEBUFFER_SRGB_CAPABLE_EXT = 36282;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.opengl.EXTFramebufferSRGB
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

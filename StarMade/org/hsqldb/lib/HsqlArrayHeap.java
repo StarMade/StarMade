@@ -8,34 +8,40 @@ public class HsqlArrayHeap
   protected Comparator oc;
   protected int count;
   protected Object[] heap;
-
+  
   public HsqlArrayHeap(int paramInt, Comparator paramComparator)
     throws IllegalArgumentException
   {
-    if (paramInt <= 0)
+    if (paramInt <= 0) {
       throw new IllegalArgumentException("" + paramInt);
-    if (paramComparator == null)
+    }
+    if (paramComparator == null) {
       throw new IllegalArgumentException("null comparator");
+    }
     this.heap = new Object[paramInt];
     this.oc = paramComparator;
   }
-
+  
   public synchronized void clear()
   {
-    for (int i = 0; i < this.count; i++)
+    for (int i = 0; i < this.count; i++) {
       this.heap[i] = null;
+    }
     this.count = 0;
   }
-
+  
   public synchronized void add(Object paramObject)
     throws IllegalArgumentException, RuntimeException
   {
-    if (paramObject == null)
+    if (paramObject == null) {
       throw new IllegalArgumentException("null element");
-    if (isFull())
+    }
+    if (isFull()) {
       throw new RuntimeException("full");
-    if (this.count >= this.heap.length)
+    }
+    if (this.count >= this.heap.length) {
       increaseCapacity();
+    }
     int i = this.count;
     this.count += 1;
     while (i > 0)
@@ -43,8 +49,9 @@ public class HsqlArrayHeap
       int j = i - 1 >> 1;
       try
       {
-        if (this.oc.compare(paramObject, this.heap[j]) >= 0)
+        if (this.oc.compare(paramObject, this.heap[j]) >= 0) {
           break;
+        }
       }
       catch (Exception localException)
       {
@@ -55,26 +62,27 @@ public class HsqlArrayHeap
     }
     this.heap[i] = paramObject;
   }
-
+  
   public synchronized boolean isEmpty()
   {
     return this.count == 0;
   }
-
+  
   public synchronized boolean isFull()
   {
     return this.count == 2147483647;
   }
-
+  
   public synchronized Object peek()
   {
     return this.heap[0];
   }
-
+  
   public synchronized Object remove()
   {
-    if (this.count == 0)
+    if (this.count == 0) {
       return null;
+    }
     int i = 0;
     Object localObject2 = this.heap[i];
     this.count -= 1;
@@ -85,27 +93,29 @@ public class HsqlArrayHeap
     }
     Object localObject1 = this.heap[this.count];
     this.heap[this.count] = null;
-    while (true)
+    for (;;)
     {
       int j = (i << 1) + 1;
-      if (j >= this.count)
+      if (j >= this.count) {
         break;
+      }
       int k = (i << 1) + 2;
       int m = (k >= this.count) || (this.oc.compare(this.heap[j], this.heap[k]) < 0) ? j : k;
-      if (this.oc.compare(localObject1, this.heap[m]) <= 0)
+      if (this.oc.compare(localObject1, this.heap[m]) <= 0) {
         break;
+      }
       this.heap[i] = this.heap[m];
       i = m;
     }
     this.heap[i] = localObject1;
     return localObject2;
   }
-
+  
   public synchronized int size()
   {
     return this.count;
   }
-
+  
   public synchronized String toString()
   {
     StringBuffer localStringBuffer = new StringBuffer();
@@ -126,7 +136,7 @@ public class HsqlArrayHeap
     localStringBuffer.append(']');
     return localStringBuffer.toString();
   }
-
+  
   private void increaseCapacity()
   {
     Object[] arrayOfObject = this.heap;
@@ -135,7 +145,8 @@ public class HsqlArrayHeap
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.lib.HsqlArrayHeap
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

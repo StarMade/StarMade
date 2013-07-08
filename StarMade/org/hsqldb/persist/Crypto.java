@@ -26,7 +26,7 @@ public class Crypto
   Cipher inCipher;
   Cipher inStreamCipher;
   Cipher outStreamCipher;
-
+  
   public Crypto(String paramString1, String paramString2, String paramString3)
   {
     try
@@ -64,11 +64,12 @@ public class Crypto
       throw Error.error(331, localIOException);
     }
   }
-
+  
   public synchronized InputStream getInputStream(InputStream paramInputStream)
   {
-    if (this.inCipher == null)
+    if (this.inCipher == null) {
       return paramInputStream;
+    }
     try
     {
       this.inStreamCipher.init(2, this.key);
@@ -79,11 +80,12 @@ public class Crypto
       throw Error.error(331, localInvalidKeyException);
     }
   }
-
+  
   public synchronized OutputStream getOutputStream(OutputStream paramOutputStream)
   {
-    if (this.outCipher == null)
+    if (this.outCipher == null) {
       return paramOutputStream;
+    }
     try
     {
       this.outStreamCipher.init(1, this.key);
@@ -94,11 +96,12 @@ public class Crypto
       throw Error.error(331, localInvalidKeyException);
     }
   }
-
+  
   public synchronized int decode(byte[] paramArrayOfByte1, int paramInt1, int paramInt2, byte[] paramArrayOfByte2, int paramInt3)
   {
-    if (this.inCipher == null)
+    if (this.inCipher == null) {
       return paramInt2;
+    }
     try
     {
       this.inCipher.init(2, this.key);
@@ -121,11 +124,12 @@ public class Crypto
       throw Error.error(331, localShortBufferException);
     }
   }
-
+  
   public synchronized int encode(byte[] paramArrayOfByte1, int paramInt1, int paramInt2, byte[] paramArrayOfByte2, int paramInt3)
   {
-    if (this.outCipher == null)
+    if (this.outCipher == null) {
       return paramInt2;
+    }
     try
     {
       this.outCipher.init(1, this.key);
@@ -148,7 +152,7 @@ public class Crypto
       throw Error.error(331, localShortBufferException);
     }
   }
-
+  
   public static byte[] getNewKey(String paramString1, String paramString2)
   {
     try
@@ -167,7 +171,7 @@ public class Crypto
       throw Error.error(331, localNoSuchProviderException);
     }
   }
-
+  
   public synchronized int getEncodedSize(int paramInt)
   {
     try
@@ -189,7 +193,8 @@ public class Crypto
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.persist.Crypto
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

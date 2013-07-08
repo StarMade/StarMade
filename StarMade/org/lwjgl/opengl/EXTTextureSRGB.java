@@ -20,7 +20,8 @@ public final class EXTTextureSRGB
   public static final int GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT = 35919;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.opengl.EXTTextureSRGB
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

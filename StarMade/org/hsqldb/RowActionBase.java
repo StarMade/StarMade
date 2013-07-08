@@ -19,18 +19,16 @@ public class RowActionBase
   boolean rolledback;
   boolean prepared;
   int[] changeColumnMap;
-
-  RowActionBase()
-  {
-  }
-
+  
+  RowActionBase() {}
+  
   RowActionBase(Session paramSession, byte paramByte)
   {
     this.session = paramSession;
     this.type = paramByte;
     this.actionTimestamp = paramSession.actionTimestamp;
   }
-
+  
   void setAsAction(RowActionBase paramRowActionBase)
   {
     this.next = paramRowActionBase.next;
@@ -45,7 +43,8 @@ public class RowActionBase
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.RowActionBase
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

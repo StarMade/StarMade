@@ -10,13 +10,14 @@ import org.hsqldb.types.ArrayType;
 import org.hsqldb.types.BinaryData;
 import org.hsqldb.types.Type;
 
-public class ParserRoutine extends ParserDML
+public class ParserRoutine
+  extends ParserDML
 {
   ParserRoutine(Session paramSession, Scanner paramScanner)
   {
     super(paramSession, paramScanner);
   }
-
+  
   Expression readDefaultClause(Type paramType)
   {
     Expression localExpression = null;
@@ -26,22 +27,23 @@ public class ParserRoutine extends ParserDML
       read();
       return new ExpressionValue(null, paramType);
     }
-    if ((paramType.isDateTimeType()) || (paramType.isIntervalType()));
+    if ((paramType.isDateTimeType()) || (paramType.isIntervalType())) {}
     Object localObject1;
     switch (this.token.tokenType)
     {
-    case 72:
-    case 140:
-    case 281:
-    case 282:
+    case 72: 
+    case 140: 
+    case 281: 
+    case 282: 
       localExpression = readDateTimeIntervalLiteral(this.session);
-      if (localExpression.dataType.typeCode != paramType.typeCode)
+      if (localExpression.dataType.typeCode != paramType.typeCode) {
         throw unexpectedToken();
+      }
       localObject1 = localExpression.getValue(this.session, paramType);
       return new ExpressionValue(localObject1, paramType);
-    case 845:
+    case 845: 
       break;
-    default:
+    default: 
       localExpression = XreadDateTimeValueFunctionOrNull();
       if (localExpression != null)
       {
@@ -63,14 +65,14 @@ public class ParserRoutine extends ParserDML
         {
           switch (this.token.tokenType)
           {
-          case 60:
-          case 63:
-          case 64:
-          case 65:
-          case 69:
-          case 253:
-          case 277:
-          case 305:
+          case 60: 
+          case 63: 
+          case 64: 
+          case 65: 
+          case 69: 
+          case 253: 
+          case 277: 
+          case 305: 
             localObject1 = FunctionSQL.newSQLFunction(this.token.tokenString, this.compileContext);
             localExpression = readSQLFunction((FunctionSQL)localObject1);
             break;
@@ -80,10 +82,10 @@ public class ParserRoutine extends ParserDML
         {
           switch (this.token.tokenType)
           {
-          case 294:
+          case 294: 
             read();
             return Expression.EXPR_TRUE;
-          case 106:
+          case 106: 
             read();
             return Expression.EXPR_FALSE;
           }
@@ -92,10 +94,10 @@ public class ParserRoutine extends ParserDML
         {
           switch (this.token.tokenType)
           {
-          case 294:
+          case 294: 
             read();
             return new ExpressionValue(BinaryData.singleBitOne, paramType);
-          case 106:
+          case 106: 
             read();
             return new ExpressionValue(BinaryData.singleBitZero, paramType);
           }
@@ -103,8 +105,9 @@ public class ParserRoutine extends ParserDML
         else if (paramType.isArrayType())
         {
           localExpression = readCollection(19);
-          if (localExpression.nodes.length > 0)
+          if (localExpression.nodes.length > 0) {
             throw Error.error(5562);
+          }
           localExpression.dataType = paramType;
           return localExpression;
         }
@@ -114,8 +117,9 @@ public class ParserRoutine extends ParserDML
     if (localExpression != null)
     {
       localExpression.resolveTypes(this.session, null);
-      if (paramType.typeComparisonGroup != localExpression.getDataType().typeComparisonGroup)
+      if (paramType.typeComparisonGroup != localExpression.getDataType().typeComparisonGroup) {
         throw Error.error(5562);
+      }
       return localExpression;
     }
     int j = 0;
@@ -131,16 +135,19 @@ public class ParserRoutine extends ParserDML
       localObject2 = this.token.tokenValue;
       localObject3 = this.token.dataType;
       Type localType = paramType;
-      if (paramType.typeCode == 40)
+      if (paramType.typeCode == 40) {
         localType = Type.getType(12, null, this.database.collation, paramType.precision, 0);
-      else if (paramType.typeCode == 30)
+      } else if (paramType.typeCode == 30) {
         localType = Type.getType(61, null, null, paramType.precision, 0);
+      }
       localObject2 = localType.convertToType(this.session, localObject2, (Type)localObject3);
       read();
-      if (i != 0)
+      if (i != 0) {
         localObject2 = paramType.negate(localObject2);
-      if (j != 0)
+      }
+      if (j != 0) {
         readThis(772);
+      }
       return new ExpressionValue(localObject2, localType);
     }
     if (this.database.sqlSyntaxDb2)
@@ -148,33 +155,33 @@ public class ParserRoutine extends ParserDML
       localObject2 = null;
       switch (paramType.typeComparisonGroup)
       {
-      case 12:
+      case 12: 
         localObject2 = "";
         break;
-      case 61:
+      case 61: 
         localObject2 = BinaryData.zeroLengthBinary;
         break;
-      case 2:
+      case 2: 
         localObject2 = Integer.valueOf(0);
         break;
-      case 16:
+      case 16: 
         localObject2 = Boolean.FALSE;
         break;
-      case 40:
+      case 40: 
         localObject2 = "";
         return new ExpressionValue(localObject2, Type.SQL_VARCHAR_DEFAULT);
-      case 30:
+      case 30: 
         localObject2 = BinaryData.zeroLengthBinary;
         return new ExpressionValue(localObject2, Type.SQL_VARBINARY_DEFAULT);
-      case 92:
+      case 92: 
         localObject3 = FunctionSQL.newSQLFunction("CURRENT_TIME", this.compileContext);
         ((FunctionSQL)localObject3).resolveTypes(this.session, null);
         return localObject3;
-      case 91:
+      case 91: 
         localObject3 = FunctionSQL.newSQLFunction("CURRENT_DATE", this.compileContext);
         ((FunctionSQL)localObject3).resolveTypes(this.session, null);
         return localObject3;
-      case 93:
+      case 93: 
         localObject3 = FunctionSQL.newSQLFunction("CURRENT_TIMESTAMP", this.compileContext);
         ((FunctionSQL)localObject3).resolveTypes(this.session, null);
         return localObject3;
@@ -184,19 +191,21 @@ public class ParserRoutine extends ParserDML
     }
     throw unexpectedToken();
   }
-
+  
   Statement compileOpenCursorStatement(StatementCompound paramStatementCompound)
   {
     readThis(196);
     checkIsSimpleName();
     String str = this.token.tokenString;
     read();
-    for (int i = 0; i < paramStatementCompound.cursors.length; i++)
-      if (paramStatementCompound.cursors[i].getCursorName().name.equals(str))
+    for (int i = 0; i < paramStatementCompound.cursors.length; i++) {
+      if (paramStatementCompound.cursors[i].getCursorName().name.equals(str)) {
         return paramStatementCompound.cursors[i];
+      }
+    }
     throw Error.error(4680);
   }
-
+  
   Statement compileSelectSingleRowStatement(RangeGroup[] paramArrayOfRangeGroup)
   {
     OrderedHashSet localOrderedHashSet = new OrderedHashSet();
@@ -215,18 +224,20 @@ public class ParserRoutine extends ParserDML
     Type[] arrayOfType = new Type[arrayOfExpression.length];
     for (int i = 0; i < arrayOfExpression.length; i++)
     {
-      if (arrayOfExpression[i].getColumn().getParameterMode() == 1)
+      if (arrayOfExpression[i].getColumn().getParameterMode() == 1) {
         throw Error.error(2500);
+      }
       arrayOfType[i] = arrayOfExpression[i].getDataType();
     }
     localQuerySpecification.setReturningResult();
     localQuerySpecification.resolve(this.session, paramArrayOfRangeGroup, arrayOfType);
-    if (localQuerySpecification.getColumnCount() != arrayOfExpression.length)
+    if (localQuerySpecification.getColumnCount() != arrayOfExpression.length) {
       throw Error.error(5564, "INTO");
+    }
     StatementSet localStatementSet = new StatementSet(this.session, arrayOfExpression, localQuerySpecification, arrayOfInt, this.compileContext);
     return localStatementSet;
   }
-
+  
   Statement compileGetStatement(RangeVariable[] paramArrayOfRangeVariable)
   {
     read();
@@ -236,29 +247,34 @@ public class ParserRoutine extends ParserDML
     LongDeque localLongDeque = new LongDeque();
     RangeGroup[] arrayOfRangeGroup = { new RangeGroup.RangeGroupSimple(paramArrayOfRangeVariable) };
     readGetClauseList(paramArrayOfRangeVariable, localOrderedHashSet, localLongDeque, localHsqlArrayList);
-    if (localHsqlArrayList.size() > 1)
+    if (localHsqlArrayList.size() > 1) {
       throw Error.error(5602);
+    }
     Expression localExpression = (Expression)localHsqlArrayList.get(0);
-    if (localExpression.getDegree() != localOrderedHashSet.size())
+    if (localExpression.getDegree() != localOrderedHashSet.size()) {
       throw Error.error(5546, "SET");
+    }
     int[] arrayOfInt = new int[localLongDeque.size()];
     localLongDeque.toArray(arrayOfInt);
     Expression[] arrayOfExpression = new Expression[localOrderedHashSet.size()];
     localOrderedHashSet.toArray(arrayOfExpression);
-    for (int i = 0; i < arrayOfExpression.length; i++)
+    for (int i = 0; i < arrayOfExpression.length; i++) {
       resolveOuterReferencesAndTypes(arrayOfRangeGroup, arrayOfExpression[i]);
+    }
     resolveOuterReferencesAndTypes(arrayOfRangeGroup, localExpression);
     for (i = 0; i < arrayOfExpression.length; i++)
     {
-      if (arrayOfExpression[i].getColumn().getParameterMode() == 1)
+      if (arrayOfExpression[i].getColumn().getParameterMode() == 1) {
         throw Error.error(2500);
-      if (!arrayOfExpression[i].getDataType().canBeAssignedFrom(localExpression.getNodeDataType(i)))
+      }
+      if (!arrayOfExpression[i].getDataType().canBeAssignedFrom(localExpression.getNodeDataType(i))) {
         throw Error.error(5561);
+      }
     }
     StatementSet localStatementSet = new StatementSet(this.session, arrayOfExpression, localExpression, arrayOfInt, this.compileContext);
     return localStatementSet;
   }
-
+  
   StatementSet compileSetStatement(RangeVariable[] paramArrayOfRangeVariable)
   {
     read();
@@ -266,30 +282,35 @@ public class ParserRoutine extends ParserDML
     HsqlArrayList localHsqlArrayList = new HsqlArrayList();
     LongDeque localLongDeque = new LongDeque();
     readSetClauseList(paramArrayOfRangeVariable, localOrderedHashSet, localLongDeque, localHsqlArrayList);
-    if (localHsqlArrayList.size() > 1)
+    if (localHsqlArrayList.size() > 1) {
       throw Error.error(5602);
+    }
     Expression localExpression = (Expression)localHsqlArrayList.get(0);
-    if (localExpression.getDegree() != localOrderedHashSet.size())
+    if (localExpression.getDegree() != localOrderedHashSet.size()) {
       throw Error.error(5546, "SET");
+    }
     int[] arrayOfInt = new int[localLongDeque.size()];
     localLongDeque.toArray(arrayOfInt);
     Expression[] arrayOfExpression = new Expression[localOrderedHashSet.size()];
     localOrderedHashSet.toArray(arrayOfExpression);
-    for (int i = 0; i < arrayOfExpression.length; i++)
+    for (int i = 0; i < arrayOfExpression.length; i++) {
       resolveOuterReferencesAndTypes(paramArrayOfRangeVariable, arrayOfExpression[i]);
+    }
     resolveOuterReferencesAndTypes(paramArrayOfRangeVariable, localExpression);
     for (i = 0; i < arrayOfExpression.length; i++)
     {
       ColumnSchema localColumnSchema = arrayOfExpression[i].getColumn();
-      if (localColumnSchema.getParameterMode() == 1)
+      if (localColumnSchema.getParameterMode() == 1) {
         throw Error.error(2500, localColumnSchema.getName().statementName);
-      if (!arrayOfExpression[i].getDataType().canBeAssignedFrom(localExpression.getNodeDataType(i)))
+      }
+      if (!arrayOfExpression[i].getDataType().canBeAssignedFrom(localExpression.getNodeDataType(i))) {
         throw Error.error(5561);
+      }
     }
     StatementSet localStatementSet = new StatementSet(this.session, arrayOfExpression, localExpression, arrayOfInt, this.compileContext);
     return localStatementSet;
   }
-
+  
   StatementDMQL compileTriggerSetStatement(Table paramTable, RangeGroup[] paramArrayOfRangeGroup)
   {
     read();
@@ -302,15 +323,16 @@ public class ParserRoutine extends ParserDML
     localLongDeque.toArray(arrayOfInt);
     Expression[] arrayOfExpression2 = new Expression[localOrderedHashSet.size()];
     localOrderedHashSet.toArray(arrayOfExpression2);
-    for (int i = 0; i < arrayOfExpression2.length; i++)
+    for (int i = 0; i < arrayOfExpression2.length; i++) {
       resolveOuterReferencesAndTypes(RangeGroup.emptyArray, arrayOfExpression2[i]);
+    }
     Expression[] arrayOfExpression1 = new Expression[localHsqlArrayList.size()];
     localHsqlArrayList.toArray(arrayOfExpression1);
     resolveUpdateExpressions(paramTable, RangeGroup.emptyGroup, arrayOfInt, arrayOfExpression1, paramArrayOfRangeGroup);
     StatementSet localStatementSet = new StatementSet(this.session, arrayOfExpression2, paramTable, paramArrayOfRangeGroup[0].getRangeVariables(), arrayOfInt, arrayOfExpression1, this.compileContext);
     return localStatementSet;
   }
-
+  
   StatementSchema compileAlterSpecificRoutine()
   {
     boolean bool = false;
@@ -323,13 +345,15 @@ public class ParserRoutine extends ParserDML
     if (bool)
     {
       localObject = this.database.schemaManager.getReferencesTo(localRoutine.getSpecificName());
-      if (!((OrderedHashSet)localObject).isEmpty())
+      if (!((OrderedHashSet)localObject).isEmpty()) {
         throw Error.error(5502);
+      }
     }
-    if (this.token.tokenType == 567)
+    if (this.token.tokenType == 567) {
       read();
-    else if (this.token.tokenType == 445)
+    } else if (this.token.tokenType == 445) {
       read();
+    }
     readRoutineBody(localRoutine);
     localRoutine.resetAlteredRoutineSettings();
     localRoutine.resolve(this.session);
@@ -338,7 +362,7 @@ public class ParserRoutine extends ParserDML
     StatementSchema localStatementSchema = new StatementSchema(str, 17, (Object[])localObject, null, this.database.schemaManager.getCatalogNameArray());
     return localStatementSchema;
   }
-
+  
   StatementSchema compileCreateProcedureOrFunction(boolean paramBoolean)
   {
     boolean bool = false;
@@ -346,8 +370,9 @@ public class ParserRoutine extends ParserDML
     {
       bool = true;
       read();
-      if (this.token.tokenType == 215)
+      if (this.token.tokenType == 215) {
         throw super.unexpectedToken();
+      }
     }
     int i = this.token.tokenType == 215 ? 17 : 16;
     read();
@@ -357,10 +382,10 @@ public class ParserRoutine extends ParserDML
     localRoutine.setName(localHsqlName);
     localRoutine.setAggregate(bool);
     readThis(786);
-    if (this.token.tokenType == 772)
+    if (this.token.tokenType == 772) {
       read();
-    else
-      while (true)
+    } else {
+      for (;;)
       {
         localObject = readRoutineParameter(localRoutine, true);
         localRoutine.addParameter((ColumnSchema)localObject);
@@ -374,6 +399,7 @@ public class ParserRoutine extends ParserDML
           break;
         }
       }
+    }
     if (i != 17)
     {
       readThis(238);
@@ -397,7 +423,7 @@ public class ParserRoutine extends ParserDML
     StatementSchema localStatementSchema = new StatementSchema(str, 14, (Object[])localObject, null, this.database.schemaManager.getCatalogNameArray());
     return localStatementSchema;
   }
-
+  
   Routine readCreatePasswordCheckFunction()
   {
     Routine localRoutine = new Routine(16);
@@ -427,7 +453,7 @@ public class ParserRoutine extends ParserDML
     localRoutine.resolve(this.session);
     return localRoutine;
   }
-
+  
   Routine readCreateDatabaseAuthenticationFunction()
   {
     Routine localRoutine = new Routine(16);
@@ -450,16 +476,17 @@ public class ParserRoutine extends ParserDML
     localRoutine.resolve(this.session);
     return localRoutine;
   }
-
+  
   private void readTableDefinition(Routine paramRoutine, Table paramTable)
     throws HsqlException
   {
     readThis(786);
-    for (int i = 0; ; i++)
+    for (int i = 0;; i++)
     {
       ColumnSchema localColumnSchema = readRoutineParameter(paramRoutine, false);
-      if (localColumnSchema.getName() == null)
+      if (localColumnSchema.getName() == null) {
         throw super.unexpectedToken();
+      }
       paramTable.addColumn(localColumnSchema);
       if (this.token.tokenType == 774)
       {
@@ -473,17 +500,18 @@ public class ParserRoutine extends ParserDML
     }
     paramTable.createPrimaryKey();
   }
-
+  
   private void readRoutineCharacteristics(Routine paramRoutine)
   {
     OrderedIntHashSet localOrderedIntHashSet = new OrderedIntHashSet();
     int i = 0;
-    while (i == 0)
+    while (i == 0) {
       switch (this.token.tokenType)
       {
-      case 146:
-        if (!localOrderedIntHashSet.add(146))
+      case 146: 
+        if (!localOrderedIntHashSet.add(146)) {
           throw unexpectedToken();
+        }
         read();
         if (this.token.tokenType == 425)
         {
@@ -500,9 +528,10 @@ public class ParserRoutine extends ParserDML
           throw unexpectedToken();
         }
         break;
-      case 204:
-        if (!localOrderedIntHashSet.add(204))
+      case 204: 
+        if (!localOrderedIntHashSet.add(204)) {
           throw unexpectedToken();
+        }
         read();
         readThis(519);
         if (this.token.tokenType == 425)
@@ -516,63 +545,73 @@ public class ParserRoutine extends ParserDML
           paramRoutine.setParameterStyle(2);
         }
         break;
-      case 259:
-        if (!localOrderedIntHashSet.add(259))
+      case 259: 
+        if (!localOrderedIntHashSet.add(259)) {
           throw unexpectedToken();
+        }
         read();
         HsqlNameManager.HsqlName localHsqlName = readNewSchemaObjectName(24, false);
         paramRoutine.setSpecificName(localHsqlName);
         break;
-      case 83:
-        if (!localOrderedIntHashSet.add(83))
+      case 83: 
+        if (!localOrderedIntHashSet.add(83)) {
           throw unexpectedToken();
+        }
         read();
         paramRoutine.setDeterministic(true);
         break;
-      case 183:
-        if (!localOrderedIntHashSet.add(83))
+      case 183: 
+        if (!localOrderedIntHashSet.add(83)) {
           throw unexpectedToken();
+        }
         read();
         readThis(83);
         paramRoutine.setDeterministic(false);
         break;
-      case 171:
-        if (!localOrderedIntHashSet.add(261))
+      case 171: 
+        if (!localOrderedIntHashSet.add(261)) {
           throw unexpectedToken();
-        if (paramRoutine.getType() == 16)
+        }
+        if (paramRoutine.getType() == 16) {
           throw unexpectedToken();
+        }
         read();
         readThis(261);
         readThis(378);
         paramRoutine.setDataImpact(4);
         break;
-      case 180:
-        if (!localOrderedIntHashSet.add(261))
+      case 180: 
+        if (!localOrderedIntHashSet.add(261)) {
           throw unexpectedToken();
+        }
         read();
         readThis(261);
         paramRoutine.setDataImpact(1);
         break;
-      case 218:
-        if (!localOrderedIntHashSet.add(261))
+      case 218: 
+        if (!localOrderedIntHashSet.add(261)) {
           throw unexpectedToken();
+        }
         read();
         readThis(261);
         readThis(378);
         paramRoutine.setDataImpact(3);
         break;
-      case 375:
-        if (!localOrderedIntHashSet.add(261))
+      case 375: 
+        if (!localOrderedIntHashSet.add(261)) {
           throw unexpectedToken();
+        }
         read();
         readThis(261);
         paramRoutine.setDataImpact(2);
         break;
-      case 238:
-        if ((!localOrderedIntHashSet.add(186)) || (paramRoutine.isProcedure()))
+      case 238: 
+        if ((!localOrderedIntHashSet.add(186)) || (paramRoutine.isProcedure())) {
           throw unexpectedToken();
-        if (paramRoutine.isAggregate())
+        }
+        if (paramRoutine.isAggregate()) {
           throw Error.error(5604, this.token.tokenString);
+        }
         read();
         readThis(186);
         readThis(194);
@@ -580,53 +619,60 @@ public class ParserRoutine extends ParserDML
         readThis(419);
         paramRoutine.setNullInputOutput(true);
         break;
-      case 26:
-        if ((!localOrderedIntHashSet.add(186)) || (paramRoutine.isProcedure()))
+      case 26: 
+        if ((!localOrderedIntHashSet.add(186)) || (paramRoutine.isProcedure())) {
           throw unexpectedToken();
+        }
         read();
         readThis(194);
         readThis(186);
         readThis(419);
         paramRoutine.setNullInputOutput(false);
         break;
-      case 89:
-        if ((!localOrderedIntHashSet.add(236)) || (paramRoutine.isFunction()))
+      case 89: 
+        if ((!localOrderedIntHashSet.add(236)) || (paramRoutine.isFunction())) {
           throw unexpectedToken();
+        }
         read();
         readThis(236);
         readThis(510);
         int j = readInteger();
-        if ((j < 0) || (j > 16))
+        if ((j < 0) || (j > 16)) {
           throw Error.error(5604, String.valueOf(j));
+        }
         paramRoutine.setMaxDynamicResults(j);
         break;
-      case 179:
-        if ((paramRoutine.getType() == 16) || (!localOrderedIntHashSet.add(246)))
+      case 179: 
+        if ((paramRoutine.getType() == 16) || (!localOrderedIntHashSet.add(246))) {
           throw unexpectedToken();
+        }
         read();
         readThis(246);
         readThis(432);
         paramRoutine.setNewSavepointLevel(true);
         break;
-      case 193:
-        if ((paramRoutine.getType() == 16) || (!localOrderedIntHashSet.add(246)))
+      case 193: 
+        if ((paramRoutine.getType() == 16) || (!localOrderedIntHashSet.add(246))) {
           throw unexpectedToken();
+        }
         read();
         readThis(246);
         readThis(432);
         paramRoutine.setNewSavepointLevel(false);
         throw super.unsupportedFeature("OLD");
-      default:
+      default: 
         i = 1;
       }
+    }
   }
-
+  
   void readRoutineBody(Routine paramRoutine)
   {
     if (this.token.tokenType == 104)
     {
-      if (paramRoutine.getLanguage() != 1)
+      if (paramRoutine.getLanguage() != 1) {
         throw unexpectedToken();
+      }
       read();
       readThis(445);
       checkIsValue(1);
@@ -643,15 +689,16 @@ public class ParserRoutine extends ParserDML
     {
       startRecording();
       Statement localStatement = compileSQLProcedureStatementOrNull(paramRoutine, null);
-      if (localStatement == null)
+      if (localStatement == null) {
         throw unexpectedToken();
+      }
       Token[] arrayOfToken = getRecordedStatement();
       String str = Token.getSQL(arrayOfToken);
       localStatement.setSQL(str);
       paramRoutine.setProcedure(localStatement);
     }
   }
-
+  
   private Object[] readLocalDeclarationList(Routine paramRoutine, StatementCompound paramStatementCompound)
   {
     HsqlArrayList localHsqlArrayList = new HsqlArrayList();
@@ -678,10 +725,11 @@ public class ParserRoutine extends ParserDML
       else if (i == 1)
       {
         localObject = readLocalVariableDeclarationOrNull();
-        if (localObject == null)
+        if (localObject == null) {
           i = 2;
-        else
+        } else {
           localHsqlArrayList.addAll((Object[])localObject);
+        }
       }
       else if (i == 2)
       {
@@ -706,7 +754,7 @@ public class ParserRoutine extends ParserDML
     localHsqlArrayList.toArray(localObject);
     return localObject;
   }
-
+  
   Table readLocalTableVariableDeclarationOrNull(Routine paramRoutine)
   {
     int i = super.getPosition();
@@ -723,7 +771,7 @@ public class ParserRoutine extends ParserDML
     rewind(i);
     return null;
   }
-
+  
   ColumnSchema[] readLocalVariableDeclarationOrNull()
   {
     int i = super.getPosition();
@@ -737,12 +785,13 @@ public class ParserRoutine extends ParserDML
         rewind(i);
         return null;
       }
-      while (true)
+      for (;;)
       {
         arrayOfHsqlName = (HsqlNameManager.HsqlName[])ArrayUtil.resizeArray(arrayOfHsqlName, arrayOfHsqlName.length + 1);
         arrayOfHsqlName[(arrayOfHsqlName.length - 1)] = super.readNewSchemaObjectName(22, false);
-        if (this.token.tokenType != 774)
+        if (this.token.tokenType != 774) {
           break;
+        }
         read();
       }
       localType = readTypeDefinition(false, true);
@@ -767,26 +816,26 @@ public class ParserRoutine extends ParserDML
     readThis(791);
     return arrayOfColumnSchema;
   }
-
+  
   private StatementHandler compileLocalHandlerDeclaration(Routine paramRoutine, StatementCompound paramStatementCompound)
   {
     readThis(77);
     int i;
     switch (this.token.tokenType)
     {
-    case 376:
+    case 376: 
       read();
       i = 5;
       break;
-    case 102:
+    case 102: 
       read();
       i = 6;
       break;
-    case 297:
+    case 297: 
       read();
       i = 7;
       break;
-    default:
+    default: 
       throw unexpectedToken();
     }
     readThis(124);
@@ -794,31 +843,36 @@ public class ParserRoutine extends ParserDML
     StatementHandler localStatementHandler = new StatementHandler(i);
     int j = 0;
     int k = 1;
-    label301: 
+    label301:
     while (j == 0)
     {
       int m = 0;
       switch (this.token.tokenType)
       {
-      case 774:
-        if (k != 0)
+      case 774: 
+        if (k != 0) {
           throw unexpectedToken();
+        }
         read();
         k = 1;
         break;
-      case 263:
+      case 263: 
         m = 4;
-      case 262:
-        if (m == 0)
+      case 262: 
+        if (m == 0) {
           m = 1;
-      case 264:
-        if (m == 0)
+        }
+      case 264: 
+        if (m == 0) {
           m = 2;
-      case 183:
-        if (m == 0)
+        }
+      case 183: 
+        if (m == 0) {
           m = 3;
-        if (k == 0)
+        }
+        if (k == 0) {
           throw unexpectedToken();
+        }
         k = 0;
         read();
         if (m == 3)
@@ -834,8 +888,9 @@ public class ParserRoutine extends ParserDML
         localStatementHandler.addConditionType(m);
         break;
       }
-      if (k != 0)
+      if (k != 0) {
         throw unexpectedToken();
+      }
       j = 1;
     }
     if (this.token.tokenType == 791)
@@ -845,25 +900,27 @@ public class ParserRoutine extends ParserDML
     else
     {
       Statement localStatement = compileSQLProcedureStatementOrNull(paramRoutine, paramStatementCompound);
-      if (localStatement == null)
+      if (localStatement == null) {
         throw unexpectedToken();
+      }
       readThis(791);
       localStatementHandler.addStatement(localStatement);
     }
     return localStatementHandler;
   }
-
+  
   String parseSQLStateValue()
   {
     readIfThis(307);
     checkIsValue(1);
     String str = this.token.tokenString;
-    if (this.token.tokenString.length() != 5)
+    if (this.token.tokenString.length() != 5) {
       throw Error.error(5607);
+    }
     read();
     return str;
   }
-
+  
   private Statement compileCompoundStatement(Routine paramRoutine, StatementCompound paramStatementCompound, HsqlNameManager.HsqlName paramHsqlName)
   {
     readThis(17);
@@ -887,33 +944,37 @@ public class ParserRoutine extends ParserDML
     readThis(94);
     if ((isSimpleName()) && (!isReservedKey()))
     {
-      if (paramHsqlName == null)
+      if (paramHsqlName == null) {
         throw unexpectedToken();
-      if (!paramHsqlName.name.equals(this.token.tokenString))
+      }
+      if (!paramHsqlName.name.equals(this.token.tokenString)) {
         throw Error.error(5508, this.token.tokenString);
+      }
       read();
     }
     return localStatementCompound;
   }
-
+  
   private Statement[] compileSQLProcedureStatementList(Routine paramRoutine, StatementCompound paramStatementCompound)
   {
     HsqlArrayList localHsqlArrayList = new HsqlArrayList();
-    while (true)
+    for (;;)
     {
       Statement localStatement = compileSQLProcedureStatementOrNull(paramRoutine, paramStatementCompound);
-      if (localStatement == null)
+      if (localStatement == null) {
         break;
+      }
       readThis(791);
       localHsqlArrayList.add(localStatement);
     }
-    if (localHsqlArrayList.size() == 0)
+    if (localHsqlArrayList.size() == 0) {
       throw unexpectedToken();
+    }
     Statement[] arrayOfStatement = new Statement[localHsqlArrayList.size()];
     localHsqlArrayList.toArray(arrayOfStatement);
     return arrayOfStatement;
   }
-
+  
   Statement compileSQLProcedureStatementOrNull(Routine paramRoutine, StatementCompound paramStatementCompound)
   {
     Object localObject1 = null;
@@ -924,8 +985,9 @@ public class ParserRoutine extends ParserDML
     if ((!paramRoutine.isTrigger()) && (isSimpleName()) && (!isReservedKey()))
     {
       localHsqlName1 = readNewSchemaObjectName(21, false);
-      if (this.token.tokenType != 773)
+      if (this.token.tokenType != 773) {
         throw unexpectedToken(localHsqlName1.getNameString());
+      }
       readThis(773);
     }
     this.compileContext.reset();
@@ -935,46 +997,55 @@ public class ParserRoutine extends ParserDML
     {
       switch (this.token.tokenType)
       {
-      case 196:
-        if (paramRoutine.dataImpact == 2)
+      case 196: 
+        if (paramRoutine.dataImpact == 2) {
           throw Error.error(5602, paramRoutine.getDataImpactString());
-        if (localHsqlName1 != null)
+        }
+        if (localHsqlName1 != null) {
           throw unexpectedToken();
+        }
         localObject1 = compileOpenCursorStatement(paramStatementCompound);
         break;
-      case 251:
-        if (localHsqlName1 != null)
+      case 251: 
+        if (localHsqlName1 != null) {
           throw unexpectedToken();
+        }
         localObject1 = compileSelectSingleRowStatement(arrayOfRangeGroup);
         break;
-      case 135:
-        if (localHsqlName1 != null)
+      case 135: 
+        if (localHsqlName1 != null) {
           throw unexpectedToken();
+        }
         localObject1 = compileInsertStatement(arrayOfRangeGroup);
         break;
-      case 303:
-        if (localHsqlName1 != null)
+      case 303: 
+        if (localHsqlName1 != null) {
           throw unexpectedToken();
+        }
         localObject1 = compileUpdateStatement(arrayOfRangeGroup);
         break;
-      case 79:
-        if (localHsqlName1 != null)
+      case 79: 
+        if (localHsqlName1 != null) {
           throw unexpectedToken();
+        }
         localObject1 = compileDeleteStatement(arrayOfRangeGroup);
         break;
-      case 295:
-        if (localHsqlName1 != null)
+      case 295: 
+        if (localHsqlName1 != null) {
           throw unexpectedToken();
+        }
         localObject1 = compileTruncateStatement();
         break;
-      case 166:
-        if (localHsqlName1 != null)
+      case 166: 
+        if (localHsqlName1 != null) {
           throw unexpectedToken();
+        }
         localObject1 = compileMergeStatement(arrayOfRangeGroup);
         break;
-      case 254:
-        if (localHsqlName1 != null)
+      case 254: 
+        if (localHsqlName1 != null) {
           throw unexpectedToken();
+        }
         if (paramRoutine.isTrigger())
         {
           if ((paramRoutine.triggerType == 4) && (paramRoutine.triggerOperation != 19))
@@ -1002,76 +1073,86 @@ public class ParserRoutine extends ParserDML
           localObject1 = compileSetStatement(arrayOfRangeVariable);
         }
         break;
-      case 119:
-        if (localHsqlName1 != null)
+      case 119: 
+        if (localHsqlName1 != null) {
           throw unexpectedToken();
+        }
         localObject1 = compileGetStatement(arrayOfRangeVariable);
         break;
-      case 25:
-        if (localHsqlName1 != null)
+      case 25: 
+        if (localHsqlName1 != null) {
           throw unexpectedToken();
+        }
         localObject1 = compileCallStatement(arrayOfRangeGroup, true);
         localObject2 = ((StatementProcedure)localObject1).procedure;
-        if (localObject2 != null)
+        if (localObject2 != null) {
           switch (paramRoutine.dataImpact)
           {
-          case 2:
-            if ((((Routine)localObject2).dataImpact == 3) || (((Routine)localObject2).dataImpact == 4))
+          case 2: 
+            if ((((Routine)localObject2).dataImpact == 3) || (((Routine)localObject2).dataImpact == 4)) {
               throw Error.error(5602, paramRoutine.getDataImpactString());
+            }
             break;
-          case 3:
-            if (((Routine)localObject2).dataImpact == 4)
+          case 3: 
+            if (((Routine)localObject2).dataImpact == 4) {
               throw Error.error(5602, paramRoutine.getDataImpactString());
+            }
             break;
           }
+        }
         break;
-      case 237:
-        if ((paramRoutine.isTrigger()) || (localHsqlName1 != null))
+      case 237: 
+        if ((paramRoutine.isTrigger()) || (localHsqlName1 != null)) {
           throw unexpectedToken();
+        }
         read();
         localObject1 = compileReturnValue(paramRoutine, paramStatementCompound);
         break;
-      case 17:
+      case 17: 
         localObject1 = compileCompoundStatement(paramRoutine, paramStatementCompound, localHsqlName1);
         break;
-      case 322:
-        if (paramRoutine.isTrigger())
+      case 322: 
+        if (paramRoutine.isTrigger()) {
           throw unexpectedToken();
+        }
         localObject1 = compileWhile(paramRoutine, paramStatementCompound, localHsqlName1);
         break;
-      case 234:
+      case 234: 
         localObject1 = compileRepeat(paramRoutine, paramStatementCompound, localHsqlName1);
         break;
-      case 160:
+      case 160: 
         localObject1 = compileLoop(paramRoutine, paramStatementCompound, localHsqlName1);
         break;
-      case 112:
+      case 112: 
         localObject1 = compileFor(paramRoutine, paramStatementCompound, localHsqlName1);
         break;
-      case 143:
-        if (localHsqlName1 != null)
+      case 143: 
+        if (localHsqlName1 != null) {
           throw unexpectedToken();
+        }
         localObject1 = compileIterate();
         break;
-      case 152:
-        if (localHsqlName1 != null)
+      case 152: 
+        if (localHsqlName1 != null) {
           throw unexpectedToken();
+        }
         localObject1 = compileLeave(paramRoutine, paramStatementCompound);
         break;
-      case 412:
+      case 412: 
         localObject1 = compileIf(paramRoutine, paramStatementCompound);
         break;
-      case 29:
+      case 29: 
         localObject1 = compileCase(paramRoutine, paramStatementCompound);
         break;
-      case 255:
+      case 255: 
         localObject1 = compileSignal(paramRoutine, paramStatementCompound, localHsqlName1);
         break;
-      case 235:
+      case 235: 
         localObject1 = compileResignal(paramRoutine, paramStatementCompound, localHsqlName1);
         break;
-      default:
-        label551: localObject2 = null;
+      default: 
+        label551:
+        localObject2 = null;
         return localObject2;
       }
       ((Statement)localObject1).setRoot(paramRoutine);
@@ -1084,7 +1165,7 @@ public class ParserRoutine extends ParserDML
       this.session.setCurrentSchemaHsqlName(localHsqlName2);
     }
   }
-
+  
   private Statement compileReturnValue(Routine paramRoutine, StatementCompound paramStatementCompound)
   {
     RangeGroup[] arrayOfRangeGroup = new RangeGroup[1];
@@ -1094,29 +1175,31 @@ public class ParserRoutine extends ParserDML
     if (localObject == null)
     {
       checkIsValue();
-      if (this.token.tokenValue == null)
+      if (this.token.tokenValue == null) {
         localObject = new ExpressionValue(null, null);
+      }
     }
     resolveOuterReferencesAndTypes(paramRoutine, paramStatementCompound, (Expression)localObject);
-    if (paramRoutine.isProcedure())
+    if (paramRoutine.isProcedure()) {
       throw Error.error(5602);
+    }
     return new StatementExpression(this.session, this.compileContext, 58, (Expression)localObject);
   }
-
+  
   private Statement compileIterate()
   {
     readThis(143);
     HsqlNameManager.HsqlName localHsqlName = readNewSchemaObjectName(21, false);
     return new StatementSimple(102, localHsqlName);
   }
-
+  
   private Statement compileLeave(Routine paramRoutine, StatementCompound paramStatementCompound)
   {
     readThis(152);
     HsqlNameManager.HsqlName localHsqlName = readNewSchemaObjectName(21, false);
     return new StatementSimple(89, localHsqlName);
   }
-
+  
   private Statement compileWhile(Routine paramRoutine, StatementCompound paramStatementCompound, HsqlNameManager.HsqlName paramHsqlName)
   {
     readThis(322);
@@ -1129,10 +1212,12 @@ public class ParserRoutine extends ParserDML
     readThis(322);
     if ((isSimpleName()) && (!isReservedKey()))
     {
-      if (paramHsqlName == null)
+      if (paramHsqlName == null) {
         throw unexpectedToken();
-      if (!paramHsqlName.name.equals(this.token.tokenString))
+      }
+      if (!paramHsqlName.name.equals(this.token.tokenString)) {
         throw Error.error(5508, this.token.tokenString);
+      }
       read();
     }
     StatementCompound localStatementCompound = new StatementCompound(97, paramHsqlName);
@@ -1140,7 +1225,7 @@ public class ParserRoutine extends ParserDML
     localStatementCompound.setCondition(localStatementExpression);
     return localStatementCompound;
   }
-
+  
   private Statement compileRepeat(Routine paramRoutine, StatementCompound paramStatementCompound, HsqlNameManager.HsqlName paramHsqlName)
   {
     readThis(234);
@@ -1153,10 +1238,12 @@ public class ParserRoutine extends ParserDML
     readThis(234);
     if ((isSimpleName()) && (!isReservedKey()))
     {
-      if (paramHsqlName == null)
+      if (paramHsqlName == null) {
         throw unexpectedToken();
-      if (!paramHsqlName.name.equals(this.token.tokenString))
+      }
+      if (!paramHsqlName.name.equals(this.token.tokenString)) {
         throw Error.error(5508, this.token.tokenString);
+      }
       read();
     }
     StatementCompound localStatementCompound = new StatementCompound(95, paramHsqlName);
@@ -1164,7 +1251,7 @@ public class ParserRoutine extends ParserDML
     localStatementCompound.setCondition(localStatementExpression);
     return localStatementCompound;
   }
-
+  
   private Statement compileLoop(Routine paramRoutine, StatementCompound paramStatementCompound, HsqlNameManager.HsqlName paramHsqlName)
   {
     readThis(160);
@@ -1173,17 +1260,19 @@ public class ParserRoutine extends ParserDML
     readThis(160);
     if ((isSimpleName()) && (!isReservedKey()))
     {
-      if (paramHsqlName == null)
+      if (paramHsqlName == null) {
         throw unexpectedToken();
-      if (!paramHsqlName.name.equals(this.token.tokenString))
+      }
+      if (!paramHsqlName.name.equals(this.token.tokenString)) {
         throw Error.error(5508, this.token.tokenString);
+      }
       read();
     }
     StatementCompound localStatementCompound = new StatementCompound(90, paramHsqlName);
     localStatementCompound.setStatements(arrayOfStatement);
     return localStatementCompound;
   }
-
+  
   private Statement compileFor(Routine paramRoutine, StatementCompound paramStatementCompound, HsqlNameManager.HsqlName paramHsqlName)
   {
     RangeGroup[] arrayOfRangeGroup = new RangeGroup[1];
@@ -1202,16 +1291,18 @@ public class ParserRoutine extends ParserDML
     readThis(112);
     if ((isSimpleName()) && (!isReservedKey()))
     {
-      if (paramHsqlName == null)
+      if (paramHsqlName == null) {
         throw unexpectedToken();
-      if (!paramHsqlName.name.equals(this.token.tokenString))
+      }
+      if (!paramHsqlName.name.equals(this.token.tokenString)) {
         throw Error.error(5508, this.token.tokenString);
+      }
       read();
     }
     localStatementCompound.setStatements(arrayOfStatement);
     return localStatementCompound;
   }
-
+  
   private Statement compileIf(Routine paramRoutine, StatementCompound paramStatementCompound)
   {
     HsqlArrayList localHsqlArrayList = new HsqlArrayList();
@@ -1222,8 +1313,9 @@ public class ParserRoutine extends ParserDML
     localHsqlArrayList.add(localStatementExpression);
     readThis(280);
     Statement[] arrayOfStatement = compileSQLProcedureStatementList(paramRoutine, paramStatementCompound);
-    for (int i = 0; i < arrayOfStatement.length; i++)
+    for (int i = 0; i < arrayOfStatement.length; i++) {
       localHsqlArrayList.add(arrayOfStatement[i]);
+    }
     while (this.token.tokenType == 93)
     {
       read();
@@ -1233,8 +1325,9 @@ public class ParserRoutine extends ParserDML
       localHsqlArrayList.add(localStatementExpression);
       readThis(280);
       arrayOfStatement = compileSQLProcedureStatementList(paramRoutine, paramStatementCompound);
-      for (i = 0; i < arrayOfStatement.length; i++)
+      for (i = 0; i < arrayOfStatement.length; i++) {
         localHsqlArrayList.add(arrayOfStatement[i]);
+      }
     }
     if (this.token.tokenType == 92)
     {
@@ -1243,8 +1336,9 @@ public class ParserRoutine extends ParserDML
       localStatementExpression = new StatementExpression(this.session, this.compileContext, 1201, localExpression);
       localHsqlArrayList.add(localStatementExpression);
       arrayOfStatement = compileSQLProcedureStatementList(paramRoutine, paramStatementCompound);
-      for (i = 0; i < arrayOfStatement.length; i++)
+      for (i = 0; i < arrayOfStatement.length; i++) {
         localHsqlArrayList.add(arrayOfStatement[i]);
+      }
     }
     readThis(94);
     readThis(412);
@@ -1254,16 +1348,17 @@ public class ParserRoutine extends ParserDML
     localStatementCompound.setStatements(arrayOfStatement);
     return localStatementCompound;
   }
-
+  
   private Statement compileCase(Routine paramRoutine, StatementCompound paramStatementCompound)
   {
     HsqlArrayList localHsqlArrayList = new HsqlArrayList();
     Expression localExpression = null;
     readThis(29);
-    if (this.token.tokenType == 314)
+    if (this.token.tokenType == 314) {
       localHsqlArrayList = readCaseWhen(paramRoutine, paramStatementCompound);
-    else
+    } else {
       localHsqlArrayList = readSimpleCaseWhen(paramRoutine, paramStatementCompound);
+    }
     if (this.token.tokenType == 92)
     {
       read();
@@ -1271,8 +1366,9 @@ public class ParserRoutine extends ParserDML
       StatementExpression localStatementExpression = new StatementExpression(this.session, this.compileContext, 1201, localExpression);
       localHsqlArrayList.add(localStatementExpression);
       arrayOfStatement = compileSQLProcedureStatementList(paramRoutine, paramStatementCompound);
-      for (int i = 0; i < arrayOfStatement.length; i++)
+      for (int i = 0; i < arrayOfStatement.length; i++) {
         localHsqlArrayList.add(arrayOfStatement[i]);
+      }
     }
     readThis(94);
     readThis(29);
@@ -1282,46 +1378,51 @@ public class ParserRoutine extends ParserDML
     localStatementCompound.setStatements(arrayOfStatement);
     return localStatementCompound;
   }
-
+  
   private HsqlArrayList readSimpleCaseWhen(Routine paramRoutine, StatementCompound paramStatementCompound)
   {
     HsqlArrayList localHsqlArrayList = new HsqlArrayList();
     Object localObject1 = null;
     Expression localExpression = XreadRowValuePredicand();
-    while (true)
+    for (;;)
     {
       readThis(314);
-      while (true)
+      for (;;)
       {
         Object localObject2 = XreadPredicateRightPart(localExpression);
-        if (localExpression == localObject2)
+        if (localExpression == localObject2) {
           localObject2 = new ExpressionLogical(localExpression, XreadRowValuePredicand());
+        }
         resolveOuterReferencesAndTypes(paramRoutine, paramStatementCompound, (Expression)localObject2);
-        if (localObject1 == null)
+        if (localObject1 == null) {
           localObject1 = localObject2;
-        else
+        } else {
           localObject1 = new ExpressionLogical(50, (Expression)localObject1, (Expression)localObject2);
-        if (this.token.tokenType != 774)
+        }
+        if (this.token.tokenType != 774) {
           break;
+        }
         read();
       }
       StatementExpression localStatementExpression = new StatementExpression(this.session, this.compileContext, 1201, (Expression)localObject1);
       localHsqlArrayList.add(localStatementExpression);
       readThis(280);
       Statement[] arrayOfStatement = compileSQLProcedureStatementList(paramRoutine, paramStatementCompound);
-      for (int i = 0; i < arrayOfStatement.length; i++)
+      for (int i = 0; i < arrayOfStatement.length; i++) {
         localHsqlArrayList.add(arrayOfStatement[i]);
-      if (this.token.tokenType != 314)
+      }
+      if (this.token.tokenType != 314) {
         break;
+      }
     }
     return localHsqlArrayList;
   }
-
+  
   private HsqlArrayList readCaseWhen(Routine paramRoutine, StatementCompound paramStatementCompound)
   {
     HsqlArrayList localHsqlArrayList = new HsqlArrayList();
     Expression localExpression = null;
-    while (true)
+    for (;;)
     {
       readThis(314);
       localExpression = XreadBooleanValueExpression();
@@ -1330,14 +1431,16 @@ public class ParserRoutine extends ParserDML
       localHsqlArrayList.add(localStatementExpression);
       readThis(280);
       Statement[] arrayOfStatement = compileSQLProcedureStatementList(paramRoutine, paramStatementCompound);
-      for (int i = 0; i < arrayOfStatement.length; i++)
+      for (int i = 0; i < arrayOfStatement.length; i++) {
         localHsqlArrayList.add(arrayOfStatement[i]);
-      if (this.token.tokenType != 314)
+      }
+      if (this.token.tokenType != 314) {
         break;
+      }
     }
     return localHsqlArrayList;
   }
-
+  
   private Statement compileSignal(Routine paramRoutine, StatementCompound paramStatementCompound, HsqlNameManager.HsqlName paramHsqlName)
   {
     String str2 = null;
@@ -1353,7 +1456,7 @@ public class ParserRoutine extends ParserDML
     StatementSimple localStatementSimple = new StatementSimple(92, str1, str2);
     return localStatementSimple;
   }
-
+  
   private Statement compileResignal(Routine paramRoutine, StatementCompound paramStatementCompound, HsqlNameManager.HsqlName paramHsqlName)
   {
     String str1 = null;
@@ -1372,45 +1475,50 @@ public class ParserRoutine extends ParserDML
     StatementSimple localStatementSimple = new StatementSimple(91, str1, str2);
     return localStatementSimple;
   }
-
+  
   private ColumnSchema readRoutineParameter(Routine paramRoutine, boolean paramBoolean)
   {
     HsqlNameManager.HsqlName localHsqlName = null;
     byte b = 1;
-    if (paramBoolean)
+    if (paramBoolean) {
       switch (this.token.tokenType)
       {
-      case 130:
+      case 130: 
         read();
         break;
-      case 199:
-        if (paramRoutine.getType() != 17)
+      case 199: 
+        if (paramRoutine.getType() != 17) {
           throw unexpectedToken();
+        }
         read();
         b = 4;
         break;
-      case 133:
-        if ((paramRoutine.getType() != 17) && (!paramRoutine.isAggregate()))
+      case 133: 
+        if ((paramRoutine.getType() != 17) && (!paramRoutine.isAggregate())) {
           throw unexpectedToken();
+        }
         read();
         b = 2;
         break;
       }
-    if (!isReservedKey())
+    }
+    if (!isReservedKey()) {
       localHsqlName = readNewDependentSchemaObjectName(paramRoutine.getName(), 23);
+    }
     Type localType = readTypeDefinition(false, true);
     ColumnSchema localColumnSchema = new ColumnSchema(localHsqlName, localType, true, false, null);
-    if (paramBoolean)
+    if (paramBoolean) {
       localColumnSchema.setParameterMode(b);
+    }
     return localColumnSchema;
   }
-
+  
   void resolveOuterReferencesAndTypes(Routine paramRoutine, StatementCompound paramStatementCompound, Expression paramExpression)
   {
     StatementCompound localStatementCompound = paramStatementCompound == null ? paramRoutine : paramStatementCompound;
     resolveOuterReferencesAndTypes(new RangeGroup[] { localStatementCompound }, paramExpression);
   }
-
+  
   void resolveOuterReferencesAndTypes(RangeVariable[] paramArrayOfRangeVariable, Expression paramExpression)
   {
     RangeGroup.RangeGroupSimple localRangeGroupSimple = new RangeGroup.RangeGroupSimple(paramArrayOfRangeVariable);
@@ -1418,7 +1526,8 @@ public class ParserRoutine extends ParserDML
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.ParserRoutine
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

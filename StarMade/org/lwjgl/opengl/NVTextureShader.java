@@ -77,7 +77,8 @@ public final class NVTextureShader
   public static final int GL_TEXTURE_MAG_SIZE_NV = 34591;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.opengl.NVTextureShader
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

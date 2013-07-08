@@ -10,34 +10,35 @@ import org.hsqldb.lib.HsqlByteArrayOutputStream;
 import org.hsqldb.result.Result;
 import org.hsqldb.rowio.RowOutputInterface;
 
-public class ClientConnectionHTTP extends ClientConnection
+public class ClientConnectionHTTP
+  extends ClientConnection
 {
   static final String ENCODING = "ISO-8859-1";
   static final int IDLENGTH = 12;
   private HttpURLConnection httpConnection = null;
-
+  
   public ClientConnectionHTTP(String paramString1, int paramInt1, String paramString2, String paramString3, boolean paramBoolean, String paramString4, String paramString5, int paramInt2)
   {
     super(paramString1, paramInt1, paramString2, paramString3, paramBoolean, paramString4, paramString5, paramInt2);
   }
-
-  protected void initConnection(String paramString, int paramInt, boolean paramBoolean)
-  {
-  }
-
+  
+  protected void initConnection(String paramString, int paramInt, boolean paramBoolean) {}
+  
   protected void openConnection(String paramString, int paramInt, boolean paramBoolean)
   {
     try
     {
       URL localURL = null;
       String str = "";
-      if (!this.path.endsWith("/"))
+      if (!this.path.endsWith("/")) {
         str = "/";
+      }
       str = "http://" + paramString + ":" + paramInt + this.path + str + this.database;
-      if (paramBoolean)
+      if (paramBoolean) {
         localURL = new URL("https://" + paramString + ":" + paramInt + this.path + str + this.database);
-      else
+      } else {
         localURL = new URL(str);
+      }
       this.httpConnection = ((HttpURLConnection)localURL.openConnection());
       this.httpConnection.setDefaultUseCaches(false);
     }
@@ -46,11 +47,9 @@ public class ClientConnectionHTTP extends ClientConnection
       localIOException.printStackTrace(System.out);
     }
   }
-
-  protected void closeConnection()
-  {
-  }
-
+  
+  protected void closeConnection() {}
+  
   public synchronized Result execute(Result paramResult)
   {
     openConnection(this.host, this.port, this.isTLS);
@@ -58,7 +57,7 @@ public class ClientConnectionHTTP extends ClientConnection
     closeConnection();
     return localResult;
   }
-
+  
   protected void write(Result paramResult)
     throws IOException, HsqlException
   {
@@ -76,7 +75,7 @@ public class ClientConnectionHTTP extends ClientConnection
     localHsqlByteArrayOutputStream.writeTo(this.dataOutput);
     this.dataOutput.flush();
   }
-
+  
   protected Result read()
     throws IOException, HsqlException
   {
@@ -87,14 +86,14 @@ public class ClientConnectionHTTP extends ClientConnection
     this.dataInput.close();
     return localResult;
   }
-
+  
   protected void handshake()
     throws IOException
-  {
-  }
+  {}
 }
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.ClientConnectionHTTP
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

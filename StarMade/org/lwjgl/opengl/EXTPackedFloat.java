@@ -10,7 +10,8 @@ public final class EXTPackedFloat
   public static final int GLX_RGBA_UNSIGNED_FLOAT_BIT_EXT = 8;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.opengl.EXTPackedFloat
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

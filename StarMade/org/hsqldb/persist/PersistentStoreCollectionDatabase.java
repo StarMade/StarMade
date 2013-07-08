@@ -10,23 +10,24 @@ public class PersistentStoreCollectionDatabase
 {
   private long persistentStoreIdSequence;
   private final LongKeyHashMap rowStoreMap = new LongKeyHashMap();
-
+  
   public void setStore(Object paramObject, PersistentStore paramPersistentStore)
   {
     long l = ((TableBase)paramObject).getPersistenceId();
-    if (paramPersistentStore == null)
+    if (paramPersistentStore == null) {
       this.rowStoreMap.remove(l);
-    else
+    } else {
       this.rowStoreMap.put(l, paramPersistentStore);
+    }
   }
-
+  
   public PersistentStore getStore(Object paramObject)
   {
     long l = ((TableBase)paramObject).getPersistenceId();
     PersistentStore localPersistentStore = (PersistentStore)this.rowStoreMap.get(l);
     return localPersistentStore;
   }
-
+  
   public void releaseStore(TableBase paramTableBase)
   {
     PersistentStore localPersistentStore = (PersistentStore)this.rowStoreMap.get(paramTableBase.getPersistenceId());
@@ -36,16 +37,17 @@ public class PersistentStoreCollectionDatabase
       this.rowStoreMap.remove(paramTableBase.getPersistenceId());
     }
   }
-
+  
   public long getNextId()
   {
     return this.persistentStoreIdSequence++;
   }
-
+  
   public void release()
   {
-    if (this.rowStoreMap.isEmpty())
+    if (this.rowStoreMap.isEmpty()) {
       return;
+    }
     Iterator localIterator = this.rowStoreMap.values().iterator();
     while (localIterator.hasNext())
     {
@@ -56,7 +58,8 @@ public class PersistentStoreCollectionDatabase
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.persist.PersistentStoreCollectionDatabase
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

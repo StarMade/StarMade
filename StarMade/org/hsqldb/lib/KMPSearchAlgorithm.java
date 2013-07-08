@@ -9,8 +9,9 @@ public class KMPSearchAlgorithm
   public static long search(InputStream paramInputStream, byte[] paramArrayOfByte, int[] paramArrayOfInt)
     throws IOException
   {
-    if ((paramInputStream == null) || (paramArrayOfByte == null) || (paramArrayOfByte.length == 0))
+    if ((paramInputStream == null) || (paramArrayOfByte == null) || (paramArrayOfByte.length == 0)) {
       return -1L;
+    }
     int i = paramArrayOfByte.length;
     long l = -1L;
     int j;
@@ -20,14 +21,16 @@ public class KMPSearchAlgorithm
       while (-1 != (j = paramInputStream.read()))
       {
         l += 1L;
-        if (j == k)
+        if (j == k) {
           return l;
+        }
       }
       return -1L;
     }
     int k = 0;
-    if (paramArrayOfInt == null)
+    if (paramArrayOfInt == null) {
       paramArrayOfInt = computeTable(paramArrayOfByte);
+    }
     while (-1 != (j = paramInputStream.read()))
     {
       l += 1L;
@@ -40,17 +43,19 @@ public class KMPSearchAlgorithm
         k = paramArrayOfInt[k];
         k++;
       }
-      if (k == i)
+      if (k == i) {
         return l - (i - 1);
+      }
     }
     return -1L;
   }
-
+  
   public static long search(Reader paramReader, char[] paramArrayOfChar, int[] paramArrayOfInt)
     throws IOException
   {
-    if ((paramReader == null) || (paramArrayOfChar == null) || (paramArrayOfChar.length == 0))
+    if ((paramReader == null) || (paramArrayOfChar == null) || (paramArrayOfChar.length == 0)) {
       return -1L;
+    }
     int i = paramArrayOfChar.length;
     long l = -1L;
     int j;
@@ -60,14 +65,16 @@ public class KMPSearchAlgorithm
       while (-1 != (j = paramReader.read()))
       {
         l += 1L;
-        if (j == k)
+        if (j == k) {
           return l;
+        }
       }
       return -1L;
     }
     int k = 0;
-    if (paramArrayOfInt == null)
+    if (paramArrayOfInt == null) {
       paramArrayOfInt = computeTable(paramArrayOfChar);
+    }
     while (-1 != (j = paramReader.read()))
     {
       l += 1L;
@@ -80,16 +87,18 @@ public class KMPSearchAlgorithm
         k = paramArrayOfInt[k];
         k++;
       }
-      if (k == i)
+      if (k == i) {
         return l - (i - 1);
+      }
     }
     return -1L;
   }
-
+  
   public static int search(byte[] paramArrayOfByte1, byte[] paramArrayOfByte2, int[] paramArrayOfInt, int paramInt)
   {
-    if ((paramArrayOfByte1 == null) || (paramArrayOfByte2 == null) || (paramArrayOfByte2.length == 0))
+    if ((paramArrayOfByte1 == null) || (paramArrayOfByte2 == null) || (paramArrayOfByte2.length == 0)) {
       return -1;
+    }
     int i = paramArrayOfByte1.length;
     int j = paramArrayOfByte2.length;
     int k = paramInt;
@@ -98,16 +107,18 @@ public class KMPSearchAlgorithm
       m = paramArrayOfByte2[0];
       while (k < i)
       {
-        if (paramArrayOfByte1[k] == m)
+        if (paramArrayOfByte1[k] == m) {
           return k;
+        }
         k++;
       }
       return -1;
     }
     int m = paramInt;
     int n = 0;
-    if (paramArrayOfInt == null)
+    if (paramArrayOfInt == null) {
       paramArrayOfInt = computeTable(paramArrayOfByte2);
+    }
     while ((k < i) && (n < j))
     {
       if (paramArrayOfByte1[k] == paramArrayOfByte2[n])
@@ -118,21 +129,24 @@ public class KMPSearchAlgorithm
       {
         int i1 = paramArrayOfInt[n];
         m += n - i1;
-        if (n > 0)
+        if (n > 0) {
           n = i1;
+        }
         n++;
       }
       k = m + n;
     }
-    if (n == j)
+    if (n == j) {
       return m;
+    }
     return -1;
   }
-
+  
   public static int search(char[] paramArrayOfChar1, char[] paramArrayOfChar2, int[] paramArrayOfInt, int paramInt)
   {
-    if ((paramArrayOfChar1 == null) || (paramArrayOfChar2 == null) || (paramArrayOfChar2.length == 0))
+    if ((paramArrayOfChar1 == null) || (paramArrayOfChar2 == null) || (paramArrayOfChar2.length == 0)) {
       return -1;
+    }
     int i = paramArrayOfChar1.length;
     int j = paramArrayOfChar2.length;
     int k = paramInt;
@@ -141,16 +155,18 @@ public class KMPSearchAlgorithm
       m = paramArrayOfChar2[0];
       while (k < i)
       {
-        if (paramArrayOfChar1[k] == m)
+        if (paramArrayOfChar1[k] == m) {
           return k;
+        }
         k++;
       }
       return -1;
     }
     int m = paramInt;
     int n = 0;
-    if (paramArrayOfInt == null)
+    if (paramArrayOfInt == null) {
       paramArrayOfInt = computeTable(paramArrayOfChar2);
+    }
     while ((k < i) && (n < j))
     {
       if (paramArrayOfChar1[k] == paramArrayOfChar2[n])
@@ -161,30 +177,35 @@ public class KMPSearchAlgorithm
       {
         int i1 = paramArrayOfInt[n];
         m += n - i1;
-        if (n > 0)
+        if (n > 0) {
           n = i1;
+        }
         n++;
       }
       k = m + n;
     }
-    if (n == j)
+    if (n == j) {
       return m;
+    }
     return -1;
   }
-
+  
   public static int search(String paramString1, String paramString2, int[] paramArrayOfInt, int paramInt)
   {
-    if ((paramString1 == null) || (paramString2 == null) || (paramString2.length() == 0))
+    if ((paramString1 == null) || (paramString2 == null) || (paramString2.length() == 0)) {
       return -1;
+    }
     int i = paramString2.length();
-    if (i == 1)
+    if (i == 1) {
       return paramString1.indexOf(paramString2, paramInt);
+    }
     int j = paramString1.length();
     int k = paramInt;
     int m = paramInt;
     int n = 0;
-    if (paramArrayOfInt == null)
+    if (paramArrayOfInt == null) {
       paramArrayOfInt = computeTable(paramString2);
+    }
     while ((m < j) && (n < i))
     {
       if (paramString1.charAt(m) == paramString2.charAt(n))
@@ -195,29 +216,33 @@ public class KMPSearchAlgorithm
       {
         int i1 = paramArrayOfInt[n];
         k += n - i1;
-        if (n > 0)
+        if (n > 0) {
           n = i1;
+        }
         n++;
       }
       m = k + n;
     }
-    if (n == i)
+    if (n == i) {
       return k;
+    }
     return -1;
   }
-
+  
   public static int[] computeTable(byte[] paramArrayOfByte)
   {
-    if (paramArrayOfByte == null)
+    if (paramArrayOfByte == null) {
       throw new IllegalArgumentException("Pattern must  not be null.");
-    if (paramArrayOfByte.length < 2)
+    }
+    if (paramArrayOfByte.length < 2) {
       throw new IllegalArgumentException("Pattern length must be > 1.");
+    }
     int[] arrayOfInt = new int[paramArrayOfByte.length];
     int i = 2;
     int j = 0;
     arrayOfInt[0] = -1;
     arrayOfInt[1] = 0;
-    while (i < paramArrayOfByte.length)
+    while (i < paramArrayOfByte.length) {
       if (paramArrayOfByte[(i - 1)] == paramArrayOfByte[j])
       {
         arrayOfInt[i] = (j + 1);
@@ -234,21 +259,24 @@ public class KMPSearchAlgorithm
         i++;
         j = 0;
       }
+    }
     return arrayOfInt;
   }
-
+  
   public static int[] computeTable(char[] paramArrayOfChar)
   {
-    if (paramArrayOfChar == null)
+    if (paramArrayOfChar == null) {
       throw new IllegalArgumentException("Pattern must  not be null.");
-    if (paramArrayOfChar.length < 2)
+    }
+    if (paramArrayOfChar.length < 2) {
       throw new IllegalArgumentException("Pattern length must be > 1.");
+    }
     int[] arrayOfInt = new int[paramArrayOfChar.length];
     int i = 2;
     int j = 0;
     arrayOfInt[0] = -1;
     arrayOfInt[1] = 0;
-    while (i < paramArrayOfChar.length)
+    while (i < paramArrayOfChar.length) {
       if (paramArrayOfChar[(i - 1)] == paramArrayOfChar[j])
       {
         arrayOfInt[i] = (j + 1);
@@ -265,22 +293,25 @@ public class KMPSearchAlgorithm
         i++;
         j = 0;
       }
+    }
     return arrayOfInt;
   }
-
+  
   public static int[] computeTable(String paramString)
   {
-    if (paramString == null)
+    if (paramString == null) {
       throw new IllegalArgumentException("Pattern must  not be null.");
-    if (paramString.length() < 2)
+    }
+    if (paramString.length() < 2) {
       throw new IllegalArgumentException("Pattern length must be > 1.");
+    }
     int i = paramString.length();
     int[] arrayOfInt = new int[i];
     int j = 2;
     int k = 0;
     arrayOfInt[0] = -1;
     arrayOfInt[1] = 0;
-    while (j < i)
+    while (j < i) {
       if (paramString.charAt(j - 1) == paramString.charAt(k))
       {
         arrayOfInt[j] = (k + 1);
@@ -297,11 +328,13 @@ public class KMPSearchAlgorithm
         j++;
         k = 0;
       }
+    }
     return arrayOfInt;
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.lib.KMPSearchAlgorithm
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

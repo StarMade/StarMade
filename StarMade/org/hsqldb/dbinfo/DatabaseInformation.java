@@ -107,12 +107,12 @@ public class DatabaseInformation
   protected static final IntValueHashMap sysTableNamesMap;
   protected final Database database;
   protected boolean withContent = false;
-
+  
   static int getSysTableID(String paramString)
   {
     return sysTableNamesMap.get(paramString, -1);
   }
-
+  
   public static final DatabaseInformation newDatabaseInformation(Database paramDatabase)
   {
     Object localObject = null;
@@ -144,43 +144,43 @@ public class DatabaseInformation
     }
     return new DatabaseInformation(paramDatabase);
   }
-
+  
   DatabaseInformation(Database paramDatabase)
   {
     this.database = paramDatabase;
   }
-
+  
   final boolean isSystemTable(String paramString)
   {
     return sysTableNamesMap.containsKey(paramString);
   }
-
+  
   public Table getSystemTable(Session paramSession, String paramString)
   {
     return null;
   }
-
-  public void setStore(Session paramSession, Table paramTable, PersistentStore paramPersistentStore)
-  {
-  }
-
+  
+  public void setStore(Session paramSession, Table paramTable, PersistentStore paramPersistentStore) {}
+  
   public final void setWithContent(boolean paramBoolean)
   {
     this.withContent = paramBoolean;
   }
-
+  
   static
   {
     synchronized (DatabaseInformation.class)
     {
       sysTableNamesMap = new IntValueHashMap(97);
-      for (int i = 0; i < sysTableNames.length; i++)
+      for (int i = 0; i < sysTableNames.length; i++) {
         sysTableNamesMap.put(sysTableNames[i], i);
+      }
     }
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.dbinfo.DatabaseInformation
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

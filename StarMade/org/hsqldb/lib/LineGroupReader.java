@@ -15,7 +15,7 @@ public class LineGroupReader
   final String[] sectionContinuations;
   final String[] sectionStarts;
   final String[] ignoredStarts;
-
+  
   public LineGroupReader(LineNumberReader paramLineNumberReader)
   {
     this.sectionContinuations = defaultContinuations;
@@ -26,11 +26,9 @@ public class LineGroupReader
     {
       getSection();
     }
-    catch (Exception localException)
-    {
-    }
+    catch (Exception localException) {}
   }
-
+  
   public LineGroupReader(LineNumberReader paramLineNumberReader, String[] paramArrayOfString)
   {
     this.sectionStarts = paramArrayOfString;
@@ -41,11 +39,9 @@ public class LineGroupReader
     {
       getSection();
     }
-    catch (Exception localException)
-    {
-    }
+    catch (Exception localException) {}
   }
-
+  
   public HsqlArrayList getSection()
   {
     HsqlArrayList localHsqlArrayList = new HsqlArrayList();
@@ -54,7 +50,7 @@ public class LineGroupReader
       localHsqlArrayList.add(this.nextStartLine);
       this.startLineNumber = this.nextStartLineNumber;
     }
-    while (true)
+    for (;;)
     {
       int i = 0;
       String str = null;
@@ -62,9 +58,7 @@ public class LineGroupReader
       {
         str = this.reader.readLine();
       }
-      catch (Exception localException)
-      {
-      }
+      catch (Exception localException) {}
       if (str == null)
       {
         this.nextStartLine = null;
@@ -73,8 +67,9 @@ public class LineGroupReader
       str = str.substring(0, StringUtil.rightTrimSize(str));
       if ((str.length() != 0) && (!isIgnoredLine(str)))
       {
-        if (isNewSectionLine(str))
+        if (isNewSectionLine(str)) {
           i = 1;
+        }
         if (i != 0)
         {
           this.nextStartLine = str;
@@ -85,71 +80,78 @@ public class LineGroupReader
       }
     }
   }
-
+  
   public HashMappedList getAsMap()
   {
     HashMappedList localHashMappedList = new HashMappedList();
-    while (true)
+    for (;;)
     {
       HsqlArrayList localHsqlArrayList = getSection();
-      if (localHsqlArrayList.size() < 1)
+      if (localHsqlArrayList.size() < 1) {
         break;
+      }
       String str1 = (String)localHsqlArrayList.get(0);
       String str2 = convertToString(localHsqlArrayList, 1);
       localHashMappedList.put(str1, str2);
     }
     return localHashMappedList;
   }
-
+  
   private boolean isNewSectionLine(String paramString)
   {
     if (this.sectionStarts.length == 0)
     {
-      for (i = 0; i < this.sectionContinuations.length; i++)
-        if (paramString.startsWith(this.sectionContinuations[i]))
+      for (i = 0; i < this.sectionContinuations.length; i++) {
+        if (paramString.startsWith(this.sectionContinuations[i])) {
           return false;
+        }
+      }
       return true;
     }
-    for (int i = 0; i < this.sectionStarts.length; i++)
-      if (paramString.startsWith(this.sectionStarts[i]))
+    for (int i = 0; i < this.sectionStarts.length; i++) {
+      if (paramString.startsWith(this.sectionStarts[i])) {
         return true;
+      }
+    }
     return false;
   }
-
+  
   private boolean isIgnoredLine(String paramString)
   {
-    for (int i = 0; i < this.ignoredStarts.length; i++)
-      if (paramString.startsWith(this.ignoredStarts[i]))
+    for (int i = 0; i < this.ignoredStarts.length; i++) {
+      if (paramString.startsWith(this.ignoredStarts[i])) {
         return true;
+      }
+    }
     return false;
   }
-
+  
   public int getStartLineNumber()
   {
     return this.startLineNumber;
   }
-
+  
   public void close()
   {
     try
     {
       this.reader.close();
     }
-    catch (Exception localException)
-    {
-    }
+    catch (Exception localException) {}
   }
-
+  
   public static String convertToString(HsqlArrayList paramHsqlArrayList, int paramInt)
   {
     StringBuffer localStringBuffer = new StringBuffer();
-    for (int i = paramInt; i < paramHsqlArrayList.size(); i++)
+    for (int i = paramInt; i < paramHsqlArrayList.size(); i++) {
       localStringBuffer.append(paramHsqlArrayList.get(i)).append(LS);
+    }
     return localStringBuffer.toString();
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.lib.LineGroupReader
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -7,7 +7,8 @@ public abstract class TriangleCallback
   public abstract void processTriangle(Vector3f[] paramArrayOfVector3f, int paramInt1, int paramInt2);
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     com.bulletphysics.collision.shapes.TriangleCallback
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

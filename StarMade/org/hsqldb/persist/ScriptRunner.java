@@ -29,9 +29,9 @@ public class ScriptRunner
   {
     Crypto localCrypto = paramDatabase.logger.getCrypto();
     Object localObject;
-    if (localCrypto == null)
+    if (localCrypto == null) {
       localObject = new ScriptReaderText(paramDatabase, paramInputStream);
-    else
+    } else {
       try
       {
         localObject = new ScriptReaderDecode(paramDatabase, paramInputStream, localCrypto, true);
@@ -41,29 +41,32 @@ public class ScriptRunner
         paramDatabase.logger.logSevereEvent("opening log file", localThrowable);
         return;
       }
+    }
     runScript(paramDatabase, (ScriptReaderBase)localObject);
   }
-
+  
   public static void runScript(Database paramDatabase, String paramString)
   {
     Crypto localCrypto = paramDatabase.logger.getCrypto();
     Object localObject;
     try
     {
-      if (localCrypto == null)
+      if (localCrypto == null) {
         localObject = new ScriptReaderText(paramDatabase, paramString, false);
-      else
+      } else {
         localObject = new ScriptReaderDecode(paramDatabase, paramString, localCrypto, true);
+      }
     }
     catch (Throwable localThrowable)
     {
-      if (!(localThrowable instanceof EOFException))
+      if (!(localThrowable instanceof EOFException)) {
         paramDatabase.logger.logSevereEvent("opening log file", localThrowable);
+      }
       return;
     }
     runScript(paramDatabase, (ScriptReaderBase)localObject);
   }
-
+  
   private static void runScript(Database paramDatabase, ScriptReaderBase paramScriptReaderBase)
   {
     IntKeyHashMap localIntKeyHashMap = new IntKeyHashMap();
@@ -102,7 +105,7 @@ public class ScriptRunner
           Object localObject1;
           switch (j)
           {
-          case 1:
+          case 1: 
             String str1 = paramScriptReaderBase.getLoggedStatement();
             try
             {
@@ -113,8 +116,9 @@ public class ScriptRunner
                 for (int m = 0; m < localTable.getColumnCount(); m++)
                 {
                   localObject2 = localTable.getColumn(m);
-                  if (((ColumnSchema)localObject2).getDataType().isBitType())
+                  if (((ColumnSchema)localObject2).getDataType().isBitType()) {
                     ((ColumnSchema)localObject2).setType(Type.SQL_BOOLEAN);
+                  }
                 }
               }
               localResult = localSession.executeCompiledStatement(localStatement, ValuePool.emptyObjectArray);
@@ -125,39 +129,41 @@ public class ScriptRunner
             }
             if ((localResult != null) && (localResult.isError()))
             {
-              if (localResult.getException() != null)
+              if (localResult.getException() != null) {
                 throw localResult.getException();
+              }
               throw Error.error(localResult);
             }
             break;
-          case 4:
+          case 4: 
             localSession.commit(false);
             break;
-          case 3:
+          case 3: 
             localSession.sessionContext.currentStatement = localStatementDML;
             localSession.beginAction(localStatementDML);
             localObject1 = paramScriptReaderBase.getData();
             paramScriptReaderBase.getCurrentTable().insertNoCheckFromLog(localSession, (Object[])localObject1);
             localSession.endAction(Result.updateOneResult);
             break;
-          case 2:
+          case 2: 
             localSession.sessionContext.currentStatement = localStatementDML;
             localSession.beginAction(localStatementDML);
             localObject1 = paramScriptReaderBase.getCurrentTable();
             Object[] arrayOfObject = paramScriptReaderBase.getData();
             localObject2 = ((Table)localObject1).getDeleteRowFromLog(localSession, arrayOfObject);
-            if (localObject2 != null)
+            if (localObject2 != null) {
               localSession.addDeleteAction((Table)localObject1, (Row)localObject2, null);
+            }
             localSession.endAction(Result.updateOneResult);
             break;
-          case 6:
+          case 6: 
             localObject1 = paramDatabase.schemaManager.findSchemaHsqlName(paramScriptReaderBase.getCurrentSchema());
             localSession.setCurrentSchemaHsqlName((HsqlNameManager.HsqlName)localObject1);
             break;
-          case 5:
           }
-          if (localSession.isClosed())
+          if (localSession.isClosed()) {
             localIntKeyHashMap.remove(i);
+          }
         }
       }
     }
@@ -165,8 +171,9 @@ public class ScriptRunner
     {
       str3 = "statement error processing log " + str2 + "line: " + paramScriptReaderBase.getLineNumber();
       paramDatabase.logger.logSevereEvent(str3, localHsqlException);
-      if (bool)
+      if (bool) {
         throw Error.error(localHsqlException, 461, str3);
+      }
     }
     catch (OutOfMemoryError localOutOfMemoryError)
     {
@@ -178,20 +185,23 @@ public class ScriptRunner
     {
       String str3 = "statement error processing log " + str2 + "line: " + paramScriptReaderBase.getLineNumber();
       paramDatabase.logger.logSevereEvent(str3, localThrowable1);
-      if (bool)
+      if (bool) {
         throw Error.error(localThrowable1, 461, str3);
+      }
     }
     finally
     {
-      if (paramScriptReaderBase != null)
+      if (paramScriptReaderBase != null) {
         paramScriptReaderBase.close();
+      }
       paramDatabase.getSessionManager().closeAllSessions();
       paramDatabase.setReferentialIntegrity(true);
     }
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.persist.ScriptRunner
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

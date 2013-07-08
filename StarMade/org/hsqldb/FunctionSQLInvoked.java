@@ -9,38 +9,41 @@ import org.hsqldb.result.Result;
 import org.hsqldb.store.ValuePool;
 import org.hsqldb.types.Type;
 
-public class FunctionSQLInvoked extends Expression
+public class FunctionSQLInvoked
+  extends Expression
 {
   RoutineSchema routineSchema;
   Routine routine;
   Expression condition = Expression.EXPR_TRUE;
-
+  
   FunctionSQLInvoked(RoutineSchema paramRoutineSchema)
   {
     super(paramRoutineSchema.isAggregate() ? 98 : 27);
     this.routineSchema = paramRoutineSchema;
   }
-
+  
   public void setArguments(Expression[] paramArrayOfExpression)
   {
     this.nodes = paramArrayOfExpression;
   }
-
+  
   public HsqlList resolveColumnReferences(Session paramSession, RangeGroup paramRangeGroup, int paramInt, RangeGroup[] paramArrayOfRangeGroup, HsqlList paramHsqlList, boolean paramBoolean)
   {
     HsqlList localHsqlList = this.condition.resolveColumnReferences(paramSession, paramRangeGroup, paramInt, paramArrayOfRangeGroup, null, false);
-    if (localHsqlList != null)
+    if (localHsqlList != null) {
       ExpressionColumn.checkColumnsResolved(localHsqlList);
+    }
     if (isSelfAggregate())
     {
-      if (paramHsqlList == null)
+      if (paramHsqlList == null) {
         paramHsqlList = new ArrayListIdentity();
+      }
       paramHsqlList.add(this);
       return paramHsqlList;
     }
     return super.resolveColumnReferences(paramSession, paramRangeGroup, paramInt, paramArrayOfRangeGroup, paramHsqlList, paramBoolean);
   }
-
+  
   public void resolveTypes(Session paramSession, Expression paramExpression)
   {
     Type[] arrayOfType = new Type[this.nodes.length];
@@ -51,13 +54,15 @@ public class FunctionSQLInvoked extends Expression
       arrayOfType[i] = localExpression.dataType;
     }
     this.routine = this.routineSchema.getSpecificRoutine(arrayOfType);
-    for (i = 0; i < this.nodes.length; i++)
-      if (this.nodes[i].dataType == null)
+    for (i = 0; i < this.nodes.length; i++) {
+      if (this.nodes[i].dataType == null) {
         this.nodes[i].dataType = this.routine.getParameterTypes()[i];
+      }
+    }
     this.dataType = this.routine.getReturnType();
     this.condition.resolveTypes(paramSession, null);
   }
-
+  
   private Object getValueInternal(Session paramSession, Object[] paramArrayOfObject)
   {
     int i = 0;
@@ -70,8 +75,9 @@ public class FunctionSQLInvoked extends Expression
       if (this.opType == 98)
       {
         arrayOfObject = new Object[this.routine.getParameterCount()];
-        for (int m = 0; m < paramArrayOfObject.length; m++)
+        for (int m = 0; m < paramArrayOfObject.length; m++) {
           arrayOfObject[(m + 1)] = paramArrayOfObject[m];
+        }
       }
       else
       {
@@ -80,8 +86,9 @@ public class FunctionSQLInvoked extends Expression
       if (!this.routine.isPSM())
       {
         localObject1 = paramSession.getInternalConnection();
-        if (k > 0)
+        if (k > 0) {
           arrayOfObject[0] = localObject1;
+        }
       }
     }
     Object localObject1 = this.routine.getParameterTypes();
@@ -91,25 +98,30 @@ public class FunctionSQLInvoked extends Expression
       Object localObject2 = localExpression.getValue(paramSession, localObject1[n]);
       if (localObject2 == null)
       {
-        if (this.routine.isNullInputOutput())
+        if (this.routine.isNullInputOutput()) {
           return null;
-        if (!this.routine.getParameter(n).isNullable())
+        }
+        if (!this.routine.getParameter(n).isNullable()) {
           return Result.newErrorResult(Error.error(4811));
+        }
       }
-      if (this.routine.isPSM())
+      if (this.routine.isPSM()) {
         arrayOfObject[n] = localObject2;
-      else
+      } else {
         arrayOfObject[(n + k)] = localExpression.dataType.convertSQLToJava(paramSession, localObject2);
+      }
     }
     Result localResult = this.routine.invoke(paramSession, arrayOfObject, paramArrayOfObject, bool);
     paramSession.releaseInternalConnection();
-    if (localResult.isError())
+    if (localResult.isError()) {
       throw localResult.getException();
-    if (i != 0)
+    }
+    if (i != 0) {
       return localResult.valueData;
+    }
     return localResult;
   }
-
+  
   public Object getValue(Session paramSession)
   {
     if (this.opType == 5)
@@ -121,115 +133,127 @@ public class FunctionSQLInvoked extends Expression
     if ((localObject instanceof Result))
     {
       Result localResult = (Result)localObject;
-      if (localResult.isError())
+      if (localResult.isError()) {
         throw localResult.getException();
-      if (localResult.isSimpleValue())
+      }
+      if (localResult.isSimpleValue()) {
         localObject = localResult.getValueObject();
-      else if (localResult.isData())
+      } else if (localResult.isData()) {
         localObject = localResult;
-      else
+      } else {
         throw Error.error(4605, this.routine.getName().name);
+      }
     }
     return localObject;
   }
-
+  
   public Result getResult(Session paramSession)
   {
     Object localObject = getValueInternal(paramSession, null);
-    if ((localObject instanceof Result))
+    if ((localObject instanceof Result)) {
       return (Result)localObject;
+    }
     return Result.newPSMResult(localObject);
   }
-
+  
   void collectObjectNames(Set paramSet)
   {
     paramSet.add(this.routine.getSpecificName());
   }
-
+  
   public String getSQL()
   {
     StringBuffer localStringBuffer = new StringBuffer();
     localStringBuffer.append(this.routineSchema.getName().getSchemaQualifiedStatementName());
     localStringBuffer.append('(');
     int i = this.nodes.length;
-    if (this.opType == 98)
+    if (this.opType == 98) {
       i = 1;
+    }
     for (int j = 0; j < i; j++)
     {
-      if (j != 0)
+      if (j != 0) {
         localStringBuffer.append(',');
+      }
       localStringBuffer.append(this.nodes[j].getSQL());
     }
     localStringBuffer.append(')');
     return localStringBuffer.toString();
   }
-
+  
   public String describe(Session paramSession, int paramInt)
   {
     return super.describe(paramSession, paramInt);
   }
-
+  
   boolean isSelfAggregate()
   {
     return this.routineSchema.isAggregate();
   }
-
+  
   public boolean isDeterministic()
   {
     return this.routine.isDeterministic();
   }
-
+  
   public boolean equals(Expression paramExpression)
   {
-    if (!(paramExpression instanceof FunctionSQLInvoked))
+    if (!(paramExpression instanceof FunctionSQLInvoked)) {
       return false;
+    }
     FunctionSQLInvoked localFunctionSQLInvoked = (FunctionSQLInvoked)paramExpression;
-    if ((this.opType == paramExpression.opType) && (this.routineSchema == localFunctionSQLInvoked.routineSchema) && (this.routine == localFunctionSQLInvoked.routine) && (this.condition.equals(localFunctionSQLInvoked.condition)))
+    if ((this.opType == paramExpression.opType) && (this.routineSchema == localFunctionSQLInvoked.routineSchema) && (this.routine == localFunctionSQLInvoked.routine) && (this.condition.equals(localFunctionSQLInvoked.condition))) {
       return super.equals(paramExpression);
+    }
     return false;
   }
-
+  
   public Object updateAggregatingValue(Session paramSession, Object paramObject)
   {
-    if (!this.condition.testCondition(paramSession))
+    if (!this.condition.testCondition(paramSession)) {
       return paramObject;
+    }
     Object[] arrayOfObject = (Object[])paramObject;
-    if (arrayOfObject == null)
+    if (arrayOfObject == null) {
       arrayOfObject = new Object[3];
+    }
     arrayOfObject[0] = Boolean.FALSE;
     getValueInternal(paramSession, arrayOfObject);
     return arrayOfObject;
   }
-
+  
   public Object getAggregatedValue(Session paramSession, Object paramObject)
   {
     Object[] arrayOfObject = (Object[])paramObject;
-    if (arrayOfObject == null)
+    if (arrayOfObject == null) {
       arrayOfObject = new Object[3];
+    }
     arrayOfObject[0] = Boolean.TRUE;
     Result localResult = (Result)getValueInternal(paramSession, arrayOfObject);
-    if (localResult.isError())
+    if (localResult.isError()) {
       throw localResult.getException();
+    }
     return localResult.getValueObject();
   }
-
+  
   public Expression getCondition()
   {
     return this.condition;
   }
-
+  
   public boolean hasCondition()
   {
     return (this.condition != null) && (this.condition != Expression.EXPR_TRUE);
   }
-
+  
   public void setCondition(Expression paramExpression)
   {
     this.condition = paramExpression;
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.FunctionSQLInvoked
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

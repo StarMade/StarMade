@@ -8,7 +8,8 @@ public final class ARBTextureCompressionRGTC
   public static final int GL_COMPRESSED_SIGNED_RG_RGTC2 = 36286;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.opengl.ARBTextureCompressionRGTC
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -11,37 +11,38 @@ import org.hsqldb.types.Type;
 public abstract interface RowSetNavigatorDataChange
 {
   public abstract void release();
-
+  
   public abstract int getSize();
-
+  
   public abstract int getRowPosition();
-
+  
   public abstract boolean next();
-
+  
   public abstract boolean beforeFirst();
-
+  
   public abstract Row getCurrentRow();
-
+  
   public abstract Object[] getCurrentChangedData();
-
+  
   public abstract int[] getCurrentChangedColumns();
-
+  
   public abstract void write(RowOutputInterface paramRowOutputInterface, ResultMetaData paramResultMetaData)
     throws IOException;
-
+  
   public abstract void read(RowInputInterface paramRowInputInterface, ResultMetaData paramResultMetaData)
     throws IOException;
-
+  
   public abstract void endMainDataSet();
-
+  
   public abstract boolean addRow(Row paramRow);
-
+  
   public abstract Object[] addRow(Session paramSession, Row paramRow, Object[] paramArrayOfObject, Type[] paramArrayOfType, int[] paramArrayOfInt);
-
+  
   public abstract boolean containsDeletedRow(Row paramRow);
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.navigator.RowSetNavigatorDataChange
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

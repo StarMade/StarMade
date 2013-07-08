@@ -60,113 +60,114 @@ public abstract interface SGL
   public static final int GL_SRC_COLOR = 768;
   public static final int GL_ONE_MINUS_SRC_COLOR = 769;
   public static final int GL_MODELVIEW_MATRIX = 2982;
-
+  
   public abstract void flush();
-
+  
   public abstract void initDisplay(int paramInt1, int paramInt2);
-
+  
   public abstract void enterOrtho(int paramInt1, int paramInt2);
-
+  
   public abstract void glClearColor(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4);
-
+  
   public abstract void glClipPlane(int paramInt, DoubleBuffer paramDoubleBuffer);
-
+  
   public abstract void glScissor(int paramInt1, int paramInt2, int paramInt3, int paramInt4);
-
+  
   public abstract void glLineWidth(float paramFloat);
-
+  
   public abstract void glClear(int paramInt);
-
+  
   public abstract void glColorMask(boolean paramBoolean1, boolean paramBoolean2, boolean paramBoolean3, boolean paramBoolean4);
-
+  
   public abstract void glLoadIdentity();
-
+  
   public abstract void glGetInteger(int paramInt, IntBuffer paramIntBuffer);
-
+  
   public abstract void glGetFloat(int paramInt, FloatBuffer paramFloatBuffer);
-
+  
   public abstract void glEnable(int paramInt);
-
+  
   public abstract void glDisable(int paramInt);
-
+  
   public abstract void glBindTexture(int paramInt1, int paramInt2);
-
+  
   public abstract void glGetTexImage(int paramInt1, int paramInt2, int paramInt3, int paramInt4, ByteBuffer paramByteBuffer);
-
+  
   public abstract void glDeleteTextures(IntBuffer paramIntBuffer);
-
+  
   public abstract void glColor4f(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4);
-
+  
   public abstract void glTexCoord2f(float paramFloat1, float paramFloat2);
-
+  
   public abstract void glVertex3f(float paramFloat1, float paramFloat2, float paramFloat3);
-
+  
   public abstract void glVertex2f(float paramFloat1, float paramFloat2);
-
+  
   public abstract void glRotatef(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4);
-
+  
   public abstract void glTranslatef(float paramFloat1, float paramFloat2, float paramFloat3);
-
+  
   public abstract void glBegin(int paramInt);
-
+  
   public abstract void glEnd();
-
+  
   public abstract void glTexEnvi(int paramInt1, int paramInt2, int paramInt3);
-
+  
   public abstract void glPointSize(float paramFloat);
-
+  
   public abstract void glScalef(float paramFloat1, float paramFloat2, float paramFloat3);
-
+  
   public abstract void glPushMatrix();
-
+  
   public abstract void glPopMatrix();
-
+  
   public abstract void glBlendFunc(int paramInt1, int paramInt2);
-
+  
   public abstract int glGenLists(int paramInt);
-
+  
   public abstract void glNewList(int paramInt1, int paramInt2);
-
+  
   public abstract void glEndList();
-
+  
   public abstract void glCallList(int paramInt);
-
+  
   public abstract void glCopyTexImage2D(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int paramInt7, int paramInt8);
-
+  
   public abstract void glReadPixels(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, ByteBuffer paramByteBuffer);
-
+  
   public abstract void glTexParameteri(int paramInt1, int paramInt2, int paramInt3);
-
+  
   public abstract float[] getCurrentColor();
-
+  
   public abstract void glDeleteLists(int paramInt1, int paramInt2);
-
+  
   public abstract void glDepthMask(boolean paramBoolean);
-
+  
   public abstract void glClearDepth(float paramFloat);
-
+  
   public abstract void glDepthFunc(int paramInt);
-
+  
   public abstract void setGlobalAlphaScale(float paramFloat);
-
+  
   public abstract void glLoadMatrix(FloatBuffer paramFloatBuffer);
-
+  
   public abstract void glGenTextures(IntBuffer paramIntBuffer);
-
+  
   public abstract void glGetError();
-
+  
   public abstract void glTexImage2D(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int paramInt7, int paramInt8, ByteBuffer paramByteBuffer);
-
+  
   public abstract void glTexSubImage2D(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int paramInt7, int paramInt8, ByteBuffer paramByteBuffer);
-
+  
   public abstract boolean canTextureMirrorClamp();
-
+  
   public abstract boolean canSecondaryColor();
-
+  
   public abstract void glSecondaryColor3ubEXT(byte paramByte1, byte paramByte2, byte paramByte3);
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.newdawn.slick.opengl.renderer.SGL
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

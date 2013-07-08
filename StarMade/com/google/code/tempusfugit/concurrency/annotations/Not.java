@@ -11,10 +11,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Not
 {
-  public abstract Class<? extends Annotation>[] value();
+  Class<? extends Annotation>[] value();
 }
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     com.google.code.tempusfugit.concurrency.annotations.Not
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

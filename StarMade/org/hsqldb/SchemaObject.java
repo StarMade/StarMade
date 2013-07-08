@@ -33,34 +33,34 @@ public abstract interface SchemaObject
   public static final int SERVER = 26;
   public static final int SUBQUERY = 27;
   public static final SchemaObject[] emptyArray = new SchemaObject[0];
-
+  
   public abstract int getType();
-
+  
   public abstract HsqlNameManager.HsqlName getName();
-
+  
   public abstract HsqlNameManager.HsqlName getSchemaName();
-
+  
   public abstract HsqlNameManager.HsqlName getCatalogName();
-
+  
   public abstract Grantee getOwner();
-
+  
   public abstract OrderedHashSet getReferences();
-
+  
   public abstract OrderedHashSet getComponents();
-
+  
   public abstract void compile(Session paramSession, SchemaObject paramSchemaObject);
-
+  
   public abstract String getSQL();
-
+  
   public abstract long getChangeTimestamp();
-
+  
   public static abstract interface Nullability
   {
     public static final byte NO_NULLS = 0;
     public static final byte NULLABLE = 1;
     public static final byte NULLABLE_UNKNOWN = 2;
   }
-
+  
   public static abstract interface ParameterModes
   {
     public static final byte PARAM_UNKNOWN = 0;
@@ -68,21 +68,21 @@ public abstract interface SchemaObject
     public static final byte PARAM_OUT = 4;
     public static final byte PARAM_INOUT = 2;
   }
-
+  
   public static abstract interface ViewCheckModes
   {
     public static final int CHECK_NONE = 0;
     public static final int CHECK_LOCAL = 1;
     public static final int CHECK_CASCADE = 2;
   }
-
+  
   public static abstract interface Deferable
   {
     public static final int NOT_DEFERRABLE = 0;
     public static final int INIT_DEFERRED = 1;
     public static final int INIT_IMMEDIATE = 2;
   }
-
+  
   public static abstract interface ReferentialAction
   {
     public static final int CASCADE = 0;
@@ -91,7 +91,7 @@ public abstract interface SchemaObject
     public static final int NO_ACTION = 3;
     public static final int SET_DEFAULT = 4;
   }
-
+  
   public static abstract interface ConstraintTypes
   {
     public static final int FOREIGN_KEY = 0;
@@ -103,7 +103,8 @@ public abstract interface SchemaObject
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.SchemaObject
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

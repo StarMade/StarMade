@@ -453,7 +453,8 @@ public abstract interface ErrorCode
   public static final int X_HY093 = 6800;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.error.ErrorCode
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

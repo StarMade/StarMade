@@ -10,7 +10,8 @@ import org.hsqldb.lib.DataOutputStream;
 import org.hsqldb.lib.HsqlByteArrayOutputStream;
 import org.hsqldb.rowio.RowOutputInterface;
 
-public final class ResultLob extends Result
+public final class ResultLob
+  extends Result
 {
   long lobID;
   int subType;
@@ -20,12 +21,12 @@ public final class ResultLob extends Result
   char[] charBlock;
   Reader reader;
   InputStream stream;
-
+  
   private ResultLob()
   {
     super(18);
   }
-
+  
   public static ResultLob newLobGetLengthRequest(long paramLong)
   {
     ResultLob localResultLob = new ResultLob();
@@ -33,7 +34,7 @@ public final class ResultLob extends Result
     localResultLob.lobID = paramLong;
     return localResultLob;
   }
-
+  
   public static ResultLob newLobGetBytesRequest(long paramLong1, long paramLong2, int paramInt)
   {
     ResultLob localResultLob = new ResultLob();
@@ -43,7 +44,7 @@ public final class ResultLob extends Result
     localResultLob.blockLength = paramInt;
     return localResultLob;
   }
-
+  
   public static ResultLob newLobGetCharsRequest(long paramLong1, long paramLong2, int paramInt)
   {
     ResultLob localResultLob = new ResultLob();
@@ -53,7 +54,7 @@ public final class ResultLob extends Result
     localResultLob.blockLength = paramInt;
     return localResultLob;
   }
-
+  
   public static ResultLob newLobSetBytesRequest(long paramLong1, long paramLong2, byte[] paramArrayOfByte)
   {
     ResultLob localResultLob = new ResultLob();
@@ -64,7 +65,7 @@ public final class ResultLob extends Result
     localResultLob.blockLength = paramArrayOfByte.length;
     return localResultLob;
   }
-
+  
   public static ResultLob newLobSetCharsRequest(long paramLong1, long paramLong2, char[] paramArrayOfChar)
   {
     ResultLob localResultLob = new ResultLob();
@@ -75,7 +76,7 @@ public final class ResultLob extends Result
     localResultLob.blockLength = paramArrayOfChar.length;
     return localResultLob;
   }
-
+  
   public static ResultLob newLobTruncateRequest(long paramLong1, long paramLong2)
   {
     ResultLob localResultLob = new ResultLob();
@@ -84,7 +85,7 @@ public final class ResultLob extends Result
     localResultLob.blockOffset = paramLong2;
     return localResultLob;
   }
-
+  
   public static ResultLob newLobGetBytesResponse(long paramLong1, long paramLong2, byte[] paramArrayOfByte)
   {
     ResultLob localResultLob = new ResultLob();
@@ -95,7 +96,7 @@ public final class ResultLob extends Result
     localResultLob.blockLength = paramArrayOfByte.length;
     return localResultLob;
   }
-
+  
   public static ResultLob newLobGetCharsResponse(long paramLong1, long paramLong2, char[] paramArrayOfChar)
   {
     ResultLob localResultLob = new ResultLob();
@@ -106,7 +107,7 @@ public final class ResultLob extends Result
     localResultLob.blockLength = paramArrayOfChar.length;
     return localResultLob;
   }
-
+  
   public static ResultLob newLobSetResponse(long paramLong1, long paramLong2)
   {
     ResultLob localResultLob = new ResultLob();
@@ -115,7 +116,7 @@ public final class ResultLob extends Result
     localResultLob.blockLength = paramLong2;
     return localResultLob;
   }
-
+  
   public static ResultLob newLobGetBytePatternPositionRequest(long paramLong1, byte[] paramArrayOfByte, long paramLong2)
   {
     ResultLob localResultLob = new ResultLob();
@@ -126,7 +127,7 @@ public final class ResultLob extends Result
     localResultLob.blockLength = paramArrayOfByte.length;
     return localResultLob;
   }
-
+  
   public static ResultLob newLobGetBytePatternPositionRequest(long paramLong1, long paramLong2, long paramLong3)
   {
     ResultLob localResultLob = new ResultLob();
@@ -135,7 +136,7 @@ public final class ResultLob extends Result
     localResultLob.blockOffset = paramLong3;
     return localResultLob;
   }
-
+  
   public static ResultLob newLobGetCharPatternPositionRequest(long paramLong1, char[] paramArrayOfChar, long paramLong2)
   {
     ResultLob localResultLob = new ResultLob();
@@ -146,7 +147,7 @@ public final class ResultLob extends Result
     localResultLob.blockLength = paramArrayOfChar.length;
     return localResultLob;
   }
-
+  
   public static ResultLob newLobGetCharPatternPositionRequest(long paramLong1, long paramLong2, long paramLong3)
   {
     ResultLob localResultLob = new ResultLob();
@@ -156,7 +157,7 @@ public final class ResultLob extends Result
     localResultLob.blockLength = paramLong2;
     return localResultLob;
   }
-
+  
   public static ResultLob newLobCreateBlobRequest(long paramLong1, long paramLong2, InputStream paramInputStream, long paramLong3)
   {
     ResultLob localResultLob = new ResultLob();
@@ -166,7 +167,7 @@ public final class ResultLob extends Result
     localResultLob.stream = paramInputStream;
     return localResultLob;
   }
-
+  
   public static ResultLob newLobCreateClobRequest(long paramLong1, long paramLong2, Reader paramReader, long paramLong3)
   {
     ResultLob localResultLob = new ResultLob();
@@ -176,7 +177,7 @@ public final class ResultLob extends Result
     localResultLob.reader = paramReader;
     return localResultLob;
   }
-
+  
   public static ResultLob newLobGetTruncateLength(long paramLong)
   {
     ResultLob localResultLob = new ResultLob();
@@ -184,7 +185,7 @@ public final class ResultLob extends Result
     localResultLob.lobID = paramLong;
     return localResultLob;
   }
-
+  
   public static ResultLob newLobCreateBlobResponse(long paramLong)
   {
     ResultLob localResultLob = new ResultLob();
@@ -192,7 +193,7 @@ public final class ResultLob extends Result
     localResultLob.lobID = paramLong;
     return localResultLob;
   }
-
+  
   public static ResultLob newLobCreateClobResponse(long paramLong)
   {
     ResultLob localResultLob = new ResultLob();
@@ -200,7 +201,7 @@ public final class ResultLob extends Result
     localResultLob.lobID = paramLong;
     return localResultLob;
   }
-
+  
   public static ResultLob newLobTruncateResponse(long paramLong1, long paramLong2)
   {
     ResultLob localResultLob = new ResultLob();
@@ -209,7 +210,7 @@ public final class ResultLob extends Result
     localResultLob.blockLength = paramLong2;
     return localResultLob;
   }
-
+  
   public static ResultLob newLobGetRequest(long paramLong1, long paramLong2, long paramLong3)
   {
     ResultLob localResultLob = new ResultLob();
@@ -219,7 +220,7 @@ public final class ResultLob extends Result
     localResultLob.blockLength = paramLong3;
     return localResultLob;
   }
-
+  
   public static ResultLob newLobDuplicateRequest(long paramLong)
   {
     ResultLob localResultLob = new ResultLob();
@@ -227,7 +228,7 @@ public final class ResultLob extends Result
     localResultLob.lobID = paramLong;
     return localResultLob;
   }
-
+  
   public static ResultLob newLob(DataInput paramDataInput, boolean paramBoolean)
     throws IOException
   {
@@ -239,77 +240,80 @@ public final class ResultLob extends Result
     int i;
     switch (localResultLob.subType)
     {
-    case 7:
-    case 8:
+    case 7: 
+    case 8: 
       localResultLob.blockOffset = paramDataInput.readLong();
       localResultLob.blockLength = paramDataInput.readLong();
       break;
-    case 1:
-    case 3:
-    case 11:
-    case 12:
+    case 1: 
+    case 3: 
+    case 11: 
+    case 12: 
       localResultLob.blockOffset = paramDataInput.readLong();
       localResultLob.blockLength = paramDataInput.readLong();
       break;
-    case 2:
-    case 5:
-      localResultLob.blockOffset = paramDataInput.readLong();
-      localResultLob.blockLength = paramDataInput.readLong();
-      localResultLob.byteBlock = new byte[(int)localResultLob.blockLength];
-      paramDataInput.readFully(localResultLob.byteBlock);
-      break;
-    case 4:
-    case 6:
-      localResultLob.blockOffset = paramDataInput.readLong();
-      localResultLob.blockLength = paramDataInput.readLong();
-      localResultLob.charBlock = new char[(int)localResultLob.blockLength];
-      for (i = 0; i < localResultLob.charBlock.length; i++)
-        localResultLob.charBlock[i] = paramDataInput.readChar();
-      break;
-    case 9:
-    case 10:
-      localResultLob.blockOffset = paramDataInput.readLong();
-      break;
-    case 21:
+    case 2: 
+    case 5: 
       localResultLob.blockOffset = paramDataInput.readLong();
       localResultLob.blockLength = paramDataInput.readLong();
       localResultLob.byteBlock = new byte[(int)localResultLob.blockLength];
       paramDataInput.readFully(localResultLob.byteBlock);
       break;
-    case 23:
+    case 4: 
+    case 6: 
       localResultLob.blockOffset = paramDataInput.readLong();
       localResultLob.blockLength = paramDataInput.readLong();
       localResultLob.charBlock = new char[(int)localResultLob.blockLength];
-      for (i = 0; i < localResultLob.charBlock.length; i++)
+      for (i = 0; i < localResultLob.charBlock.length; i++) {
         localResultLob.charBlock[i] = paramDataInput.readChar();
+      }
       break;
-    case 22:
-    case 27:
-    case 28:
-    case 29:
-      localResultLob.blockLength = paramDataInput.readLong();
-      break;
-    case 25:
-    case 26:
+    case 9: 
+    case 10: 
       localResultLob.blockOffset = paramDataInput.readLong();
       break;
-    case 13:
-    case 14:
-    case 15:
-    case 16:
-    case 17:
-    case 18:
-    case 19:
-    case 20:
-    case 24:
-    default:
+    case 21: 
+      localResultLob.blockOffset = paramDataInput.readLong();
+      localResultLob.blockLength = paramDataInput.readLong();
+      localResultLob.byteBlock = new byte[(int)localResultLob.blockLength];
+      paramDataInput.readFully(localResultLob.byteBlock);
+      break;
+    case 23: 
+      localResultLob.blockOffset = paramDataInput.readLong();
+      localResultLob.blockLength = paramDataInput.readLong();
+      localResultLob.charBlock = new char[(int)localResultLob.blockLength];
+      for (i = 0; i < localResultLob.charBlock.length; i++) {
+        localResultLob.charBlock[i] = paramDataInput.readChar();
+      }
+      break;
+    case 22: 
+    case 27: 
+    case 28: 
+    case 29: 
+      localResultLob.blockLength = paramDataInput.readLong();
+      break;
+    case 25: 
+    case 26: 
+      localResultLob.blockOffset = paramDataInput.readLong();
+      break;
+    case 13: 
+    case 14: 
+    case 15: 
+    case 16: 
+    case 17: 
+    case 18: 
+    case 19: 
+    case 20: 
+    case 24: 
+    default: 
       throw Error.runtimeError(201, "ResultLob");
     }
-    if (paramBoolean)
+    if (paramBoolean) {
       paramDataInput.readByte();
+    }
     return localResultLob;
   }
-
+  
   public void write(SessionInterface paramSessionInterface, DataOutputStream paramDataOutputStream, RowOutputInterface paramRowOutputInterface)
     throws IOException
   {
@@ -317,13 +321,13 @@ public final class ResultLob extends Result
     paramDataOutputStream.writeByte(0);
     paramDataOutputStream.flush();
   }
-
+  
   public void writeBody(SessionInterface paramSessionInterface, DataOutputStream paramDataOutputStream)
     throws IOException
   {
     switch (this.subType)
     {
-    case 7:
+    case 7: 
       if (this.blockLength >= 0L)
       {
         writeCreate(paramSessionInterface, paramDataOutputStream);
@@ -331,7 +335,7 @@ public final class ResultLob extends Result
       }
       writeCreateByteSegments(paramSessionInterface, paramDataOutputStream);
       return;
-    case 8:
+    case 8: 
       if (this.blockLength >= 0L)
       {
         writeCreate(paramSessionInterface, paramDataOutputStream);
@@ -347,65 +351,65 @@ public final class ResultLob extends Result
     paramDataOutputStream.writeInt(this.subType);
     switch (this.subType)
     {
-    case 2:
-    case 5:
+    case 2: 
+    case 5: 
       paramDataOutputStream.writeLong(this.blockOffset);
       paramDataOutputStream.writeLong(this.blockLength);
       paramDataOutputStream.write(this.byteBlock);
       break;
-    case 4:
-    case 6:
+    case 4: 
+    case 6: 
       paramDataOutputStream.writeLong(this.blockOffset);
       paramDataOutputStream.writeLong(this.blockLength);
       paramDataOutputStream.writeChars(this.charBlock);
       break;
-    case 1:
-    case 3:
-    case 11:
-    case 12:
+    case 1: 
+    case 3: 
+    case 11: 
+    case 12: 
       paramDataOutputStream.writeLong(this.blockOffset);
       paramDataOutputStream.writeLong(this.blockLength);
       break;
-    case 9:
-    case 10:
+    case 9: 
+    case 10: 
       paramDataOutputStream.writeLong(this.blockOffset);
       break;
-    case 21:
+    case 21: 
       paramDataOutputStream.writeLong(this.blockOffset);
       paramDataOutputStream.writeLong(this.blockLength);
       paramDataOutputStream.write(this.byteBlock);
       break;
-    case 23:
+    case 23: 
       paramDataOutputStream.writeLong(this.blockOffset);
       paramDataOutputStream.writeLong(this.blockLength);
       paramDataOutputStream.writeChars(this.charBlock);
       break;
-    case 22:
-    case 27:
-    case 28:
-    case 29:
+    case 22: 
+    case 27: 
+    case 28: 
+    case 29: 
       paramDataOutputStream.writeLong(this.blockLength);
       break;
-    case 25:
-    case 26:
+    case 25: 
+    case 26: 
       paramDataOutputStream.writeLong(this.blockOffset);
       break;
-    case 7:
-    case 8:
-    case 13:
-    case 14:
-    case 15:
-    case 16:
-    case 17:
-    case 18:
-    case 19:
-    case 20:
-    case 24:
-    default:
+    case 7: 
+    case 8: 
+    case 13: 
+    case 14: 
+    case 15: 
+    case 16: 
+    case 17: 
+    case 18: 
+    case 19: 
+    case 20: 
+    case 24: 
+    default: 
       throw Error.runtimeError(201, "ResultLob");
     }
   }
-
+  
   private void writeCreate(SessionInterface paramSessionInterface, DataOutputStream paramDataOutputStream)
     throws IOException
   {
@@ -418,14 +422,14 @@ public final class ResultLob extends Result
     paramDataOutputStream.writeLong(this.blockLength);
     switch (this.subType)
     {
-    case 7:
+    case 7: 
       paramDataOutputStream.write(this.stream, this.blockLength);
       break;
-    case 8:
+    case 8: 
       paramDataOutputStream.write(this.reader, this.blockLength);
     }
   }
-
+  
   private void writeCreateByteSegments(SessionInterface paramSessionInterface, DataOutputStream paramDataOutputStream)
     throws IOException
   {
@@ -443,9 +447,10 @@ public final class ResultLob extends Result
     paramDataOutputStream.writeLong(localHsqlByteArrayOutputStream.size());
     paramDataOutputStream.write(localHsqlByteArrayOutputStream.getBuffer(), 0, localHsqlByteArrayOutputStream.size());
     l += localHsqlByteArrayOutputStream.size();
-    if (localHsqlByteArrayOutputStream.size() < i)
+    if (localHsqlByteArrayOutputStream.size() < i) {
       return;
-    while (true)
+    }
+    for (;;)
     {
       localHsqlByteArrayOutputStream.reset();
       localHsqlByteArrayOutputStream.write(this.stream, i);
@@ -460,12 +465,13 @@ public final class ResultLob extends Result
         paramDataOutputStream.writeLong(localHsqlByteArrayOutputStream.size());
         paramDataOutputStream.write(localHsqlByteArrayOutputStream.getBuffer(), 0, localHsqlByteArrayOutputStream.size());
         l += localHsqlByteArrayOutputStream.size();
-        if (localHsqlByteArrayOutputStream.size() < i)
+        if (localHsqlByteArrayOutputStream.size() < i) {
           break;
+        }
       }
     }
   }
-
+  
   private void writeCreateCharSegments(SessionInterface paramSessionInterface, DataOutputStream paramDataOutputStream)
     throws IOException
   {
@@ -483,9 +489,10 @@ public final class ResultLob extends Result
     paramDataOutputStream.writeLong(localHsqlByteArrayOutputStream.size() / 2);
     paramDataOutputStream.write(localHsqlByteArrayOutputStream.getBuffer(), 0, localHsqlByteArrayOutputStream.size());
     l += localHsqlByteArrayOutputStream.size() / 2;
-    if (localHsqlByteArrayOutputStream.size() < i)
+    if (localHsqlByteArrayOutputStream.size() < i) {
       return;
-    while (true)
+    }
+    for (;;)
     {
       localHsqlByteArrayOutputStream.reset();
       localHsqlByteArrayOutputStream.write(this.reader, i / 2);
@@ -500,52 +507,53 @@ public final class ResultLob extends Result
         paramDataOutputStream.writeLong(localHsqlByteArrayOutputStream.size() / 2);
         paramDataOutputStream.write(localHsqlByteArrayOutputStream.getBuffer(), 0, localHsqlByteArrayOutputStream.size());
         l += localHsqlByteArrayOutputStream.size() / 2;
-        if (localHsqlByteArrayOutputStream.size() < i)
+        if (localHsqlByteArrayOutputStream.size() < i) {
           break;
+        }
       }
     }
   }
-
+  
   public long getLobID()
   {
     return this.lobID;
   }
-
+  
   public int getSubType()
   {
     return this.subType;
   }
-
+  
   public long getOffset()
   {
     return this.blockOffset;
   }
-
+  
   public long getBlockLength()
   {
     return this.blockLength;
   }
-
+  
   public byte[] getByteArray()
   {
     return this.byteBlock;
   }
-
+  
   public char[] getCharArray()
   {
     return this.charBlock;
   }
-
+  
   public InputStream getInputStream()
   {
     return this.stream;
   }
-
+  
   public Reader getReader()
   {
     return this.reader;
   }
-
+  
   public static abstract interface LobResultTypes
   {
     public static final int REQUEST_GET_BYTES = 1;
@@ -572,7 +580,8 @@ public final class ResultLob extends Result
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.result.ResultLob
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

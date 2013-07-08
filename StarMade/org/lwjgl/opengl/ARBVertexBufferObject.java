@@ -1,6 +1,7 @@
 package org.lwjgl.opengl;
 
-public final class ARBVertexBufferObject extends ARBBufferObject
+public final class ARBVertexBufferObject
+  extends ARBBufferObject
 {
   public static final int GL_ARRAY_BUFFER_ARB = 34962;
   public static final int GL_ELEMENT_ARRAY_BUFFER_ARB = 34963;
@@ -18,7 +19,8 @@ public final class ARBVertexBufferObject extends ARBBufferObject
   public static final int GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING_ARB = 34975;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.opengl.ARBVertexBufferObject
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

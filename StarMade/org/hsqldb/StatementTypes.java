@@ -231,7 +231,8 @@ public abstract interface StatementTypes
   public static final int RETURN_RESULT = 2;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.StatementTypes
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

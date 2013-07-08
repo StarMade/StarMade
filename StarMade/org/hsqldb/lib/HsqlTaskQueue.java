@@ -5,36 +5,32 @@ public class HsqlTaskQueue
   protected Thread taskRunnerThread;
   protected static final Runnable SHUTDOWNTASK = new Runnable()
   {
-    public void run()
-    {
-    }
+    public void run() {}
   };
   protected volatile boolean isShutdown;
   protected final HsqlDeque queue = new HsqlDeque();
   protected final TaskRunner taskRunner = new TaskRunner();
-
+  
   public synchronized Thread getTaskRunnerThread()
   {
     return this.taskRunnerThread;
   }
-
+  
   protected synchronized void clearThread()
   {
     try
     {
       this.taskRunnerThread.setContextClassLoader(null);
     }
-    catch (Throwable localThrowable)
-    {
-    }
+    catch (Throwable localThrowable) {}
     this.taskRunnerThread = null;
   }
-
+  
   public boolean isShutdown()
   {
     return this.isShutdown;
   }
-
+  
   public synchronized void restart()
   {
     if ((this.taskRunnerThread == null) && (!this.isShutdown))
@@ -43,7 +39,7 @@ public class HsqlTaskQueue
       this.taskRunnerThread.start();
     }
   }
-
+  
   public void execute(Runnable paramRunnable)
     throws RuntimeException
   {
@@ -56,16 +52,17 @@ public class HsqlTaskQueue
       restart();
     }
   }
-
+  
   public synchronized void shutdownAfterQueued()
   {
-    if (!this.isShutdown)
+    if (!this.isShutdown) {
       synchronized (this.queue)
       {
         this.queue.addLast(SHUTDOWNTASK);
       }
+    }
   }
-
+  
   public synchronized void shutdownAfterCurrent()
   {
     this.isShutdown = true;
@@ -75,26 +72,25 @@ public class HsqlTaskQueue
       this.queue.addLast(SHUTDOWNTASK);
     }
   }
-
+  
   public synchronized void shutdownImmediately()
   {
     this.isShutdown = true;
-    if (this.taskRunnerThread != null)
+    if (this.taskRunnerThread != null) {
       this.taskRunnerThread.interrupt();
+    }
     synchronized (this.queue)
     {
       this.queue.clear();
       this.queue.addLast(SHUTDOWNTASK);
     }
   }
-
+  
   protected class TaskRunner
     implements Runnable
   {
-    protected TaskRunner()
-    {
-    }
-
+    protected TaskRunner() {}
+    
     public void run()
     {
       try
@@ -114,8 +110,9 @@ public class HsqlTaskQueue
             }
             break;
           }
-          if (localRunnable == null)
+          if (localRunnable == null) {
             break;
+          }
           localRunnable.run();
           Runnable localRunnable = null;
         }
@@ -128,7 +125,8 @@ public class HsqlTaskQueue
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.lib.HsqlTaskQueue
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -9,7 +9,8 @@ public final class NVTextureEnvCombine4
   public static final int GL_OPERAND3_ALPHA_NV = 34203;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.opengl.NVTextureEnvCombine4
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -29,7 +29,7 @@ public final class Schema
   HashMappedList tableList;
   HashMappedList sequenceList;
   long changeTimestamp;
-
+  
   public Schema(HsqlNameManager.HsqlName paramHsqlName, Grantee paramGrantee)
   {
     this.name = paramHsqlName;
@@ -49,51 +49,49 @@ public final class Schema
     this.sequenceList = ((HashMappedList)this.sequenceLookup.map);
     paramHsqlName.owner = paramGrantee;
   }
-
+  
   public int getType()
   {
     return 2;
   }
-
+  
   public HsqlNameManager.HsqlName getName()
   {
     return this.name;
   }
-
+  
   public HsqlNameManager.HsqlName getSchemaName()
   {
     return null;
   }
-
+  
   public HsqlNameManager.HsqlName getCatalogName()
   {
     return null;
   }
-
+  
   public Grantee getOwner()
   {
     return this.name.owner;
   }
-
+  
   public OrderedHashSet getReferences()
   {
     return new OrderedHashSet();
   }
-
+  
   public OrderedHashSet getComponents()
   {
     return null;
   }
-
-  public void compile(Session paramSession, SchemaObject paramSchemaObject)
-  {
-  }
-
+  
+  public void compile(Session paramSession, SchemaObject paramSchemaObject) {}
+  
   public long getChangeTimestamp()
   {
     return this.changeTimestamp;
   }
-
+  
   public String getSQL()
   {
     StringBuffer localStringBuffer = new StringBuffer(128);
@@ -104,7 +102,7 @@ public final class Schema
     localStringBuffer.append(getOwner().getName().getStatementName());
     return localStringBuffer.toString();
   }
-
+  
   static String getSetSchemaSQL(HsqlNameManager.HsqlName paramHsqlName)
   {
     StringBuffer localStringBuffer = new StringBuffer();
@@ -113,7 +111,7 @@ public final class Schema
     localStringBuffer.append(paramHsqlName.statementName);
     return localStringBuffer.toString();
   }
-
+  
   public String[] getSQLArray(OrderedHashSet paramOrderedHashSet1, OrderedHashSet paramOrderedHashSet2)
   {
     HsqlArrayList localHsqlArrayList = new HsqlArrayList();
@@ -129,13 +127,14 @@ public final class Schema
     localHsqlArrayList.addAll(arrayOfString1);
     arrayOfString1 = this.assertionLookup.getSQL(paramOrderedHashSet1, paramOrderedHashSet2);
     localHsqlArrayList.addAll(arrayOfString1);
-    if (localHsqlArrayList.size() == 1)
+    if (localHsqlArrayList.size() == 1) {
       return new String[0];
+    }
     String[] arrayOfString2 = new String[localHsqlArrayList.size()];
     localHsqlArrayList.toArray(arrayOfString2);
     return arrayOfString2;
   }
-
+  
   public String[] getSequenceRestartSQL()
   {
     HsqlArrayList localHsqlArrayList = new HsqlArrayList();
@@ -150,7 +149,7 @@ public final class Schema
     localHsqlArrayList.toArray(localObject);
     return localObject;
   }
-
+  
   public String[] getTriggerSQL()
   {
     HsqlArrayList localHsqlArrayList = new HsqlArrayList();
@@ -165,113 +164,100 @@ public final class Schema
     localHsqlArrayList.toArray(localObject);
     return localObject;
   }
-
+  
   public void addSimpleObjects(OrderedHashSet paramOrderedHashSet)
   {
     Iterator localIterator = this.specificRoutineLookup.map.values().iterator();
     while (localIterator.hasNext())
     {
       Routine localRoutine = (Routine)localIterator.next();
-      if ((localRoutine.dataImpact == 1) || (localRoutine.dataImpact == 2))
+      if ((localRoutine.dataImpact == 1) || (localRoutine.dataImpact == 2)) {
         paramOrderedHashSet.add(localRoutine);
+      }
     }
     paramOrderedHashSet.addAll(this.typeLookup.map.values());
     paramOrderedHashSet.addAll(this.charsetLookup.map.values());
     paramOrderedHashSet.addAll(this.collationLookup.map.values());
   }
-
+  
   boolean isEmpty()
   {
     return (this.sequenceLookup.isEmpty()) && (this.tableLookup.isEmpty()) && (this.typeLookup.isEmpty()) && (this.charsetLookup.isEmpty()) && (this.collationLookup.isEmpty()) && (this.specificRoutineLookup.isEmpty());
   }
-
+  
   public SchemaObjectSet getObjectSet(int paramInt)
   {
     switch (paramInt)
     {
-    case 7:
+    case 7: 
       return this.sequenceLookup;
-    case 3:
-    case 4:
+    case 3: 
+    case 4: 
       return this.tableLookup;
-    case 14:
+    case 14: 
       return this.charsetLookup;
-    case 15:
+    case 15: 
       return this.collationLookup;
-    case 17:
+    case 17: 
       return this.procedureLookup;
-    case 16:
+    case 16: 
       return this.functionLookup;
-    case 18:
+    case 18: 
       return this.functionLookup;
-    case 24:
+    case 24: 
       return this.specificRoutineLookup;
-    case 12:
-    case 13:
+    case 12: 
+    case 13: 
       return this.typeLookup;
-    case 6:
+    case 6: 
       return this.assertionLookup;
-    case 8:
+    case 8: 
       return this.triggerLookup;
-    case 20:
+    case 20: 
       return this.indexLookup;
-    case 5:
+    case 5: 
       return this.constraintLookup;
-    case 9:
-    case 10:
-    case 11:
-    case 19:
-    case 21:
-    case 22:
-    case 23:
     }
     throw Error.runtimeError(201, "Schema");
   }
-
+  
   Iterator schemaObjectIterator(int paramInt)
   {
     switch (paramInt)
     {
-    case 7:
+    case 7: 
       return this.sequenceLookup.map.values().iterator();
-    case 3:
-    case 4:
+    case 3: 
+    case 4: 
       return this.tableLookup.map.values().iterator();
-    case 14:
+    case 14: 
       return this.charsetLookup.map.values().iterator();
-    case 15:
+    case 15: 
       return this.collationLookup.map.values().iterator();
-    case 17:
+    case 17: 
       return this.procedureLookup.map.values().iterator();
-    case 16:
+    case 16: 
       return this.functionLookup.map.values().iterator();
-    case 18:
+    case 18: 
       Iterator localIterator = this.functionLookup.map.values().iterator();
       return new WrapperIterator(localIterator, this.procedureLookup.map.values().iterator());
-    case 24:
+    case 24: 
       return this.specificRoutineLookup.map.values().iterator();
-    case 12:
-    case 13:
+    case 12: 
+    case 13: 
       return this.typeLookup.map.values().iterator();
-    case 6:
+    case 6: 
       return this.assertionLookup.map.values().iterator();
-    case 8:
+    case 8: 
       return this.triggerLookup.map.values().iterator();
-    case 20:
+    case 20: 
       return this.indexLookup.map.values().iterator();
-    case 5:
+    case 5: 
       return this.constraintLookup.map.values().iterator();
-    case 9:
-    case 10:
-    case 11:
-    case 19:
-    case 21:
-    case 22:
-    case 23:
     }
     throw Error.runtimeError(201, "Schema");
   }
-
+  
   void release()
   {
     this.tableList.clear();
@@ -287,7 +273,8 @@ public final class Schema
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.Schema
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -62,175 +62,170 @@ import org.hsqldb.types.TimestampData;
 import org.hsqldb.types.Type;
 import org.hsqldb.types.UserTypeModifier;
 
-final class DatabaseInformationFull extends DatabaseInformationMain
+final class DatabaseInformationFull
+  extends DatabaseInformationMain
 {
   static final HashMappedList statementMap;
-
+  
   DatabaseInformationFull(Database paramDatabase)
   {
     super(paramDatabase);
   }
-
+  
   protected Table generateTable(Session paramSession, PersistentStore paramPersistentStore, int paramInt)
   {
     switch (paramInt)
     {
-    case 15:
+    case 15: 
       return SYSTEM_CACHEINFO(paramSession, paramPersistentStore);
-    case 16:
+    case 16: 
       return SYSTEM_COLUMN_SEQUENCE_USAGE(paramSession, paramPersistentStore);
-    case 17:
+    case 17: 
       return SYSTEM_COMMENTS(paramSession, paramPersistentStore);
-    case 20:
+    case 20: 
       return SYSTEM_SESSIONINFO(paramSession, paramPersistentStore);
-    case 19:
+    case 19: 
       return SYSTEM_PROPERTIES(paramSession, paramPersistentStore);
-    case 21:
+    case 21: 
       return SYSTEM_SESSIONS(paramSession, paramPersistentStore);
-    case 22:
+    case 22: 
       return SYSTEM_TEXTTABLES(paramSession, paramPersistentStore);
-    case 23:
+    case 23: 
       return ADMINISTRABLE_ROLE_AUTHORIZATIONS(paramSession, paramPersistentStore);
-    case 24:
+    case 24: 
       return APPLICABLE_ROLES(paramSession, paramPersistentStore);
-    case 25:
+    case 25: 
       return ASSERTIONS(paramSession, paramPersistentStore);
-    case 26:
+    case 26: 
       return AUTHORIZATIONS(paramSession, paramPersistentStore);
-    case 27:
+    case 27: 
       return CHARACTER_SETS(paramSession, paramPersistentStore);
-    case 28:
+    case 28: 
       return CHECK_CONSTRAINT_ROUTINE_USAGE(paramSession, paramPersistentStore);
-    case 29:
+    case 29: 
       return CHECK_CONSTRAINTS(paramSession, paramPersistentStore);
-    case 30:
+    case 30: 
       return COLLATIONS(paramSession, paramPersistentStore);
-    case 31:
+    case 31: 
       return COLUMN_COLUMN_USAGE(paramSession, paramPersistentStore);
-    case 32:
+    case 32: 
       return COLUMN_DOMAIN_USAGE(paramSession, paramPersistentStore);
-    case 34:
+    case 34: 
       return COLUMN_UDT_USAGE(paramSession, paramPersistentStore);
-    case 36:
+    case 36: 
       return CONSTRAINT_COLUMN_USAGE(paramSession, paramPersistentStore);
-    case 37:
+    case 37: 
       return CONSTRAINT_TABLE_USAGE(paramSession, paramPersistentStore);
-    case 35:
+    case 35: 
       return COLUMNS(paramSession, paramPersistentStore);
-    case 38:
+    case 38: 
       return DATA_TYPE_PRIVILEGES(paramSession, paramPersistentStore);
-    case 39:
+    case 39: 
       return DOMAIN_CONSTRAINTS(paramSession, paramPersistentStore);
-    case 40:
+    case 40: 
       return DOMAINS(paramSession, paramPersistentStore);
-    case 41:
+    case 41: 
       return ELEMENT_TYPES(paramSession, paramPersistentStore);
-    case 42:
+    case 42: 
       return ENABLED_ROLES(paramSession, paramPersistentStore);
-    case 44:
+    case 44: 
       return JAR_JAR_USAGE(paramSession, paramPersistentStore);
-    case 45:
+    case 45: 
       return JARS(paramSession, paramPersistentStore);
-    case 46:
+    case 46: 
       return KEY_COLUMN_USAGE(paramSession, paramPersistentStore);
-    case 47:
+    case 47: 
       return METHOD_SPECIFICATIONS(paramSession, paramPersistentStore);
-    case 48:
+    case 48: 
       return MODULE_COLUMN_USAGE(paramSession, paramPersistentStore);
-    case 49:
+    case 49: 
       return MODULE_PRIVILEGES(paramSession, paramPersistentStore);
-    case 50:
+    case 50: 
       return MODULE_TABLE_USAGE(paramSession, paramPersistentStore);
-    case 51:
+    case 51: 
       return MODULES(paramSession, paramPersistentStore);
-    case 52:
+    case 52: 
       return PARAMETERS(paramSession, paramPersistentStore);
-    case 53:
+    case 53: 
       return REFERENTIAL_CONSTRAINTS(paramSession, paramPersistentStore);
-    case 54:
+    case 54: 
       return ROLE_AUTHORIZATION_DESCRIPTORS(paramSession, paramPersistentStore);
-    case 55:
+    case 55: 
       return ROLE_COLUMN_GRANTS(paramSession, paramPersistentStore);
-    case 57:
+    case 57: 
       return ROLE_ROUTINE_GRANTS(paramSession, paramPersistentStore);
-    case 58:
+    case 58: 
       return ROLE_TABLE_GRANTS(paramSession, paramPersistentStore);
-    case 60:
+    case 60: 
       return ROLE_USAGE_GRANTS(paramSession, paramPersistentStore);
-    case 59:
+    case 59: 
       return ROLE_UDT_GRANTS(paramSession, paramPersistentStore);
-    case 61:
+    case 61: 
       return ROUTINE_COLUMN_USAGE(paramSession, paramPersistentStore);
-    case 62:
+    case 62: 
       return ROUTINE_JAR_USAGE(paramSession, paramPersistentStore);
-    case 63:
+    case 63: 
       return ROUTINE_PRIVILEGES(paramSession, paramPersistentStore);
-    case 64:
+    case 64: 
       return ROUTINE_ROUTINE_USAGE(paramSession, paramPersistentStore);
-    case 65:
+    case 65: 
       return ROUTINE_SEQUENCE_USAGE(paramSession, paramPersistentStore);
-    case 66:
+    case 66: 
       return ROUTINE_TABLE_USAGE(paramSession, paramPersistentStore);
-    case 67:
+    case 67: 
       return ROUTINES(paramSession, paramPersistentStore);
-    case 68:
+    case 68: 
       return SCHEMATA(paramSession, paramPersistentStore);
-    case 69:
+    case 69: 
       return SEQUENCES(paramSession, paramPersistentStore);
-    case 70:
+    case 70: 
       return SQL_FEATURES(paramSession, paramPersistentStore);
-    case 71:
+    case 71: 
       return SQL_IMPLEMENTATION_INFO(paramSession, paramPersistentStore);
-    case 72:
+    case 72: 
       return SQL_PACKAGES(paramSession, paramPersistentStore);
-    case 73:
+    case 73: 
       return SQL_PARTS(paramSession, paramPersistentStore);
-    case 74:
+    case 74: 
       return SQL_SIZING(paramSession, paramPersistentStore);
-    case 75:
+    case 75: 
       return SQL_SIZING_PROFILES(paramSession, paramPersistentStore);
-    case 76:
+    case 76: 
       return TABLE_CONSTRAINTS(paramSession, paramPersistentStore);
-    case 78:
+    case 78: 
       return TABLES(paramSession, paramPersistentStore);
-    case 79:
+    case 79: 
       return TRANSLATIONS(paramSession, paramPersistentStore);
-    case 84:
+    case 84: 
       return TRIGGERED_UPDATE_COLUMNS(paramSession, paramPersistentStore);
-    case 80:
+    case 80: 
       return TRIGGER_COLUMN_USAGE(paramSession, paramPersistentStore);
-    case 81:
+    case 81: 
       return TRIGGER_ROUTINE_USAGE(paramSession, paramPersistentStore);
-    case 82:
+    case 82: 
       return TRIGGER_SEQUENCE_USAGE(paramSession, paramPersistentStore);
-    case 83:
+    case 83: 
       return TRIGGER_TABLE_USAGE(paramSession, paramPersistentStore);
-    case 85:
+    case 85: 
       return TRIGGERS(paramSession, paramPersistentStore);
-    case 87:
+    case 87: 
       return UDT_PRIVILEGES(paramSession, paramPersistentStore);
-    case 88:
+    case 88: 
       return USAGE_PRIVILEGES(paramSession, paramPersistentStore);
-    case 89:
+    case 89: 
       return USER_DEFINED_TYPES(paramSession, paramPersistentStore);
-    case 90:
+    case 90: 
       return VIEW_COLUMN_USAGE(paramSession, paramPersistentStore);
-    case 91:
+    case 91: 
       return VIEW_ROUTINE_USAGE(paramSession, paramPersistentStore);
-    case 92:
+    case 92: 
       return VIEW_TABLE_USAGE(paramSession, paramPersistentStore);
-    case 93:
+    case 93: 
       return VIEWS(paramSession, paramPersistentStore);
-    case 18:
-    case 33:
-    case 43:
-    case 56:
-    case 77:
-    case 86:
     }
     return super.generateTable(paramSession, paramPersistentStore, paramInt);
   }
-
+  
   Table SYSTEM_CACHEINFO(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable1 = this.sysTables[15];
@@ -258,10 +253,12 @@ final class DatabaseInformationFull extends DatabaseInformationMain
       PersistentStore localPersistentStore = localTable2.getRowStore(paramSession);
       if (paramSession.getGrantee().isFullyAccessibleByRole(localTable2.getName()))
       {
-        if (localPersistentStore != null)
+        if (localPersistentStore != null) {
           localDataFileCache = localPersistentStore.getCache();
-        if (localDataFileCache != null)
+        }
+        if (localDataFileCache != null) {
           localHashSet.add(localDataFileCache);
+        }
       }
     }
     Iterator localIterator1 = localHashSet.iterator();
@@ -281,7 +278,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     }
     return localTable1;
   }
-
+  
   Table SYSTEM_COLUMN_SEQUENCE_USAGE(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable1 = this.sysTables[16];
@@ -334,7 +331,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     }
     return localTable1;
   }
-
+  
   Table SYSTEM_COMMENTS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[17];
@@ -408,7 +405,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     }
     return localTable;
   }
-
+  
   Table SYSTEM_PROPERTIES(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[19];
@@ -436,14 +433,15 @@ final class DatabaseInformationFull extends DatabaseInformationMain
       arrayOfObject1[1] = str2;
       arrayOfObject1[2] = arrayOfObject2[0];
       arrayOfObject1[3] = this.database.logger.getValueStringForProperty((String)arrayOfObject1[2]);
-      if (arrayOfObject1[3] == null)
+      if (arrayOfObject1[3] == null) {
         arrayOfObject1[3] = localHsqlDatabaseProperties.getPropertyString((String)arrayOfObject1[2]);
+      }
       arrayOfObject1[4] = arrayOfObject2[2];
       localTable.insertSys(paramSession, paramPersistentStore, arrayOfObject1);
     }
     return localTable;
   }
-
+  
   Table SYSTEM_SESSIONINFO(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[20];
@@ -500,12 +498,13 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     localObject[0] = "CURRENT STATEMENT";
     localObject[1] = "";
     Statement localStatement = paramSession.sessionContext.currentStatement;
-    if (localStatement != null)
+    if (localStatement != null) {
       localObject[1] = localStatement.getSQL();
+    }
     localTable.insertSys(paramSession, paramPersistentStore, (Object[])localObject);
     return localTable;
   }
-
+  
   Table SYSTEM_SESSIONS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[21];
@@ -531,7 +530,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
       return localTable;
     }
     Session[] arrayOfSession1 = this.database.sessionManager.getVisibleSessions(paramSession);
-    for (int i = 0; i < arrayOfSession1.length; i++)
+    for (int i = 0; i < arrayOfSession1.length; i++) {
       if (!arrayOfSession1[i].isClosed())
       {
         Session localSession = arrayOfSession1[i];
@@ -543,13 +542,15 @@ final class DatabaseInformationFull extends DatabaseInformationMain
         arrayOfObject[4] = localSession.sessionContext.isAutoCommit;
         arrayOfObject[5] = Boolean.valueOf(localSession.isReadOnlyDefault);
         Number localNumber = localSession.getLastIdentity();
-        if (localNumber != null)
+        if (localNumber != null) {
           arrayOfObject[6] = ValuePool.getLong(localNumber.longValue());
+        }
         arrayOfObject[8] = Boolean.valueOf(localSession.isInMidTransaction());
         arrayOfObject[9] = ValuePool.getLong(localSession.getTransactionSize());
         HsqlNameManager.HsqlName localHsqlName2 = localSession.getCurrentSchemaHsqlName();
-        if (localHsqlName2 != null)
+        if (localHsqlName2 != null) {
           arrayOfObject[7] = localHsqlName2.name;
+        }
         arrayOfObject[10] = "";
         arrayOfObject[11] = "";
         Session[] arrayOfSession2;
@@ -561,8 +562,9 @@ final class DatabaseInformationFull extends DatabaseInformationMain
           localSession.waitingSessions.toArray(arrayOfSession2);
           for (j = 0; j < arrayOfSession2.length; j++)
           {
-            if (j > 0)
+            if (j > 0) {
               ((StringBuffer)localObject).append(',');
+            }
             ((StringBuffer)localObject).append(arrayOfSession2[j].getId());
           }
           arrayOfObject[10] = ((StringBuffer)localObject).toString();
@@ -574,8 +576,9 @@ final class DatabaseInformationFull extends DatabaseInformationMain
           localSession.waitedSessions.toArray(arrayOfSession2);
           for (j = 0; j < arrayOfSession2.length; j++)
           {
-            if (j > 0)
+            if (j > 0) {
               ((StringBuffer)localObject).append(',');
+            }
             ((StringBuffer)localObject).append(arrayOfSession2[j].getId());
           }
           arrayOfObject[11] = ((StringBuffer)localObject).toString();
@@ -585,9 +588,10 @@ final class DatabaseInformationFull extends DatabaseInformationMain
         arrayOfObject[13] = new Long(localSession.latch.getCount());
         localTable.insertSys(paramSession, paramPersistentStore, arrayOfObject);
       }
+    }
     return localTable;
   }
-
+  
   Table SYSTEM_TEXTTABLES(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable1 = this.sysTables[22];
@@ -642,7 +646,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     }
     return localTable1;
   }
-
+  
   Table ADMINISTRABLE_ROLE_AUTHORIZATIONS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[23];
@@ -656,11 +660,12 @@ final class DatabaseInformationFull extends DatabaseInformationMain
       localTable.createPrimaryKeyConstraint(localHsqlName, new int[] { 0, 1, 2 }, false);
       return localTable;
     }
-    if (paramSession.isAdmin())
+    if (paramSession.isAdmin()) {
       insertRoles(paramSession, localTable, paramSession.getGrantee(), true);
+    }
     return localTable;
   }
-
+  
   Table APPLICABLE_ROLES(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[24];
@@ -677,7 +682,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     insertRoles(paramSession, localTable, paramSession.getGrantee(), paramSession.isAdmin());
     return localTable;
   }
-
+  
   private void insertRoles(Session paramSession, Table paramTable, Grantee paramGrantee, boolean paramBoolean)
   {
     PersistentStore localPersistentStore = paramTable.getRowStore(paramSession);
@@ -714,7 +719,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
       }
     }
   }
-
+  
   Table ASSERTIONS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[25];
@@ -732,7 +737,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     }
     return localTable;
   }
-
+  
   Table AUTHORIZATIONS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[26];
@@ -756,7 +761,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     }
     return localTable;
   }
-
+  
   Table CHARACTER_SETS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[27];
@@ -803,7 +808,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     }
     return localTable;
   }
-
+  
   Table CHECK_CONSTRAINT_ROUTINE_USAGE(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[28];
@@ -830,29 +835,25 @@ final class DatabaseInformationFull extends DatabaseInformationMain
         Constraint localConstraint;
         switch (localHsqlName2.parent.type)
         {
-        case 3:
+        case 3: 
           try
           {
             localObject = (Table)this.database.schemaManager.getSchemaObject(localHsqlName2.parent.name, localHsqlName2.parent.schema.name, 3);
           }
-          catch (Exception localException1)
-          {
-          }
+          catch (Exception localException1) {}
           continue;
           localConstraint = ((Table)localObject).getConstraint(localHsqlName2.name);
-          if (localConstraint.getConstraintType() == 3);
+          if (localConstraint.getConstraintType() == 3) {}
           break;
-        case 13:
+        case 13: 
           try
           {
             localObject = (Type)this.database.schemaManager.getSchemaObject(localHsqlName2.parent.name, localHsqlName2.parent.schema.name, 13);
           }
-          catch (Exception localException2)
-          {
-          }
+          catch (Exception localException2) {}
           continue;
           localConstraint = ((Type)localObject).userTypeModifier.getConstraint(localHsqlName2.name);
-        default:
+        default: 
           continue;
           OrderedHashSet localOrderedHashSet = localConstraint.getReferences();
           for (int i = 0; i < localOrderedHashSet.size(); i++)
@@ -875,7 +876,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     }
     return localTable;
   }
-
+  
   Table CHECK_CONSTRAINTS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable1 = this.sysTables[29];
@@ -896,8 +897,8 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     while (localIterator1.hasNext())
     {
       Table localTable2 = (Table)localIterator1.next();
-      if ((!localTable2.isView()) && (paramSession.getGrantee().isFullyAccessibleByRole(localTable2.getName())))
-        for (localConstraint : localTable2.getConstraints())
+      if ((!localTable2.isView()) && (paramSession.getGrantee().isFullyAccessibleByRole(localTable2.getName()))) {
+        for (localConstraint : localTable2.getConstraints()) {
           if (localConstraint.getConstraintType() == 3)
           {
             arrayOfObject = localTable1.getEmptyRowData();
@@ -908,17 +909,17 @@ final class DatabaseInformationFull extends DatabaseInformationMain
             {
               arrayOfObject[3] = localConstraint.getCheckSQL();
             }
-            catch (Exception localException1)
-            {
-            }
+            catch (Exception localException1) {}
             localTable1.insertSys(paramSession, paramPersistentStore, arrayOfObject);
           }
+        }
+      }
     }
     Iterator localIterator2 = this.database.schemaManager.databaseObjectIterator(13);
     while (localIterator2.hasNext())
     {
       Type localType = (Type)localIterator2.next();
-      if ((localType.isDomainType()) && (paramSession.getGrantee().isFullyAccessibleByRole(localType.getName())))
+      if ((localType.isDomainType()) && (paramSession.getGrantee().isFullyAccessibleByRole(localType.getName()))) {
         for (localConstraint : localType.userTypeModifier.getConstraints())
         {
           arrayOfObject = localTable1.getEmptyRowData();
@@ -929,15 +930,14 @@ final class DatabaseInformationFull extends DatabaseInformationMain
           {
             arrayOfObject[3] = localConstraint.getCheckSQL();
           }
-          catch (Exception localException2)
-          {
-          }
+          catch (Exception localException2) {}
           localTable1.insertSys(paramSession, paramPersistentStore, arrayOfObject);
         }
+      }
     }
     return localTable1;
   }
-
+  
   Table COLLATIONS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[30];
@@ -983,7 +983,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     }
     return localTable;
   }
-
+  
   Table COLUMN_COLUMN_USAGE(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable1 = this.sysTables[31];
@@ -1012,7 +1012,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
           if (localColumnSchema.isGenerated())
           {
             OrderedHashSet localOrderedHashSet = localColumnSchema.getGeneratedColumnReferences();
-            if (localOrderedHashSet != null)
+            if (localOrderedHashSet != null) {
               for (int j = 0; j < localOrderedHashSet.size(); j++)
               {
                 Object[] arrayOfObject = localTable1.getEmptyRowData();
@@ -1023,13 +1023,14 @@ final class DatabaseInformationFull extends DatabaseInformationMain
                 arrayOfObject[4] = localColumnSchema.getName().name;
                 localTable1.insertSys(paramSession, paramPersistentStore, arrayOfObject);
               }
+            }
           }
         }
       }
     }
     return localTable1;
   }
-
+  
   Table COLUMN_DOMAIN_USAGE(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable1 = this.sysTables[32];
@@ -1074,7 +1075,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     }
     return localTable1;
   }
-
+  
   Table COLUMN_UDT_USAGE(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable1 = this.sysTables[34];
@@ -1119,7 +1120,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     }
     return localTable1;
   }
-
+  
   Table COLUMNS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable1 = this.sysTables[35];
@@ -1301,7 +1302,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     }
     return localTable1;
   }
-
+  
   Table CONSTRAINT_COLUMN_USAGE(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable1 = this.sysTables[36];
@@ -1337,14 +1338,15 @@ final class DatabaseInformationFull extends DatabaseInformationMain
           Iterator localIterator2;
           switch (localConstraint.getConstraintType())
           {
-          case 3:
+          case 3: 
             localObject1 = localConstraint.getCheckColumnExpressions();
-            if (localObject1 != null)
+            if (localObject1 != null) {
               localIterator2 = ((OrderedHashSet)localObject1).iterator();
+            }
             break;
-          case 0:
-          case 2:
-          case 4:
+          case 0: 
+          case 2: 
+          case 4: 
             while (localIterator2.hasNext())
             {
               Object localObject2 = (ExpressionColumn)localIterator2.next();
@@ -1363,14 +1365,13 @@ final class DatabaseInformationFull extends DatabaseInformationMain
                 {
                   localTable1.insertSys(paramSession, paramPersistentStore, arrayOfObject);
                 }
-                catch (HsqlException localHsqlException1)
-                {
-                }
+                catch (HsqlException localHsqlException1) {}
                 continue;
                 localObject1 = localTable2;
                 localObject2 = localConstraint.getMainColumns();
-                if (localConstraint.getConstraintType() == 0)
+                if (localConstraint.getConstraintType() == 0) {
                   localObject2 = localConstraint.getRefColumns();
+                }
                 for (int k = 0; k < localObject2.length; k++)
                 {
                   arrayOfObject = localTable1.getEmptyRowData();
@@ -1385,20 +1386,17 @@ final class DatabaseInformationFull extends DatabaseInformationMain
                   {
                     localTable1.insertSys(paramSession, paramPersistentStore, arrayOfObject);
                   }
-                  catch (HsqlException localHsqlException2)
-                  {
-                  }
+                  catch (HsqlException localHsqlException2) {}
                 }
               }
             }
-          case 1:
           }
         }
       }
     }
     return localTable1;
   }
-
+  
   Table CONSTRAINT_TABLE_USAGE(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[37];
@@ -1421,7 +1419,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     ((Session)localObject).close();
     return localTable;
   }
-
+  
   Table DATA_TYPE_PRIVILEGES(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[38];
@@ -1444,7 +1442,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     ((Session)localObject).close();
     return localTable;
   }
-
+  
   Table DOMAIN_CONSTRAINTS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[39];
@@ -1489,7 +1487,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     }
     return localTable;
   }
-
+  
   Table DOMAINS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[40];
@@ -1591,14 +1589,15 @@ final class DatabaseInformationFull extends DatabaseInformationMain
         arrayOfObject[20] = localType.getDefinition();
         arrayOfObject[21] = arrayOfObject[3];
         Expression localExpression = localType.userTypeModifier.getDefaultClause();
-        if (localExpression != null)
+        if (localExpression != null) {
           arrayOfObject[18] = localExpression.getSQL();
+        }
         localTable.insertSys(paramSession, paramPersistentStore, arrayOfObject);
       }
     }
     return localTable;
   }
-
+  
   Table ELEMENT_TYPES(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable1 = this.sysTables[41];
@@ -1669,9 +1668,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
               {
                 localTable1.insertSys(paramSession, paramPersistentStore, arrayOfObject);
               }
-              catch (HsqlException localHsqlException2)
-              {
-              }
+              catch (HsqlException localHsqlException2) {}
             }
           }
         }
@@ -1710,9 +1707,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
         {
           localTable1.insertSys(paramSession, paramPersistentStore, arrayOfObject);
         }
-        catch (HsqlException localHsqlException1)
-        {
-        }
+        catch (HsqlException localHsqlException1) {}
       }
     }
     localIterator2 = this.database.schemaManager.databaseObjectIterator(24);
@@ -1735,9 +1730,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
           {
             localTable1.insertSys(paramSession, paramPersistentStore, arrayOfObject);
           }
-          catch (HsqlException localHsqlException3)
-          {
-          }
+          catch (HsqlException localHsqlException3) {}
         }
         Type localType2 = localType1;
         int k = localRoutine.getParameterCount();
@@ -1758,16 +1751,14 @@ final class DatabaseInformationFull extends DatabaseInformationMain
             {
               localTable1.insertSys(paramSession, paramPersistentStore, arrayOfObject);
             }
-            catch (HsqlException localHsqlException4)
-            {
-            }
+            catch (HsqlException localHsqlException4) {}
           }
         }
       }
     }
     return localTable1;
   }
-
+  
   void addTypeInfo(Object[] paramArrayOfObject, Type paramType)
   {
     paramArrayOfObject[5] = paramType.getFullNameString();
@@ -1826,7 +1817,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     paramArrayOfObject[27] = paramType.getDefinition();
     paramArrayOfObject[28] = paramArrayOfObject[5];
   }
-
+  
   Table ENABLED_ROLES(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[42];
@@ -1848,7 +1839,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     }
     return localTable;
   }
-
+  
   Table JAR_JAR_USAGE(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[44];
@@ -1867,7 +1858,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     }
     return localTable;
   }
-
+  
   Table JARS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[45];
@@ -1884,7 +1875,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     }
     return localTable;
   }
-
+  
   Table KEY_COLUMN_USAGE(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable1 = this.sysTables[46];
@@ -1927,11 +1918,12 @@ final class DatabaseInformationFull extends DatabaseInformationMain
               Constraint localConstraint2 = localTable3.getConstraint(localConstraint1.getUniqueName().name);
               int[] arrayOfInt3 = localConstraint2.getMainColumns();
               arrayOfInt2 = new int[arrayOfInt1.length];
-              for (int k = 0; k < arrayOfInt1.length; k++)
+              for (int k = 0; k < arrayOfInt1.length; k++) {
                 arrayOfInt2[k] = ArrayUtil.find(arrayOfInt3, arrayOfInt1[k]);
+              }
               arrayOfInt1 = localConstraint1.getRefColumns();
             }
-            if (paramSession.getGrantee().hasColumnRights(localTable2, arrayOfInt1))
+            if (paramSession.getGrantee().hasColumnRights(localTable2, arrayOfInt1)) {
               for (int j = 0; j < arrayOfInt1.length; j++)
               {
                 Object[] arrayOfObject = localTable1.getEmptyRowData();
@@ -1943,47 +1935,49 @@ final class DatabaseInformationFull extends DatabaseInformationMain
                 arrayOfObject[5] = localHsqlName.name;
                 arrayOfObject[6] = localTable2.getColumn(arrayOfInt1[j]).getName().name;
                 arrayOfObject[7] = ValuePool.getLong(j + 1);
-                if (localConstraint1.getConstraintType() == 0)
+                if (localConstraint1.getConstraintType() == 0) {
                   arrayOfObject[8] = ValuePool.getInt(arrayOfInt2[j] + 1);
+                }
                 localTable1.insertSys(paramSession, paramPersistentStore, arrayOfObject);
               }
+            }
           }
         }
       }
     }
     return localTable1;
   }
-
+  
   Table METHOD_SPECIFICATION_PARAMETERS(Session paramSession, PersistentStore paramPersistentStore)
   {
     return null;
   }
-
+  
   Table METHOD_SPECIFICATIONS(Session paramSession, PersistentStore paramPersistentStore)
   {
     return null;
   }
-
+  
   Table MODULE_COLUMN_USAGE(Session paramSession, PersistentStore paramPersistentStore)
   {
     return null;
   }
-
+  
   Table MODULE_PRIVILEGES(Session paramSession, PersistentStore paramPersistentStore)
   {
     return null;
   }
-
+  
   Table MODULE_TABLE_USAGE(Session paramSession, PersistentStore paramPersistentStore)
   {
     return null;
   }
-
+  
   Table MODULES(Session paramSession, PersistentStore paramPersistentStore)
   {
     return null;
   }
-
+  
   Table PARAMETERS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[52];
@@ -2057,15 +2051,14 @@ final class DatabaseInformationFull extends DatabaseInformationMain
             arrayOfObject[3] = ValuePool.getLong(k + 1);
             switch (localColumnSchema.getParameterMode())
             {
-            case 1:
+            case 1: 
               arrayOfObject[4] = "IN";
               break;
-            case 4:
+            case 4: 
               arrayOfObject[4] = "OUT";
               break;
-            case 2:
+            case 2: 
               arrayOfObject[4] = "INOUT";
-            case 3:
             }
             arrayOfObject[5] = "NO";
             arrayOfObject[6] = "NO";
@@ -2130,7 +2123,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     }
     return localTable;
   }
-
+  
   Table REFERENTIAL_CONSTRAINTS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable1 = this.sysTables[53];
@@ -2183,7 +2176,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     }
     return localTable1;
   }
-
+  
   Table ROLE_COLUMN_GRANTS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[55];
@@ -2208,7 +2201,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     ((Session)localObject).close();
     return localTable;
   }
-
+  
   Table ROLE_ROUTINE_GRANTS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[57];
@@ -2235,7 +2228,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     ((Session)localObject).close();
     return localTable;
   }
-
+  
   Table ROLE_TABLE_GRANTS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[58];
@@ -2260,7 +2253,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     ((Session)localObject).close();
     return localTable;
   }
-
+  
   Table ROLE_UDT_GRANTS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[59];
@@ -2284,7 +2277,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     ((Session)localObject).close();
     return localTable;
   }
-
+  
   Table ROLE_USAGE_GRANTS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[60];
@@ -2309,7 +2302,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     ((Session)localObject).close();
     return localTable;
   }
-
+  
   Table ROUTINE_COLUMN_USAGE(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[61];
@@ -2355,15 +2348,13 @@ final class DatabaseInformationFull extends DatabaseInformationMain
           {
             localTable.insertSys(paramSession, paramPersistentStore, arrayOfObject);
           }
-          catch (HsqlException localHsqlException)
-          {
-          }
+          catch (HsqlException localHsqlException) {}
         }
       }
     }
     return localTable;
   }
-
+  
   Table ROUTINE_PRIVILEGES(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[63];
@@ -2421,16 +2412,14 @@ final class DatabaseInformationFull extends DatabaseInformationMain
             {
               localTable.insertSys(paramSession, paramPersistentStore, arrayOfObject);
             }
-            catch (HsqlException localHsqlException)
-            {
-            }
+            catch (HsqlException localHsqlException) {}
           }
         }
       }
     }
     return localTable;
   }
-
+  
   Table ROUTINE_JAR_USAGE(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[62];
@@ -2447,8 +2436,9 @@ final class DatabaseInformationFull extends DatabaseInformationMain
       localTable.createPrimaryKeyConstraint(localHsqlName, new int[] { 0, 1, 2, 3, 4, 5 }, false);
       return localTable;
     }
-    if (!paramSession.isAdmin())
+    if (!paramSession.isAdmin()) {
       return localTable;
+    }
     Iterator localIterator = this.database.schemaManager.databaseObjectIterator(24);
     while (localIterator.hasNext())
     {
@@ -2467,7 +2457,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     }
     return localTable;
   }
-
+  
   Table ROUTINE_ROUTINE_USAGE(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[64];
@@ -2505,15 +2495,13 @@ final class DatabaseInformationFull extends DatabaseInformationMain
           {
             localTable.insertSys(paramSession, paramPersistentStore, arrayOfObject);
           }
-          catch (HsqlException localHsqlException)
-          {
-          }
+          catch (HsqlException localHsqlException) {}
         }
       }
     }
     return localTable;
   }
-
+  
   Table ROUTINE_SEQUENCE_USAGE(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[65];
@@ -2551,15 +2539,13 @@ final class DatabaseInformationFull extends DatabaseInformationMain
           {
             localTable.insertSys(paramSession, paramPersistentStore, arrayOfObject);
           }
-          catch (HsqlException localHsqlException)
-          {
-          }
+          catch (HsqlException localHsqlException) {}
         }
       }
     }
     return localTable;
   }
-
+  
   Table ROUTINE_TABLE_USAGE(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[66];
@@ -2603,15 +2589,13 @@ final class DatabaseInformationFull extends DatabaseInformationMain
           {
             localTable.insertSys(paramSession, paramPersistentStore, arrayOfObject);
           }
-          catch (HsqlException localHsqlException)
-          {
-          }
+          catch (HsqlException localHsqlException) {}
         }
       }
     }
     return localTable;
   }
-
+  
   Table ROUTINES(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[67];
@@ -2854,7 +2838,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     }
     return localTable;
   }
-
+  
   Table SCHEMATA(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[68];
@@ -2895,7 +2879,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     }
     return localTable;
   }
-
+  
   Table SQL_FEATURES(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[70];
@@ -2919,7 +2903,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     localTable.insertSys(paramSession, paramPersistentStore, localResult);
     return localTable;
   }
-
+  
   Table SQL_IMPLEMENTATION_INFO(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[71];
@@ -2941,7 +2925,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     localTable.insertSys(paramSession, paramPersistentStore, localResult);
     return localTable;
   }
-
+  
   Table SQL_PACKAGES(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[72];
@@ -2963,7 +2947,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     localTable.insertSys(paramSession, paramPersistentStore, localResult);
     return localTable;
   }
-
+  
   Table SQL_PARTS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[73];
@@ -2985,7 +2969,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     localTable.insertSys(paramSession, paramPersistentStore, localResult);
     return localTable;
   }
-
+  
   Table SQL_SIZING(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[74];
@@ -3006,7 +2990,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     localTable.insertSys(paramSession, paramPersistentStore, localResult);
     return localTable;
   }
-
+  
   Table SQL_SIZING_PROFILES(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[75];
@@ -3026,7 +3010,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     Object localObject = this.database.sessionManager.newSysSession(SqlInvariants.INFORMATION_SCHEMA_HSQLNAME, paramSession.getUser());
     return localTable;
   }
-
+  
   Table TABLE_CONSTRAINTS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable1 = this.sysTables[76];
@@ -3051,27 +3035,24 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     while (((Iterator)localObject).hasNext())
     {
       localTable2 = (Table)((Iterator)localObject).next();
-      if ((!localTable2.isView()) && (paramSession.getGrantee().hasNonSelectTableRight(localTable2)))
+      if ((!localTable2.isView()) && (paramSession.getGrantee().hasNonSelectTableRight(localTable2))) {
         for (Constraint localConstraint : localTable2.getConstraints())
         {
           Object[] arrayOfObject = localTable1.getEmptyRowData();
           switch (localConstraint.getConstraintType())
           {
-          case 3:
+          case 3: 
             arrayOfObject[3] = "CHECK";
             break;
-          case 2:
+          case 2: 
             arrayOfObject[3] = "UNIQUE";
             break;
-          case 0:
+          case 0: 
             arrayOfObject[3] = "FOREIGN KEY";
             localTable2 = localConstraint.getRef();
             break;
-          case 4:
+          case 4: 
             arrayOfObject[3] = "PRIMARY KEY";
-            break;
-          case 1:
-          default:
             break;
           }
           String str1 = this.database.getCatalogName().name;
@@ -3086,10 +3067,11 @@ final class DatabaseInformationFull extends DatabaseInformationMain
           arrayOfObject[8] = "NO";
           localTable1.insertSys(paramSession, paramPersistentStore, arrayOfObject);
         }
+      }
     }
     return localTable1;
   }
-
+  
   Table TRANSLATIONS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[79];
@@ -3114,7 +3096,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     }
     return localTable;
   }
-
+  
   Table TRIGGER_COLUMN_USAGE(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[80];
@@ -3156,16 +3138,14 @@ final class DatabaseInformationFull extends DatabaseInformationMain
             {
               localTable.insertSys(paramSession, paramPersistentStore, arrayOfObject);
             }
-            catch (HsqlException localHsqlException)
-            {
-            }
+            catch (HsqlException localHsqlException) {}
           }
         }
       }
     }
     return localTable;
   }
-
+  
   Table TRIGGER_ROUTINE_USAGE(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[81];
@@ -3205,16 +3185,14 @@ final class DatabaseInformationFull extends DatabaseInformationMain
             {
               localTable.insertSys(paramSession, paramPersistentStore, arrayOfObject);
             }
-            catch (HsqlException localHsqlException)
-            {
-            }
+            catch (HsqlException localHsqlException) {}
           }
         }
       }
     }
     return localTable;
   }
-
+  
   Table TRIGGER_SEQUENCE_USAGE(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[82];
@@ -3254,16 +3232,14 @@ final class DatabaseInformationFull extends DatabaseInformationMain
             {
               localTable.insertSys(paramSession, paramPersistentStore, arrayOfObject);
             }
-            catch (HsqlException localHsqlException)
-            {
-            }
+            catch (HsqlException localHsqlException) {}
           }
         }
       }
     }
     return localTable;
   }
-
+  
   Table TRIGGER_TABLE_USAGE(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[83];
@@ -3303,16 +3279,14 @@ final class DatabaseInformationFull extends DatabaseInformationMain
             {
               localTable.insertSys(paramSession, paramPersistentStore, arrayOfObject);
             }
-            catch (HsqlException localHsqlException)
-            {
-            }
+            catch (HsqlException localHsqlException) {}
           }
         }
       }
     }
     return localTable;
   }
-
+  
   Table TRIGGERS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[85];
@@ -3371,7 +3345,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     }
     return localTable;
   }
-
+  
   Table TRIGGERED_UPDATE_COLUMNS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[84];
@@ -3396,7 +3370,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
       if (paramSession.getGrantee().isAccessible(localTriggerDef))
       {
         int[] arrayOfInt = localTriggerDef.getUpdateColumnIndexes();
-        if (arrayOfInt != null)
+        if (arrayOfInt != null) {
           for (int i = 0; i < arrayOfInt.length; i++)
           {
             ColumnSchema localColumnSchema = localTriggerDef.getTable().getColumn(arrayOfInt[i]);
@@ -3410,11 +3384,12 @@ final class DatabaseInformationFull extends DatabaseInformationMain
             arrayOfObject[6] = localColumnSchema.getNameString();
             localTable.insertSys(paramSession, paramPersistentStore, arrayOfObject);
           }
+        }
       }
     }
     return localTable;
   }
-
+  
   Table UDT_PRIVILEGES(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[87];
@@ -3437,7 +3412,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     while (localIterator.hasNext())
     {
       SchemaObject localSchemaObject = (SchemaObject)localIterator.next();
-      if (localSchemaObject.getType() == 12)
+      if (localSchemaObject.getType() == 12) {
         for (int i = 0; i < localOrderedHashSet1.size(); i++)
         {
           Grantee localGrantee = (Grantee)localOrderedHashSet1.get(i);
@@ -3464,15 +3439,14 @@ final class DatabaseInformationFull extends DatabaseInformationMain
             {
               localTable.insertSys(paramSession, paramPersistentStore, arrayOfObject);
             }
-            catch (HsqlException localHsqlException)
-            {
-            }
+            catch (HsqlException localHsqlException) {}
           }
         }
+      }
     }
     return localTable;
   }
-
+  
   Table USAGE_PRIVILEGES(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[88];
@@ -3526,15 +3500,13 @@ final class DatabaseInformationFull extends DatabaseInformationMain
           {
             localTable.insertSys(paramSession, paramPersistentStore, (Object[])localObject1);
           }
-          catch (HsqlException localHsqlException)
-          {
-          }
+          catch (HsqlException localHsqlException) {}
         }
       }
     }
     return localTable;
   }
-
+  
   Table USER_DEFINED_TYPES(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[89];
@@ -3656,7 +3628,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     }
     return localTable;
   }
-
+  
   Table VIEW_COLUMN_USAGE(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable1 = this.sysTables[90];
@@ -3704,16 +3676,14 @@ final class DatabaseInformationFull extends DatabaseInformationMain
             {
               localTable1.insertSys(paramSession, paramPersistentStore, arrayOfObject);
             }
-            catch (HsqlException localHsqlException)
-            {
-            }
+            catch (HsqlException localHsqlException) {}
           }
         }
       }
     }
     return localTable1;
   }
-
+  
   Table VIEW_ROUTINE_USAGE(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable1 = this.sysTables[91];
@@ -3753,16 +3723,14 @@ final class DatabaseInformationFull extends DatabaseInformationMain
             {
               localTable1.insertSys(paramSession, paramPersistentStore, arrayOfObject);
             }
-            catch (HsqlException localHsqlException)
-            {
-            }
+            catch (HsqlException localHsqlException) {}
           }
         }
       }
     }
     return localTable1;
   }
-
+  
   Table VIEW_TABLE_USAGE(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable1 = this.sysTables[92];
@@ -3802,16 +3770,14 @@ final class DatabaseInformationFull extends DatabaseInformationMain
             {
               localTable1.insertSys(paramSession, paramPersistentStore, arrayOfObject);
             }
-            catch (HsqlException localHsqlException)
-            {
-            }
+            catch (HsqlException localHsqlException) {}
           }
         }
       }
     }
     return localTable1;
   }
-
+  
   Table VIEWS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable1 = this.sysTables[93];
@@ -3845,16 +3811,17 @@ final class DatabaseInformationFull extends DatabaseInformationMain
         String str = "NONE";
         if ((localTable2 instanceof View))
         {
-          if (paramSession.getGrantee().isFullyAccessibleByRole(localTable2.getName()))
+          if (paramSession.getGrantee().isFullyAccessibleByRole(localTable2.getName())) {
             arrayOfObject[3] = ((View)localTable2).getStatement();
+          }
           switch (((View)localTable2).getCheckOption())
           {
-          case 0:
+          case 0: 
             break;
-          case 1:
+          case 1: 
             str = "LOCAL";
             break;
-          case 2:
+          case 2: 
             str = "CASCADED";
           }
         }
@@ -3869,7 +3836,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     }
     return localTable1;
   }
-
+  
   Table ROLE_AUTHORIZATION_DESCRIPTORS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[54];
@@ -3905,7 +3872,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
     }
     return localTable;
   }
-
+  
   static
   {
     synchronized (DatabaseInformationFull.class)
@@ -3923,9 +3890,7 @@ final class DatabaseInformationFull extends DatabaseInformationMain
       {
         localInputStreamReader = new InputStreamReader(localInputStream, "ISO-8859-1");
       }
-      catch (Exception localException)
-      {
-      }
+      catch (Exception localException) {}
       LineNumberReader localLineNumberReader = new LineNumberReader(localInputStreamReader);
       LineGroupReader localLineGroupReader = new LineGroupReader(localLineNumberReader, arrayOfString);
       statementMap = localLineGroupReader.getAsMap();
@@ -3934,7 +3899,8 @@ final class DatabaseInformationFull extends DatabaseInformationMain
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.dbinfo.DatabaseInformationFull
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

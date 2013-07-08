@@ -11,7 +11,7 @@ class InfoMapping0
   int coupling_steps;
   int[] coupling_mag = new int[256];
   int[] coupling_ang = new int[256];
-
+  
   void free()
   {
     this.chmuxlist = null;
@@ -24,7 +24,8 @@ class InfoMapping0
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     com.jcraft.jorbis.InfoMapping0
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

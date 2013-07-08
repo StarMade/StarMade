@@ -1,253 +1,247 @@
-/*     */ package it.unimi.dsi.fastutil.longs;
-/*     */ 
-/*     */ import it.unimi.dsi.fastutil.objects.AbstractObjectIterator;
-/*     */ import it.unimi.dsi.fastutil.objects.AbstractObjectSet;
-/*     */ import it.unimi.dsi.fastutil.objects.ObjectArrays;
-/*     */ import it.unimi.dsi.fastutil.objects.ObjectIterator;
-/*     */ import it.unimi.dsi.fastutil.objects.ReferenceArraySet;
-/*     */ import it.unimi.dsi.fastutil.objects.ReferenceCollection;
-/*     */ import it.unimi.dsi.fastutil.objects.ReferenceCollections;
-/*     */ import java.io.IOException;
-/*     */ import java.io.ObjectInputStream;
-/*     */ import java.io.ObjectOutputStream;
-/*     */ import java.io.Serializable;
-/*     */ import java.util.Map;
-/*     */ import java.util.Map.Entry;
-/*     */ import java.util.NoSuchElementException;
-/*     */ 
-/*     */ public class Long2ReferenceArrayMap<V> extends AbstractLong2ReferenceMap<V>
-/*     */   implements Serializable, Cloneable
-/*     */ {
-/*     */   private static final long serialVersionUID = 1L;
-/*     */   private transient long[] key;
-/*     */   private transient Object[] value;
-/*     */   private int size;
-/*     */ 
-/*     */   public Long2ReferenceArrayMap(long[] key, Object[] value)
-/*     */   {
-/*  76 */     this.key = key;
-/*  77 */     this.value = value;
-/*  78 */     this.size = key.length;
-/*  79 */     if (key.length != value.length) throw new IllegalArgumentException("Keys and values have different lengths (" + key.length + ", " + value.length + ")");
-/*     */   }
-/*     */ 
-/*     */   public Long2ReferenceArrayMap()
-/*     */   {
-/*  84 */     this.key = LongArrays.EMPTY_ARRAY;
-/*  85 */     this.value = ObjectArrays.EMPTY_ARRAY;
-/*     */   }
-/*     */ 
-/*     */   public Long2ReferenceArrayMap(int capacity)
-/*     */   {
-/*  92 */     this.key = new long[capacity];
-/*  93 */     this.value = new Object[capacity];
-/*     */   }
-/*     */ 
-/*     */   public Long2ReferenceArrayMap(Long2ReferenceMap<V> m)
-/*     */   {
-/* 100 */     this(m.size());
-/* 101 */     putAll(m);
-/*     */   }
-/*     */ 
-/*     */   public Long2ReferenceArrayMap(Map<? extends Long, ? extends V> m)
-/*     */   {
-/* 108 */     this(m.size());
-/* 109 */     putAll(m);
-/*     */   }
-/*     */ 
-/*     */   public Long2ReferenceArrayMap(long[] key, Object[] value, int size)
-/*     */   {
-/* 120 */     this.key = key;
-/* 121 */     this.value = value;
-/* 122 */     this.size = size;
-/* 123 */     if (key.length != value.length) throw new IllegalArgumentException("Keys and values have different lengths (" + key.length + ", " + value.length + ")");
-/* 124 */     if (size > key.length) throw new IllegalArgumentException("The provided size (" + size + ") is larger than or equal to the backing-arrays size (" + key.length + ")");
-/*     */   }
-/*     */ 
-/*     */   public Long2ReferenceMap.FastEntrySet<V> long2ReferenceEntrySet()
-/*     */   {
-/* 169 */     return new EntrySet(null);
-/*     */   }
-/*     */ 
-/*     */   private int findKey(long k) {
-/* 173 */     long[] key = this.key;
-/* 174 */     for (int i = this.size; i-- != 0; ) if (key[i] == k) return i;
-/* 175 */     return -1;
-/*     */   }
-/*     */ 
-/*     */   public V get(long k)
-/*     */   {
-/* 184 */     long[] key = this.key;
-/* 185 */     for (int i = this.size; i-- != 0; ) if (key[i] == k) return this.value[i];
-/* 186 */     return this.defRetValue;
-/*     */   }
-/*     */ 
-/*     */   public int size() {
-/* 190 */     return this.size;
-/*     */   }
-/*     */ 
-/*     */   public void clear()
-/*     */   {
-/* 196 */     for (int i = this.size; i-- != 0; )
-/*     */     {
-/* 201 */       this.value[i] = null;
-/*     */     }
-/*     */ 
-/* 205 */     this.size = 0;
-/*     */   }
-/*     */ 
-/*     */   public boolean containsKey(long k)
-/*     */   {
-/* 210 */     return findKey(k) != -1;
-/*     */   }
-/*     */ 
-/*     */   public boolean containsValue(Object v)
-/*     */   {
-/* 216 */     for (int i = this.size; i-- != 0; ) if (this.value[i] == v) return true;
-/* 217 */     return false;
-/*     */   }
-/*     */ 
-/*     */   public boolean isEmpty()
-/*     */   {
-/* 222 */     return this.size == 0;
-/*     */   }
-/*     */ 
-/*     */   public V put(long k, V v)
-/*     */   {
-/* 228 */     int oldKey = findKey(k);
-/* 229 */     if (oldKey != -1) {
-/* 230 */       Object oldValue = this.value[oldKey];
-/* 231 */       this.value[oldKey] = v;
-/* 232 */       return oldValue;
-/*     */     }
-/* 234 */     if (this.size == this.key.length) {
-/* 235 */       long[] newKey = new long[this.size == 0 ? 2 : this.size * 2];
-/* 236 */       Object[] newValue = new Object[this.size == 0 ? 2 : this.size * 2];
-/* 237 */       for (int i = this.size; i-- != 0; ) {
-/* 238 */         newKey[i] = this.key[i];
-/* 239 */         newValue[i] = this.value[i];
-/*     */       }
-/* 241 */       this.key = newKey;
-/* 242 */       this.value = newValue;
-/*     */     }
-/* 244 */     this.key[this.size] = k;
-/* 245 */     this.value[this.size] = v;
-/* 246 */     this.size += 1;
-/* 247 */     return this.defRetValue;
-/*     */   }
-/*     */ 
-/*     */   public V remove(long k)
-/*     */   {
-/* 258 */     int oldPos = findKey(k);
-/* 259 */     if (oldPos == -1) return this.defRetValue;
-/* 260 */     Object oldValue = this.value[oldPos];
-/* 261 */     int tail = this.size - oldPos - 1;
-/* 262 */     for (int i = 0; i < tail; i++) {
-/* 263 */       this.key[(oldPos + i)] = this.key[(oldPos + i + 1)];
-/* 264 */       this.value[(oldPos + i)] = this.value[(oldPos + i + 1)];
-/*     */     }
-/* 266 */     this.size -= 1;
-/*     */ 
-/* 271 */     this.value[this.size] = null;
-/*     */ 
-/* 273 */     return oldValue;
-/*     */   }
-/*     */ 
-/*     */   public LongSet keySet()
-/*     */   {
-/* 280 */     return new LongArraySet(this.key, this.size);
-/*     */   }
-/*     */ 
-/*     */   public ReferenceCollection<V> values()
-/*     */   {
-/* 285 */     return ReferenceCollections.unmodifiable(new ReferenceArraySet(this.value, this.size));
-/*     */   }
-/*     */ 
-/*     */   public Long2ReferenceArrayMap<V> clone()
-/*     */   {
-/*     */     Long2ReferenceArrayMap c;
-/*     */     try
-/*     */     {
-/* 300 */       c = (Long2ReferenceArrayMap)super.clone();
-/*     */     }
-/*     */     catch (CloneNotSupportedException cantHappen) {
-/* 303 */       throw new InternalError();
-/*     */     }
-/* 305 */     c.key = ((long[])this.key.clone());
-/* 306 */     c.value = ((Object[])this.value.clone());
-/* 307 */     return c;
-/*     */   }
-/*     */ 
-/*     */   private void writeObject(ObjectOutputStream s) throws IOException {
-/* 311 */     s.defaultWriteObject();
-/* 312 */     for (int i = 0; i < this.size; i++) {
-/* 313 */       s.writeLong(this.key[i]);
-/* 314 */       s.writeObject(this.value[i]);
-/*     */     }
-/*     */   }
-/*     */ 
-/*     */   private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException
-/*     */   {
-/* 320 */     s.defaultReadObject();
-/* 321 */     this.key = new long[this.size];
-/* 322 */     this.value = new Object[this.size];
-/* 323 */     for (int i = 0; i < this.size; i++) {
-/* 324 */       this.key[i] = s.readLong();
-/* 325 */       this.value[i] = s.readObject();
-/*     */     }
-/*     */   }
-/*     */ 
-/*     */   private final class EntrySet extends AbstractObjectSet<Long2ReferenceMap.Entry<V>>
-/*     */     implements Long2ReferenceMap.FastEntrySet<V>
-/*     */   {
-/*     */     private EntrySet()
-/*     */     {
-/*     */     }
-/*     */ 
-/*     */     public ObjectIterator<Long2ReferenceMap.Entry<V>> iterator()
-/*     */     {
-/* 129 */       return new AbstractObjectIterator() {
-/* 130 */         int next = 0;
-/*     */ 
-/* 132 */         public boolean hasNext() { return this.next < Long2ReferenceArrayMap.this.size; }
-/*     */ 
-/*     */         public Long2ReferenceMap.Entry<V> next()
-/*     */         {
-/* 136 */           if (!hasNext()) throw new NoSuchElementException();
-/* 137 */           return new AbstractLong2ReferenceMap.BasicEntry(Long2ReferenceArrayMap.this.key[this.next], Long2ReferenceArrayMap.this.value[(this.next++)]);
-/*     */         } } ;
-/*     */     }
-/*     */ 
-/*     */     public ObjectIterator<Long2ReferenceMap.Entry<V>> fastIterator() {
-/* 142 */       return new AbstractObjectIterator() {
-/* 143 */         int next = 0;
-/* 144 */         final AbstractLong2ReferenceMap.BasicEntry<V> entry = new AbstractLong2ReferenceMap.BasicEntry(0L, null);
-/*     */ 
-/* 146 */         public boolean hasNext() { return this.next < Long2ReferenceArrayMap.this.size; }
-/*     */ 
-/*     */         public Long2ReferenceMap.Entry<V> next()
-/*     */         {
-/* 150 */           if (!hasNext()) throw new NoSuchElementException();
-/* 151 */           this.entry.key = Long2ReferenceArrayMap.this.key[this.next];
-/* 152 */           this.entry.value = Long2ReferenceArrayMap.this.value[(this.next++)];
-/* 153 */           return this.entry;
-/*     */         } } ;
-/*     */     }
-/*     */ 
-/*     */     public int size() {
-/* 158 */       return Long2ReferenceArrayMap.this.size;
-/*     */     }
-/*     */ 
-/*     */     public boolean contains(Object o) {
-/* 162 */       if (!(o instanceof Map.Entry)) return false;
-/* 163 */       Map.Entry e = (Map.Entry)o;
-/* 164 */       long k = ((Long)e.getKey()).longValue();
-/* 165 */       return (Long2ReferenceArrayMap.this.containsKey(k)) && (Long2ReferenceArrayMap.this.get(k) == e.getValue());
-/*     */     }
-/*     */   }
-/*     */ }
+/*   1:    */package it.unimi.dsi.fastutil.longs;
+/*   2:    */
+/*   3:    */import it.unimi.dsi.fastutil.objects.AbstractObjectIterator;
+/*   4:    */import it.unimi.dsi.fastutil.objects.AbstractObjectSet;
+/*   5:    */import it.unimi.dsi.fastutil.objects.ObjectArrays;
+/*   6:    */import it.unimi.dsi.fastutil.objects.ObjectIterator;
+/*   7:    */import it.unimi.dsi.fastutil.objects.ReferenceArraySet;
+/*   8:    */import it.unimi.dsi.fastutil.objects.ReferenceCollection;
+/*   9:    */import it.unimi.dsi.fastutil.objects.ReferenceCollections;
+/*  10:    */import java.io.IOException;
+/*  11:    */import java.io.ObjectInputStream;
+/*  12:    */import java.io.ObjectOutputStream;
+/*  13:    */import java.io.Serializable;
+/*  14:    */import java.util.Map;
+/*  15:    */import java.util.Map.Entry;
+/*  16:    */import java.util.NoSuchElementException;
+/*  17:    */
+/*  65:    */public class Long2ReferenceArrayMap<V>
+/*  66:    */  extends AbstractLong2ReferenceMap<V>
+/*  67:    */  implements Serializable, Cloneable
+/*  68:    */{
+/*  69:    */  private static final long serialVersionUID = 1L;
+/*  70:    */  private transient long[] key;
+/*  71:    */  private transient Object[] value;
+/*  72:    */  private int size;
+/*  73:    */  
+/*  74:    */  public Long2ReferenceArrayMap(long[] key, Object[] value)
+/*  75:    */  {
+/*  76: 76 */    this.key = key;
+/*  77: 77 */    this.value = value;
+/*  78: 78 */    this.size = key.length;
+/*  79: 79 */    if (key.length != value.length) throw new IllegalArgumentException("Keys and values have different lengths (" + key.length + ", " + value.length + ")");
+/*  80:    */  }
+/*  81:    */  
+/*  82:    */  public Long2ReferenceArrayMap()
+/*  83:    */  {
+/*  84: 84 */    this.key = LongArrays.EMPTY_ARRAY;
+/*  85: 85 */    this.value = ObjectArrays.EMPTY_ARRAY;
+/*  86:    */  }
+/*  87:    */  
+/*  90:    */  public Long2ReferenceArrayMap(int capacity)
+/*  91:    */  {
+/*  92: 92 */    this.key = new long[capacity];
+/*  93: 93 */    this.value = new Object[capacity];
+/*  94:    */  }
+/*  95:    */  
+/*  98:    */  public Long2ReferenceArrayMap(Long2ReferenceMap<V> m)
+/*  99:    */  {
+/* 100:100 */    this(m.size());
+/* 101:101 */    putAll(m);
+/* 102:    */  }
+/* 103:    */  
+/* 106:    */  public Long2ReferenceArrayMap(Map<? extends Long, ? extends V> m)
+/* 107:    */  {
+/* 108:108 */    this(m.size());
+/* 109:109 */    putAll(m);
+/* 110:    */  }
+/* 111:    */  
+/* 118:    */  public Long2ReferenceArrayMap(long[] key, Object[] value, int size)
+/* 119:    */  {
+/* 120:120 */    this.key = key;
+/* 121:121 */    this.value = value;
+/* 122:122 */    this.size = size;
+/* 123:123 */    if (key.length != value.length) throw new IllegalArgumentException("Keys and values have different lengths (" + key.length + ", " + value.length + ")");
+/* 124:124 */    if (size > key.length) throw new IllegalArgumentException("The provided size (" + size + ") is larger than or equal to the backing-arrays size (" + key.length + ")");
+/* 125:    */  }
+/* 126:    */  
+/* 127:    */  private final class EntrySet extends AbstractObjectSet<Long2ReferenceMap.Entry<V>> implements Long2ReferenceMap.FastEntrySet<V> { private EntrySet() {}
+/* 128:    */    
+/* 129:129 */    public ObjectIterator<Long2ReferenceMap.Entry<V>> iterator() { new AbstractObjectIterator() {
+/* 130:130 */        int next = 0;
+/* 131:    */        
+/* 132:132 */        public boolean hasNext() { return this.next < Long2ReferenceArrayMap.this.size; }
+/* 133:    */        
+/* 134:    */        public Long2ReferenceMap.Entry<V> next()
+/* 135:    */        {
+/* 136:136 */          if (!hasNext()) throw new NoSuchElementException();
+/* 137:137 */          return new AbstractLong2ReferenceMap.BasicEntry(Long2ReferenceArrayMap.this.key[this.next], Long2ReferenceArrayMap.this.value[(this.next++)]);
+/* 138:    */        }
+/* 139:    */      }; }
+/* 140:    */    
+/* 141:    */    public ObjectIterator<Long2ReferenceMap.Entry<V>> fastIterator() {
+/* 142:142 */      new AbstractObjectIterator() {
+/* 143:143 */        int next = 0;
+/* 144:144 */        final AbstractLong2ReferenceMap.BasicEntry<V> entry = new AbstractLong2ReferenceMap.BasicEntry(0L, null);
+/* 145:    */        
+/* 146:146 */        public boolean hasNext() { return this.next < Long2ReferenceArrayMap.this.size; }
+/* 147:    */        
+/* 148:    */        public Long2ReferenceMap.Entry<V> next()
+/* 149:    */        {
+/* 150:150 */          if (!hasNext()) throw new NoSuchElementException();
+/* 151:151 */          this.entry.key = Long2ReferenceArrayMap.this.key[this.next];
+/* 152:152 */          this.entry.value = Long2ReferenceArrayMap.this.value[(this.next++)];
+/* 153:153 */          return this.entry;
+/* 154:    */        }
+/* 155:    */      };
+/* 156:    */    }
+/* 157:    */    
+/* 158:158 */    public int size() { return Long2ReferenceArrayMap.this.size; }
+/* 159:    */    
+/* 160:    */    public boolean contains(Object o)
+/* 161:    */    {
+/* 162:162 */      if (!(o instanceof Map.Entry)) return false;
+/* 163:163 */      Map.Entry<Long, V> e = (Map.Entry)o;
+/* 164:164 */      long k = ((Long)e.getKey()).longValue();
+/* 165:165 */      return (Long2ReferenceArrayMap.this.containsKey(k)) && (Long2ReferenceArrayMap.this.get(k) == e.getValue());
+/* 166:    */    }
+/* 167:    */  }
+/* 168:    */  
+/* 169:169 */  public Long2ReferenceMap.FastEntrySet<V> long2ReferenceEntrySet() { return new EntrySet(null); }
+/* 170:    */  
+/* 171:    */  private int findKey(long k)
+/* 172:    */  {
+/* 173:173 */    long[] key = this.key;
+/* 174:174 */    for (int i = this.size; i-- != 0;) if (key[i] == k) return i;
+/* 175:175 */    return -1;
+/* 176:    */  }
+/* 177:    */  
+/* 182:    */  public V get(long k)
+/* 183:    */  {
+/* 184:184 */    long[] key = this.key;
+/* 185:185 */    for (int i = this.size; i-- != 0;) if (key[i] == k) return this.value[i];
+/* 186:186 */    return this.defRetValue;
+/* 187:    */  }
+/* 188:    */  
+/* 189:    */  public int size() {
+/* 190:190 */    return this.size;
+/* 191:    */  }
+/* 192:    */  
+/* 194:    */  public void clear()
+/* 195:    */  {
+/* 196:196 */    for (int i = this.size; i-- != 0;)
+/* 197:    */    {
+/* 201:201 */      this.value[i] = null;
+/* 202:    */    }
+/* 203:    */    
+/* 205:205 */    this.size = 0;
+/* 206:    */  }
+/* 207:    */  
+/* 208:    */  public boolean containsKey(long k)
+/* 209:    */  {
+/* 210:210 */    return findKey(k) != -1;
+/* 211:    */  }
+/* 212:    */  
+/* 214:    */  public boolean containsValue(Object v)
+/* 215:    */  {
+/* 216:216 */    for (int i = this.size; i-- != 0;) if (this.value[i] == v) return true;
+/* 217:217 */    return false;
+/* 218:    */  }
+/* 219:    */  
+/* 220:    */  public boolean isEmpty()
+/* 221:    */  {
+/* 222:222 */    return this.size == 0;
+/* 223:    */  }
+/* 224:    */  
+/* 226:    */  public V put(long k, V v)
+/* 227:    */  {
+/* 228:228 */    int oldKey = findKey(k);
+/* 229:229 */    if (oldKey != -1) {
+/* 230:230 */      V oldValue = this.value[oldKey];
+/* 231:231 */      this.value[oldKey] = v;
+/* 232:232 */      return oldValue;
+/* 233:    */    }
+/* 234:234 */    if (this.size == this.key.length) {
+/* 235:235 */      long[] newKey = new long[this.size == 0 ? 2 : this.size * 2];
+/* 236:236 */      Object[] newValue = new Object[this.size == 0 ? 2 : this.size * 2];
+/* 237:237 */      for (int i = this.size; i-- != 0;) {
+/* 238:238 */        newKey[i] = this.key[i];
+/* 239:239 */        newValue[i] = this.value[i];
+/* 240:    */      }
+/* 241:241 */      this.key = newKey;
+/* 242:242 */      this.value = newValue;
+/* 243:    */    }
+/* 244:244 */    this.key[this.size] = k;
+/* 245:245 */    this.value[this.size] = v;
+/* 246:246 */    this.size += 1;
+/* 247:247 */    return this.defRetValue;
+/* 248:    */  }
+/* 249:    */  
+/* 256:    */  public V remove(long k)
+/* 257:    */  {
+/* 258:258 */    int oldPos = findKey(k);
+/* 259:259 */    if (oldPos == -1) return this.defRetValue;
+/* 260:260 */    V oldValue = this.value[oldPos];
+/* 261:261 */    int tail = this.size - oldPos - 1;
+/* 262:262 */    for (int i = 0; i < tail; i++) {
+/* 263:263 */      this.key[(oldPos + i)] = this.key[(oldPos + i + 1)];
+/* 264:264 */      this.value[(oldPos + i)] = this.value[(oldPos + i + 1)];
+/* 265:    */    }
+/* 266:266 */    this.size -= 1;
+/* 267:    */    
+/* 271:271 */    this.value[this.size] = null;
+/* 272:    */    
+/* 273:273 */    return oldValue;
+/* 274:    */  }
+/* 275:    */  
+/* 278:    */  public LongSet keySet()
+/* 279:    */  {
+/* 280:280 */    return new LongArraySet(this.key, this.size);
+/* 281:    */  }
+/* 282:    */  
+/* 283:    */  public ReferenceCollection<V> values()
+/* 284:    */  {
+/* 285:285 */    return ReferenceCollections.unmodifiable(new ReferenceArraySet(this.value, this.size));
+/* 286:    */  }
+/* 287:    */  
+/* 292:    */  public Long2ReferenceArrayMap<V> clone()
+/* 293:    */  {
+/* 294:    */    Long2ReferenceArrayMap<V> c;
+/* 295:    */    
+/* 298:    */    try
+/* 299:    */    {
+/* 300:300 */      c = (Long2ReferenceArrayMap)super.clone();
+/* 301:    */    }
+/* 302:    */    catch (CloneNotSupportedException cantHappen) {
+/* 303:303 */      throw new InternalError();
+/* 304:    */    }
+/* 305:305 */    c.key = ((long[])this.key.clone());
+/* 306:306 */    c.value = ((Object[])this.value.clone());
+/* 307:307 */    return c;
+/* 308:    */  }
+/* 309:    */  
+/* 310:    */  private void writeObject(ObjectOutputStream s) throws IOException {
+/* 311:311 */    s.defaultWriteObject();
+/* 312:312 */    for (int i = 0; i < this.size; i++) {
+/* 313:313 */      s.writeLong(this.key[i]);
+/* 314:314 */      s.writeObject(this.value[i]);
+/* 315:    */    }
+/* 316:    */  }
+/* 317:    */  
+/* 318:    */  private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException
+/* 319:    */  {
+/* 320:320 */    s.defaultReadObject();
+/* 321:321 */    this.key = new long[this.size];
+/* 322:322 */    this.value = new Object[this.size];
+/* 323:323 */    for (int i = 0; i < this.size; i++) {
+/* 324:324 */      this.key[i] = s.readLong();
+/* 325:325 */      this.value[i] = s.readObject();
+/* 326:    */    }
+/* 327:    */  }
+/* 328:    */}
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     it.unimi.dsi.fastutil.longs.Long2ReferenceArrayMap
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -12,20 +12,21 @@ public final class ServerConfiguration
   {
     switch (paramInt)
     {
-    case 1:
+    case 1: 
       return paramBoolean ? 554 : 9001;
-    case 0:
+    case 0: 
       return paramBoolean ? 443 : 80;
-    case 2:
+    case 2: 
       return paramBoolean ? -1 : 9101;
     }
     return -1;
   }
-
+  
   public static ServerProperties getPropertiesFromFile(int paramInt, String paramString1, String paramString2)
   {
-    if (StringUtil.isEmpty(paramString1))
+    if (StringUtil.isEmpty(paramString1)) {
       return null;
+    }
     ServerProperties localServerProperties = new ServerProperties(paramInt, paramString1, paramString2);
     boolean bool;
     try
@@ -38,7 +39,7 @@ public final class ServerConfiguration
     }
     return bool ? localServerProperties : null;
   }
-
+  
   public static String[] listLocalInetAddressNames()
   {
     HashSet localHashSet = new HashSet();
@@ -60,9 +61,7 @@ public final class ServerConfiguration
         localHashSet.add(arrayOfInetAddress[i].getHostName());
       }
     }
-    catch (Exception localException1)
-    {
-    }
+    catch (Exception localException1) {}
     try
     {
       localInetAddress = InetAddress.getByName(null);
@@ -79,22 +78,18 @@ public final class ServerConfiguration
         localHashSet.add(arrayOfInetAddress[j].getHostName());
       }
     }
-    catch (Exception localException2)
-    {
-    }
+    catch (Exception localException2) {}
     try
     {
       localHashSet.add(InetAddress.getByName("loopback").getHostAddress());
       localHashSet.add(InetAddress.getByName("loopback").getHostName());
     }
-    catch (Exception localException3)
-    {
-    }
+    catch (Exception localException3) {}
     String[] arrayOfString = new String[localHashSet.size()];
     localHashSet.toArray(arrayOfString);
     return arrayOfString;
   }
-
+  
   public static ServerProperties newDefaultProperties(int paramInt)
   {
     ServerProperties localServerProperties = new ServerProperties(paramInt);
@@ -109,46 +104,53 @@ public final class ServerConfiguration
     localServerProperties.setProperty("server.root", ".");
     return localServerProperties;
   }
-
+  
   public static void translateAddressProperty(HsqlProperties paramHsqlProperties)
   {
-    if (paramHsqlProperties == null)
+    if (paramHsqlProperties == null) {
       return;
+    }
     String str = paramHsqlProperties.getProperty("server.address");
-    if (StringUtil.isEmpty(str))
+    if (StringUtil.isEmpty(str)) {
       paramHsqlProperties.setProperty("server.address", "0.0.0.0");
+    }
   }
-
+  
   public static void translateDefaultDatabaseProperty(HsqlProperties paramHsqlProperties)
   {
-    if (paramHsqlProperties == null)
+    if (paramHsqlProperties == null) {
       return;
+    }
     if (!paramHsqlProperties.isPropertyTrue("server.remote_open"))
     {
       if (paramHsqlProperties.getProperty("server.database.0") == null)
       {
         String str = paramHsqlProperties.getProperty("server.database");
-        if (str == null)
+        if (str == null) {
           str = "test";
-        else
+        } else {
           paramHsqlProperties.removeProperty("server.database");
+        }
         paramHsqlProperties.setProperty("server.database.0", str);
         paramHsqlProperties.setProperty("server.dbname.0", "");
       }
-      if (paramHsqlProperties.getProperty("server.dbname.0") == null)
+      if (paramHsqlProperties.getProperty("server.dbname.0") == null) {
         paramHsqlProperties.setProperty("server.dbname.0", "");
+      }
     }
   }
-
+  
   public static void translateDefaultNoSystemExitProperty(HsqlProperties paramHsqlProperties)
   {
-    if (paramHsqlProperties == null)
+    if (paramHsqlProperties == null) {
       return;
+    }
     paramHsqlProperties.setPropertyIfNotExists("server.no_system_exit", "false");
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.server.ServerConfiguration
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

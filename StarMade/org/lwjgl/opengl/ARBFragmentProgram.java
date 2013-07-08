@@ -1,6 +1,7 @@
 package org.lwjgl.opengl;
 
-public final class ARBFragmentProgram extends ARBProgram
+public final class ARBFragmentProgram
+  extends ARBProgram
 {
   public static final int GL_FRAGMENT_PROGRAM_ARB = 34820;
   public static final int GL_PROGRAM_ALU_INSTRUCTIONS_ARB = 34821;
@@ -19,7 +20,8 @@ public final class ARBFragmentProgram extends ARBProgram
   public static final int GL_MAX_TEXTURE_IMAGE_UNITS_ARB = 34930;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.opengl.ARBFragmentProgram
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

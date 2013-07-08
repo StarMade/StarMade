@@ -17,7 +17,7 @@ public class CodeSwitcher
   private Vector vSwitchOff = new Vector();
   private Vector vSwitches = new Vector();
   private static final int MAX_LINELENGTH = 82;
-
+  
   public static void main(String[] paramArrayOfString)
   {
     CodeSwitcher localCodeSwitcher = new CodeSwitcher();
@@ -32,18 +32,19 @@ public class CodeSwitcher
     for (int i = 0; i < paramArrayOfString.length; i++)
     {
       str1 = paramArrayOfString[i];
-      if (str1.startsWith("+"))
+      if (str1.startsWith("+")) {
         localCodeSwitcher.vSwitchOn.addElement(str1.substring(1));
-      else if (str1.startsWith("--basedir="))
+      } else if (str1.startsWith("--basedir=")) {
         localFile2 = new File(str1.substring("--basedir=".length()));
-      else if (str1.startsWith("--pathlist="))
+      } else if (str1.startsWith("--pathlist=")) {
         localFile1 = new File(str1.substring("--pathlist=".length()));
-      else if (str1.startsWith("-"))
+      } else if (str1.startsWith("-")) {
         localCodeSwitcher.vSwitchOff.addElement(str1.substring(1));
-      else
+      } else {
         localCodeSwitcher.addDir(str1);
+      }
     }
-    if (localFile2 != null)
+    if (localFile2 != null) {
       if (localFile1 == null)
       {
         System.err.println("--basedir= setting ignored, since only used for list files");
@@ -53,7 +54,8 @@ public class CodeSwitcher
         System.err.println("Skipping listfile since basedir '" + localFile2.getAbsolutePath() + "' is not a directory");
         localFile1 = null;
       }
-    if (localFile1 != null)
+    }
+    if (localFile1 != null) {
       try
       {
         BufferedReader localBufferedReader = new BufferedReader(new FileReader(localFile1));
@@ -64,10 +66,11 @@ public class CodeSwitcher
           if (str2.length() >= 1)
           {
             File localFile3 = localFile2 == null ? new File(str2) : new File(localFile2, str2);
-            if (localFile3.isFile())
+            if (localFile3.isFile()) {
               localCodeSwitcher.addDir(localFile3);
-            else
+            } else {
               System.err.println("Skipping non-file '" + str2.trim() + "'");
+            }
           }
         }
       }
@@ -75,26 +78,28 @@ public class CodeSwitcher
       {
         System.err.println("Failed to read pathlist file '" + localFile1.getAbsolutePath() + "'");
       }
+    }
     if (localCodeSwitcher.size() < 1)
     {
       printError("No path specified, or no specified paths qualify");
       showUsage();
     }
     localCodeSwitcher.process();
-    if ((localCodeSwitcher.vSwitchOff.size() == 0) && (localCodeSwitcher.vSwitchOn.size() == 0))
+    if ((localCodeSwitcher.vSwitchOff.size() == 0) && (localCodeSwitcher.vSwitchOn.size() == 0)) {
       localCodeSwitcher.printSwitches();
+    }
   }
-
+  
   public int size()
   {
     return this.vList == null ? 0 : this.vList.size();
   }
-
+  
   static void showUsage()
   {
     System.out.print("Usage: java CodeSwitcher paths|{--pathlist=listfile} [{+|-}label...] [+][-]\nIf no labels are specified then all used\nlabels in the source code are shown.\nUse +MODE to switch on the things labeld MODE\nUse -MODE to switch off the things labeld MODE\nPath: Any number of path or files may be\nspecified. Use . for the current directory\n(including sub-directories).\nExample: java CodeSwitcher +JAVA2 .\nThis example switches on code labeled JAVA2\nin all *.java files in the current directory\nand all subdirectories.\n");
   }
-
+  
   void process()
   {
     int i = this.vList.size();
@@ -102,24 +107,26 @@ public class CodeSwitcher
     {
       System.out.print(".");
       String str = (String)this.vList.elementAt(j);
-      if (!processFile(str))
+      if (!processFile(str)) {
         System.out.println("in file " + str + " !");
+      }
     }
     System.out.println("");
   }
-
+  
   void printSwitches()
   {
     System.out.println("Used labels:");
-    for (int i = 0; i < this.vSwitches.size(); i++)
+    for (int i = 0; i < this.vSwitches.size(); i++) {
       System.out.println((String)this.vSwitches.elementAt(i));
+    }
   }
-
+  
   void addDir(String paramString)
   {
     addDir(new File(paramString));
   }
-
+  
   void addDir(File paramFile)
   {
     if ((paramFile.isFile()) && (paramFile.getName().endsWith(".java")))
@@ -129,11 +136,12 @@ public class CodeSwitcher
     else if (paramFile.isDirectory())
     {
       File[] arrayOfFile = paramFile.listFiles();
-      for (int i = 0; i < arrayOfFile.length; i++)
+      for (int i = 0; i < arrayOfFile.length; i++) {
         addDir(arrayOfFile[i]);
+      }
     }
   }
-
+  
   boolean processFile(String paramString)
   {
     File localFile1 = new File(paramString);
@@ -145,16 +153,18 @@ public class CodeSwitcher
     {
       Vector localVector1 = getFileLines(localFile1);
       Vector localVector2 = new Vector(localVector1.size());
-      for (int m = 0; m < localVector1.size(); m++)
+      for (int m = 0; m < localVector1.size(); m++) {
         localVector2.addElement(localVector1.elementAt(m));
+      }
       for (m = 0; m < localVector1.size(); m++)
       {
         String str = (String)localVector1.elementAt(m);
-        if (str == null)
+        if (str == null) {
           break;
-        if ((k != 0) && ((str.equals("/*")) || (str.equals("*/"))))
+        }
+        if ((k != 0) && ((str.equals("/*")) || (str.equals("*/")))) {
           localVector1.removeElementAt(m--);
-        else if (str.startsWith("//#"))
+        } else if (str.startsWith("//#")) {
           if (str.startsWith("//#ifdef "))
           {
             if (i != 0)
@@ -175,8 +185,9 @@ public class CodeSwitcher
               localVector1.insertElementAt("/*", ++m);
               j = 1;
             }
-            if (this.vSwitches.indexOf(localObject) == -1)
+            if (this.vSwitches.indexOf(localObject) == -1) {
               this.vSwitches.addElement(localObject);
+            }
           }
           else if (str.startsWith("//#ifndef "))
           {
@@ -198,8 +209,9 @@ public class CodeSwitcher
               localVector1.insertElementAt("/*", ++m);
               j = 1;
             }
-            if (this.vSwitches.indexOf(localObject) == -1)
+            if (this.vSwitches.indexOf(localObject) == -1) {
               this.vSwitches.addElement(localObject);
+            }
           }
           else if (str.startsWith("//#else"))
           {
@@ -209,7 +221,7 @@ public class CodeSwitcher
               return false;
             }
             i = 2;
-            if (k != 0)
+            if (k != 0) {
               if (j != 0)
               {
                 if (localVector1.elementAt(m - 1).equals(""))
@@ -228,6 +240,7 @@ public class CodeSwitcher
                 localVector1.insertElementAt("/*", ++m);
                 j = 1;
               }
+            }
           }
           else if (str.startsWith("//#endif"))
           {
@@ -237,7 +250,7 @@ public class CodeSwitcher
               return false;
             }
             i = 0;
-            if ((k != 0) && (j != 0))
+            if ((k != 0) && (j != 0)) {
               if (localVector1.elementAt(m - 1).equals(""))
               {
                 localVector1.insertElementAt("*/", m - 1);
@@ -247,8 +260,10 @@ public class CodeSwitcher
               {
                 localVector1.insertElementAt("*/", m++);
               }
+            }
             k = 0;
           }
+        }
       }
       if (i != 0)
       {
@@ -256,14 +271,16 @@ public class CodeSwitcher
         return false;
       }
       m = 0;
-      for (int n = 0; n < localVector1.size(); n++)
+      for (int n = 0; n < localVector1.size(); n++) {
         if (!localVector2.elementAt(n).equals(localVector1.elementAt(n)))
         {
           m = 1;
           break;
         }
-      if (m == 0)
+      }
+      if (m == 0) {
         return true;
+      }
       writeFileLines(localVector1, localFile2);
       File localFile3 = new File(paramString + ".bak");
       localFile3.delete();
@@ -279,23 +296,24 @@ public class CodeSwitcher
     }
     return false;
   }
-
+  
   static Vector getFileLines(File paramFile)
     throws IOException
   {
     LineNumberReader localLineNumberReader = new LineNumberReader(new FileReader(paramFile));
     Vector localVector = new Vector();
-    while (true)
+    for (;;)
     {
       String str = localLineNumberReader.readLine();
-      if (str == null)
+      if (str == null) {
         break;
+      }
       localVector.addElement(str);
     }
     localLineNumberReader.close();
     return localVector;
   }
-
+  
   static void writeFileLines(Vector paramVector, File paramFile)
     throws IOException
   {
@@ -308,7 +326,7 @@ public class CodeSwitcher
     localFileWriter.flush();
     localFileWriter.close();
   }
-
+  
   static void printError(String paramString)
   {
     System.out.println("");
@@ -316,7 +334,8 @@ public class CodeSwitcher
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.util.CodeSwitcher
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -1,13 +1,14 @@
-/*    */ package com.bulletphysics.collision.shapes;
-/*    */ 
-/*    */ public enum TraversalMode
-/*    */ {
-/* 32 */   STACKLESS, 
-/* 33 */   STACKLESS_CACHE_FRIENDLY, 
-/* 34 */   RECURSIVE;
-/*    */ }
+package com.bulletphysics.collision.shapes;
+
+public enum TraversalMode
+{
+  STACKLESS,  STACKLESS_CACHE_FRIENDLY,  RECURSIVE;
+  
+  private TraversalMode() {}
+}
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     com.bulletphysics.collision.shapes.TraversalMode
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

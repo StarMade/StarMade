@@ -16,7 +16,7 @@ public class Matrix3f
   public float m21;
   public float m22;
   private static final double EPS = 1.0E-008D;
-
+  
   public Matrix3f(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5, float paramFloat6, float paramFloat7, float paramFloat8, float paramFloat9)
   {
     this.m00 = paramFloat1;
@@ -29,7 +29,7 @@ public class Matrix3f
     this.m21 = paramFloat8;
     this.m22 = paramFloat9;
   }
-
+  
   public Matrix3f(float[] paramArrayOfFloat)
   {
     this.m00 = paramArrayOfFloat[0];
@@ -42,7 +42,7 @@ public class Matrix3f
     this.m21 = paramArrayOfFloat[7];
     this.m22 = paramArrayOfFloat[8];
   }
-
+  
   public Matrix3f(Matrix3d paramMatrix3d)
   {
     this.m00 = ((float)paramMatrix3d.m00);
@@ -55,7 +55,7 @@ public class Matrix3f
     this.m21 = ((float)paramMatrix3d.m21);
     this.m22 = ((float)paramMatrix3d.m22);
   }
-
+  
   public Matrix3f(Matrix3f paramMatrix3f)
   {
     this.m00 = paramMatrix3f.m00;
@@ -68,7 +68,7 @@ public class Matrix3f
     this.m21 = paramMatrix3f.m21;
     this.m22 = paramMatrix3f.m22;
   }
-
+  
   public Matrix3f()
   {
     this.m00 = 0.0F;
@@ -81,12 +81,12 @@ public class Matrix3f
     this.m21 = 0.0F;
     this.m22 = 0.0F;
   }
-
+  
   public String toString()
   {
     return this.m00 + ", " + this.m01 + ", " + this.m02 + "\n" + this.m10 + ", " + this.m11 + ", " + this.m12 + "\n" + this.m20 + ", " + this.m21 + ", " + this.m22 + "\n";
   }
-
+  
   public final void setIdentity()
   {
     this.m00 = 1.0F;
@@ -99,7 +99,7 @@ public class Matrix3f
     this.m21 = 0.0F;
     this.m22 = 1.0F;
   }
-
+  
   public final void setScale(float paramFloat)
   {
     double[] arrayOfDouble1 = new double[9];
@@ -115,64 +115,64 @@ public class Matrix3f
     this.m21 = ((float)(arrayOfDouble1[7] * paramFloat));
     this.m22 = ((float)(arrayOfDouble1[8] * paramFloat));
   }
-
+  
   public final void setElement(int paramInt1, int paramInt2, float paramFloat)
   {
     switch (paramInt1)
     {
-    case 0:
+    case 0: 
       switch (paramInt2)
       {
-      case 0:
+      case 0: 
         this.m00 = paramFloat;
         break;
-      case 1:
+      case 1: 
         this.m01 = paramFloat;
         break;
-      case 2:
+      case 2: 
         this.m02 = paramFloat;
         break;
-      default:
+      default: 
         throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix3f0"));
       }
       break;
-    case 1:
+    case 1: 
       switch (paramInt2)
       {
-      case 0:
+      case 0: 
         this.m10 = paramFloat;
         break;
-      case 1:
+      case 1: 
         this.m11 = paramFloat;
         break;
-      case 2:
+      case 2: 
         this.m12 = paramFloat;
         break;
-      default:
+      default: 
         throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix3f0"));
       }
       break;
-    case 2:
+    case 2: 
       switch (paramInt2)
       {
-      case 0:
+      case 0: 
         this.m20 = paramFloat;
         break;
-      case 1:
+      case 1: 
         this.m21 = paramFloat;
         break;
-      case 2:
+      case 2: 
         this.m22 = paramFloat;
         break;
-      default:
+      default: 
         throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix3f0"));
       }
       break;
-    default:
+    default: 
       throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix3f0"));
     }
   }
-
+  
   public final void getRow(int paramInt, Vector3f paramVector3f)
   {
     if (paramInt == 0)
@@ -198,7 +198,7 @@ public class Matrix3f
       throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix3f1"));
     }
   }
-
+  
   public final void getRow(int paramInt, float[] paramArrayOfFloat)
   {
     if (paramInt == 0)
@@ -224,7 +224,7 @@ public class Matrix3f
       throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix3f1"));
     }
   }
-
+  
   public final void getColumn(int paramInt, Vector3f paramVector3f)
   {
     if (paramInt == 0)
@@ -250,7 +250,7 @@ public class Matrix3f
       throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix3f3"));
     }
   }
-
+  
   public final void getColumn(int paramInt, float[] paramArrayOfFloat)
   {
     if (paramInt == 0)
@@ -276,192 +276,192 @@ public class Matrix3f
       throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix3f3"));
     }
   }
-
+  
   public final float getElement(int paramInt1, int paramInt2)
   {
     switch (paramInt1)
     {
-    case 0:
+    case 0: 
       switch (paramInt2)
       {
-      case 0:
+      case 0: 
         return this.m00;
-      case 1:
+      case 1: 
         return this.m01;
-      case 2:
+      case 2: 
         return this.m02;
       }
       break;
-    case 1:
+    case 1: 
       switch (paramInt2)
       {
-      case 0:
+      case 0: 
         return this.m10;
-      case 1:
+      case 1: 
         return this.m11;
-      case 2:
+      case 2: 
         return this.m12;
       }
       break;
-    case 2:
+    case 2: 
       switch (paramInt2)
       {
-      case 0:
+      case 0: 
         return this.m20;
-      case 1:
+      case 1: 
         return this.m21;
-      case 2:
+      case 2: 
         return this.m22;
       }
       break;
     }
     throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix3f5"));
   }
-
+  
   public final void setRow(int paramInt, float paramFloat1, float paramFloat2, float paramFloat3)
   {
     switch (paramInt)
     {
-    case 0:
+    case 0: 
       this.m00 = paramFloat1;
       this.m01 = paramFloat2;
       this.m02 = paramFloat3;
       break;
-    case 1:
+    case 1: 
       this.m10 = paramFloat1;
       this.m11 = paramFloat2;
       this.m12 = paramFloat3;
       break;
-    case 2:
+    case 2: 
       this.m20 = paramFloat1;
       this.m21 = paramFloat2;
       this.m22 = paramFloat3;
       break;
-    default:
+    default: 
       throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix3f6"));
     }
   }
-
+  
   public final void setRow(int paramInt, Vector3f paramVector3f)
   {
     switch (paramInt)
     {
-    case 0:
+    case 0: 
       this.m00 = paramVector3f.x;
       this.m01 = paramVector3f.y;
       this.m02 = paramVector3f.z;
       break;
-    case 1:
+    case 1: 
       this.m10 = paramVector3f.x;
       this.m11 = paramVector3f.y;
       this.m12 = paramVector3f.z;
       break;
-    case 2:
+    case 2: 
       this.m20 = paramVector3f.x;
       this.m21 = paramVector3f.y;
       this.m22 = paramVector3f.z;
       break;
-    default:
+    default: 
       throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix3f6"));
     }
   }
-
+  
   public final void setRow(int paramInt, float[] paramArrayOfFloat)
   {
     switch (paramInt)
     {
-    case 0:
+    case 0: 
       this.m00 = paramArrayOfFloat[0];
       this.m01 = paramArrayOfFloat[1];
       this.m02 = paramArrayOfFloat[2];
       break;
-    case 1:
+    case 1: 
       this.m10 = paramArrayOfFloat[0];
       this.m11 = paramArrayOfFloat[1];
       this.m12 = paramArrayOfFloat[2];
       break;
-    case 2:
+    case 2: 
       this.m20 = paramArrayOfFloat[0];
       this.m21 = paramArrayOfFloat[1];
       this.m22 = paramArrayOfFloat[2];
       break;
-    default:
+    default: 
       throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix3f6"));
     }
   }
-
+  
   public final void setColumn(int paramInt, float paramFloat1, float paramFloat2, float paramFloat3)
   {
     switch (paramInt)
     {
-    case 0:
+    case 0: 
       this.m00 = paramFloat1;
       this.m10 = paramFloat2;
       this.m20 = paramFloat3;
       break;
-    case 1:
+    case 1: 
       this.m01 = paramFloat1;
       this.m11 = paramFloat2;
       this.m21 = paramFloat3;
       break;
-    case 2:
+    case 2: 
       this.m02 = paramFloat1;
       this.m12 = paramFloat2;
       this.m22 = paramFloat3;
       break;
-    default:
+    default: 
       throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix3f9"));
     }
   }
-
+  
   public final void setColumn(int paramInt, Vector3f paramVector3f)
   {
     switch (paramInt)
     {
-    case 0:
+    case 0: 
       this.m00 = paramVector3f.x;
       this.m10 = paramVector3f.y;
       this.m20 = paramVector3f.z;
       break;
-    case 1:
+    case 1: 
       this.m01 = paramVector3f.x;
       this.m11 = paramVector3f.y;
       this.m21 = paramVector3f.z;
       break;
-    case 2:
+    case 2: 
       this.m02 = paramVector3f.x;
       this.m12 = paramVector3f.y;
       this.m22 = paramVector3f.z;
       break;
-    default:
+    default: 
       throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix3f9"));
     }
   }
-
+  
   public final void setColumn(int paramInt, float[] paramArrayOfFloat)
   {
     switch (paramInt)
     {
-    case 0:
+    case 0: 
       this.m00 = paramArrayOfFloat[0];
       this.m10 = paramArrayOfFloat[1];
       this.m20 = paramArrayOfFloat[2];
       break;
-    case 1:
+    case 1: 
       this.m01 = paramArrayOfFloat[0];
       this.m11 = paramArrayOfFloat[1];
       this.m21 = paramArrayOfFloat[2];
       break;
-    case 2:
+    case 2: 
       this.m02 = paramArrayOfFloat[0];
       this.m12 = paramArrayOfFloat[1];
       this.m22 = paramArrayOfFloat[2];
       break;
-    default:
+    default: 
       throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix3f9"));
     }
   }
-
+  
   public final float getScale()
   {
     double[] arrayOfDouble1 = new double[9];
@@ -469,7 +469,7 @@ public class Matrix3f
     getScaleRotate(arrayOfDouble2, arrayOfDouble1);
     return (float)Matrix3d.max3(arrayOfDouble2);
   }
-
+  
   public final void add(float paramFloat)
   {
     this.m00 += paramFloat;
@@ -482,7 +482,7 @@ public class Matrix3f
     this.m21 += paramFloat;
     this.m22 += paramFloat;
   }
-
+  
   public final void add(float paramFloat, Matrix3f paramMatrix3f)
   {
     paramMatrix3f.m00 += paramFloat;
@@ -495,7 +495,7 @@ public class Matrix3f
     paramMatrix3f.m21 += paramFloat;
     paramMatrix3f.m22 += paramFloat;
   }
-
+  
   public final void add(Matrix3f paramMatrix3f1, Matrix3f paramMatrix3f2)
   {
     paramMatrix3f1.m00 += paramMatrix3f2.m00;
@@ -508,7 +508,7 @@ public class Matrix3f
     paramMatrix3f1.m21 += paramMatrix3f2.m21;
     paramMatrix3f1.m22 += paramMatrix3f2.m22;
   }
-
+  
   public final void add(Matrix3f paramMatrix3f)
   {
     this.m00 += paramMatrix3f.m00;
@@ -521,7 +521,7 @@ public class Matrix3f
     this.m21 += paramMatrix3f.m21;
     this.m22 += paramMatrix3f.m22;
   }
-
+  
   public final void sub(Matrix3f paramMatrix3f1, Matrix3f paramMatrix3f2)
   {
     paramMatrix3f1.m00 -= paramMatrix3f2.m00;
@@ -534,7 +534,7 @@ public class Matrix3f
     paramMatrix3f1.m21 -= paramMatrix3f2.m21;
     paramMatrix3f1.m22 -= paramMatrix3f2.m22;
   }
-
+  
   public final void sub(Matrix3f paramMatrix3f)
   {
     this.m00 -= paramMatrix3f.m00;
@@ -547,7 +547,7 @@ public class Matrix3f
     this.m21 -= paramMatrix3f.m21;
     this.m22 -= paramMatrix3f.m22;
   }
-
+  
   public final void transpose()
   {
     float f = this.m10;
@@ -560,7 +560,7 @@ public class Matrix3f
     this.m21 = this.m12;
     this.m12 = f;
   }
-
+  
   public final void transpose(Matrix3f paramMatrix3f)
   {
     if (this != paramMatrix3f)
@@ -580,7 +580,7 @@ public class Matrix3f
       transpose();
     }
   }
-
+  
   public final void set(Quat4f paramQuat4f)
   {
     this.m00 = (1.0F - 2.0F * paramQuat4f.y * paramQuat4f.y - 2.0F * paramQuat4f.z * paramQuat4f.z);
@@ -593,7 +593,7 @@ public class Matrix3f
     this.m12 = (2.0F * (paramQuat4f.y * paramQuat4f.z - paramQuat4f.w * paramQuat4f.x));
     this.m22 = (1.0F - 2.0F * paramQuat4f.x * paramQuat4f.x - 2.0F * paramQuat4f.y * paramQuat4f.y);
   }
-
+  
   public final void set(AxisAngle4f paramAxisAngle4f)
   {
     float f1 = (float)Math.sqrt(paramAxisAngle4f.x * paramAxisAngle4f.x + paramAxisAngle4f.y * paramAxisAngle4f.y + paramAxisAngle4f.z * paramAxisAngle4f.z);
@@ -632,7 +632,7 @@ public class Matrix3f
       this.m22 = (f7 * f4 * f4 + f6);
     }
   }
-
+  
   public final void set(AxisAngle4d paramAxisAngle4d)
   {
     double d1 = Math.sqrt(paramAxisAngle4d.x * paramAxisAngle4d.x + paramAxisAngle4d.y * paramAxisAngle4d.y + paramAxisAngle4d.z * paramAxisAngle4d.z);
@@ -671,7 +671,7 @@ public class Matrix3f
       this.m22 = ((float)(d7 * d4 * d4 + d6));
     }
   }
-
+  
   public final void set(Quat4d paramQuat4d)
   {
     this.m00 = ((float)(1.0D - 2.0D * paramQuat4d.y * paramQuat4d.y - 2.0D * paramQuat4d.z * paramQuat4d.z));
@@ -684,7 +684,7 @@ public class Matrix3f
     this.m12 = ((float)(2.0D * (paramQuat4d.y * paramQuat4d.z - paramQuat4d.w * paramQuat4d.x)));
     this.m22 = ((float)(1.0D - 2.0D * paramQuat4d.x * paramQuat4d.x - 2.0D * paramQuat4d.y * paramQuat4d.y));
   }
-
+  
   public final void set(float[] paramArrayOfFloat)
   {
     this.m00 = paramArrayOfFloat[0];
@@ -697,7 +697,7 @@ public class Matrix3f
     this.m21 = paramArrayOfFloat[7];
     this.m22 = paramArrayOfFloat[8];
   }
-
+  
   public final void set(Matrix3f paramMatrix3f)
   {
     this.m00 = paramMatrix3f.m00;
@@ -710,7 +710,7 @@ public class Matrix3f
     this.m21 = paramMatrix3f.m21;
     this.m22 = paramMatrix3f.m22;
   }
-
+  
   public final void set(Matrix3d paramMatrix3d)
   {
     this.m00 = ((float)paramMatrix3d.m00);
@@ -723,17 +723,17 @@ public class Matrix3f
     this.m21 = ((float)paramMatrix3d.m21);
     this.m22 = ((float)paramMatrix3d.m22);
   }
-
+  
   public final void invert(Matrix3f paramMatrix3f)
   {
     invertGeneral(paramMatrix3f);
   }
-
+  
   public final void invert()
   {
     invertGeneral(this);
   }
-
+  
   private final void invertGeneral(Matrix3f paramMatrix3f)
   {
     double[] arrayOfDouble1 = new double[9];
@@ -748,10 +748,12 @@ public class Matrix3f
     arrayOfDouble1[6] = paramMatrix3f.m20;
     arrayOfDouble1[7] = paramMatrix3f.m21;
     arrayOfDouble1[8] = paramMatrix3f.m22;
-    if (!luDecomposition(arrayOfDouble1, arrayOfInt))
+    if (!luDecomposition(arrayOfDouble1, arrayOfInt)) {
       throw new SingularMatrixException(VecMathI18N.getString("Matrix3f12"));
-    for (int i = 0; i < 9; i++)
+    }
+    for (int i = 0; i < 9; i++) {
       arrayOfDouble2[i] = 0.0D;
+    }
     arrayOfDouble2[0] = 1.0D;
     arrayOfDouble2[4] = 1.0D;
     arrayOfDouble2[8] = 1.0D;
@@ -766,7 +768,7 @@ public class Matrix3f
     this.m21 = ((float)arrayOfDouble2[7]);
     this.m22 = ((float)arrayOfDouble2[8]);
   }
-
+  
   static boolean luDecomposition(double[] paramArrayOfDouble, int[] paramArrayOfInt)
   {
     double[] arrayOfDouble = new double[3];
@@ -782,11 +784,13 @@ public class Matrix3f
       {
         double d4 = paramArrayOfDouble[(d2++)];
         d4 = Math.abs(d4);
-        if (d4 > d3)
+        if (d4 > d3) {
           d3 = d4;
+        }
       }
-      if (d3 == 0.0D)
+      if (d3 == 0.0D) {
         return false;
+      }
       arrayOfDouble[(j++)] = (1.0D / d3);
     }
     int i = 0;
@@ -831,8 +835,9 @@ public class Matrix3f
           j = d2;
         }
       }
-      if (j < 0)
+      if (j < 0) {
         throw new RuntimeException(VecMathI18N.getString("Matrix3f13"));
+      }
       if (d1 != j)
       {
         k = 3;
@@ -847,8 +852,9 @@ public class Matrix3f
         arrayOfDouble[j] = arrayOfDouble[d1];
       }
       paramArrayOfInt[d1] = j;
-      if (paramArrayOfDouble[(i + 3 * d1 + d1)] == 0.0D)
+      if (paramArrayOfDouble[(i + 3 * d1 + d1)] == 0.0D) {
         return false;
+      }
       if (d1 != 2)
       {
         d7 = 1.0D / paramArrayOfDouble[(i + 3 * d1 + d1)];
@@ -863,7 +869,7 @@ public class Matrix3f
     }
     return true;
   }
-
+  
   static void luBacksubstitution(double[] paramArrayOfDouble1, int[] paramArrayOfInt, double[] paramArrayOfDouble2)
   {
     int i1 = 0;
@@ -879,11 +885,13 @@ public class Matrix3f
         if (j >= 0)
         {
           i3 = i * 3;
-          for (int m = j; m <= i - 1; m++)
+          for (int m = j; m <= i - 1; m++) {
             d -= paramArrayOfDouble1[(i3 + m)] * paramArrayOfDouble2[(i2 + 3 * m)];
+          }
         }
-        if (d != 0.0D)
+        if (d != 0.0D) {
           j = i;
+        }
         paramArrayOfDouble2[(i2 + 3 * i)] = d;
       }
       int i3 = 6;
@@ -894,13 +902,13 @@ public class Matrix3f
       paramArrayOfDouble2[(i2 + 0)] = ((paramArrayOfDouble2[(i2 + 0)] - paramArrayOfDouble1[(i3 + 1)] * paramArrayOfDouble2[(i2 + 3)] - paramArrayOfDouble1[(i3 + 2)] * paramArrayOfDouble2[(i2 + 6)]) / paramArrayOfDouble1[(i3 + 0)]);
     }
   }
-
+  
   public final float determinant()
   {
     float f = this.m00 * (this.m11 * this.m22 - this.m12 * this.m21) + this.m01 * (this.m12 * this.m20 - this.m10 * this.m22) + this.m02 * (this.m10 * this.m21 - this.m11 * this.m20);
     return f;
   }
-
+  
   public final void set(float paramFloat)
   {
     this.m00 = paramFloat;
@@ -913,7 +921,7 @@ public class Matrix3f
     this.m21 = 0.0F;
     this.m22 = paramFloat;
   }
-
+  
   public final void rotX(float paramFloat)
   {
     float f1 = (float)Math.sin(paramFloat);
@@ -928,7 +936,7 @@ public class Matrix3f
     this.m21 = f1;
     this.m22 = f2;
   }
-
+  
   public final void rotY(float paramFloat)
   {
     float f1 = (float)Math.sin(paramFloat);
@@ -943,7 +951,7 @@ public class Matrix3f
     this.m21 = 0.0F;
     this.m22 = f2;
   }
-
+  
   public final void rotZ(float paramFloat)
   {
     float f1 = (float)Math.sin(paramFloat);
@@ -958,7 +966,7 @@ public class Matrix3f
     this.m21 = 0.0F;
     this.m22 = 1.0F;
   }
-
+  
   public final void mul(float paramFloat)
   {
     this.m00 *= paramFloat;
@@ -971,7 +979,7 @@ public class Matrix3f
     this.m21 *= paramFloat;
     this.m22 *= paramFloat;
   }
-
+  
   public final void mul(float paramFloat, Matrix3f paramMatrix3f)
   {
     this.m00 = (paramFloat * paramMatrix3f.m00);
@@ -984,7 +992,7 @@ public class Matrix3f
     this.m21 = (paramFloat * paramMatrix3f.m21);
     this.m22 = (paramFloat * paramMatrix3f.m22);
   }
-
+  
   public final void mul(Matrix3f paramMatrix3f)
   {
     float f1 = this.m00 * paramMatrix3f.m00 + this.m01 * paramMatrix3f.m10 + this.m02 * paramMatrix3f.m20;
@@ -1006,7 +1014,7 @@ public class Matrix3f
     this.m21 = f8;
     this.m22 = f9;
   }
-
+  
   public final void mul(Matrix3f paramMatrix3f1, Matrix3f paramMatrix3f2)
   {
     if ((this != paramMatrix3f1) && (this != paramMatrix3f2))
@@ -1043,7 +1051,7 @@ public class Matrix3f
       this.m22 = f9;
     }
   }
-
+  
   public final void mulNormalize(Matrix3f paramMatrix3f)
   {
     double[] arrayOfDouble1 = new double[9];
@@ -1069,7 +1077,7 @@ public class Matrix3f
     this.m21 = ((float)arrayOfDouble2[7]);
     this.m22 = ((float)arrayOfDouble2[8]);
   }
-
+  
   public final void mulNormalize(Matrix3f paramMatrix3f1, Matrix3f paramMatrix3f2)
   {
     double[] arrayOfDouble1 = new double[9];
@@ -1095,7 +1103,7 @@ public class Matrix3f
     this.m21 = ((float)arrayOfDouble2[7]);
     this.m22 = ((float)arrayOfDouble2[8]);
   }
-
+  
   public final void mulTransposeBoth(Matrix3f paramMatrix3f1, Matrix3f paramMatrix3f2)
   {
     if ((this != paramMatrix3f1) && (this != paramMatrix3f2))
@@ -1132,7 +1140,7 @@ public class Matrix3f
       this.m22 = f9;
     }
   }
-
+  
   public final void mulTransposeRight(Matrix3f paramMatrix3f1, Matrix3f paramMatrix3f2)
   {
     if ((this != paramMatrix3f1) && (this != paramMatrix3f2))
@@ -1169,7 +1177,7 @@ public class Matrix3f
       this.m22 = f9;
     }
   }
-
+  
   public final void mulTransposeLeft(Matrix3f paramMatrix3f1, Matrix3f paramMatrix3f2)
   {
     if ((this != paramMatrix3f1) && (this != paramMatrix3f2))
@@ -1206,7 +1214,7 @@ public class Matrix3f
       this.m22 = f9;
     }
   }
-
+  
   public final void normalize()
   {
     double[] arrayOfDouble1 = new double[9];
@@ -1222,7 +1230,7 @@ public class Matrix3f
     this.m21 = ((float)arrayOfDouble1[7]);
     this.m22 = ((float)arrayOfDouble1[8]);
   }
-
+  
   public final void normalize(Matrix3f paramMatrix3f)
   {
     double[] arrayOfDouble1 = new double[9];
@@ -1248,7 +1256,7 @@ public class Matrix3f
     this.m21 = ((float)arrayOfDouble2[7]);
     this.m22 = ((float)arrayOfDouble2[8]);
   }
-
+  
   public final void normalizeCP()
   {
     float f = 1.0F / (float)Math.sqrt(this.m00 * this.m00 + this.m10 * this.m10 + this.m20 * this.m20);
@@ -1263,7 +1271,7 @@ public class Matrix3f
     this.m12 = (this.m01 * this.m20 - this.m00 * this.m21);
     this.m22 = (this.m00 * this.m11 - this.m01 * this.m10);
   }
-
+  
   public final void normalizeCP(Matrix3f paramMatrix3f)
   {
     float f = 1.0F / (float)Math.sqrt(paramMatrix3f.m00 * paramMatrix3f.m00 + paramMatrix3f.m10 * paramMatrix3f.m10 + paramMatrix3f.m20 * paramMatrix3f.m20);
@@ -1278,19 +1286,17 @@ public class Matrix3f
     this.m12 = (this.m01 * this.m20 - this.m00 * this.m21);
     this.m22 = (this.m00 * this.m11 - this.m01 * this.m10);
   }
-
+  
   public boolean equals(Matrix3f paramMatrix3f)
   {
     try
     {
       return (this.m00 == paramMatrix3f.m00) && (this.m01 == paramMatrix3f.m01) && (this.m02 == paramMatrix3f.m02) && (this.m10 == paramMatrix3f.m10) && (this.m11 == paramMatrix3f.m11) && (this.m12 == paramMatrix3f.m12) && (this.m20 == paramMatrix3f.m20) && (this.m21 == paramMatrix3f.m21) && (this.m22 == paramMatrix3f.m22);
     }
-    catch (NullPointerException localNullPointerException)
-    {
-    }
+    catch (NullPointerException localNullPointerException) {}
     return false;
   }
-
+  
   public boolean equals(Object paramObject)
   {
     try
@@ -1302,36 +1308,43 @@ public class Matrix3f
     {
       return false;
     }
-    catch (NullPointerException localNullPointerException)
-    {
-    }
+    catch (NullPointerException localNullPointerException) {}
     return false;
   }
-
+  
   public boolean epsilonEquals(Matrix3f paramMatrix3f, float paramFloat)
   {
     boolean bool = true;
-    if (Math.abs(this.m00 - paramMatrix3f.m00) > paramFloat)
+    if (Math.abs(this.m00 - paramMatrix3f.m00) > paramFloat) {
       bool = false;
-    if (Math.abs(this.m01 - paramMatrix3f.m01) > paramFloat)
+    }
+    if (Math.abs(this.m01 - paramMatrix3f.m01) > paramFloat) {
       bool = false;
-    if (Math.abs(this.m02 - paramMatrix3f.m02) > paramFloat)
+    }
+    if (Math.abs(this.m02 - paramMatrix3f.m02) > paramFloat) {
       bool = false;
-    if (Math.abs(this.m10 - paramMatrix3f.m10) > paramFloat)
+    }
+    if (Math.abs(this.m10 - paramMatrix3f.m10) > paramFloat) {
       bool = false;
-    if (Math.abs(this.m11 - paramMatrix3f.m11) > paramFloat)
+    }
+    if (Math.abs(this.m11 - paramMatrix3f.m11) > paramFloat) {
       bool = false;
-    if (Math.abs(this.m12 - paramMatrix3f.m12) > paramFloat)
+    }
+    if (Math.abs(this.m12 - paramMatrix3f.m12) > paramFloat) {
       bool = false;
-    if (Math.abs(this.m20 - paramMatrix3f.m20) > paramFloat)
+    }
+    if (Math.abs(this.m20 - paramMatrix3f.m20) > paramFloat) {
       bool = false;
-    if (Math.abs(this.m21 - paramMatrix3f.m21) > paramFloat)
+    }
+    if (Math.abs(this.m21 - paramMatrix3f.m21) > paramFloat) {
       bool = false;
-    if (Math.abs(this.m22 - paramMatrix3f.m22) > paramFloat)
+    }
+    if (Math.abs(this.m22 - paramMatrix3f.m22) > paramFloat) {
       bool = false;
+    }
     return bool;
   }
-
+  
   public int hashCode()
   {
     long l = 1L;
@@ -1346,7 +1359,7 @@ public class Matrix3f
     l = 31L * l + VecMathUtil.floatToIntBits(this.m22);
     return (int)(l ^ l >> 32);
   }
-
+  
   public final void setZero()
   {
     this.m00 = 0.0F;
@@ -1359,7 +1372,7 @@ public class Matrix3f
     this.m21 = 0.0F;
     this.m22 = 0.0F;
   }
-
+  
   public final void negate()
   {
     this.m00 = (-this.m00);
@@ -1372,7 +1385,7 @@ public class Matrix3f
     this.m21 = (-this.m21);
     this.m22 = (-this.m22);
   }
-
+  
   public final void negate(Matrix3f paramMatrix3f)
   {
     this.m00 = (-paramMatrix3f.m00);
@@ -1385,7 +1398,7 @@ public class Matrix3f
     this.m21 = (-paramMatrix3f.m21);
     this.m22 = (-paramMatrix3f.m22);
   }
-
+  
   public final void transform(Tuple3f paramTuple3f)
   {
     float f1 = this.m00 * paramTuple3f.x + this.m01 * paramTuple3f.y + this.m02 * paramTuple3f.z;
@@ -1393,7 +1406,7 @@ public class Matrix3f
     float f3 = this.m20 * paramTuple3f.x + this.m21 * paramTuple3f.y + this.m22 * paramTuple3f.z;
     paramTuple3f.set(f1, f2, f3);
   }
-
+  
   public final void transform(Tuple3f paramTuple3f1, Tuple3f paramTuple3f2)
   {
     float f1 = this.m00 * paramTuple3f1.x + this.m01 * paramTuple3f1.y + this.m02 * paramTuple3f1.z;
@@ -1402,7 +1415,7 @@ public class Matrix3f
     paramTuple3f2.x = f1;
     paramTuple3f2.y = f2;
   }
-
+  
   void getScaleRotate(double[] paramArrayOfDouble1, double[] paramArrayOfDouble2)
   {
     double[] arrayOfDouble = new double[9];
@@ -1417,7 +1430,7 @@ public class Matrix3f
     arrayOfDouble[8] = this.m22;
     Matrix3d.compute_svd(arrayOfDouble, paramArrayOfDouble1, paramArrayOfDouble2);
   }
-
+  
   public Object clone()
   {
     Matrix3f localMatrix3f = null;
@@ -1433,7 +1446,8 @@ public class Matrix3f
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     javax.vecmath.Matrix3f
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

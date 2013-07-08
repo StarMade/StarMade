@@ -28,7 +28,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
-class ConnectionDialogSwing extends JDialog
+class ConnectionDialogSwing
+  extends JDialog
   implements ActionListener, ItemListener
 {
   private static final long serialVersionUID = 1L;
@@ -44,24 +45,24 @@ class ConnectionDialogSwing extends JDialog
   private JButton clear;
   private JComboBox mSettingName = new JComboBox(loadRecentConnectionSettings());
   private static ConnectionSetting currentConnectionSetting = null;
-
+  
   public static void setConnectionSetting(ConnectionSetting paramConnectionSetting)
   {
     currentConnectionSetting = paramConnectionSetting;
   }
-
+  
   public static Connection createConnection(String paramString1, String paramString2, String paramString3, String paramString4)
     throws Exception
   {
     Class.forName(paramString1).newInstance();
     return DriverManager.getConnection(paramString2, paramString3, paramString4);
   }
-
+  
   ConnectionDialogSwing(JFrame paramJFrame, String paramString)
   {
     super(paramJFrame, paramString, true);
   }
-
+  
   private void create()
   {
     Box localBox1 = Box.createHorizontalBox();
@@ -120,8 +121,9 @@ class ConnectionDialogSwing extends JDialog
     localBox4.add(Box.createHorizontalStrut(10));
     JComboBox localJComboBox = new JComboBox();
     this.connTypes = ConnectionDialogCommon.getTypes();
-    for (int i = 0; i < this.connTypes.length; i++)
+    for (int i = 0; i < this.connTypes.length; i++) {
       localJComboBox.addItem(this.connTypes[i][0]);
+    }
     localJComboBox.addItemListener(this);
     localBox3.add(localJComboBox);
     localBox3.add(Box.createVerticalGlue());
@@ -183,7 +185,7 @@ class ConnectionDialogSwing extends JDialog
     }
     setVisible(true);
   }
-
+  
   public static Connection createConnection(JFrame paramJFrame, String paramString)
   {
     ConnectionDialogSwing localConnectionDialogSwing = new ConnectionDialogSwing(paramJFrame, paramString);
@@ -198,13 +200,13 @@ class ConnectionDialogSwing extends JDialog
     localConnectionDialogSwing.create();
     return localConnectionDialogSwing.mConnection;
   }
-
+  
   private static JLabel createLabel(String paramString)
   {
     JLabel localJLabel = new JLabel(paramString);
     return localJLabel;
   }
-
+  
   public Vector loadRecentConnectionSettings()
   {
     Vector localVector = new Vector();
@@ -214,8 +216,9 @@ class ConnectionDialogSwing extends JDialog
       this.settings = ConnectionDialogCommon.loadRecentConnectionSettings();
       Iterator localIterator = this.settings.values().iterator();
       localVector.add(ConnectionDialogCommon.emptySettingName);
-      while (localIterator.hasNext())
+      while (localIterator.hasNext()) {
         localVector.add(((ConnectionSetting)localIterator.next()).getName());
+      }
     }
     catch (IOException localIOException)
     {
@@ -223,7 +226,7 @@ class ConnectionDialogSwing extends JDialog
     }
     return localVector;
   }
-
+  
   public void actionPerformed(ActionEvent paramActionEvent)
   {
     String str1 = paramActionEvent.getActionCommand();
@@ -231,8 +234,9 @@ class ConnectionDialogSwing extends JDialog
     {
       try
       {
-        if (this.mURL.getText().indexOf(171) >= 0)
+        if (this.mURL.getText().indexOf(171) >= 0) {
           throw new Exception("please specify db path");
+        }
         this.mConnection = createConnection(this.mDriver.getText(), this.mURL.getText(), this.mUser.getText(), new String(this.mPassword.getPassword()));
         if ((this.mName.getText() != null) && (this.mName.getText().trim().length() != 0))
         {
@@ -277,20 +281,22 @@ class ConnectionDialogSwing extends JDialog
       this.mName.setText(null);
     }
   }
-
+  
   public void itemStateChanged(ItemEvent paramItemEvent)
   {
     String str = (String)paramItemEvent.getItem();
-    for (int i = 0; i < this.connTypes.length; i++)
+    for (int i = 0; i < this.connTypes.length; i++) {
       if (str.equals(this.connTypes[i][0]))
       {
         this.mDriver.setText(this.connTypes[i][1]);
         this.mURL.setText(this.connTypes[i][2]);
       }
+    }
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.util.ConnectionDialogSwing
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

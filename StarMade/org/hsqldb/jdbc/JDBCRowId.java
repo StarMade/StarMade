@@ -11,26 +11,28 @@ public final class JDBCRowId
 {
   private int hash;
   private final byte[] id;
-
+  
   public JDBCRowId(byte[] paramArrayOfByte)
     throws SQLException
   {
-    if (paramArrayOfByte == null)
+    if (paramArrayOfByte == null) {
       throw Util.nullArgument("id");
+    }
     this.id = paramArrayOfByte;
   }
-
+  
   public JDBCRowId(RowId paramRowId)
     throws SQLException
   {
     this(paramRowId.getBytes());
   }
-
+  
   public JDBCRowId(String paramString)
     throws SQLException
   {
-    if (paramString == null)
+    if (paramString == null) {
       throw Util.nullArgument("hex");
+    }
     try
     {
       this.id = StringConverter.hexStringToByteArray(paramString);
@@ -40,36 +42,38 @@ public final class JDBCRowId
       throw Util.sqlException(423, "hex: " + localIOException);
     }
   }
-
+  
   public boolean equals(Object paramObject)
   {
     return ((paramObject instanceof JDBCRowId)) && (Arrays.equals(this.id, ((JDBCRowId)paramObject).id));
   }
-
+  
   public byte[] getBytes()
   {
     return (byte[])this.id.clone();
   }
-
+  
   public String toString()
   {
     return StringConverter.byteArrayToHexString(this.id);
   }
-
+  
   public int hashCode()
   {
-    if (this.hash == 0)
+    if (this.hash == 0) {
       this.hash = Arrays.hashCode(this.id);
+    }
     return this.hash;
   }
-
+  
   Object id()
   {
     return this.id;
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.jdbc.JDBCRowId
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

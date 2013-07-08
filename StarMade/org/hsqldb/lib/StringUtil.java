@@ -7,43 +7,53 @@ public class StringUtil
   public static String toZeroPaddedString(long paramLong, int paramInt1, int paramInt2)
   {
     StringBuffer localStringBuffer = new StringBuffer();
-    if (paramLong < 0L)
+    if (paramLong < 0L) {
       paramLong = -paramLong;
+    }
     String str = Long.toString(paramLong);
-    if (str.length() > paramInt1)
+    if (str.length() > paramInt1) {
       str = str.substring(paramInt1);
-    for (int i = str.length(); i < paramInt1; i++)
+    }
+    for (int i = str.length(); i < paramInt1; i++) {
       localStringBuffer.append('0');
+    }
     localStringBuffer.append(str);
-    if (paramInt2 < paramInt1)
+    if (paramInt2 < paramInt1) {
       localStringBuffer.setLength(paramInt2);
+    }
     return localStringBuffer.toString();
   }
-
+  
   public static String toPaddedString(String paramString, int paramInt, char paramChar, boolean paramBoolean)
   {
     int i = paramString.length();
-    if (i >= paramInt)
+    if (i >= paramInt) {
       return paramString;
+    }
     StringBuffer localStringBuffer = new StringBuffer(paramInt);
-    if (paramBoolean)
+    if (paramBoolean) {
       localStringBuffer.append(paramString);
-    for (int j = i; j < paramInt; j++)
+    }
+    for (int j = i; j < paramInt; j++) {
       localStringBuffer.append(paramChar);
-    if (!paramBoolean)
+    }
+    if (!paramBoolean) {
       localStringBuffer.append(paramString);
+    }
     return localStringBuffer.toString();
   }
-
+  
   public static String toPaddedString(String paramString1, int paramInt, String paramString2, boolean paramBoolean)
   {
     int i = paramString1.length();
-    if (i == paramInt)
+    if (i == paramInt) {
       return paramString1;
+    }
     if (i > paramInt)
     {
-      if (paramBoolean)
+      if (paramBoolean) {
         return paramString1.substring(0, paramInt);
+      }
       return paramString1.substring(i - paramInt, i);
     }
     StringBuffer localStringBuffer = new StringBuffer(paramInt);
@@ -66,7 +76,7 @@ public class StringUtil
     }
     return localStringBuffer.toString();
   }
-
+  
   public static String toLowerSubset(String paramString, char paramChar)
   {
     int i = paramString.length();
@@ -74,16 +84,17 @@ public class StringUtil
     for (int j = 0; j < i; j++)
     {
       char c = paramString.charAt(j);
-      if (!Character.isLetterOrDigit(c))
+      if (!Character.isLetterOrDigit(c)) {
         localStringBuffer.append(paramChar);
-      else if ((j == 0) && (Character.isDigit(c)))
+      } else if ((j == 0) && (Character.isDigit(c))) {
         localStringBuffer.append(paramChar);
-      else
+      } else {
         localStringBuffer.append(Character.toLowerCase(c));
+      }
     }
     return localStringBuffer.toString();
   }
-
+  
   public static String arrayToString(Object paramObject)
   {
     int i = Array.getLength(paramObject);
@@ -93,13 +104,14 @@ public class StringUtil
     for (int k = 0; k < i; k++)
     {
       localStringBuffer.append(Array.get(paramObject, k));
-      if (k != j)
+      if (k != j) {
         localStringBuffer.append(',');
+      }
     }
     localStringBuffer.append('}');
     return localStringBuffer.toString();
   }
-
+  
   public static String getList(String[] paramArrayOfString, String paramString1, String paramString2)
   {
     int i = paramArrayOfString.length;
@@ -109,12 +121,13 @@ public class StringUtil
       localStringBuffer.append(paramString2);
       localStringBuffer.append(paramArrayOfString[j]);
       localStringBuffer.append(paramString2);
-      if (j + 1 < i)
+      if (j + 1 < i) {
         localStringBuffer.append(paramString1);
+      }
     }
     return localStringBuffer.toString();
   }
-
+  
   public static String getList(int[] paramArrayOfInt, String paramString1, String paramString2)
   {
     int i = paramArrayOfInt.length;
@@ -124,12 +137,13 @@ public class StringUtil
       localStringBuffer.append(paramString2);
       localStringBuffer.append(paramArrayOfInt[j]);
       localStringBuffer.append(paramString2);
-      if (j + 1 < i)
+      if (j + 1 < i) {
         localStringBuffer.append(paramString1);
+      }
     }
     return localStringBuffer.toString();
   }
-
+  
   public static String getList(long[] paramArrayOfLong, String paramString1, String paramString2)
   {
     int i = paramArrayOfLong.length;
@@ -139,12 +153,13 @@ public class StringUtil
       localStringBuffer.append(paramString2);
       localStringBuffer.append(paramArrayOfLong[j]);
       localStringBuffer.append(paramString2);
-      if (j + 1 < i)
+      if (j + 1 < i) {
         localStringBuffer.append(paramString1);
+      }
     }
     return localStringBuffer.toString();
   }
-
+  
   public static String getList(String[][] paramArrayOfString, String paramString1, String paramString2)
   {
     int i = paramArrayOfString.length;
@@ -154,40 +169,44 @@ public class StringUtil
       localStringBuffer.append(paramString2);
       localStringBuffer.append(paramArrayOfString[j][0]);
       localStringBuffer.append(paramString2);
-      if (j + 1 < i)
+      if (j + 1 < i) {
         localStringBuffer.append(paramString1);
+      }
     }
     return localStringBuffer.toString();
   }
-
+  
   public static boolean isEmpty(String paramString)
   {
     int i = paramString == null ? 0 : paramString.length();
-    while (i > 0)
-      if (paramString.charAt(--i) > ' ')
+    while (i > 0) {
+      if (paramString.charAt(--i) > ' ') {
         return false;
+      }
+    }
     return true;
   }
-
+  
   public static int rightTrimSize(String paramString)
   {
     int i = paramString.length();
     while (i > 0)
     {
       i--;
-      if (paramString.charAt(i) != ' ')
+      if (paramString.charAt(i) != ' ') {
         return i + 1;
+      }
     }
     return 0;
   }
-
+  
   public static int skipSpaces(String paramString, int paramInt)
   {
     int i = paramString.length();
-    for (int j = paramInt; (j < i) && (paramString.charAt(j) == ' '); j++);
+    for (int j = paramInt; (j < i) && (paramString.charAt(j) == ' '); j++) {}
     return j;
   }
-
+  
   public static String[] split(String paramString1, String paramString2)
   {
     HsqlArrayList localHsqlArrayList = new HsqlArrayList();
@@ -208,7 +227,8 @@ public class StringUtil
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.lib.StringUtil
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

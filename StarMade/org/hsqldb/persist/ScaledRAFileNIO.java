@@ -31,7 +31,7 @@ final class ScaledRAFileNIO
   static final int largeBufferScale = 24;
   static final int largeBufferSize = 16777216;
   static final long largeBufferMask = -16777216L;
-
+  
   ScaledRAFileNIO(Database paramDatabase, String paramString, boolean paramBoolean, long paramLong1, long paramLong2)
     throws Throwable
   {
@@ -44,8 +44,9 @@ final class ScaledRAFileNIO
     }
     else
     {
-      if (localFile.length() > paramLong1)
+      if (localFile.length() > paramLong1) {
         paramLong1 = localFile.length();
+      }
       paramLong1 = ScaledRAFile.getBinaryNormalisedCeiling(paramLong1, 24);
     }
     this.file = new RandomAccessFile(paramString, paramBoolean ? "r" : "rw");
@@ -66,7 +67,7 @@ final class ScaledRAFileNIO
       throw localIOException;
     }
   }
-
+  
   public long length()
     throws IOException
   {
@@ -87,13 +88,11 @@ final class ScaledRAFileNIO
       {
         localIOException2.initCause(localThrowable1);
       }
-      catch (Throwable localThrowable2)
-      {
-      }
+      catch (Throwable localThrowable2) {}
       throw localIOException2;
     }
   }
-
+  
   public void seek(long paramLong)
     throws IOException
   {
@@ -110,9 +109,7 @@ final class ScaledRAFileNIO
       {
         localIOException.initCause(localIllegalArgumentException);
       }
-      catch (Throwable localThrowable2)
-      {
-      }
+      catch (Throwable localThrowable2) {}
       throw localIOException;
     }
     catch (Throwable localThrowable1)
@@ -123,13 +120,11 @@ final class ScaledRAFileNIO
       {
         localIOException.initCause(localThrowable1);
       }
-      catch (Throwable localThrowable3)
-      {
-      }
+      catch (Throwable localThrowable3) {}
       throw localIOException;
     }
   }
-
+  
   public long getFilePointer()
     throws IOException
   {
@@ -145,13 +140,11 @@ final class ScaledRAFileNIO
       {
         localIOException.initCause(localThrowable1);
       }
-      catch (Throwable localThrowable2)
-      {
-      }
+      catch (Throwable localThrowable2) {}
       throw localIOException;
     }
   }
-
+  
   public int read()
     throws IOException
   {
@@ -169,29 +162,29 @@ final class ScaledRAFileNIO
       {
         localIOException.initCause(localThrowable1);
       }
-      catch (Throwable localThrowable2)
-      {
-      }
+      catch (Throwable localThrowable2) {}
       throw localIOException;
     }
   }
-
+  
   public void read(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
     throws IOException
   {
     try
     {
-      while (true)
+      for (;;)
       {
         long l = this.bufferPosition + this.bufferLength - this.currentPosition;
-        if (l > paramInt2)
+        if (l > paramInt2) {
           l = paramInt2;
+        }
         this.buffer.get(paramArrayOfByte, paramInt1, (int)l);
         positionBufferMove((int)l);
         paramInt2 = (int)(paramInt2 - l);
         paramInt1 = (int)(paramInt1 + l);
-        if (paramInt2 == 0)
+        if (paramInt2 == 0) {
           break;
+        }
       }
     }
     catch (Throwable localThrowable1)
@@ -202,13 +195,11 @@ final class ScaledRAFileNIO
       {
         localIOException.initCause(localThrowable1);
       }
-      catch (Throwable localThrowable2)
-      {
-      }
+      catch (Throwable localThrowable2) {}
       throw localIOException;
     }
   }
-
+  
   public int readInt()
     throws IOException
   {
@@ -226,13 +217,11 @@ final class ScaledRAFileNIO
       {
         localIOException.initCause(localThrowable1);
       }
-      catch (Throwable localThrowable2)
-      {
-      }
+      catch (Throwable localThrowable2) {}
       throw localIOException;
     }
   }
-
+  
   public long readLong()
     throws IOException
   {
@@ -250,30 +239,30 @@ final class ScaledRAFileNIO
       {
         localIOException.initCause(localThrowable1);
       }
-      catch (Throwable localThrowable2)
-      {
-      }
+      catch (Throwable localThrowable2) {}
       throw localIOException;
     }
   }
-
+  
   public void write(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
     throws IOException
   {
     try
     {
       this.buffersModified = true;
-      while (true)
+      for (;;)
       {
         long l = this.bufferPosition + this.bufferLength - this.currentPosition;
-        if (l > paramInt2)
+        if (l > paramInt2) {
           l = paramInt2;
+        }
         this.buffer.put(paramArrayOfByte, paramInt1, (int)l);
         positionBufferMove((int)l);
         paramInt2 = (int)(paramInt2 - l);
         paramInt1 = (int)(paramInt1 + l);
-        if (paramInt2 == 0)
+        if (paramInt2 == 0) {
           break;
+        }
       }
     }
     catch (Throwable localThrowable1)
@@ -284,13 +273,11 @@ final class ScaledRAFileNIO
       {
         localIOException.initCause(localThrowable1);
       }
-      catch (Throwable localThrowable2)
-      {
-      }
+      catch (Throwable localThrowable2) {}
       throw localIOException;
     }
   }
-
+  
   public void writeInt(int paramInt)
     throws IOException
   {
@@ -308,13 +295,11 @@ final class ScaledRAFileNIO
       {
         localIOException.initCause(localThrowable1);
       }
-      catch (Throwable localThrowable2)
-      {
-      }
+      catch (Throwable localThrowable2) {}
       throw localIOException;
     }
   }
-
+  
   public void writeLong(long paramLong)
     throws IOException
   {
@@ -332,13 +317,11 @@ final class ScaledRAFileNIO
       {
         localIOException.initCause(localThrowable1);
       }
-      catch (Throwable localThrowable2)
-      {
-      }
+      catch (Throwable localThrowable2) {}
       throw localIOException;
     }
   }
-
+  
   public void close()
     throws IOException
   {
@@ -362,35 +345,37 @@ final class ScaledRAFileNIO
       {
         localIOException.initCause(localThrowable1);
       }
-      catch (Throwable localThrowable2)
-      {
-      }
+      catch (Throwable localThrowable2) {}
       throw localIOException;
     }
   }
-
+  
   public boolean isReadOnly()
   {
     return this.readOnly;
   }
-
+  
   public boolean ensureLength(long paramLong)
   {
-    if (paramLong > this.maxLength)
+    if (paramLong > this.maxLength) {
       return false;
-    while (paramLong > this.fileLength)
-      if (!enlargeFile(paramLong))
+    }
+    while (paramLong > this.fileLength) {
+      if (!enlargeFile(paramLong)) {
         return false;
+      }
+    }
     return true;
   }
-
+  
   private boolean enlargeFile(long paramLong)
   {
     try
     {
       long l = paramLong;
-      if (!this.readOnly)
+      if (!this.readOnly) {
         l = 16777216L;
+      }
       FileChannel.MapMode localMapMode = this.readOnly ? FileChannel.MapMode.READ_ONLY : FileChannel.MapMode.READ_WRITE;
       if ((!this.readOnly) && (this.file.length() < this.fileLength + l))
       {
@@ -412,30 +397,29 @@ final class ScaledRAFileNIO
     }
     return true;
   }
-
+  
   public boolean setLength(long paramLong)
   {
-    if (paramLong > this.fileLength)
+    if (paramLong > this.fileLength) {
       return enlargeFile(paramLong);
+    }
     try
     {
       seek(0L);
     }
-    catch (Throwable localThrowable)
-    {
-    }
+    catch (Throwable localThrowable) {}
     return true;
   }
-
+  
   public Database getDatabase()
   {
     return null;
   }
-
+  
   public void synch()
   {
     int i = 0;
-    for (int j = 0; j < this.buffers.length; j++)
+    for (int j = 0; j < this.buffers.length; j++) {
       try
       {
         this.buffers[j].force();
@@ -445,8 +429,9 @@ final class ScaledRAFileNIO
         this.database.logger.logSevereEvent("NIO buffer force error JVM threw unsupported Exception ", localThrowable2);
         i = 1;
       }
-    if (i != 0)
-      for (j = 0; j < this.buffers.length; j++)
+    }
+    if (i != 0) {
+      for (j = 0; j < this.buffers.length; j++) {
         try
         {
           this.buffers[j].force();
@@ -455,6 +440,8 @@ final class ScaledRAFileNIO
         {
           this.database.logger.logSevereEvent("NIO buffer force error JVM threw unsupported Exception ", localThrowable3);
         }
+      }
+    }
     try
     {
       this.fileDescriptor.sync();
@@ -465,36 +452,39 @@ final class ScaledRAFileNIO
       this.database.logger.logSevereEvent("NIO RA file sync error JVM threw unsupported Exception ", localThrowable1);
     }
   }
-
+  
   private void positionBufferSeek(long paramLong)
   {
-    if ((paramLong < this.bufferPosition) || (paramLong >= this.bufferPosition + this.bufferLength))
+    if ((paramLong < this.bufferPosition) || (paramLong >= this.bufferPosition + this.bufferLength)) {
       setCurrentBuffer(paramLong);
+    }
     this.buffer.position((int)(paramLong - this.bufferPosition));
     this.currentPosition = paramLong;
   }
-
+  
   private void positionBufferMove(int paramInt)
   {
     long l = this.currentPosition + paramInt;
-    if (l >= this.bufferPosition + this.bufferLength)
+    if (l >= this.bufferPosition + this.bufferLength) {
       setCurrentBuffer(l);
+    }
     this.buffer.position((int)(l - this.bufferPosition));
     this.currentPosition = l;
   }
-
+  
   private void setCurrentBuffer(long paramLong)
   {
     int i = (int)(paramLong >> 24);
     this.buffer = this.buffers[i];
     this.bufferPosition = (paramLong &= -16777216L);
   }
-
+  
   private void unmap(MappedByteBuffer paramMappedByteBuffer)
     throws IOException
   {
-    if (paramMappedByteBuffer == null)
+    if (paramMappedByteBuffer == null) {
       return;
+    }
     try
     {
       Method localMethod1 = paramMappedByteBuffer.getClass().getMethod("cleaner", new Class[0]);
@@ -503,19 +493,12 @@ final class ScaledRAFileNIO
       Method localMethod2 = localObject.getClass().getMethod("clean", new Class[0]);
       localMethod2.invoke(localObject, new Object[0]);
     }
-    catch (InvocationTargetException localInvocationTargetException)
-    {
-    }
-    catch (NoSuchMethodException localNoSuchMethodException)
-    {
-    }
-    catch (Throwable localThrowable)
-    {
-    }
+    catch (InvocationTargetException localInvocationTargetException) {}catch (NoSuchMethodException localNoSuchMethodException) {}catch (Throwable localThrowable) {}
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.persist.ScaledRAFileNIO
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

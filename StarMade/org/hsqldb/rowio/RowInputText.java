@@ -18,7 +18,8 @@ import org.hsqldb.types.TimeData;
 import org.hsqldb.types.TimestampData;
 import org.hsqldb.types.Type;
 
-public class RowInputText extends RowInputBase
+public class RowInputText
+  extends RowInputBase
   implements RowInputInterface
 {
   private String fieldSep;
@@ -38,7 +39,7 @@ public class RowInputText extends RowInputBase
   protected boolean allQuoted;
   protected Scanner scanner = new Scanner();
   private int maxPooledStringLength = ValuePool.getMaxStringLength();
-
+  
   public RowInputText(String paramString1, String paramString2, String paramString3, boolean paramBoolean)
   {
     super(new byte[0]);
@@ -65,7 +66,7 @@ public class RowInputText extends RowInputBase
     this.varSepLen = paramString2.length();
     this.longvarSepLen = paramString3.length();
   }
-
+  
   public void setSource(String paramString, long paramLong, int paramInt)
   {
     this.size = paramInt;
@@ -76,7 +77,7 @@ public class RowInputText extends RowInputBase
     this.line += 1;
     this.field = 0;
   }
-
+  
   protected String getField(String paramString, int paramInt, boolean paramBoolean)
     throws IOException
   {
@@ -87,26 +88,31 @@ public class RowInputText extends RowInputBase
       this.field += 1;
       if (paramBoolean)
       {
-        if ((this.next >= this.textLen) && (paramInt > 0))
+        if ((this.next >= this.textLen) && (paramInt > 0)) {
           throw Error.error(488);
-        if (this.text.endsWith(paramString))
+        }
+        if (this.text.endsWith(paramString)) {
           this.next = (this.textLen - paramInt);
-        else
+        } else {
           throw Error.error(488);
+        }
       }
       else
       {
         this.next = this.text.indexOf(paramString, i);
-        if (this.next == -1)
+        if (this.next == -1) {
           this.next = this.textLen;
+        }
       }
-      if (i > this.next)
+      if (i > this.next) {
         i = this.next;
+      }
       str = this.text.substring(i, this.next);
       this.next += paramInt;
       str = str.trim();
-      if (str.length() == 0)
+      if (str.length() == 0) {
         str = null;
+      }
     }
     catch (Exception localException)
     {
@@ -115,288 +121,322 @@ public class RowInputText extends RowInputBase
     }
     return str;
   }
-
+  
   public String readString()
     throws IOException
   {
     return getField(this.fieldSep, this.fieldSepLen, this.fieldSepEnd);
   }
-
+  
   private String readVarString()
     throws IOException
   {
     return getField(this.varSep, this.varSepLen, this.varSepEnd);
   }
-
+  
   private String readLongVarString()
     throws IOException
   {
     return getField(this.longvarSep, this.longvarSepLen, this.longvarSepEnd);
   }
-
+  
   public short readShort()
     throws IOException
   {
     return (short)readInt();
   }
-
+  
   public int readInt()
     throws IOException
   {
     String str = readString();
-    if (str == null)
+    if (str == null) {
       return 0;
+    }
     str = str.trim();
-    if (str.length() == 0)
+    if (str.length() == 0) {
       return 0;
+    }
     return Integer.parseInt(str);
   }
-
+  
   public long readLong()
     throws IOException
   {
     throw Error.runtimeError(201, "RowInputText");
   }
-
+  
   public int readType()
     throws IOException
   {
     return 0;
   }
-
+  
   protected boolean readNull()
   {
     return false;
   }
-
+  
   protected String readChar(Type paramType)
     throws IOException
   {
     String str = null;
     switch (paramType.typeCode)
     {
-    case 1:
+    case 1: 
       str = readString();
       break;
-    case 12:
-    case 100:
+    case 12: 
+    case 100: 
       str = readVarString();
       break;
-    default:
+    default: 
       str = readLongVarString();
     }
-    if (str == null)
+    if (str == null) {
       return null;
-    if (str.length() > this.maxPooledStringLength)
+    }
+    if (str.length() > this.maxPooledStringLength) {
       return new String(str);
+    }
     return ValuePool.getString(str);
   }
-
+  
   protected Integer readSmallint()
     throws IOException
   {
     String str = readString();
-    if (str == null)
+    if (str == null) {
       return null;
+    }
     str = str.trim();
-    if (str.length() == 0)
+    if (str.length() == 0) {
       return null;
+    }
     return ValuePool.getInt(Integer.parseInt(str));
   }
-
+  
   protected Integer readInteger()
     throws IOException
   {
     String str = readString();
-    if (str == null)
+    if (str == null) {
       return null;
+    }
     str = str.trim();
-    if (str.length() == 0)
+    if (str.length() == 0) {
       return null;
+    }
     return ValuePool.getInt(Integer.parseInt(str));
   }
-
+  
   protected Long readBigint()
     throws IOException
   {
     String str = readString();
-    if (str == null)
+    if (str == null) {
       return null;
+    }
     str = str.trim();
-    if (str.length() == 0)
+    if (str.length() == 0) {
       return null;
+    }
     return ValuePool.getLong(Long.parseLong(str));
   }
-
+  
   protected Double readReal()
     throws IOException
   {
     String str = readString();
-    if (str == null)
+    if (str == null) {
       return null;
+    }
     str = str.trim();
-    if (str.length() == 0)
+    if (str.length() == 0) {
       return null;
+    }
     return Double.valueOf(str);
   }
-
+  
   protected BigDecimal readDecimal(Type paramType)
     throws IOException
   {
     String str = readString();
-    if (str == null)
+    if (str == null) {
       return null;
+    }
     str = str.trim();
-    if (str.length() == 0)
+    if (str.length() == 0) {
       return null;
+    }
     return new BigDecimal(str);
   }
-
+  
   protected TimeData readTime(Type paramType)
     throws IOException
   {
     String str = readString();
-    if (str == null)
+    if (str == null) {
       return null;
+    }
     str = str.trim();
-    if (str.length() == 0)
+    if (str.length() == 0) {
       return null;
+    }
     return this.scanner.newTime(str);
   }
-
+  
   protected TimestampData readDate(Type paramType)
     throws IOException
   {
     String str = readString();
-    if (str == null)
+    if (str == null) {
       return null;
+    }
     str = str.trim();
-    if (str.length() == 0)
+    if (str.length() == 0) {
       return null;
+    }
     return this.scanner.newDate(str);
   }
-
+  
   protected TimestampData readTimestamp(Type paramType)
     throws IOException
   {
     String str = readString();
-    if (str == null)
+    if (str == null) {
       return null;
+    }
     str = str.trim();
-    if (str.length() == 0)
+    if (str.length() == 0) {
       return null;
+    }
     return this.scanner.newTimestamp(str);
   }
-
+  
   protected IntervalMonthData readYearMonthInterval(Type paramType)
     throws IOException
   {
     String str = readString();
-    if (str == null)
+    if (str == null) {
       return null;
+    }
     str = str.trim();
-    if (str.length() == 0)
+    if (str.length() == 0) {
       return null;
+    }
     return (IntervalMonthData)this.scanner.newInterval(str, (IntervalType)paramType);
   }
-
+  
   protected IntervalSecondData readDaySecondInterval(Type paramType)
     throws IOException
   {
     String str = readString();
-    if (str == null)
+    if (str == null) {
       return null;
+    }
     str = str.trim();
-    if (str.length() == 0)
+    if (str.length() == 0) {
       return null;
+    }
     return (IntervalSecondData)this.scanner.newInterval(str, (IntervalType)paramType);
   }
-
+  
   protected Boolean readBoole()
     throws IOException
   {
     String str = readString();
-    if (str == null)
+    if (str == null) {
       return null;
+    }
     str = str.trim();
-    if (str.length() == 0)
+    if (str.length() == 0) {
       return null;
+    }
     return str.equalsIgnoreCase("TRUE") ? Boolean.TRUE : Boolean.FALSE;
   }
-
+  
   protected Object readOther()
     throws IOException
   {
     String str = readString();
-    if (str == null)
+    if (str == null) {
       return null;
+    }
     BinaryData localBinaryData = this.scanner.convertToBinary(str);
-    if (localBinaryData.length(null) == 0L)
+    if (localBinaryData.length(null) == 0L) {
       return null;
+    }
     return new JavaObjectData(localBinaryData.getBytes());
   }
-
+  
   protected BinaryData readBit()
     throws IOException
   {
     String str = readString();
-    if (str == null)
+    if (str == null) {
       return null;
+    }
     BinaryData localBinaryData = this.scanner.convertToBit(str);
     return localBinaryData;
   }
-
+  
   protected BinaryData readBinary()
     throws IOException
   {
     String str = readString();
-    if (str == null)
+    if (str == null) {
       return null;
+    }
     BinaryData localBinaryData = this.scanner.convertToBinary(str);
     return localBinaryData;
   }
-
+  
   protected ClobData readClob()
     throws IOException
   {
     String str = readString();
-    if (str == null)
+    if (str == null) {
       return null;
+    }
     str = str.trim();
-    if (str.length() == 0)
+    if (str.length() == 0) {
       return null;
+    }
     long l = Long.parseLong(str);
     return new ClobDataID(l);
   }
-
+  
   protected BlobData readBlob()
     throws IOException
   {
     String str = readString();
-    if (str == null)
+    if (str == null) {
       return null;
+    }
     str = str.trim();
-    if (str.length() == 0)
+    if (str.length() == 0) {
       return null;
+    }
     long l = Long.parseLong(str);
     return new BlobDataID(l);
   }
-
+  
   protected Object[] readArray(Type paramType)
   {
     throw Error.runtimeError(201, "RowInputText");
   }
-
+  
   public int getLineNumber()
   {
     return this.line;
   }
-
+  
   public void skippedLine()
   {
     this.line += 1;
   }
-
+  
   public void reset()
   {
     this.text = "";
@@ -408,7 +448,8 @@ public class RowInputText extends RowInputBase
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.rowio.RowInputText
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

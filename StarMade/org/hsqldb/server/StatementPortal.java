@@ -16,13 +16,13 @@ class StatementPortal
   public String handle;
   private Map containingMap;
   private Session session;
-
+  
   public StatementPortal(String paramString, OdbcPreparedStatement paramOdbcPreparedStatement, Map paramMap)
     throws RecoverableOdbcFailure
   {
     this(paramString, paramOdbcPreparedStatement, new Object[0], paramMap);
   }
-
+  
   public StatementPortal(String paramString, OdbcPreparedStatement paramOdbcPreparedStatement, Object[] paramArrayOfObject, Map paramMap)
     throws RecoverableOdbcFailure
   {
@@ -34,11 +34,11 @@ class StatementPortal
     this.bindResult = Result.newPreparedExecuteRequest(paramOdbcPreparedStatement.ackResult.parameterMetaData.getParameterTypes(), paramOdbcPreparedStatement.ackResult.getStatementID());
     switch (this.bindResult.getType())
     {
-    case 35:
+    case 35: 
       break;
-    case 2:
+    case 2: 
       throw new RecoverableOdbcFailure(this.bindResult);
-    default:
+    default: 
       throw new RecoverableOdbcFailure("Output Result from seconary Statement prep is of unexpected type: " + this.bindResult.getType());
     }
     if (paramArrayOfObject.length < 1)
@@ -48,16 +48,19 @@ class StatementPortal
     else
     {
       ResultMetaData localResultMetaData = paramOdbcPreparedStatement.ackResult.parameterMetaData;
-      if (localResultMetaData == null)
+      if (localResultMetaData == null) {
         throw new RecoverableOdbcFailure("No metadata for Result ack");
+      }
       Type[] arrayOfType = localResultMetaData.getParameterTypes();
-      if (arrayOfType.length != paramArrayOfObject.length)
+      if (arrayOfType.length != paramArrayOfObject.length) {
         throw new RecoverableOdbcFailure(null, "Client didn't specify all " + arrayOfType.length + " parameters (" + paramArrayOfObject.length + ')', "08P01");
+      }
       this.parameters = new Object[paramArrayOfObject.length];
       try
       {
-        for (int i = 0; i < this.parameters.length; i++)
+        for (int i = 0; i < this.parameters.length; i++) {
           this.parameters[i] = ((paramArrayOfObject[i] instanceof String) ? PgType.getPgType(arrayOfType[i], true).getParameter((String)paramArrayOfObject[i], this.session) : paramArrayOfObject[i]);
+        }
       }
       catch (SQLException localSQLException)
       {
@@ -66,14 +69,15 @@ class StatementPortal
     }
     paramMap.put(paramString, this);
   }
-
+  
   public void close()
   {
     this.containingMap.remove(this.handle);
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.server.StatementPortal
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

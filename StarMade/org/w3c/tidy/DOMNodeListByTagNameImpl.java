@@ -10,23 +10,24 @@ public class DOMNodeListByTagNameImpl
   private int currIndex;
   private int maxIndex;
   private Node currNode;
-
+  
   protected DOMNodeListByTagNameImpl(Node paramNode, String paramString)
   {
     this.first = paramNode;
     this.tagName = paramString;
   }
-
+  
   public org.w3c.dom.Node item(int paramInt)
   {
     this.currIndex = 0;
     this.maxIndex = paramInt;
     preTraverse(this.first);
-    if ((this.currIndex > this.maxIndex) && (this.currNode != null))
+    if ((this.currIndex > this.maxIndex) && (this.currNode != null)) {
       return this.currNode.getAdapter();
+    }
     return null;
   }
-
+  
   public int getLength()
   {
     this.currIndex = 0;
@@ -34,24 +35,28 @@ public class DOMNodeListByTagNameImpl
     preTraverse(this.first);
     return this.currIndex;
   }
-
+  
   protected void preTraverse(Node paramNode)
   {
-    if (paramNode == null)
+    if (paramNode == null) {
       return;
+    }
     if (((paramNode.type == 5) || (paramNode.type == 7)) && (this.currIndex <= this.maxIndex) && ((this.tagName.equals("*")) || (this.tagName.equals(paramNode.element))))
     {
       this.currIndex += 1;
       this.currNode = paramNode;
     }
-    if (this.currIndex > this.maxIndex)
+    if (this.currIndex > this.maxIndex) {
       return;
-    for (paramNode = paramNode.content; paramNode != null; paramNode = paramNode.next)
+    }
+    for (paramNode = paramNode.content; paramNode != null; paramNode = paramNode.next) {
       preTraverse(paramNode);
+    }
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.w3c.tidy.DOMNodeListByTagNameImpl
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

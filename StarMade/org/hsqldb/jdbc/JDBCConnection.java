@@ -49,7 +49,7 @@ public class JDBCConnection
   int incarnation;
   boolean isPooled;
   JDBCConnectionEventListener poolEventListener;
-
+  
   public synchronized Statement createStatement()
     throws SQLException
   {
@@ -58,7 +58,7 @@ public class JDBCConnection
     JDBCStatement localJDBCStatement = new JDBCStatement(this, i);
     return localJDBCStatement;
   }
-
+  
   public synchronized PreparedStatement prepareStatement(String paramString)
     throws SQLException
   {
@@ -72,7 +72,7 @@ public class JDBCConnection
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public synchronized CallableStatement prepareCall(String paramString)
     throws SQLException
   {
@@ -87,13 +87,14 @@ public class JDBCConnection
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public synchronized String nativeSQL(String paramString)
     throws SQLException
   {
     checkClosed();
-    if ((paramString == null) || (paramString.length() == 0) || (paramString.indexOf(123) == -1))
+    if ((paramString == null) || (paramString.length() == 0) || (paramString.indexOf(123) == -1)) {
       return paramString;
+    }
     int i = 0;
     int j = 0;
     int k = paramString.length();
@@ -105,7 +106,7 @@ public class JDBCConnection
       int i2 = paramString.charAt(i1);
       switch (j)
       {
-      case 0:
+      case 0: 
         if (i2 == 39)
         {
           j = 1;
@@ -116,8 +117,9 @@ public class JDBCConnection
         }
         else if (i2 == 123)
         {
-          if (localStringBuffer == null)
+          if (localStringBuffer == null) {
             localStringBuffer = new StringBuffer(paramString.length());
+          }
           localStringBuffer.append(paramString.substring(n, i1));
           i1 = onStartEscapeSequence(paramString, localStringBuffer, i1);
           n = i1;
@@ -126,17 +128,19 @@ public class JDBCConnection
           j = 3;
         }
         break;
-      case 1:
-      case 4:
-        if (i2 == 39)
+      case 1: 
+      case 4: 
+        if (i2 == 39) {
           j--;
+        }
         break;
-      case 2:
-      case 5:
-        if (i2 == 34)
+      case 2: 
+      case 5: 
+        if (i2 == 34) {
           j -= 2;
+        }
         break;
-      case 3:
+      case 3: 
         if (i2 == 39)
         {
           j = 4;
@@ -167,12 +171,13 @@ public class JDBCConnection
         break;
       }
     }
-    if (i == 0)
+    if (i == 0) {
       return paramString;
+    }
     localStringBuffer.append(paramString.substring(n, paramString.length()));
     return localStringBuffer.toString();
   }
-
+  
   public synchronized void setAutoCommit(boolean paramBoolean)
     throws SQLException
   {
@@ -186,7 +191,7 @@ public class JDBCConnection
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public synchronized boolean getAutoCommit()
     throws SQLException
   {
@@ -200,7 +205,7 @@ public class JDBCConnection
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public synchronized void commit()
     throws SQLException
   {
@@ -214,7 +219,7 @@ public class JDBCConnection
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public synchronized void rollback()
     throws SQLException
   {
@@ -228,12 +233,13 @@ public class JDBCConnection
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public synchronized void close()
     throws SQLException
   {
-    if ((this.isInternal) || (this.isClosed))
+    if ((this.isInternal) || (this.isClosed)) {
       return;
+    }
     this.isClosed = true;
     this.rootWarning = null;
     this.connProperties = null;
@@ -251,20 +257,20 @@ public class JDBCConnection
       this.sessionProxy = null;
     }
   }
-
+  
   public synchronized boolean isClosed()
     throws SQLException
   {
     return this.isClosed;
   }
-
+  
   public synchronized DatabaseMetaData getMetaData()
     throws SQLException
   {
     checkClosed();
     return new JDBCDatabaseMetaData(this);
   }
-
+  
   public synchronized void setReadOnly(boolean paramBoolean)
     throws SQLException
   {
@@ -278,7 +284,7 @@ public class JDBCConnection
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public synchronized boolean isReadOnly()
     throws SQLException
   {
@@ -292,7 +298,7 @@ public class JDBCConnection
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public synchronized void setCatalog(String paramString)
     throws SQLException
   {
@@ -306,7 +312,7 @@ public class JDBCConnection
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public synchronized String getCatalog()
     throws SQLException
   {
@@ -320,23 +326,23 @@ public class JDBCConnection
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public synchronized void setTransactionIsolation(int paramInt)
     throws SQLException
   {
     checkClosed();
     switch (paramInt)
     {
-    case 1:
-    case 2:
-    case 4:
-    case 8:
+    case 1: 
+    case 2: 
+    case 4: 
+    case 8: 
       break;
-    case 3:
-    case 5:
-    case 6:
-    case 7:
-    default:
+    case 3: 
+    case 5: 
+    case 6: 
+    case 7: 
+    default: 
       throw Util.invalidArgument();
     }
     try
@@ -348,7 +354,7 @@ public class JDBCConnection
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public synchronized int getTransactionIsolation()
     throws SQLException
   {
@@ -362,21 +368,21 @@ public class JDBCConnection
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public synchronized SQLWarning getWarnings()
     throws SQLException
   {
     checkClosed();
     return this.rootWarning;
   }
-
+  
   public synchronized void clearWarnings()
     throws SQLException
   {
     checkClosed();
     this.rootWarning = null;
   }
-
+  
   public synchronized Statement createStatement(int paramInt1, int paramInt2)
     throws SQLException
   {
@@ -384,7 +390,7 @@ public class JDBCConnection
     int i = ResultProperties.getValueForJDBC(paramInt1, paramInt2, this.rsHoldability);
     return new JDBCStatement(this, i);
   }
-
+  
   public synchronized PreparedStatement prepareStatement(String paramString, int paramInt1, int paramInt2)
     throws SQLException
   {
@@ -392,8 +398,9 @@ public class JDBCConnection
     try
     {
       int i = this.rsHoldability;
-      if (paramInt2 == 1008)
+      if (paramInt2 == 1008) {
         i = 2;
+      }
       return new JDBCPreparedStatement(this, paramString, paramInt1, paramInt2, i, 2, null, null);
     }
     catch (HsqlException localHsqlException)
@@ -401,7 +408,7 @@ public class JDBCConnection
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public synchronized CallableStatement prepareCall(String paramString, int paramInt1, int paramInt2)
     throws SQLException
   {
@@ -415,49 +422,50 @@ public class JDBCConnection
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public synchronized Map<String, Class<?>> getTypeMap()
     throws SQLException
   {
     checkClosed();
     return new HashMap();
   }
-
+  
   public synchronized void setTypeMap(Map<String, Class<?>> paramMap)
     throws SQLException
   {
     checkClosed();
     throw Util.notSupported();
   }
-
+  
   public synchronized void setHoldability(int paramInt)
     throws SQLException
   {
     checkClosed();
     switch (paramInt)
     {
-    case 1:
-    case 2:
+    case 1: 
+    case 2: 
       break;
-    default:
+    default: 
       throw Util.invalidArgument();
     }
     this.rsHoldability = paramInt;
   }
-
+  
   public synchronized int getHoldability()
     throws SQLException
   {
     checkClosed();
     return this.rsHoldability;
   }
-
+  
   public synchronized Savepoint setSavepoint()
     throws SQLException
   {
     checkClosed();
-    if (getAutoCommit())
+    if (getAutoCommit()) {
       throw Util.sqlException(4821);
+    }
     JDBCSavepoint localJDBCSavepoint = new JDBCSavepoint(this);
     try
     {
@@ -469,17 +477,20 @@ public class JDBCConnection
     }
     return localJDBCSavepoint;
   }
-
+  
   public synchronized Savepoint setSavepoint(String paramString)
     throws SQLException
   {
     checkClosed();
-    if (getAutoCommit())
+    if (getAutoCommit()) {
       throw Util.sqlException(4821);
-    if (paramString == null)
+    }
+    if (paramString == null) {
       throw Util.nullArgument();
-    if (paramString.startsWith("SYSTEM_SAVEPOINT_"))
+    }
+    if (paramString.startsWith("SYSTEM_SAVEPOINT_")) {
       throw Util.invalidArgument();
+    }
     try
     {
       this.sessionProxy.savepoint(paramString);
@@ -490,13 +501,14 @@ public class JDBCConnection
     }
     return new JDBCSavepoint(paramString, this);
   }
-
+  
   public synchronized void rollback(Savepoint paramSavepoint)
     throws SQLException
   {
     checkClosed();
-    if (paramSavepoint == null)
+    if (paramSavepoint == null) {
       throw Util.nullArgument();
+    }
     String str;
     if (!(paramSavepoint instanceof JDBCSavepoint))
     {
@@ -531,13 +543,14 @@ public class JDBCConnection
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public synchronized void releaseSavepoint(Savepoint paramSavepoint)
     throws SQLException
   {
     checkClosed();
-    if (paramSavepoint == null)
+    if (paramSavepoint == null) {
       throw Util.nullArgument();
+    }
     String str;
     if (!(paramSavepoint instanceof JDBCSavepoint))
     {
@@ -572,7 +585,7 @@ public class JDBCConnection
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public synchronized Statement createStatement(int paramInt1, int paramInt2, int paramInt3)
     throws SQLException
   {
@@ -580,7 +593,7 @@ public class JDBCConnection
     int i = ResultProperties.getValueForJDBC(paramInt1, paramInt2, paramInt3);
     return new JDBCStatement(this, i);
   }
-
+  
   public synchronized PreparedStatement prepareStatement(String paramString, int paramInt1, int paramInt2, int paramInt3)
     throws SQLException
   {
@@ -594,7 +607,7 @@ public class JDBCConnection
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public synchronized CallableStatement prepareCall(String paramString, int paramInt1, int paramInt2, int paramInt3)
     throws SQLException
   {
@@ -608,15 +621,16 @@ public class JDBCConnection
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public synchronized PreparedStatement prepareStatement(String paramString, int paramInt)
     throws SQLException
   {
     checkClosed();
     try
     {
-      if ((paramInt != 1) && (paramInt != 2))
+      if ((paramInt != 1) && (paramInt != 2)) {
         throw Util.invalidArgument("autoGeneratedKeys");
+      }
       return new JDBCPreparedStatement(this, paramString, 1003, 1007, this.rsHoldability, paramInt, null, null);
     }
     catch (HsqlException localHsqlException)
@@ -624,7 +638,7 @@ public class JDBCConnection
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public synchronized PreparedStatement prepareStatement(String paramString, int[] paramArrayOfInt)
     throws SQLException
   {
@@ -638,7 +652,7 @@ public class JDBCConnection
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public synchronized PreparedStatement prepareStatement(String paramString, String[] paramArrayOfString)
     throws SQLException
   {
@@ -652,46 +666,50 @@ public class JDBCConnection
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public Clob createClob()
     throws SQLException
   {
     checkClosed();
     return new JDBCClob();
   }
-
+  
   public Blob createBlob()
     throws SQLException
   {
     checkClosed();
     return new JDBCBlob();
   }
-
+  
   public NClob createNClob()
     throws SQLException
   {
     checkClosed();
     return new JDBCNClob();
   }
-
+  
   public SQLXML createSQLXML()
     throws SQLException
   {
     checkClosed();
     return new JDBCSQLXML();
   }
-
+  
   public boolean isValid(int paramInt)
     throws SQLException
   {
-    if (paramInt < 0)
+    if (paramInt < 0) {
       throw Util.outOfRangeArgument("timeout: " + paramInt);
-    if (this.isInternal)
+    }
+    if (this.isInternal) {
       return true;
-    if (!this.isNetConn)
+    }
+    if (!this.isNetConn) {
       return !isClosed();
-    if (isClosed())
+    }
+    if (isClosed()) {
       return false;
+    }
     final boolean[] arrayOfBoolean = { true };
     Thread local1 = new Thread()
     {
@@ -707,8 +725,9 @@ public class JDBCConnection
         }
       }
     };
-    if (paramInt > 60)
+    if (paramInt > 60) {
       paramInt = 60;
+    }
     paramInt *= 1000;
     try
     {
@@ -719,19 +738,16 @@ public class JDBCConnection
       {
         local1.setContextClassLoader(null);
       }
-      catch (Throwable localThrowable2)
-      {
-      }
-      if (paramInt == 0)
+      catch (Throwable localThrowable2) {}
+      if (paramInt == 0) {
         return arrayOfBoolean[0];
+      }
       return (arrayOfBoolean[0] != 0) && (System.currentTimeMillis() - l < paramInt);
     }
-    catch (Throwable localThrowable1)
-    {
-    }
+    catch (Throwable localThrowable1) {}
     return false;
   }
-
+  
   public void setClientInfo(String paramString1, String paramString2)
     throws SQLClientInfoException
   {
@@ -739,47 +755,52 @@ public class JDBCConnection
     localSQLClientInfoException.initCause(Util.notSupported());
     throw localSQLClientInfoException;
   }
-
+  
   public void setClientInfo(Properties paramProperties)
     throws SQLClientInfoException
   {
-    if ((!this.isClosed) && ((paramProperties == null) || (paramProperties.isEmpty())))
+    if ((!this.isClosed) && ((paramProperties == null) || (paramProperties.isEmpty()))) {
       return;
+    }
     SQLClientInfoException localSQLClientInfoException = new SQLClientInfoException();
-    if (this.isClosed)
+    if (this.isClosed) {
       localSQLClientInfoException.initCause(Util.connectionClosedException());
-    else
+    } else {
       localSQLClientInfoException.initCause(Util.notSupported());
+    }
     throw localSQLClientInfoException;
   }
-
+  
   public String getClientInfo(String paramString)
     throws SQLException
   {
     checkClosed();
     return null;
   }
-
+  
   public Properties getClientInfo()
     throws SQLException
   {
     checkClosed();
     return null;
   }
-
+  
   public Array createArrayOf(String paramString, Object[] paramArrayOfObject)
     throws SQLException
   {
     checkClosed();
-    if (paramString == null)
+    if (paramString == null) {
       throw Util.nullArgument();
+    }
     paramString = paramString.toUpperCase();
     int i = Type.getTypeNr(paramString);
-    if (i < 0)
+    if (i < 0) {
       throw Util.invalidArgument(paramString);
+    }
     Type localType = Type.getDefaultType(i);
-    if ((localType.isArrayType()) || (localType.isLobType()) || (localType.isRowType()))
+    if ((localType.isArrayType()) || (localType.isLobType()) || (localType.isRowType())) {
       throw Util.invalidArgument(paramString);
+    }
     Object[] arrayOfObject = new Object[paramArrayOfObject.length];
     try
     {
@@ -795,70 +816,73 @@ public class JDBCConnection
     }
     return new JDBCArray(arrayOfObject, localType, this);
   }
-
+  
   public Struct createStruct(String paramString, Object[] paramArrayOfObject)
     throws SQLException
   {
     checkClosed();
     throw Util.notSupported();
   }
-
+  
   public <T> T unwrap(Class<T> paramClass)
     throws SQLException
   {
     checkClosed();
-    if (isWrapperFor(paramClass))
+    if (isWrapperFor(paramClass)) {
       return this;
+    }
     throw Util.invalidArgument("iface: " + paramClass);
   }
-
+  
   public boolean isWrapperFor(Class<?> paramClass)
     throws SQLException
   {
     checkClosed();
     return (paramClass != null) && (paramClass.isAssignableFrom(getClass()));
   }
-
+  
   public void setSchema(String paramString)
     throws SQLException
   {
     checkClosed();
-    if (paramString == null)
+    if (paramString == null) {
       Util.nullArgument("schema");
-    else if (paramString.length() == 0)
+    } else if (paramString.length() == 0) {
       Util.invalidArgument("Zero-length schema");
-    else
+    } else {
       new JDBCDatabaseMetaData(this).setConnectionDefaultSchema(paramString);
+    }
   }
-
+  
   public String getSchema()
     throws SQLException
   {
     checkClosed();
     return new JDBCDatabaseMetaData(this).getConnectionDefaultSchema();
   }
-
+  
   public void abort(Executor paramExecutor)
     throws SQLException
   {
-    if (paramExecutor == null)
+    if (paramExecutor == null) {
       throw Util.nullArgument("executor");
+    }
     close();
   }
-
+  
   public void setNetworkTimeout(Executor paramExecutor, int paramInt)
     throws SQLException
   {
     checkClosed();
     throw Util.notSupported();
   }
-
+  
   public int getNetworkTimeout()
     throws SQLException
   {
     return 0;
   }
-
+  
   public JDBCConnection(HsqlProperties paramHsqlProperties)
     throws SQLException
   {
@@ -870,10 +894,12 @@ public class JDBCConnection
     String str5 = paramHsqlProperties.getProperty("path");
     String str6 = paramHsqlProperties.getProperty("database");
     boolean bool = (str3 == "hsqls://") || (str3 == "https://");
-    if (str1 == null)
+    if (str1 == null) {
       str1 = "SA";
-    if (str2 == null)
+    }
+    if (str2 == null) {
       str2 = "";
+    }
     Calendar localCalendar = Calendar.getInstance();
     int j = HsqlDateTime.getZoneSeconds(localCalendar);
     try
@@ -905,13 +931,13 @@ public class JDBCConnection
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public JDBCConnection(SessionInterface paramSessionInterface)
   {
     this.isInternal = true;
     this.sessionProxy = paramSessionInterface;
   }
-
+  
   public JDBCConnection(JDBCConnection paramJDBCConnection, JDBCConnectionEventListener paramJDBCConnectionEventListener)
   {
     this.sessionProxy = paramJDBCConnection.sessionProxy;
@@ -920,48 +946,48 @@ public class JDBCConnection
     this.isPooled = true;
     this.poolEventListener = paramJDBCConnectionEventListener;
   }
-
+  
   protected void finalize()
   {
     try
     {
       close();
     }
-    catch (SQLException localSQLException)
-    {
-    }
+    catch (SQLException localSQLException) {}
   }
-
+  
   synchronized int getSavepointID()
   {
     return this.savepointIDSequence++;
   }
-
+  
   synchronized String getURL()
     throws SQLException
   {
     checkClosed();
     return this.isInternal ? this.sessionProxy.getInternalConnectionURL() : this.connProperties.getProperty("url");
   }
-
+  
   synchronized void checkClosed()
     throws SQLException
   {
-    if (this.isClosed)
+    if (this.isClosed) {
       throw Util.connectionClosedException();
+    }
   }
-
+  
   void addWarning(SQLWarning paramSQLWarning)
   {
     synchronized (this.rootWarning_mutex)
     {
-      if (this.rootWarning == null)
+      if (this.rootWarning == null) {
         this.rootWarning = paramSQLWarning;
-      else
+      } else {
         this.rootWarning.setNextWarning(paramSQLWarning);
+      }
     }
   }
-
+  
   void setWarnings(SQLWarning paramSQLWarning)
   {
     synchronized (this.rootWarning_mutex)
@@ -969,7 +995,7 @@ public class JDBCConnection
       this.rootWarning = paramSQLWarning;
     }
   }
-
+  
   public void reset()
     throws SQLException
   {
@@ -983,16 +1009,14 @@ public class JDBCConnection
       throw Util.sqlException(1305, localHsqlException.getMessage(), localHsqlException);
     }
   }
-
+  
   public void closeFully()
   {
     try
     {
       close();
     }
-    catch (Throwable localThrowable1)
-    {
-    }
+    catch (Throwable localThrowable1) {}
     try
     {
       if (this.sessionProxy != null)
@@ -1001,16 +1025,14 @@ public class JDBCConnection
         this.sessionProxy = null;
       }
     }
-    catch (Throwable localThrowable2)
-    {
-    }
+    catch (Throwable localThrowable2) {}
   }
-
+  
   public SessionInterface getSession()
   {
     return this.sessionProxy;
   }
-
+  
   private int onStartEscapeSequence(String paramString, StringBuffer paramStringBuffer, int paramInt)
     throws SQLException
   {
@@ -1064,7 +1086,8 @@ public class JDBCConnection
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.jdbc.JDBCConnection
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

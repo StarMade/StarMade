@@ -13,7 +13,7 @@ public class TableUtil
     localTableDerived.createPrimaryKeyConstraint(localTableDerived.getName(), new int[] { 0 }, true);
     return localTableDerived;
   }
-
+  
   static void setTableIndexesForSubquery(Table paramTable, boolean paramBoolean1, boolean paramBoolean2)
   {
     int[] arrayOfInt = null;
@@ -23,12 +23,13 @@ public class TableUtil
       ArrayUtil.fillSequence(arrayOfInt);
     }
     paramTable.createPrimaryKey(null, paramBoolean2 ? arrayOfInt : null, false);
-    if (paramBoolean2)
+    if (paramBoolean2) {
       paramTable.fullIndex = paramTable.getPrimaryIndex();
-    else if (paramBoolean1)
+    } else if (paramBoolean1) {
       paramTable.fullIndex = paramTable.createIndexForColumns(null, arrayOfInt);
+    }
   }
-
+  
   public static void addAutoColumns(Table paramTable, Type[] paramArrayOfType)
   {
     for (int i = 0; i < paramArrayOfType.length; i++)
@@ -37,7 +38,7 @@ public class TableUtil
       paramTable.addColumnNoCheck(localColumnSchema);
     }
   }
-
+  
   public static void setColumnsInSchemaTable(Table paramTable, HsqlNameManager.HsqlName[] paramArrayOfHsqlName, Type[] paramArrayOfType)
   {
     for (int i = 0; i < paramArrayOfHsqlName.length; i++)
@@ -51,7 +52,8 @@ public class TableUtil
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.TableUtil
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

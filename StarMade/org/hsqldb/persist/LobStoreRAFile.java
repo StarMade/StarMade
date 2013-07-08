@@ -10,7 +10,7 @@ public class LobStoreRAFile
   final int lobBlockSize;
   RandomAccessInterface file;
   Database database;
-
+  
   public LobStoreRAFile(Database paramDatabase, int paramInt)
   {
     this.lobBlockSize = paramInt;
@@ -19,36 +19,39 @@ public class LobStoreRAFile
     {
       String str = paramDatabase.getPath() + ".lobs";
       boolean bool = paramDatabase.logger.getFileAccess().isStreamElement(str);
-      if (bool)
+      if (bool) {
         openFile();
+      }
     }
     catch (Throwable localThrowable)
     {
       throw Error.error(466, localThrowable);
     }
   }
-
+  
   private void openFile()
   {
     try
     {
       String str = this.database.getPath() + ".lobs";
       boolean bool = this.database.isFilesReadOnly();
-      if (this.database.logger.isStoredFileAccess())
+      if (this.database.logger.isStoredFileAccess()) {
         this.file = ScaledRAFile.newScaledRAFile(this.database, str, bool, 3);
-      else
+      } else {
         this.file = new ScaledRAFileSimple(this.database, str, bool ? "r" : "rws");
+      }
     }
     catch (Throwable localThrowable)
     {
       throw Error.error(466, localThrowable);
     }
   }
-
+  
   public byte[] getBlockBytes(int paramInt1, int paramInt2)
   {
-    if (this.file == null)
+    if (this.file == null) {
       throw Error.error(452);
+    }
     try
     {
       long l = paramInt1 * this.lobBlockSize;
@@ -63,11 +66,12 @@ public class LobStoreRAFile
       throw Error.error(466, localThrowable);
     }
   }
-
+  
   public void setBlockBytes(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
   {
-    if (this.file == null)
+    if (this.file == null) {
       openFile();
+    }
     try
     {
       long l = paramInt1 * this.lobBlockSize;
@@ -80,13 +84,15 @@ public class LobStoreRAFile
       throw Error.error(466, localThrowable);
     }
   }
-
+  
   public void setBlockBytes(byte[] paramArrayOfByte, long paramLong, int paramInt1, int paramInt2)
   {
-    if (paramInt2 == 0)
+    if (paramInt2 == 0) {
       return;
-    if (this.file == null)
+    }
+    if (this.file == null) {
       openFile();
+    }
     try
     {
       this.file.seek(paramLong);
@@ -97,12 +103,12 @@ public class LobStoreRAFile
       throw Error.error(466, localThrowable);
     }
   }
-
+  
   public int getBlockSize()
   {
     return this.lobBlockSize;
   }
-
+  
   public void close()
   {
     try
@@ -118,15 +124,17 @@ public class LobStoreRAFile
       throw Error.error(466, localThrowable);
     }
   }
-
+  
   public void synch()
   {
-    if (this.file != null)
+    if (this.file != null) {
       this.file.synch();
+    }
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.persist.LobStoreRAFile
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

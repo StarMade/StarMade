@@ -9,32 +9,33 @@ import org.newdawn.slick.opengl.ImageData;
 public abstract interface GUIContext
 {
   public abstract Input getInput();
-
+  
   public abstract long getTime();
-
+  
   public abstract int getScreenWidth();
-
+  
   public abstract int getScreenHeight();
-
+  
   public abstract int getWidth();
-
+  
   public abstract int getHeight();
-
+  
   public abstract Font getDefaultFont();
-
+  
   public abstract void setMouseCursor(String paramString, int paramInt1, int paramInt2)
     throws SlickException;
-
+  
   public abstract void setMouseCursor(ImageData paramImageData, int paramInt1, int paramInt2)
     throws SlickException;
-
+  
   public abstract void setMouseCursor(Cursor paramCursor, int paramInt1, int paramInt2)
     throws SlickException;
-
+  
   public abstract void setDefaultMouseCursor();
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.newdawn.slick.gui.GUIContext
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

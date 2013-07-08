@@ -22,7 +22,8 @@ import org.hsqldb.result.ResultMetaData;
 import org.hsqldb.store.ValuePool;
 import org.hsqldb.types.Type;
 
-public class QuerySpecification extends QueryExpression
+public class QuerySpecification
+  extends QueryExpression
 {
   public int resultRangePosition;
   public boolean isDistinctSelect;
@@ -62,7 +63,7 @@ public class QuerySpecification extends QueryExpression
   private OrderedHashSet conditionTables;
   public Index groupIndex;
   private RangeGroup[] outerRanges;
-
+  
   QuerySpecification(Session paramSession, Table paramTable, ParserDQL.CompileContext paramCompileContext, boolean paramBoolean)
   {
     this(paramCompileContext);
@@ -76,7 +77,7 @@ public class QuerySpecification extends QueryExpression
     this.isMergeable = true;
     this.isTable = true;
   }
-
+  
   QuerySpecification(ParserDQL.CompileContext paramCompileContext)
   {
     super(paramCompileContext);
@@ -87,18 +88,18 @@ public class QuerySpecification extends QueryExpression
     this.isBaseMergeable = true;
     this.isMergeable = true;
   }
-
+  
   void addRangeVariable(Session paramSession, RangeVariable paramRangeVariable)
   {
     this.rangeVariableList.add(paramRangeVariable);
   }
-
+  
   void addRangeSeparator()
   {
     RangeVariable localRangeVariable = (RangeVariable)this.rangeVariableList.get(this.rangeVariableList.size() - 1);
     localRangeVariable.isBoundary = true;
   }
-
+  
   public TableDerived getValueListTable()
   {
     if (this.isValueList)
@@ -106,22 +107,25 @@ public class QuerySpecification extends QueryExpression
       RangeVariable localRangeVariable = null;
       if (this.rangeVariables == null)
       {
-        if (this.rangeVariableList.size() == 1)
+        if (this.rangeVariableList.size() == 1) {
           localRangeVariable = (RangeVariable)this.rangeVariableList.get(0);
+        }
       }
-      else if (this.rangeVariables.length == 1)
+      else if (this.rangeVariables.length == 1) {
         localRangeVariable = this.rangeVariables[0];
-      if (localRangeVariable != null)
+      }
+      if (localRangeVariable != null) {
         return (TableDerived)localRangeVariable.getTable();
+      }
     }
     return null;
   }
-
+  
   public RangeVariable[] getRangeVariables()
   {
     return this.rangeVariables;
   }
-
+  
   private void resolveRangeVariables(Session paramSession, RangeGroup[] paramArrayOfRangeGroup)
   {
     if ((this.rangeVariables == null) || (this.rangeVariables.length < this.rangeVariableList.size()))
@@ -148,53 +152,58 @@ public class QuerySpecification extends QueryExpression
       this.rangeVariables[i].resolveRangeTable(paramSession, (RangeGroup)localObject, paramArrayOfRangeGroup);
     }
   }
-
+  
   void addSelectColumnExpression(Expression paramExpression)
   {
-    if (paramExpression.getType() == 25)
+    if (paramExpression.getType() == 25) {
       throw Error.error(5564);
+    }
     if (this.indexLimitVisible > 0)
     {
-      if ((paramExpression.opType == 97) && (((ExpressionColumn)paramExpression).getTableName() == null))
+      if ((paramExpression.opType == 97) && (((ExpressionColumn)paramExpression).getTableName() == null)) {
         throw Error.error(5578);
+      }
       Expression localExpression = (Expression)this.exprColumnList.get(0);
-      if ((localExpression.opType == 97) && (((ExpressionColumn)localExpression).getTableName() == null))
+      if ((localExpression.opType == 97) && (((ExpressionColumn)localExpression).getTableName() == null)) {
         throw Error.error(5578);
+      }
     }
     this.exprColumnList.add(paramExpression);
     this.indexLimitVisible += 1;
   }
-
+  
   void addQueryCondition(Expression paramExpression)
   {
     this.queryCondition = paramExpression;
   }
-
+  
   void addGroupByColumnExpression(Expression paramExpression)
   {
-    if (paramExpression.getType() == 25)
+    if (paramExpression.getType() == 25) {
       throw Error.error(5564);
+    }
     this.exprColumnList.add(paramExpression);
     this.isGrouped = true;
     this.groupByColumnCount += 1;
   }
-
+  
   void addHavingExpression(Expression paramExpression)
   {
     this.exprColumnList.add(paramExpression);
     this.havingCondition = paramExpression;
     this.havingColumnCount = 1;
   }
-
+  
   void addSortAndSlice(SortAndSlice paramSortAndSlice)
   {
     this.sortAndSlice = paramSortAndSlice;
   }
-
+  
   public void resolveReferences(Session paramSession, RangeGroup[] paramArrayOfRangeGroup)
   {
-    if (this.isReferencesResolved)
+    if (this.isReferencesResolved) {
       return;
+    }
     this.outerRanges = paramArrayOfRangeGroup;
     resolveRangeVariables(paramSession, paramArrayOfRangeGroup);
     resolveColumnReferencesForAsterisk();
@@ -205,87 +214,101 @@ public class QuerySpecification extends QueryExpression
     this.unionColumnTypes = new Type[this.indexLimitVisible];
     this.isReferencesResolved = true;
   }
-
+  
   public boolean hasReference(RangeVariable paramRangeVariable)
   {
-    if (this.unresolvedExpressions == null)
+    if (this.unresolvedExpressions == null) {
       return false;
-    for (int i = 0; i < this.unresolvedExpressions.size(); i++)
-      if (((Expression)this.unresolvedExpressions.get(i)).hasReference(paramRangeVariable))
+    }
+    for (int i = 0; i < this.unresolvedExpressions.size(); i++) {
+      if (((Expression)this.unresolvedExpressions.get(i)).hasReference(paramRangeVariable)) {
         return true;
+      }
+    }
     return false;
   }
-
+  
   public boolean areColumnsResolved()
   {
     return super.areColumnsResolved();
   }
-
+  
   public void resolveTypes(Session paramSession)
   {
-    if (this.isResolved)
+    if (this.isResolved) {
       return;
+    }
     resolveTypesPartOne(paramSession);
     resolveTypesPartTwo(paramSession);
     resolveTypesPartThree(paramSession);
     ArrayUtil.copyArray(this.resultTable.colTypes, this.unionColumnTypes, this.unionColumnTypes.length);
   }
-
+  
   void resolveTypesPartOne(Session paramSession)
   {
-    if (this.isPartOneResolved)
+    if (this.isPartOneResolved) {
       return;
+    }
     resolveExpressionTypes(paramSession);
     resolveAggregates();
-    for (int i = 0; i < this.unionColumnTypes.length; i++)
+    for (int i = 0; i < this.unionColumnTypes.length; i++) {
       this.unionColumnTypes[i] = Type.getAggregateType(this.unionColumnTypes[i], this.exprColumns[i].getDataType());
+    }
     this.isPartOneResolved = true;
   }
-
+  
   void resolveTypesPartTwo(Session paramSession)
   {
-    if (this.isPartTwoResolved)
+    if (this.isPartTwoResolved) {
       return;
+    }
     resolveGroups();
     for (int i = 0; i < this.unionColumnTypes.length; i++)
     {
       Object localObject = this.unionColumnTypes[i];
       if (localObject == null)
       {
-        if (paramSession.database.sqlEnforceTypes)
+        if (paramSession.database.sqlEnforceTypes) {
           throw Error.error(5567);
+        }
         localObject = Type.SQL_VARCHAR_DEFAULT;
         this.unionColumnTypes[i] = localObject;
       }
       this.exprColumns[i].setDataType(paramSession, (Type)localObject);
-      if ((this.exprColumns[i].dataType.isArrayType()) && (this.exprColumns[i].dataType.collectionBaseType() == null))
+      if ((this.exprColumns[i].dataType.isArrayType()) && (this.exprColumns[i].dataType.collectionBaseType() == null)) {
         throw Error.error(5567);
+      }
     }
-    for (i = this.indexLimitVisible; i < this.indexStartHaving; i++)
-      if (this.exprColumns[i].dataType == null)
+    for (i = this.indexLimitVisible; i < this.indexStartHaving; i++) {
+      if (this.exprColumns[i].dataType == null) {
         throw Error.error(5567);
+      }
+    }
     checkLobUsage();
     setMergeability();
     setUpdatability();
     setResultColumnTypes();
     createResultMetaData(paramSession);
     createTable(paramSession);
-    if (this.isBaseMergeable)
+    if (this.isBaseMergeable) {
       mergeQuery();
+    }
     this.isPartTwoResolved = true;
   }
-
+  
   void resolveTypesPartThree(Session paramSession)
   {
-    if (this.isResolved)
+    if (this.isResolved) {
       return;
+    }
     this.sortAndSlice.setSortIndex(this);
     setRangeVariableConditions(paramSession);
     setDistinctConditions(paramSession);
     setAggregateConditions(paramSession);
     this.sortAndSlice.setSortRange(this);
-    for (int i = 0; i < this.rangeVariables.length; i++)
+    for (int i = 0; i < this.rangeVariables.length; i++) {
       this.rangeVariables[i].resolveRangeTableTypes(paramSession, this.rangeVariables);
+    }
     setResultNullability();
     this.rangeVariableList = null;
     this.tempSet = null;
@@ -293,36 +316,43 @@ public class QuerySpecification extends QueryExpression
     this.outerRanges = null;
     this.isResolved = true;
   }
-
+  
   public void addExtraConditions(Expression paramExpression)
   {
-    if ((this.isAggregated) || (this.isGrouped))
+    if ((this.isAggregated) || (this.isGrouped)) {
       return;
+    }
     this.queryCondition = ExpressionLogical.andExpressions(this.queryCondition, paramExpression);
   }
-
+  
   private void resolveColumnReferences(Session paramSession, RangeGroup[] paramArrayOfRangeGroup)
   {
-    if ((this.isDistinctSelect) || (this.isGrouped))
+    if ((this.isDistinctSelect) || (this.isGrouped)) {
       this.acceptsSequences = false;
+    }
     for (int i = 0; i < this.rangeVariables.length; i++)
     {
       Expression localExpression = this.rangeVariables[i].getJoinCondition();
-      if (localExpression != null)
+      if (localExpression != null) {
         resolveColumnReferencesAndAllocate(paramSession, localExpression, i + 1, paramArrayOfRangeGroup, false);
+      }
     }
     resolveColumnReferencesAndAllocate(paramSession, this.queryCondition, this.rangeVariables.length, paramArrayOfRangeGroup, false);
-    if (this.resolvedSubqueryExpressions != null)
+    if (this.resolvedSubqueryExpressions != null) {
       this.resolvedSubqueryExpressions.setSize(0);
-    for (i = 0; i < this.indexLimitVisible; i++)
+    }
+    for (i = 0; i < this.indexLimitVisible; i++) {
       resolveColumnReferencesAndAllocate(paramSession, this.exprColumns[i], this.rangeVariables.length, paramArrayOfRangeGroup, this.acceptsSequences);
-    for (i = this.indexLimitVisible; i < this.indexStartHaving; i++)
+    }
+    for (i = this.indexLimitVisible; i < this.indexStartHaving; i++) {
       this.exprColumns[i] = resolveColumnReferencesInGroupBy(paramSession, this.exprColumns[i]);
-    for (i = this.indexStartHaving; i < this.indexStartOrderBy; i++)
+    }
+    for (i = this.indexStartHaving; i < this.indexStartOrderBy; i++) {
       resolveColumnReferencesAndAllocate(paramSession, this.exprColumns[i], this.rangeVariables.length, paramArrayOfRangeGroup, false);
+    }
     resolveColumnRefernecesInOrderBy(paramSession, paramArrayOfRangeGroup, this.sortAndSlice);
   }
-
+  
   void resolveColumnRefernecesInOrderBy(Session paramSession, RangeGroup[] paramArrayOfRangeGroup, SortAndSlice paramSortAndSlice)
   {
     int i = paramSortAndSlice.getOrderLength();
@@ -332,33 +362,37 @@ public class QuerySpecification extends QueryExpression
       replaceColumnIndexInOrderBy(localExpressionOrderBy);
       if (localExpressionOrderBy.getLeftNode().queryTableColumnIndex == -1)
       {
-        if ((paramSortAndSlice.sortUnion) && (localExpressionOrderBy.getLeftNode().getType() != 2))
+        if ((paramSortAndSlice.sortUnion) && (localExpressionOrderBy.getLeftNode().getType() != 2)) {
           throw Error.error(5576);
+        }
         localExpressionOrderBy.replaceAliasInOrderBy(this.exprColumns, this.indexLimitVisible);
         resolveColumnReferencesAndAllocate(paramSession, localExpressionOrderBy, this.rangeVariables.length, RangeGroup.emptyArray, false);
         if ((this.isAggregated) || (this.isGrouped))
         {
           boolean bool = localExpressionOrderBy.getLeftNode().isComposedOf(this.exprColumns, 0, this.indexLimitVisible + this.groupByColumnCount, Expression.aggregateFunctionSet);
-          if (!bool)
+          if (!bool) {
             throw Error.error(5576);
+          }
         }
       }
     }
-    if (paramSortAndSlice.limitCondition != null)
+    if (paramSortAndSlice.limitCondition != null) {
       this.unresolvedExpressions = paramSortAndSlice.limitCondition.resolveColumnReferences(paramSession, this, paramArrayOfRangeGroup, this.unresolvedExpressions);
+    }
     paramSortAndSlice.prepare(this);
   }
-
+  
   private boolean resolveColumnReferences(Session paramSession, Expression paramExpression, int paramInt, boolean paramBoolean)
   {
-    if (paramExpression == null)
+    if (paramExpression == null) {
       return true;
+    }
     int i = this.unresolvedExpressions == null ? 0 : this.unresolvedExpressions.size();
     this.unresolvedExpressions = paramExpression.resolveColumnReferences(paramSession, this, paramInt, RangeGroup.emptyArray, this.unresolvedExpressions, paramBoolean);
     int j = this.unresolvedExpressions == null ? 0 : this.unresolvedExpressions.size();
     return i == j;
   }
-
+  
   private void resolveColumnReferencesForAsterisk()
   {
     int i = 0;
@@ -387,8 +421,9 @@ public class QuerySpecification extends QueryExpression
               break;
             }
           }
-          if (j == 0)
+          if (j == 0) {
             throw Error.error(5501, str);
+          }
         }
         for (int j = 0; j < localExpression.nodes.length; j++)
         {
@@ -403,72 +438,81 @@ public class QuerySpecification extends QueryExpression
       }
     }
   }
-
+  
   private void resolveColumnReferencesAndAllocate(Session paramSession, Expression paramExpression, int paramInt, RangeGroup[] paramArrayOfRangeGroup, boolean paramBoolean)
   {
-    if (paramExpression == null)
+    if (paramExpression == null) {
       return;
+    }
     Object localObject = paramExpression.resolveColumnReferences(paramSession, this, paramInt, paramArrayOfRangeGroup, null, paramBoolean);
-    if (localObject != null)
+    if (localObject != null) {
       for (int i = 0; i < ((HsqlList)localObject).size(); i++)
       {
         Expression localExpression = (Expression)((HsqlList)localObject).get(i);
         boolean bool = true;
-        if (localExpression.isSelfAggregate())
+        if (localExpression.isSelfAggregate()) {
           for (int j = 0; j < localExpression.nodes.length; j++)
           {
             HsqlList localHsqlList = localExpression.nodes[j].resolveColumnReferences(paramSession, this, paramInt, RangeGroup.emptyArray, null, false);
             bool &= localHsqlList == null;
           }
-        else
+        } else {
           bool = resolveColumnReferences(paramSession, localExpression, paramInt, paramBoolean);
+        }
         if (bool)
         {
           if (localExpression.isSelfAggregate())
           {
-            if (this.aggregateSet == null)
+            if (this.aggregateSet == null) {
               this.aggregateSet = new ArrayListIdentity();
+            }
             this.aggregateSet.add(localExpression);
             this.isAggregated = true;
             paramExpression.setAggregate();
           }
-          if (this.resolvedSubqueryExpressions == null)
+          if (this.resolvedSubqueryExpressions == null) {
             this.resolvedSubqueryExpressions = new ArrayListIdentity();
+          }
           this.resolvedSubqueryExpressions.add(localExpression);
         }
         else
         {
-          if (this.unresolvedExpressions == null)
+          if (this.unresolvedExpressions == null) {
             this.unresolvedExpressions = new ArrayListIdentity();
+          }
           this.unresolvedExpressions.add(localExpression);
         }
       }
+    }
     if ((this.isMergeable) && (!this.isAggregated) && (!this.isGrouped))
     {
       localObject = paramExpression.collectAllSubqueries(null);
-      if (localObject != null)
+      if (localObject != null) {
         this.isMergeable = false;
+      }
     }
   }
-
+  
   private Expression resolveColumnReferencesInGroupBy(Session paramSession, Expression paramExpression)
   {
-    if (paramExpression == null)
+    if (paramExpression == null) {
       return null;
+    }
     HsqlList localHsqlList = paramExpression.resolveColumnReferences(paramSession, this, this.rangeVariables.length, RangeGroup.emptyArray, null, false);
     if (localHsqlList != null)
     {
       if (paramExpression.getType() == 2)
       {
         Expression localExpression = paramExpression.replaceAliasInOrderBy(this.exprColumns, this.indexLimitVisible);
-        if (localExpression != paramExpression)
+        if (localExpression != paramExpression) {
           return localExpression;
+        }
       }
       resolveColumnReferencesAndAllocate(paramSession, paramExpression, this.rangeVariables.length, RangeGroup.emptyArray, false);
     }
     return paramExpression;
   }
-
+  
   private HashSet getAllNamedJoinColumns()
   {
     HashSet localHashSet = null;
@@ -477,14 +521,15 @@ public class QuerySpecification extends QueryExpression
       RangeVariable localRangeVariable = (RangeVariable)this.rangeVariableList.get(i);
       if (localRangeVariable.namedJoinColumns != null)
       {
-        if (localHashSet == null)
+        if (localHashSet == null) {
           localHashSet = new HashSet();
+        }
         localHashSet.addAll(localRangeVariable.namedJoinColumns);
       }
     }
     return localHashSet;
   }
-
+  
   public Expression getEquiJoinExpressions(OrderedHashSet paramOrderedHashSet, RangeVariable paramRangeVariable, boolean paramBoolean)
   {
     HashSet localHashSet = new HashSet();
@@ -501,8 +546,9 @@ public class QuerySpecification extends QueryExpression
         boolean bool = paramOrderedHashSet.contains(str);
         int k = (localRangeVariable.namedJoinColumns != null) && (localRangeVariable.namedJoinColumns.contains(str)) ? 1 : 0;
         int m = (k == 0) && (!localHashSet.add(str)) ? 1 : 0;
-        if ((m != 0) && ((!paramBoolean) || (bool)))
+        if ((m != 0) && ((!paramBoolean) || (bool))) {
           throw Error.error(5578, str);
+        }
         if (bool)
         {
           localOrderedHashSet.add(str);
@@ -525,22 +571,24 @@ public class QuerySpecification extends QueryExpression
         }
       }
     }
-    if ((paramBoolean) && (!localOrderedHashSet.containsAll(paramOrderedHashSet)))
+    if ((paramBoolean) && (!localOrderedHashSet.containsAll(paramOrderedHashSet))) {
       throw Error.error(5501);
+    }
     paramRangeVariable.addNamedJoinColumns(localOrderedHashSet);
     return localExpression;
   }
-
+  
   private void addAllJoinedColumns(Expression paramExpression)
   {
     HsqlArrayList localHsqlArrayList = new HsqlArrayList();
-    for (int i = 0; i < this.rangeVariables.length; i++)
+    for (int i = 0; i < this.rangeVariables.length; i++) {
       this.rangeVariables[i].addTableColumns(localHsqlArrayList);
+    }
     Expression[] arrayOfExpression = new Expression[localHsqlArrayList.size()];
     localHsqlArrayList.toArray(arrayOfExpression);
     paramExpression.nodes = arrayOfExpression;
   }
-
+  
   private void finaliseColumns()
   {
     this.indexLimitRowId = this.indexLimitVisible;
@@ -551,19 +599,23 @@ public class QuerySpecification extends QueryExpression
     this.exprColumns = new Expression[this.indexLimitExpressions];
     this.exprColumnList.toArray(this.exprColumns);
     this.exprColumnList = null;
-    for (int i = 0; i < this.indexLimitVisible; i++)
+    for (int i = 0; i < this.indexLimitVisible; i++) {
       this.exprColumns[i].queryTableColumnIndex = i;
-    if (this.sortAndSlice.hasOrder())
-      for (i = 0; i < this.sortAndSlice.getOrderLength(); i++)
+    }
+    if (this.sortAndSlice.hasOrder()) {
+      for (i = 0; i < this.sortAndSlice.getOrderLength(); i++) {
         this.exprColumns[(this.indexStartOrderBy + i)] = ((Expression)this.sortAndSlice.exprList.get(i));
+      }
+    }
     this.rowExpression = new Expression(25, this.exprColumns);
   }
-
+  
   private void replaceColumnIndexInOrderBy(Expression paramExpression)
   {
     Expression localExpression = paramExpression.getLeftNode();
-    if (localExpression.getType() != 1)
+    if (localExpression.getType() != 1) {
       return;
+    }
     Type localType = localExpression.getDataType();
     if ((localType != null) && (localType.typeCode == 4))
     {
@@ -576,18 +628,21 @@ public class QuerySpecification extends QueryExpression
     }
     throw Error.error(5576);
   }
-
+  
   OrderedHashSet collectRangeVariables(RangeVariable[] paramArrayOfRangeVariable, OrderedHashSet paramOrderedHashSet)
   {
-    for (int i = 0; i < this.indexStartAggregates; i++)
+    for (int i = 0; i < this.indexStartAggregates; i++) {
       paramOrderedHashSet = this.exprColumns[i].collectRangeVariables(paramArrayOfRangeVariable, paramOrderedHashSet);
-    if (this.queryCondition != null)
+    }
+    if (this.queryCondition != null) {
       paramOrderedHashSet = this.queryCondition.collectRangeVariables(paramArrayOfRangeVariable, paramOrderedHashSet);
-    if (this.havingCondition != null)
+    }
+    if (this.havingCondition != null) {
       paramOrderedHashSet = this.havingCondition.collectRangeVariables(paramArrayOfRangeVariable, paramOrderedHashSet);
+    }
     return paramOrderedHashSet;
   }
-
+  
   public void resolveExpressionTypes(Session paramSession)
   {
     Expression localExpression;
@@ -595,10 +650,12 @@ public class QuerySpecification extends QueryExpression
     {
       localExpression = this.exprColumns[i];
       localExpression.resolveTypes(paramSession, this.rowExpression);
-      if (localExpression.getType() == 25)
+      if (localExpression.getType() == 25) {
         throw Error.error(5565);
-      if ((localExpression.getDataType() != null) && (localExpression.getDataType().typeCode == 19))
+      }
+      if ((localExpression.getDataType() != null) && (localExpression.getDataType().typeCode == 19)) {
         throw Error.error(5565);
+      }
     }
     for (i = 0; i < this.rangeVariables.length; i++)
     {
@@ -606,26 +663,30 @@ public class QuerySpecification extends QueryExpression
       if (localExpression != null)
       {
         localExpression.resolveTypes(paramSession, null);
-        if (localExpression.getDataType() != Type.SQL_BOOLEAN)
+        if (localExpression.getDataType() != Type.SQL_BOOLEAN) {
           throw Error.error(5568);
+        }
       }
     }
     if (this.queryCondition != null)
     {
       this.queryCondition.resolveTypes(paramSession, null);
-      if (this.queryCondition.getDataType() != Type.SQL_BOOLEAN)
+      if (this.queryCondition.getDataType() != Type.SQL_BOOLEAN) {
         throw Error.error(5568);
+      }
     }
     if (this.havingCondition != null)
     {
       this.havingCondition.resolveTypes(paramSession, null);
-      if (this.havingCondition.getDataType() != Type.SQL_BOOLEAN)
+      if (this.havingCondition.getDataType() != Type.SQL_BOOLEAN) {
         throw Error.error(5568);
+      }
     }
-    if (this.sortAndSlice.limitCondition != null)
+    if (this.sortAndSlice.limitCondition != null) {
       this.sortAndSlice.limitCondition.resolveTypes(paramSession, null);
+    }
   }
-
+  
   private void resolveAggregates()
   {
     this.tempSet.clear();
@@ -647,48 +708,54 @@ public class QuerySpecification extends QueryExpression
       this.tempSet.clear();
     }
   }
-
+  
   private void setRangeVariableConditions(Session paramSession)
   {
     RangeVariableResolver localRangeVariableResolver = new RangeVariableResolver(this);
     localRangeVariableResolver.processConditions(paramSession);
     this.rangeVariables = localRangeVariableResolver.rangeVariables;
   }
-
+  
   private void setDistinctConditions(Session paramSession)
   {
-    if ((!this.isDistinctSelect) && (!this.isGrouped))
+    if ((!this.isDistinctSelect) && (!this.isGrouped)) {
       return;
-    if (this.isAggregated)
+    }
+    if (this.isAggregated) {
       return;
+    }
     RangeVariable localRangeVariable = null;
     this.tempSet.clear();
     int[] arrayOfInt = new int[this.indexLimitVisible];
     for (int i = 0; i < this.indexLimitVisible; i++)
     {
-      if (this.exprColumns[i].getType() != 2)
+      if (this.exprColumns[i].getType() != 2) {
         return;
-      if (i == 0)
+      }
+      if (i == 0) {
         localRangeVariable = this.exprColumns[i].getRangeVariable();
-      else if (localRangeVariable != this.exprColumns[i].getRangeVariable())
+      } else if (localRangeVariable != this.exprColumns[i].getRangeVariable()) {
         return;
+      }
       arrayOfInt[i] = this.exprColumns[i].columnIndex;
     }
     if (!localRangeVariable.hasAnyIndexCondition())
     {
       Index localIndex = localRangeVariable.rangeTable.getFullIndexForColumns(arrayOfInt);
-      if (localIndex != null)
+      if (localIndex != null) {
         localRangeVariable.setSortIndex(localIndex, false);
+      }
       return;
     }
     arrayOfInt = localRangeVariable.rangeTable.getColumnIndexes(this.tempSet);
     localRangeVariable.setDistinctColumnsOnIndex(arrayOfInt);
   }
-
+  
   private void setAggregateConditions(Session paramSession)
   {
-    if (!this.isAggregated)
+    if (!this.isAggregated) {
       return;
+    }
     if (this.isGrouped)
     {
       setGroupedAggregateConditions(paramSession);
@@ -700,55 +767,59 @@ public class QuerySpecification extends QueryExpression
       Object localObject;
       switch (i)
       {
-      case 73:
-      case 74:
+      case 73: 
+      case 74: 
         if (!localExpression.hasCondition())
         {
           localObject = new SortAndSlice();
           ((SortAndSlice)localObject).isGenerated = true;
           ((SortAndSlice)localObject).addLimitCondition(ExpressionOp.limitOneExpression);
-          if (((SortAndSlice)localObject).prepareSpecial(paramSession, this))
+          if (((SortAndSlice)localObject).prepareSpecial(paramSession, this)) {
             this.sortAndSlice = ((SortAndSlice)localObject);
+          }
         }
         break;
-      case 71:
+      case 71: 
         if ((!localExpression.hasCondition()) && (this.rangeVariables.length == 1) && (this.queryCondition == null))
         {
           localObject = localExpression.getLeftNode();
-          if (((Expression)localObject).getType() == 11)
+          if (((Expression)localObject).getType() == 11) {
             this.isSimpleCount = true;
-          else if (((Expression)localObject).getNullability() == 0)
+          } else if (((Expression)localObject).getNullability() == 0) {
             if (((ExpressionAggregate)localExpression).isDistinctAggregate)
             {
               if (((Expression)localObject).opType == 2)
               {
                 Table localTable = ((Expression)localObject).getRangeVariable().getTable();
-                if ((localTable.getPrimaryKey().length == 1) && (localTable.getColumn(localTable.getPrimaryKey()[0]) == ((Expression)localObject).getColumn()))
+                if ((localTable.getPrimaryKey().length == 1) && (localTable.getColumn(localTable.getPrimaryKey()[0]) == ((Expression)localObject).getColumn())) {
                   this.isSimpleCount = true;
+                }
               }
             }
-            else
+            else {
               this.isSimpleCount = true;
+            }
+          }
         }
         break;
-      case 72:
       }
     }
   }
-
-  private void setGroupedAggregateConditions(Session paramSession)
-  {
-  }
-
+  
+  private void setGroupedAggregateConditions(Session paramSession) {}
+  
   void checkLobUsage()
   {
-    if ((!this.isDistinctSelect) && (!this.isGrouped))
+    if ((!this.isDistinctSelect) && (!this.isGrouped)) {
       return;
-    for (int i = 0; i < this.indexStartHaving; i++)
-      if (this.exprColumns[i].dataType.isLobType())
+    }
+    for (int i = 0; i < this.indexStartHaving; i++) {
+      if (this.exprColumns[i].dataType.isLobType()) {
         throw Error.error(5534);
+      }
+    }
   }
-
+  
   private void resolveGroups()
   {
     this.tempSet.clear();
@@ -758,33 +829,41 @@ public class QuerySpecification extends QueryExpression
       for (i = this.indexLimitVisible; i < this.indexLimitVisible + this.groupByColumnCount; i++)
       {
         this.exprColumns[i].collectAllExpressions(this.tempSet, Expression.aggregateFunctionSet, Expression.subqueryExpressionSet);
-        if (!this.tempSet.isEmpty())
+        if (!this.tempSet.isEmpty()) {
           throw Error.error(5572, ((Expression)this.tempSet.get(0)).getSQL());
+        }
       }
-      for (i = 0; i < this.indexLimitVisible; i++)
-        if (!this.exprColumns[i].isComposedOf(this.exprColumns, this.indexLimitVisible, this.indexLimitVisible + this.groupByColumnCount, Expression.aggregateFunctionSet))
+      for (i = 0; i < this.indexLimitVisible; i++) {
+        if (!this.exprColumns[i].isComposedOf(this.exprColumns, this.indexLimitVisible, this.indexLimitVisible + this.groupByColumnCount, Expression.aggregateFunctionSet)) {
           this.tempSet.add(this.exprColumns[i]);
-      if ((!this.tempSet.isEmpty()) && (!resolveForGroupBy(this.tempSet)))
+        }
+      }
+      if ((!this.tempSet.isEmpty()) && (!resolveForGroupBy(this.tempSet))) {
         throw Error.error(5574, ((Expression)this.tempSet.get(0)).getSQL());
+      }
     }
     else if (this.isAggregated)
     {
       for (i = 0; i < this.indexLimitVisible; i++)
       {
         this.exprColumns[i].collectAllExpressions(this.tempSet, Expression.columnExpressionSet, Expression.aggregateFunctionSet);
-        if (!this.tempSet.isEmpty())
+        if (!this.tempSet.isEmpty()) {
           throw Error.error(5574, ((Expression)this.tempSet.get(0)).getSQL());
+        }
       }
     }
     this.tempSet.clear();
     if (this.havingCondition != null)
     {
-      if (this.unresolvedExpressions != null)
+      if (this.unresolvedExpressions != null) {
         this.tempSet.addAll(this.unresolvedExpressions);
-      for (i = this.indexLimitVisible; i < this.indexLimitVisible + this.groupByColumnCount; i++)
+      }
+      for (i = this.indexLimitVisible; i < this.indexLimitVisible + this.groupByColumnCount; i++) {
         this.tempSet.add(this.exprColumns[i]);
-      if (!this.havingCondition.isComposedOf(this.tempSet, this.outerRanges, Expression.subqueryAggregateExpressionSet))
+      }
+      if (!this.havingCondition.isComposedOf(this.tempSet, this.outerRanges, Expression.subqueryAggregateExpressionSet)) {
         throw Error.error(5573);
+      }
       this.tempSet.clear();
     }
     int j;
@@ -795,8 +874,9 @@ public class QuerySpecification extends QueryExpression
       for (j = 0; j < i; j++)
       {
         localExpression1 = (Expression)this.sortAndSlice.exprList.get(j);
-        if ((localExpression1.queryTableColumnIndex == -1) && (!localExpression1.isComposedOf(this.exprColumns, 0, this.indexLimitVisible, Expression.emptyExpressionSet)))
+        if ((localExpression1.queryTableColumnIndex == -1) && (!localExpression1.isComposedOf(this.exprColumns, 0, this.indexLimitVisible, Expression.emptyExpressionSet))) {
           throw Error.error(5576);
+        }
       }
     }
     if (this.isGrouped)
@@ -805,12 +885,14 @@ public class QuerySpecification extends QueryExpression
       for (j = 0; j < i; j++)
       {
         localExpression1 = (Expression)this.sortAndSlice.exprList.get(j);
-        if ((localExpression1.queryTableColumnIndex == -1) && (!localExpression1.isAggregate()) && (!localExpression1.isComposedOf(this.exprColumns, 0, this.indexLimitVisible + this.groupByColumnCount, Expression.emptyExpressionSet)))
+        if ((localExpression1.queryTableColumnIndex == -1) && (!localExpression1.isAggregate()) && (!localExpression1.isComposedOf(this.exprColumns, 0, this.indexLimitVisible + this.groupByColumnCount, Expression.emptyExpressionSet))) {
           throw Error.error(5576);
+        }
       }
     }
-    if (!this.isAggregated)
+    if (!this.isAggregated) {
       return;
+    }
     OrderedHashSet localOrderedHashSet1 = new OrderedHashSet();
     OrderedHashSet localOrderedHashSet2 = new OrderedHashSet();
     Expression localExpression2;
@@ -822,7 +904,7 @@ public class QuerySpecification extends QueryExpression
       localOrderedHashSet1.add(localExpression2);
       localOrderedHashSet2.add(localObject);
     }
-    for (k = 0; k < this.indexStartHaving; k++)
+    for (k = 0; k < this.indexStartHaving; k++) {
       if (!this.exprColumns[k].isAggregate())
       {
         localExpression2 = this.exprColumns[k];
@@ -832,24 +914,29 @@ public class QuerySpecification extends QueryExpression
           localOrderedHashSet2.add(localObject);
         }
       }
+    }
     k = this.sortAndSlice.getOrderLength();
     for (int m = 0; m < k; m++)
     {
       localObject = (Expression)this.sortAndSlice.exprList.get(m);
-      if (((Expression)localObject).getLeftNode().isAggregate())
+      if (((Expression)localObject).getLeftNode().isAggregate()) {
         ((Expression)localObject).setAggregate();
+      }
     }
-    for (m = this.indexStartOrderBy; m < this.indexStartAggregates; m++)
-      if (this.exprColumns[m].getLeftNode().isAggregate())
+    for (m = this.indexStartOrderBy; m < this.indexStartAggregates; m++) {
+      if (this.exprColumns[m].getLeftNode().isAggregate()) {
         this.exprColumns[m].setAggregate();
+      }
+    }
     for (m = 0; m < this.indexStartAggregates; m++)
     {
       localObject = this.exprColumns[m];
       if ((((Expression)localObject).isAggregate()) || (((Expression)localObject).isCorrelated()))
       {
         this.aggregateCheck[m] = true;
-        if (((Expression)localObject).isAggregate())
+        if (((Expression)localObject).isAggregate()) {
           ((Expression)localObject).convertToSimpleColumn(localOrderedHashSet1, localOrderedHashSet2);
+        }
       }
     }
     for (m = 0; m < this.aggregateSet.size(); m++)
@@ -857,14 +944,15 @@ public class QuerySpecification extends QueryExpression
       localObject = (Expression)this.aggregateSet.get(m);
       ((Expression)localObject).convertToSimpleColumn(localOrderedHashSet1, localOrderedHashSet2);
     }
-    if (this.resolvedSubqueryExpressions != null)
+    if (this.resolvedSubqueryExpressions != null) {
       for (m = 0; m < this.resolvedSubqueryExpressions.size(); m++)
       {
         localObject = (Expression)this.resolvedSubqueryExpressions.get(m);
         ((Expression)localObject).convertToSimpleColumn(localOrderedHashSet1, localOrderedHashSet2);
       }
+    }
   }
-
+  
   boolean resolveForGroupBy(HsqlList paramHsqlList)
   {
     Object localObject1;
@@ -892,35 +980,39 @@ public class QuerySpecification extends QueryExpression
     }
     return localOrderedHashSet == null;
   }
-
+  
   Result getResult(Session paramSession, int paramInt)
   {
     Result localResult = getSingleResult(paramSession, paramInt);
     localResult.getNavigator().reset();
     return localResult;
   }
-
+  
   private Result getSingleResult(Session paramSession, int paramInt)
   {
     int[] arrayOfInt = this.sortAndSlice.getLimits(paramSession, this, paramInt);
     Result localResult = buildResult(paramSession, arrayOfInt);
     RowSetNavigatorData localRowSetNavigatorData = (RowSetNavigatorData)localResult.getNavigator();
-    if (this.isDistinctSelect)
+    if (this.isDistinctSelect) {
       localRowSetNavigatorData.removeDuplicates(paramSession);
-    if (this.sortAndSlice.hasOrder())
+    }
+    if (this.sortAndSlice.hasOrder()) {
       localRowSetNavigatorData.sortOrder(paramSession);
-    if ((arrayOfInt != SortAndSlice.defaultLimits) && (!this.sortAndSlice.skipFullResult))
+    }
+    if ((arrayOfInt != SortAndSlice.defaultLimits) && (!this.sortAndSlice.skipFullResult)) {
       localRowSetNavigatorData.trim(arrayOfInt[0], arrayOfInt[1]);
+    }
     return localResult;
   }
-
+  
   private Result buildResult(Session paramSession, int[] paramArrayOfInt)
   {
     Object localObject1 = new RowSetNavigatorData(paramSession, this);
     Result localResult = Result.newResult((RowSetNavigator)localObject1);
     localResult.metaData = this.resultMetaData;
-    if (this.isUpdatable)
+    if (this.isUpdatable) {
       localResult.rsProperties = 8;
+    }
     int i = 0;
     int j = paramArrayOfInt[2];
     if (this.sortAndSlice.skipFullResult)
@@ -943,15 +1035,17 @@ public class QuerySpecification extends QueryExpression
     }
     int k = 0;
     Object localObject2 = new RangeIterator[this.rangeVariables.length];
-    for (int m = 0; m < this.rangeVariables.length; m++)
+    for (int m = 0; m < this.rangeVariables.length; m++) {
       localObject2[m] = this.rangeVariables[m].getIterator(paramSession);
+    }
     paramSession.sessionContext.rownum = 1;
     m = 0;
-    while (true)
+    for (;;)
+    {
       if (m < k)
       {
         int n = 1;
-        for (int i2 = k + 1; i2 < this.rangeVariables.length; i2++)
+        for (int i2 = k + 1; i2 < this.rangeVariables.length; i2++) {
           if (this.rangeVariables[i2].isRightJoin)
           {
             k = i2;
@@ -960,34 +1054,42 @@ public class QuerySpecification extends QueryExpression
             ((RangeVariable.RangeIteratorRight)localObject2[i2]).setOnOuterRows();
             break;
           }
-        if (n != 0)
+        }
+        if (n != 0) {
           break;
+        }
       }
       else
       {
         Object localObject3 = localObject2[m];
         if (localObject3.next())
         {
-          if (m >= this.rangeVariables.length - 1)
+          if (m >= this.rangeVariables.length - 1) {
             break label329;
+          }
           m++;
           continue;
         }
         localObject3.reset();
         m--;
         continue;
-        label329: if (j != 0)
+        label329:
+        if (j != 0)
         {
           paramSession.sessionData.startRowProcessing();
           Object localObject4 = new Object[this.indexLimitData];
-          for (int i3 = 0; i3 < this.indexStartAggregates; i3++)
-            if ((!this.isAggregated) || (this.aggregateCheck[i3] == 0))
+          for (int i3 = 0; i3 < this.indexStartAggregates; i3++) {
+            if ((!this.isAggregated) || (this.aggregateCheck[i3] == 0)) {
               localObject4[i3] = this.exprColumns[i3].getValue(paramSession);
-          for (i3 = this.indexLimitVisible; i3 < this.indexLimitRowId; i3++)
-            if (i3 == this.indexLimitVisible)
+            }
+          }
+          for (i3 = this.indexLimitVisible; i3 < this.indexLimitRowId; i3++) {
+            if (i3 == this.indexLimitVisible) {
               localObject4[i3] = localObject3.getRowidObject();
-            else
+            } else {
               localObject4[i3] = localObject3.getCurrentRow();
+            }
+          }
           paramSession.sessionContext.rownum += 1;
           if (i > 0)
           {
@@ -998,32 +1100,40 @@ public class QuerySpecification extends QueryExpression
           if ((this.isAggregated) || (this.isGrouped))
           {
             arrayOfObject3 = ((RowSetNavigatorData)localObject1).getGroupData((Object[])localObject4);
-            if (arrayOfObject3 != null)
+            if (arrayOfObject3 != null) {
               localObject4 = arrayOfObject3;
+            }
           }
-          for (int i4 = this.indexStartAggregates; i4 < this.indexLimitExpressions; i4++)
+          for (int i4 = this.indexStartAggregates; i4 < this.indexLimitExpressions; i4++) {
             localObject4[i4] = this.exprColumns[i4].updateAggregatingValue(paramSession, localObject4[i4]);
-          if (arrayOfObject3 == null)
+          }
+          if (arrayOfObject3 == null) {
             ((RowSetNavigatorData)localObject1).add((Object[])localObject4);
-          else if (this.isAggregated)
+          } else if (this.isAggregated) {
             ((RowSetNavigatorData)localObject1).update(arrayOfObject3, (Object[])localObject4);
+          }
           i4 = ((RowSetNavigatorData)localObject1).getSize();
           if ((i4 == paramSession.resultMaxMemoryRows) && (!this.isAggregated) && (!this.isSingleMemoryTable))
           {
             localObject1 = new RowSetNavigatorDataTable(paramSession, this, (RowSetNavigatorData)localObject1);
             localResult.setNavigator((RowSetNavigator)localObject1);
           }
-          if (((this.isAggregated) || (this.isGrouped)) && (!this.sortAndSlice.isGenerated))
+          if (((this.isAggregated) || (this.isGrouped)) && (!this.sortAndSlice.isGenerated)) {
             continue;
-          if (i4 >= j)
+          }
+          if (i4 >= j) {
             break;
+          }
         }
       }
+    }
     ((RowSetNavigatorData)localObject1).reset();
-    for (m = 0; m < this.rangeVariables.length; m++)
+    for (m = 0; m < this.rangeVariables.length; m++) {
       localObject2[m].reset();
-    if ((!this.isGrouped) && (!this.isAggregated))
+    }
+    if ((!this.isGrouped) && (!this.isAggregated)) {
       return localResult;
+    }
     Object[] arrayOfObject2;
     if (this.isAggregated)
     {
@@ -1031,9 +1141,11 @@ public class QuerySpecification extends QueryExpression
       if ((!this.isGrouped) && (((RowSetNavigatorData)localObject1).getSize() == 0))
       {
         arrayOfObject2 = new Object[this.exprColumns.length];
-        for (i1 = 0; i1 < this.indexStartAggregates; i1++)
-          if (this.aggregateCheck[i1] == 0)
+        for (i1 = 0; i1 < this.indexStartAggregates; i1++) {
+          if (this.aggregateCheck[i1] == 0) {
             arrayOfObject2[i1] = this.exprColumns[i1].getValue(paramSession);
+          }
+        }
         ((RowSetNavigatorData)localObject1).add(arrayOfObject2);
       }
       ((RowSetNavigatorData)localObject1).reset();
@@ -1041,11 +1153,14 @@ public class QuerySpecification extends QueryExpression
       while (((RowSetNavigatorData)localObject1).next())
       {
         arrayOfObject2 = ((RowSetNavigatorData)localObject1).getCurrent();
-        for (i1 = this.indexStartAggregates; i1 < this.indexLimitExpressions; i1++)
+        for (i1 = this.indexStartAggregates; i1 < this.indexLimitExpressions; i1++) {
           arrayOfObject2[i1] = this.exprColumns[i1].getAggregatedValue(paramSession, arrayOfObject2[i1]);
-        for (i1 = 0; i1 < this.indexStartAggregates; i1++)
-          if (this.aggregateCheck[i1] != 0)
+        }
+        for (i1 = 0; i1 < this.indexStartAggregates; i1++) {
+          if (this.aggregateCheck[i1] != 0) {
             arrayOfObject2[i1] = this.exprColumns[i1].getValue(paramSession);
+          }
+        }
       }
       paramSession.sessionContext.unsetRangeIterator((RangeIterator)localObject1);
     }
@@ -1055,14 +1170,15 @@ public class QuerySpecification extends QueryExpression
       while (((RowSetNavigatorData)localObject1).hasNext())
       {
         arrayOfObject2 = (Object[])((RowSetNavigatorData)localObject1).getNext();
-        if (!Boolean.TRUE.equals(arrayOfObject2[(this.indexLimitVisible + this.groupByColumnCount)]))
+        if (!Boolean.TRUE.equals(arrayOfObject2[(this.indexLimitVisible + this.groupByColumnCount)])) {
           ((RowSetNavigatorData)localObject1).remove();
+        }
       }
       ((RowSetNavigatorData)localObject1).reset();
     }
     return localResult;
   }
-
+  
   void setReferenceableColumns()
   {
     this.accessibleColumns = new boolean[this.indexLimitVisible];
@@ -1091,15 +1207,17 @@ public class QuerySpecification extends QueryExpression
       }
     }
   }
-
+  
   void setColumnAliases(HsqlNameManager.SimpleName[] paramArrayOfSimpleName)
   {
-    if (paramArrayOfSimpleName.length != this.indexLimitVisible)
+    if (paramArrayOfSimpleName.length != this.indexLimitVisible) {
       throw Error.error(5593);
-    for (int i = 0; i < this.indexLimitVisible; i++)
+    }
+    for (int i = 0; i < this.indexLimitVisible; i++) {
       this.exprColumns[i].setAlias(paramArrayOfSimpleName[i]);
+    }
   }
-
+  
   private void createResultMetaData(Session paramSession)
   {
     this.resultMetaData = ResultMetaData.newResultMetaData(this.resultColumnTypes, this.columnMap, this.indexLimitVisible, this.indexLimitRowId);
@@ -1110,16 +1228,17 @@ public class QuerySpecification extends QueryExpression
       localColumnSchema = localExpression.getColumn();
       this.resultMetaData.columnTypes[i] = localExpression.getDataType();
       ColumnBase localColumnBase;
-      if (localColumnSchema == null)
+      if (localColumnSchema == null) {
         localColumnBase = new ColumnBase();
-      else
+      } else {
         localColumnBase = new ColumnBase(paramSession.database.getCatalogName().name, localColumnSchema);
+      }
       localColumnBase.setType(localExpression.getDataType());
       this.resultMetaData.columns[i] = localColumnBase;
       this.resultMetaData.columnLabels[i] = localExpression.getAlias();
     }
   }
-
+  
   private void setResultNullability()
   {
     for (int i = 0; i < this.indexLimitVisible; i++)
@@ -1129,27 +1248,31 @@ public class QuerySpecification extends QueryExpression
       if (localExpression.opType == 2)
       {
         RangeVariable localRangeVariable = localExpression.getRangeVariable();
-        if ((localRangeVariable != null) && ((localRangeVariable.rangePositionInJoin < this.startInnerRange) || (localRangeVariable.rangePositionInJoin >= this.endInnerRange)))
+        if ((localRangeVariable != null) && ((localRangeVariable.rangePositionInJoin < this.startInnerRange) || (localRangeVariable.rangePositionInJoin >= this.endInnerRange))) {
           b = 1;
+        }
       }
       this.resultMetaData.columns[i].setNullability(b);
     }
   }
-
+  
   void createTable(Session paramSession)
   {
     createResultTable(paramSession);
     this.mainIndex = this.resultTable.getPrimaryIndex();
-    if ((this.sortAndSlice.hasOrder()) && (!this.sortAndSlice.skipSort))
+    if ((this.sortAndSlice.hasOrder()) && (!this.sortAndSlice.skipSort)) {
       this.orderIndex = this.sortAndSlice.getNewIndex(paramSession, this.resultTable);
-    if ((this.isDistinctSelect) || (this.isFullOrder))
+    }
+    if ((this.isDistinctSelect) || (this.isFullOrder)) {
       createFullIndex(paramSession);
+    }
     int[] arrayOfInt;
     if (this.isGrouped)
     {
       arrayOfInt = new int[this.groupByColumnCount];
-      for (int i = 0; i < this.groupByColumnCount; i++)
+      for (int i = 0; i < this.groupByColumnCount; i++) {
         arrayOfInt[i] = (this.indexLimitVisible + i);
+      }
       this.groupIndex = this.resultTable.createAndAddIndexStructure(null, arrayOfInt, null, null, false, false, false);
     }
     else if (this.isAggregated)
@@ -1162,7 +1285,7 @@ public class QuerySpecification extends QueryExpression
       this.idIndex = this.resultTable.createAndAddIndexStructure(null, arrayOfInt, null, null, false, false, false);
     }
   }
-
+  
   private void createFullIndex(Session paramSession)
   {
     int[] arrayOfInt = new int[this.indexLimitVisible];
@@ -1170,7 +1293,7 @@ public class QuerySpecification extends QueryExpression
     this.fullIndex = this.resultTable.createAndAddIndexStructure(null, arrayOfInt, null, null, false, false, false);
     this.resultTable.fullIndex = this.fullIndex;
   }
-
+  
   private void setResultColumnTypes()
   {
     this.resultColumnTypes = new Type[this.indexLimitData];
@@ -1180,18 +1303,20 @@ public class QuerySpecification extends QueryExpression
       localExpression = this.exprColumns[i];
       this.resultColumnTypes[i] = localExpression.getDataType();
     }
-    for (i = this.indexLimitVisible; i < this.indexLimitRowId; i++)
-      if (i == this.indexLimitVisible)
+    for (i = this.indexLimitVisible; i < this.indexLimitRowId; i++) {
+      if (i == this.indexLimitVisible) {
         this.resultColumnTypes[i] = Type.SQL_BIGINT;
-      else
+      } else {
         this.resultColumnTypes[i] = Type.SQL_ALL_TYPES;
+      }
+    }
     for (i = this.indexLimitRowId; i < this.indexLimitData; i++)
     {
       localExpression = this.exprColumns[i];
       this.resultColumnTypes[i] = localExpression.getDataType();
     }
   }
-
+  
   void createResultTable(Session paramSession)
   {
     HsqlNameManager.HsqlName localHsqlName1 = paramSession.database.nameManager.getSubqueryTableName();
@@ -1203,8 +1328,9 @@ public class QuerySpecification extends QueryExpression
       HsqlNameManager.SimpleName localSimpleName = localExpression.getSimpleName();
       String str = localSimpleName.name;
       HsqlNameManager.HsqlName localHsqlName2 = paramSession.database.nameManager.newColumnSchemaHsqlName(localHsqlName1, localSimpleName);
-      if (this.accessibleColumns[j] == 0)
+      if (this.accessibleColumns[j] == 0) {
         str = HsqlNameManager.getAutoNoNameColumnString(j);
+      }
       ColumnSchema localColumnSchema = new ColumnSchema(localHsqlName2, localExpression.dataType, true, false, null);
       localHashMappedList.add(str, localColumnSchema);
     }
@@ -1212,11 +1338,9 @@ public class QuerySpecification extends QueryExpression
     {
       this.resultTable = new TableDerived(paramSession.database, localHsqlName1, i, this.resultColumnTypes, localHashMappedList, ValuePool.emptyIntArray);
     }
-    catch (Exception localException)
-    {
-    }
+    catch (Exception localException) {}
   }
-
+  
   public String getSQL()
   {
     StringBuffer localStringBuffer = new StringBuffer();
@@ -1224,8 +1348,9 @@ public class QuerySpecification extends QueryExpression
     int i = this.indexLimitVisible;
     for (int j = 0; j < i; j++)
     {
-      if (j > 0)
+      if (j > 0) {
         localStringBuffer.append(',');
+      }
       localStringBuffer.append(this.exprColumns[j].getSQL());
     }
     localStringBuffer.append("FROM");
@@ -1235,12 +1360,13 @@ public class QuerySpecification extends QueryExpression
       RangeVariable localRangeVariable = this.rangeVariables[j];
       if (j > 0)
       {
-        if ((localRangeVariable.isLeftJoin) && (localRangeVariable.isRightJoin))
+        if ((localRangeVariable.isLeftJoin) && (localRangeVariable.isRightJoin)) {
           localStringBuffer.append("FULL").append(' ');
-        else if (localRangeVariable.isLeftJoin)
+        } else if (localRangeVariable.isLeftJoin) {
           localStringBuffer.append("LEFT").append(' ');
-        else if (localRangeVariable.isRightJoin)
+        } else if (localRangeVariable.isRightJoin) {
           localStringBuffer.append("RIGHT").append(' ');
+        }
         localStringBuffer.append("JOIN").append(' ');
       }
       localStringBuffer.append(localRangeVariable.getTable().getName().statementName);
@@ -1252,8 +1378,9 @@ public class QuerySpecification extends QueryExpression
       for (j = this.indexLimitVisible; j < i; j++)
       {
         localStringBuffer.append(this.exprColumns[j].getSQL());
-        if (j < i - 1)
+        if (j < i - 1) {
           localStringBuffer.append(',');
+        }
       }
     }
     if (this.havingCondition != null)
@@ -1268,25 +1395,28 @@ public class QuerySpecification extends QueryExpression
       for (j = this.indexStartOrderBy; j < i; j++)
       {
         localStringBuffer.append(this.exprColumns[j].getSQL());
-        if (j < i - 1)
+        if (j < i - 1) {
           localStringBuffer.append(',');
+        }
       }
     }
-    if (this.sortAndSlice.hasLimit())
+    if (this.sortAndSlice.hasLimit()) {
       localStringBuffer.append(this.sortAndSlice.limitCondition.getLeftNode().getSQL());
+    }
     return localStringBuffer.toString();
   }
-
+  
   public ResultMetaData getMetaData()
   {
     return this.resultMetaData;
   }
-
+  
   public String describe(Session paramSession, int paramInt)
   {
     StringBuffer localStringBuffer2 = new StringBuffer(paramInt);
-    for (int i = 0; i < paramInt; i++)
+    for (int i = 0; i < paramInt; i++) {
       localStringBuffer2.append(' ');
+    }
     StringBuffer localStringBuffer1 = new StringBuffer();
     localStringBuffer1.append(localStringBuffer2).append("isDistinctSelect=[").append(this.isDistinctSelect).append("]\n");
     localStringBuffer1.append(localStringBuffer2).append("isGrouped=[").append(this.isGrouped).append("]\n");
@@ -1296,13 +1426,15 @@ public class QuerySpecification extends QueryExpression
     for (i = 0; i < this.indexLimitVisible; i++)
     {
       j = i;
-      if (this.exprColumns[i].getType() == 5)
+      if (this.exprColumns[i].getType() == 5) {
         j = this.exprColumns[i].columnIndex;
+      }
       localStringBuffer1.append(localStringBuffer2).append(this.exprColumns[j].describe(paramSession, 2));
-      if (this.resultMetaData.columns[i].getNullability() == 0)
+      if (this.resultMetaData.columns[i].getNullability() == 0) {
         localStringBuffer1.append(" not nullable");
-      else
+      } else {
         localStringBuffer1.append(" nullable");
+      }
     }
     localStringBuffer1.append("\n");
     localStringBuffer1.append(localStringBuffer2).append("]\n");
@@ -1321,8 +1453,9 @@ public class QuerySpecification extends QueryExpression
       for (i = this.indexLimitRowId; i < this.indexLimitRowId + this.groupByColumnCount; i++)
       {
         j = i;
-        if (this.exprColumns[i].getType() == 5)
+        if (this.exprColumns[i].getType() == 5) {
           j = this.exprColumns[i].columnIndex;
+        }
         localStringBuffer1.append(this.exprColumns[j].describe(paramSession, paramInt));
       }
       localStringBuffer1.append(localStringBuffer2).append("]\n");
@@ -1335,31 +1468,38 @@ public class QuerySpecification extends QueryExpression
     if (this.sortAndSlice.hasOrder())
     {
       localStringBuffer1.append(localStringBuffer2).append("order by=[\n");
-      for (i = 0; i < this.sortAndSlice.exprList.size(); i++)
+      for (i = 0; i < this.sortAndSlice.exprList.size(); i++) {
         localStringBuffer1.append(localStringBuffer2).append(((Expression)this.sortAndSlice.exprList.get(i)).describe(paramSession, paramInt));
-      if (this.sortAndSlice.primaryTableIndex != null)
+      }
+      if (this.sortAndSlice.primaryTableIndex != null) {
         localStringBuffer1.append(localStringBuffer2).append("uses index");
+      }
       localStringBuffer1.append(localStringBuffer2).append("]\n");
     }
     if (this.sortAndSlice.hasLimit())
     {
-      if (this.sortAndSlice.limitCondition.getLeftNode() != null)
+      if (this.sortAndSlice.limitCondition.getLeftNode() != null) {
         localStringBuffer1.append(localStringBuffer2).append("offset=[").append(this.sortAndSlice.limitCondition.getLeftNode().describe(paramSession, localStringBuffer2.length())).append("]\n");
-      if (this.sortAndSlice.limitCondition.getRightNode() != null)
+      }
+      if (this.sortAndSlice.limitCondition.getRightNode() != null) {
         localStringBuffer1.append(localStringBuffer2).append("limit=[").append(this.sortAndSlice.limitCondition.getRightNode().describe(paramSession, localStringBuffer2.length())).append("]\n");
+      }
     }
     return localStringBuffer1.toString();
   }
-
+  
   void setMergeability()
   {
     this.isOrderSensitive = ((this.sortAndSlice.hasLimit()) || (this.sortAndSlice.hasOrder()));
-    if (this.isOrderSensitive)
+    if (this.isOrderSensitive) {
       this.isMergeable = false;
-    if (this.isAggregated)
+    }
+    if (this.isAggregated) {
       this.isMergeable = false;
-    if ((this.isGrouped) || (this.isDistinctSelect))
+    }
+    if ((this.isGrouped) || (this.isDistinctSelect)) {
       this.isMergeable = false;
+    }
     if (this.rangeVariables.length != 1)
     {
       this.isBaseMergeable = false;
@@ -1367,29 +1507,36 @@ public class QuerySpecification extends QueryExpression
       return;
     }
   }
-
+  
   void setUpdatability()
   {
-    if (!this.isUpdatable)
+    if (!this.isUpdatable) {
       return;
+    }
     this.isUpdatable = false;
-    if ((this.isGrouped) || (this.isDistinctSelect) || (this.isAggregated))
+    if ((this.isGrouped) || (this.isDistinctSelect) || (this.isAggregated)) {
       return;
-    if (!this.isBaseMergeable)
+    }
+    if (!this.isBaseMergeable) {
       return;
-    if (!this.isTopLevel)
+    }
+    if (!this.isTopLevel) {
       return;
-    if ((this.sortAndSlice.hasLimit()) || (this.sortAndSlice.hasOrder()))
+    }
+    if ((this.sortAndSlice.hasLimit()) || (this.sortAndSlice.hasOrder())) {
       return;
+    }
     RangeVariable localRangeVariable = this.rangeVariables[0];
     Table localTable1 = localRangeVariable.getTable();
     Table localTable2 = localTable1.getBaseTable();
-    if (localTable2 == null)
+    if (localTable2 == null) {
       return;
+    }
     this.isInsertable = localTable1.isInsertable();
     this.isUpdatable = localTable1.isUpdatable();
-    if ((!this.isInsertable) && (!this.isUpdatable))
+    if ((!this.isInsertable) && (!this.isUpdatable)) {
       return;
+    }
     IntValueHashMap localIntValueHashMap = new IntValueHashMap();
     int[] arrayOfInt1 = localTable1.getBaseTableColumnMap();
     int[] arrayOfInt2 = new int[this.indexLimitVisible];
@@ -1412,10 +1559,11 @@ public class QuerySpecification extends QueryExpression
       if (((Expression)localObject).getType() == 2)
       {
         str = ((Expression)localObject).getColumn().getName().name;
-        if (localIntValueHashMap.containsKey(str))
+        if (localIntValueHashMap.containsKey(str)) {
           localIntValueHashMap.put(str, 1);
-        else
+        } else {
           localIntValueHashMap.put(str, 0);
+        }
       }
       else
       {
@@ -1442,8 +1590,9 @@ public class QuerySpecification extends QueryExpression
           {
             int j = localTable1.findColumn(str);
             arrayOfInt2[i] = arrayOfInt1[j];
-            if (arrayOfInt2[i] == -1)
+            if (arrayOfInt2[i] == -1) {
               continue;
+            }
             this.isUpdatable = true;
             continue;
           }
@@ -1455,7 +1604,7 @@ public class QuerySpecification extends QueryExpression
     if (this.isInsertable)
     {
       boolean[] arrayOfBoolean = localTable2.getColumnCheckList(arrayOfInt2);
-      for (i = 0; i < arrayOfBoolean.length; i++)
+      for (i = 0; i < arrayOfBoolean.length; i++) {
         if (arrayOfBoolean[i] == 0)
         {
           localObject = localTable2.getColumn(i);
@@ -1465,15 +1614,18 @@ public class QuerySpecification extends QueryExpression
             break;
           }
         }
+      }
     }
-    if (!this.isUpdatable)
+    if (!this.isUpdatable) {
       this.isInsertable = false;
+    }
     if (this.isUpdatable)
     {
       this.columnMap = arrayOfInt2;
       this.baseTable = localTable2;
-      if (this.view != null)
+      if (this.view != null) {
         return;
+      }
       this.indexLimitRowId += 1;
       this.hasRowID = true;
       if (!localTable2.isFileBased())
@@ -1484,7 +1636,7 @@ public class QuerySpecification extends QueryExpression
       this.indexLimitData = this.indexLimitRowId;
     }
   }
-
+  
   void mergeQuery()
   {
     RangeVariable localRangeVariable = this.rangeVariables[0];
@@ -1512,27 +1664,31 @@ public class QuerySpecification extends QueryExpression
         Expression localExpression3 = this.exprColumns[i];
         this.exprColumns[i] = localExpression3.replaceColumnReferences(localRangeVariable, localQuerySpecification.exprColumns);
       }
-      if (localExpression1 != null)
+      if (localExpression1 != null) {
         localExpression1 = localExpression1.replaceColumnReferences(localRangeVariable, localQuerySpecification.exprColumns);
+      }
       Expression localExpression2 = localQuerySpecification.queryCondition;
       this.checkQueryCondition = localQuerySpecification.checkQueryCondition;
       this.queryCondition = ExpressionLogical.andExpressions(localExpression2, localExpression1);
     }
-    if (this.view != null)
+    if (this.view != null) {
       switch (this.view.getCheckOption())
       {
-      case 1:
-        if (!this.isUpdatable)
+      case 1: 
+        if (!this.isUpdatable) {
           throw Error.error(5537);
+        }
         this.checkQueryCondition = localExpression1;
         break;
-      case 2:
-        if (!this.isUpdatable)
+      case 2: 
+        if (!this.isUpdatable) {
           throw Error.error(5537);
+        }
         this.checkQueryCondition = this.queryCondition;
       }
+    }
   }
-
+  
   static void collectSubQueriesAndReferences(OrderedHashSet paramOrderedHashSet, Expression paramExpression)
   {
     paramExpression.collectAllExpressions(paramOrderedHashSet, Expression.subqueryExpressionSet, Expression.emptyExpressionSet);
@@ -1543,16 +1699,19 @@ public class QuerySpecification extends QueryExpression
       localExpression.collectObjectNames(paramOrderedHashSet);
     }
   }
-
+  
   public OrderedHashSet getSubqueries()
   {
     OrderedHashSet localOrderedHashSet1 = null;
-    for (int i = 0; i < this.indexLimitExpressions; i++)
+    for (int i = 0; i < this.indexLimitExpressions; i++) {
       localOrderedHashSet1 = this.exprColumns[i].collectAllSubqueries(localOrderedHashSet1);
-    if (this.queryCondition != null)
+    }
+    if (this.queryCondition != null) {
       localOrderedHashSet1 = this.queryCondition.collectAllSubqueries(localOrderedHashSet1);
-    if (this.havingCondition != null)
+    }
+    if (this.havingCondition != null) {
       localOrderedHashSet1 = this.havingCondition.collectAllSubqueries(localOrderedHashSet1);
+    }
     for (i = 0; i < this.rangeVariables.length; i++)
     {
       OrderedHashSet localOrderedHashSet2 = this.rangeVariables[i].getSubqueries();
@@ -1560,54 +1719,64 @@ public class QuerySpecification extends QueryExpression
     }
     return localOrderedHashSet1;
   }
-
+  
   public Table getBaseTable()
   {
     return this.baseTable;
   }
-
+  
   public OrderedHashSet collectAllSubqueries(OrderedHashSet paramOrderedHashSet)
   {
     return paramOrderedHashSet;
   }
-
+  
   public OrderedHashSet collectOuterColumnExpressions(OrderedHashSet paramOrderedHashSet1, OrderedHashSet paramOrderedHashSet2)
   {
     paramOrderedHashSet1 = collectAllExpressions(paramOrderedHashSet1, Expression.columnExpressionSet, Expression.subqueryAggregateExpressionSet);
     for (int i = paramOrderedHashSet1.size() - 1; i >= 0; i--)
     {
       Expression localExpression = (Expression)paramOrderedHashSet1.get(i);
-      if (ArrayUtil.find(this.rangeVariables, localExpression.getRangeVariable()) >= 0)
+      if (ArrayUtil.find(this.rangeVariables, localExpression.getRangeVariable()) >= 0) {
         paramOrderedHashSet1.remove(i);
-      if (paramOrderedHashSet2.contains(localExpression))
+      }
+      if (paramOrderedHashSet2.contains(localExpression)) {
         paramOrderedHashSet1.remove(i);
+      }
     }
-    if (paramOrderedHashSet1.isEmpty())
+    if (paramOrderedHashSet1.isEmpty()) {
       paramOrderedHashSet1 = null;
+    }
     return paramOrderedHashSet1;
   }
-
+  
   public OrderedHashSet collectAllExpressions(OrderedHashSet paramOrderedHashSet, OrderedIntHashSet paramOrderedIntHashSet1, OrderedIntHashSet paramOrderedIntHashSet2)
   {
-    for (int i = 0; i < this.indexStartAggregates; i++)
+    for (int i = 0; i < this.indexStartAggregates; i++) {
       paramOrderedHashSet = this.exprColumns[i].collectAllExpressions(paramOrderedHashSet, paramOrderedIntHashSet1, paramOrderedIntHashSet2);
-    if (this.queryCondition != null)
+    }
+    if (this.queryCondition != null) {
       paramOrderedHashSet = this.queryCondition.collectAllExpressions(paramOrderedHashSet, paramOrderedIntHashSet1, paramOrderedIntHashSet2);
-    if (this.havingCondition != null)
+    }
+    if (this.havingCondition != null) {
       paramOrderedHashSet = this.havingCondition.collectAllExpressions(paramOrderedHashSet, paramOrderedIntHashSet1, paramOrderedIntHashSet2);
-    for (i = 0; i < this.rangeVariables.length; i++)
+    }
+    for (i = 0; i < this.rangeVariables.length; i++) {
       this.rangeVariables[i].collectAllExpressions(paramOrderedHashSet, paramOrderedIntHashSet1, paramOrderedIntHashSet2);
+    }
     return paramOrderedHashSet;
   }
-
+  
   public void collectObjectNames(Set paramSet)
   {
-    for (int i = 0; i < this.indexStartAggregates; i++)
+    for (int i = 0; i < this.indexStartAggregates; i++) {
       this.exprColumns[i].collectObjectNames(paramSet);
-    if (this.queryCondition != null)
+    }
+    if (this.queryCondition != null) {
       this.queryCondition.collectObjectNames(paramSet);
-    if (this.havingCondition != null)
+    }
+    if (this.havingCondition != null) {
       this.havingCondition.collectObjectNames(paramSet);
+    }
     i = 0;
     int j = this.rangeVariables.length;
     while (i < j)
@@ -1617,15 +1786,18 @@ public class QuerySpecification extends QueryExpression
       i++;
     }
   }
-
+  
   public void replaceColumnReferences(RangeVariable paramRangeVariable, Expression[] paramArrayOfExpression)
   {
-    for (int i = 0; i < this.indexStartAggregates; i++)
+    for (int i = 0; i < this.indexStartAggregates; i++) {
       this.exprColumns[i] = this.exprColumns[i].replaceColumnReferences(paramRangeVariable, paramArrayOfExpression);
-    if (this.queryCondition != null)
+    }
+    if (this.queryCondition != null) {
       this.queryCondition = this.queryCondition.replaceColumnReferences(paramRangeVariable, paramArrayOfExpression);
-    if (this.havingCondition != null)
+    }
+    if (this.havingCondition != null) {
       this.havingCondition = this.havingCondition.replaceColumnReferences(paramRangeVariable, paramArrayOfExpression);
+    }
     i = 0;
     int j = this.rangeVariables.length;
     while (i < j)
@@ -1634,15 +1806,18 @@ public class QuerySpecification extends QueryExpression
       i++;
     }
   }
-
+  
   public void replaceRangeVariables(RangeVariable[] paramArrayOfRangeVariable1, RangeVariable[] paramArrayOfRangeVariable2)
   {
-    for (int i = 0; i < this.indexStartAggregates; i++)
+    for (int i = 0; i < this.indexStartAggregates; i++) {
       this.exprColumns[i].replaceRangeVariables(paramArrayOfRangeVariable1, paramArrayOfRangeVariable2);
-    if (this.queryCondition != null)
+    }
+    if (this.queryCondition != null) {
       this.queryCondition.replaceRangeVariables(paramArrayOfRangeVariable1, paramArrayOfRangeVariable2);
-    if (this.havingCondition != null)
+    }
+    if (this.havingCondition != null) {
       this.havingCondition.replaceRangeVariables(paramArrayOfRangeVariable1, paramArrayOfRangeVariable2);
+    }
     i = 0;
     int j = this.rangeVariables.length;
     while (i < j)
@@ -1651,86 +1826,96 @@ public class QuerySpecification extends QueryExpression
       i++;
     }
   }
-
+  
   public void setReturningResult()
   {
     setReturningResultSet();
     this.acceptsSequences = true;
     this.isTopLevel = true;
   }
-
+  
   void setReturningResultSet()
   {
     this.persistenceScope = 23;
   }
-
+  
   public boolean isSingleColumn()
   {
     return this.indexLimitVisible == 1;
   }
-
+  
   public String[] getColumnNames()
   {
     String[] arrayOfString = new String[this.indexLimitVisible];
-    for (int i = 0; i < this.indexLimitVisible; i++)
+    for (int i = 0; i < this.indexLimitVisible; i++) {
       arrayOfString[i] = this.exprColumns[i].getAlias();
+    }
     return arrayOfString;
   }
-
+  
   public Type[] getColumnTypes()
   {
-    if (this.resultColumnTypes.length == this.indexLimitVisible)
+    if (this.resultColumnTypes.length == this.indexLimitVisible) {
       return this.resultColumnTypes;
+    }
     Type[] arrayOfType = new Type[this.indexLimitVisible];
     ArrayUtil.copyArray(this.resultColumnTypes, arrayOfType, arrayOfType.length);
     return arrayOfType;
   }
-
+  
   public int getColumnCount()
   {
     return this.indexLimitVisible;
   }
-
+  
   public int[] getBaseTableColumnMap()
   {
     return this.columnMap;
   }
-
+  
   public Expression getCheckCondition()
   {
     return this.queryCondition;
   }
-
+  
   void getBaseTableNames(OrderedHashSet paramOrderedHashSet)
   {
     for (int i = 0; i < this.rangeVariables.length; i++)
     {
       Table localTable = this.rangeVariables[i].rangeTable;
       HsqlNameManager.HsqlName localHsqlName = localTable.getName();
-      if ((!localTable.isView()) && (!localTable.isReadOnly()) && (!localTable.isTemp()) && (localHsqlName.schema != SqlInvariants.SYSTEM_SCHEMA_HSQLNAME))
+      if ((!localTable.isView()) && (!localTable.isReadOnly()) && (!localTable.isTemp()) && (localHsqlName.schema != SqlInvariants.SYSTEM_SCHEMA_HSQLNAME)) {
         paramOrderedHashSet.add(localHsqlName);
+      }
     }
   }
-
+  
   boolean isEquivalent(QueryExpression paramQueryExpression)
   {
-    if (!(paramQueryExpression instanceof QuerySpecification))
+    if (!(paramQueryExpression instanceof QuerySpecification)) {
       return false;
+    }
     QuerySpecification localQuerySpecification = (QuerySpecification)paramQueryExpression;
-    if (!Expression.equals(this.exprColumns, localQuerySpecification.exprColumns))
+    if (!Expression.equals(this.exprColumns, localQuerySpecification.exprColumns)) {
       return false;
-    if (!Expression.equals(this.queryCondition, localQuerySpecification.queryCondition))
+    }
+    if (!Expression.equals(this.queryCondition, localQuerySpecification.queryCondition)) {
       return false;
-    if (this.rangeVariables.length != localQuerySpecification.rangeVariables.length)
+    }
+    if (this.rangeVariables.length != localQuerySpecification.rangeVariables.length) {
       return false;
-    for (int i = 0; i < this.rangeVariables.length; i++)
-      if (this.rangeVariables[i].getTable() != localQuerySpecification.rangeVariables[i].getTable())
+    }
+    for (int i = 0; i < this.rangeVariables.length; i++) {
+      if (this.rangeVariables[i].getTable() != localQuerySpecification.rangeVariables[i].getTable()) {
         return false;
+      }
+    }
     return true;
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.QuerySpecification
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

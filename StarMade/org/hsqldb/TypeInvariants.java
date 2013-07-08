@@ -26,7 +26,7 @@ public class TypeInvariants
   public static final Type SQL_IDENTIFIER;
   public static final Type TIME_STAMP;
   public static final Type SQL_VARCHAR = Type.SQL_VARCHAR;
-
+  
   static
   {
     HsqlNameManager.HsqlName localHsqlName = HsqlNameManager.newInfoSchemaObjectName("SQL_TEXT", false, 14);
@@ -69,7 +69,8 @@ public class TypeInvariants
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.TypeInvariants
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

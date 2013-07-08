@@ -9,30 +9,31 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Element
 {
-  public abstract String tag();
-
-  public abstract int from();
-
-  public abstract int to();
-
-  public abstract String[] states();
-
-  public abstract String collectionElementTag();
-
-  public abstract String collectionType();
-
-  public abstract boolean textArea();
-
-  public abstract boolean level();
-
-  public abstract boolean factory();
-
-  public abstract boolean vector3f();
-
-  public abstract boolean updateTextures();
+  String tag();
+  
+  int from() default -1;
+  
+  int to() default -1;
+  
+  String[] states() default {};
+  
+  String collectionElementTag() default "";
+  
+  String collectionType() default "";
+  
+  boolean textArea() default false;
+  
+  boolean level() default false;
+  
+  boolean factory() default false;
+  
+  boolean vector3f() default false;
+  
+  boolean updateTextures() default false;
 }
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.schema.game.common.data.element.annotation.Element
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

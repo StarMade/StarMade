@@ -7,7 +7,8 @@ public final class ATITextureEnvCombine3
   public static final int GL_MODULATE_SUBTRACT_ATI = 34630;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.opengl.ATITextureEnvCombine3
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

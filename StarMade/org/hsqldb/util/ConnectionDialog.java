@@ -23,7 +23,8 @@ import java.sql.DriverManager;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-class ConnectionDialog extends Dialog
+class ConnectionDialog
+  extends Dialog
   implements ActionListener, ItemListener
 {
   protected Connection mConnection;
@@ -37,19 +38,19 @@ class ConnectionDialog extends Dialog
   private Hashtable settings;
   private Choice types;
   private Choice recent;
-
+  
   public static Connection createConnection(String paramString1, String paramString2, String paramString3, String paramString4)
     throws Exception
   {
     Class.forName(paramString1).newInstance();
     return DriverManager.getConnection(paramString2, paramString3, paramString4);
   }
-
+  
   ConnectionDialog(Frame paramFrame, String paramString)
   {
     super(paramFrame, paramString, true);
   }
-
+  
   private void create()
   {
     Dimension localDimension1 = Toolkit.getDefaultToolkit().getScreenSize();
@@ -94,8 +95,9 @@ class ConnectionDialog extends Dialog
     }
     this.recent.add(ConnectionDialogCommon.emptySettingName);
     Enumeration localEnumeration = this.settings.elements();
-    while (localEnumeration.hasMoreElements())
+    while (localEnumeration.hasMoreElements()) {
       this.recent.add(((ConnectionSetting)localEnumeration.nextElement()).getName());
+    }
     this.recent.addItemListener(new ItemListener()
     {
       public void itemStateChanged(ItemEvent paramAnonymousItemEvent)
@@ -133,8 +135,9 @@ class ConnectionDialog extends Dialog
     localPanel2.add(createLabel("Type:"));
     this.types = new Choice();
     this.connTypes = ConnectionDialogCommon.getTypes();
-    for (int i = 0; i < this.connTypes.length; i++)
+    for (int i = 0; i < this.connTypes.length; i++) {
       this.types.add(this.connTypes[i][0]);
+    }
     this.types.addItemListener(this);
     localPanel3.add(this.types);
     localPanel2.add(createLabel("Driver:"));
@@ -182,21 +185,21 @@ class ConnectionDialog extends Dialog
     }
     show();
   }
-
+  
   public static Connection createConnection(Frame paramFrame, String paramString)
   {
     ConnectionDialog localConnectionDialog = new ConnectionDialog(paramFrame, paramString);
     localConnectionDialog.create();
     return localConnectionDialog.mConnection;
   }
-
+  
   protected static Label createLabel(String paramString)
   {
     Label localLabel = new Label(paramString);
     localLabel.setBackground(SystemColor.control);
     return localLabel;
   }
-
+  
   protected static Panel createBorderPanel(Component paramComponent)
   {
     Panel localPanel = new Panel();
@@ -210,15 +213,16 @@ class ConnectionDialog extends Dialog
     localPanel.setBackground(SystemColor.control);
     return localPanel;
   }
-
+  
   public void actionPerformed(ActionEvent paramActionEvent)
   {
     String str = paramActionEvent.getActionCommand();
-    if ((str.equals("ConnectOk")) || ((paramActionEvent.getSource() instanceof TextField)))
+    if ((str.equals("ConnectOk")) || ((paramActionEvent.getSource() instanceof TextField))) {
       try
       {
-        if (this.mURL.getText().indexOf(171) >= 0)
+        if (this.mURL.getText().indexOf(171) >= 0) {
           throw new Exception("please specify db path");
+        }
         this.mConnection = createConnection(this.mDriver.getText(), this.mURL.getText(), this.mUser.getText(), this.mPassword.getText());
         if ((this.mName.getText() != null) && (this.mName.getText().trim().length() != 0))
         {
@@ -236,23 +240,26 @@ class ConnectionDialog extends Dialog
         localException.printStackTrace();
         this.mError.setText(localException.toString());
       }
-    else if (str.equals("ConnectCancel"))
+    } else if (str.equals("ConnectCancel")) {
       dispose();
+    }
   }
-
+  
   public void itemStateChanged(ItemEvent paramItemEvent)
   {
     String str = (String)paramItemEvent.getItem();
-    for (int i = 0; i < this.connTypes.length; i++)
+    for (int i = 0; i < this.connTypes.length; i++) {
       if (str.equals(this.connTypes[i][0]))
       {
         this.mDriver.setText(this.connTypes[i][1]);
         this.mURL.setText(this.connTypes[i][2]);
       }
+    }
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.util.ConnectionDialog
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -15,7 +15,7 @@ public class LobStoreInJar
   DataInputStream file;
   final String fileName;
   long realPosition;
-
+  
   public LobStoreInJar(Database paramDatabase, int paramInt)
   {
     this.lobBlockSize = paramInt;
@@ -29,11 +29,12 @@ public class LobStoreInJar
       throw Error.error(466, localThrowable);
     }
   }
-
+  
   public byte[] getBlockBytes(int paramInt1, int paramInt2)
   {
-    if (this.file == null)
+    if (this.file == null) {
       throw Error.error(452);
+    }
     try
     {
       long l = paramInt1 * this.lobBlockSize;
@@ -49,38 +50,36 @@ public class LobStoreInJar
       throw Error.error(466, localThrowable);
     }
   }
-
-  public void setBlockBytes(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
-  {
-  }
-
-  public void setBlockBytes(byte[] paramArrayOfByte, long paramLong, int paramInt1, int paramInt2)
-  {
-  }
-
+  
+  public void setBlockBytes(byte[] paramArrayOfByte, int paramInt1, int paramInt2) {}
+  
+  public void setBlockBytes(byte[] paramArrayOfByte, long paramLong, int paramInt1, int paramInt2) {}
+  
   public int getBlockSize()
   {
     return this.lobBlockSize;
   }
-
+  
   public void close()
   {
     try
     {
-      if (this.file != null)
+      if (this.file != null) {
         this.file.close();
+      }
     }
     catch (Throwable localThrowable)
     {
       throw Error.error(466, localThrowable);
     }
   }
-
+  
   private void resetStream()
     throws IOException
   {
-    if (this.file != null)
+    if (this.file != null) {
       this.file.close();
+    }
     InputStream localInputStream = null;
     try
     {
@@ -88,40 +87,40 @@ public class LobStoreInJar
       if (localInputStream == null)
       {
         ClassLoader localClassLoader = Thread.currentThread().getContextClassLoader();
-        if (localClassLoader != null)
+        if (localClassLoader != null) {
           localInputStream = localClassLoader.getResourceAsStream(this.fileName);
+        }
       }
     }
-    catch (Throwable localThrowable)
+    catch (Throwable localThrowable) {}finally
     {
-    }
-    finally
-    {
-      if (localInputStream == null)
+      if (localInputStream == null) {
         throw new FileNotFoundException(this.fileName);
+      }
     }
     this.file = new DataInputStream(localInputStream);
     this.realPosition = 0L;
   }
-
+  
   private void fileSeek(long paramLong)
     throws IOException
   {
-    if (this.file == null)
+    if (this.file == null) {
       resetStream();
+    }
     long l = this.realPosition;
-    if (paramLong < l)
+    if (paramLong < l) {
       resetStream();
-    for (l = 0L; paramLong > l; l += this.file.skip(paramLong - l));
+    }
+    for (l = 0L; paramLong > l; l += this.file.skip(paramLong - l)) {}
     this.realPosition = paramLong;
   }
-
-  public void synch()
-  {
-  }
+  
+  public void synch() {}
 }
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.persist.LobStoreInJar
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

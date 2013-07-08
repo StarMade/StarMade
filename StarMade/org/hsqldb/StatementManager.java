@@ -14,7 +14,7 @@ public final class StatementManager
   private LongKeyHashMap csidMap;
   private LongKeyIntValueHashMap useMap;
   private long next_cs_id;
-
+  
   StatementManager(Database paramDatabase)
   {
     this.database = paramDatabase;
@@ -23,7 +23,7 @@ public final class StatementManager
     this.useMap = new LongKeyIntValueHashMap();
     this.next_cs_id = 0L;
   }
-
+  
   synchronized void reset()
   {
     this.schemaMap.clear();
@@ -31,26 +31,28 @@ public final class StatementManager
     this.useMap.clear();
     this.next_cs_id = 0L;
   }
-
+  
   private long nextID()
   {
     this.next_cs_id += 1L;
     return this.next_cs_id;
   }
-
+  
   private long getStatementID(HsqlNameManager.HsqlName paramHsqlName, String paramString)
   {
     LongValueHashMap localLongValueHashMap = (LongValueHashMap)this.schemaMap.get(paramHsqlName.hashCode());
-    if (localLongValueHashMap == null)
+    if (localLongValueHashMap == null) {
       return -1L;
+    }
     return localLongValueHashMap.get(paramString, -1);
   }
-
+  
   public synchronized Statement getStatement(Session paramSession, long paramLong)
   {
     Statement localStatement = (Statement)this.csidMap.get(paramLong);
-    if (localStatement == null)
+    if (localStatement == null) {
       return null;
+    }
     if (localStatement.getCompileTimestamp() < this.database.schemaManager.getSchemaChangeTimestamp())
     {
       localStatement = recompileStatement(paramSession, localStatement);
@@ -63,13 +65,14 @@ public final class StatementManager
     }
     return localStatement;
   }
-
+  
   public synchronized Statement getStatement(Session paramSession, Statement paramStatement)
   {
     long l = paramStatement.getID();
     Statement localStatement = (Statement)this.csidMap.get(l);
-    if (localStatement != null)
+    if (localStatement != null) {
       return getStatement(paramSession, l);
+    }
     if (paramStatement.getCompileTimestamp() < this.database.schemaManager.getSchemaChangeTimestamp())
     {
       localStatement = recompileStatement(paramSession, paramStatement);
@@ -81,7 +84,7 @@ public final class StatementManager
     }
     return localStatement;
   }
-
+  
   private Statement recompileStatement(Session paramSession, Statement paramStatement)
   {
     HsqlNameManager.HsqlName localHsqlName1 = paramSession.getCurrentSchemaHsqlName();
@@ -90,8 +93,9 @@ public final class StatementManager
     {
       HsqlNameManager.HsqlName localHsqlName2 = paramStatement.getSchemaName();
       int i = paramStatement.getCursorPropertiesRequest();
-      if (localHsqlName2 != null)
+      if (localHsqlName2 != null) {
         paramSession.setSchema(localHsqlName2.name);
+      }
       int j = paramStatement.generatedResultMetaData() != null ? 1 : 0;
       localStatement1 = paramSession.compileStatement(paramStatement.getSQL(), i);
       localStatement1.setCursorPropertiesRequest(i);
@@ -124,7 +128,7 @@ public final class StatementManager
     }
     return localStatement1;
   }
-
+  
   private long registerStatement(long paramLong, Statement paramStatement)
   {
     if (paramLong < 0L)
@@ -144,11 +148,12 @@ public final class StatementManager
     this.csidMap.put(paramLong, paramStatement);
     return paramLong;
   }
-
+  
   synchronized void freeStatement(long paramLong)
   {
-    if (paramLong == -1L)
+    if (paramLong == -1L) {
       return;
+    }
     int i = this.useMap.get(paramLong, 1);
     if (i > 1)
     {
@@ -165,7 +170,7 @@ public final class StatementManager
     }
     this.useMap.remove(paramLong);
   }
-
+  
   synchronized Statement compile(Session paramSession, Result paramResult)
     throws Throwable
   {
@@ -195,7 +200,8 @@ public final class StatementManager
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.StatementManager
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -47,20 +47,23 @@ public class BaseHashMap
   protected static final int PURGE_HALF = 2;
   protected static final int PURGE_QUARTER = 3;
   public static final int ACCESS_MAX = 2146435071;
-
+  
   protected BaseHashMap(int paramInt1, int paramInt2, int paramInt3, boolean paramBoolean)
     throws IllegalArgumentException
   {
-    if (paramInt1 <= 0)
+    if (paramInt1 <= 0) {
       throw new IllegalArgumentException();
-    if (paramInt1 < 3)
+    }
+    if (paramInt1 < 3) {
       paramInt1 = 3;
+    }
     this.loadFactor = 1.0F;
     this.initialCapacity = paramInt1;
     this.threshold = paramInt1;
     int i = (int)(paramInt1 * this.loadFactor);
-    if (i < 3)
+    if (i < 3) {
       i = 3;
+    }
     this.hashIndex = new HashIndex(i, paramInt1, true);
     int j = this.threshold;
     if (paramInt2 == 1)
@@ -97,91 +100,102 @@ public class BaseHashMap
     {
       this.isNoValue = true;
     }
-    if (paramBoolean)
+    if (paramBoolean) {
       this.accessTable = new int[j];
+    }
   }
-
+  
   protected int getLookup(Object paramObject, int paramInt)
   {
     for (int i = this.hashIndex.getLookup(paramInt); i >= 0; i = this.hashIndex.getNextLookup(i))
     {
       Object localObject = this.objectKeyTable[i];
-      if (paramObject.equals(localObject))
+      if (paramObject.equals(localObject)) {
         break;
+      }
     }
     return i;
   }
-
+  
   protected int getLookup(int paramInt)
   {
     for (int i = this.hashIndex.getLookup(paramInt); i >= 0; i = this.hashIndex.linkTable[i])
     {
       int j = this.intKeyTable[i];
-      if (paramInt == j)
+      if (paramInt == j) {
         break;
+      }
     }
     return i;
   }
-
+  
   protected int getLookup(long paramLong)
   {
     for (int i = this.hashIndex.getLookup((int)paramLong); i >= 0; i = this.hashIndex.getNextLookup(i))
     {
       long l = this.longKeyTable[i];
-      if (paramLong == l)
+      if (paramLong == l) {
         break;
+      }
     }
     return i;
   }
-
+  
   protected int getObjectLookup(long paramLong)
   {
     for (int i = this.hashIndex.getLookup((int)paramLong); i >= 0; i = this.hashIndex.getNextLookup(i))
     {
       long l = this.comparator.longKey(this.objectKeyTable[i]);
-      if (l == paramLong)
+      if (l == paramLong) {
         break;
+      }
     }
     return i;
   }
-
+  
   protected Iterator getValuesIterator(Object paramObject, int paramInt)
   {
     int i = getLookup(paramObject, paramInt);
-    if (this.valuesIterator == null)
+    if (this.valuesIterator == null) {
       this.valuesIterator = new ValuesIterator();
+    }
     this.valuesIterator.reset(paramObject, i);
     return this.valuesIterator;
   }
-
+  
   protected int valueCount(Object paramObject, int paramInt)
   {
     int i = getLookup(paramObject, paramInt);
-    if (i == -1)
+    if (i == -1) {
       return 0;
+    }
     int j = 1;
-    while (true)
+    for (;;)
     {
       i = this.hashIndex.getNextLookup(i);
-      if (i == -1)
+      if (i == -1) {
         break;
-      if (this.objectKeyTable[i].equals(paramObject))
+      }
+      if (this.objectKeyTable[i].equals(paramObject)) {
         j++;
+      }
     }
     return j;
   }
-
+  
   protected Object addOrRemove(long paramLong1, long paramLong2, Object paramObject1, Object paramObject2, boolean paramBoolean)
   {
     int i = (int)paramLong1;
     if (this.isObjectKey)
     {
-      if (paramObject1 == null)
+      if (paramObject1 == null) {
         return null;
-      if (this.comparator == null)
+      }
+      if (this.comparator == null) {
         i = paramObject1.hashCode();
-      else
+      } else {
         i = this.comparator.hashCode(paramObject1);
+      }
     }
     int j = this.hashIndex.getHashIndex(i);
     int k = this.hashIndex.hashTable[j];
@@ -207,10 +221,11 @@ public class BaseHashMap
             this.hasZeroKey = false;
             this.zeroKeyIndex = -1;
           }
-          if (this.isIntKey)
+          if (this.isIntKey) {
             this.intKeyTable[k] = 0;
-          else
+          } else {
             this.longKeyTable[k] = 0L;
+          }
         }
         if (this.isObjectValue)
         {
@@ -226,10 +241,12 @@ public class BaseHashMap
           this.longValueTable[k] = 0L;
         }
         this.hashIndex.unlinkNode(j, m, k);
-        if (this.accessTable != null)
+        if (this.accessTable != null) {
           this.accessTable[k] = 0;
-        if ((this.minimizeOnEmpty) && (this.hashIndex.elementCount == 0))
+        }
+        if ((this.minimizeOnEmpty) && (this.hashIndex.elementCount == 0)) {
           rehash(this.initialCapacity);
+        }
         return localObject;
       }
       if (this.isObjectValue)
@@ -245,16 +262,19 @@ public class BaseHashMap
       {
         this.longValueTable[k] = paramLong2;
       }
-      if (this.accessTable != null)
+      if (this.accessTable != null) {
         this.accessTable[k] = (++this.accessCount);
+      }
       return localObject;
     }
-    if (paramBoolean)
+    if (paramBoolean) {
       return null;
+    }
     if (this.hashIndex.elementCount >= this.threshold)
     {
-      if (reset())
+      if (reset()) {
         return addOrRemove(paramLong1, paramLong2, paramObject1, paramObject2, paramBoolean);
+      }
       throw new NoSuchElementException("BaseHashMap");
     }
     k = this.hashIndex.linkNode(j, m);
@@ -280,28 +300,32 @@ public class BaseHashMap
         this.zeroKeyIndex = k;
       }
     }
-    if (this.isObjectValue)
+    if (this.isObjectValue) {
       this.objectValueTable[k] = paramObject2;
-    else if (this.isIntValue)
+    } else if (this.isIntValue) {
       this.intValueTable[k] = ((int)paramLong2);
-    else if (this.isLongValue)
+    } else if (this.isLongValue) {
       this.longValueTable[k] = paramLong2;
-    if (this.accessTable != null)
+    }
+    if (this.accessTable != null) {
       this.accessTable[k] = (++this.accessCount);
+    }
     return localObject;
   }
-
+  
   protected Object addOrRemoveMultiVal(long paramLong1, long paramLong2, Object paramObject1, Object paramObject2, boolean paramBoolean1, boolean paramBoolean2)
   {
     int i = (int)paramLong1;
     if (this.isObjectKey)
     {
-      if (paramObject1 == null)
+      if (paramObject1 == null) {
         return null;
-      if (this.comparator == null)
+      }
+      if (this.comparator == null) {
         i = paramObject1.hashCode();
-      else
+      } else {
         i = this.comparator.hashCode(paramObject1);
+      }
     }
     int j = this.hashIndex.getHashIndex(i);
     int k = this.hashIndex.hashTable[j];
@@ -324,8 +348,7 @@ public class BaseHashMap
               this.hashIndex.unlinkNode(j, m, k);
               this.multiValueTable[k] = false;
               k = this.hashIndex.hashTable[j];
-            }
-            while ((k >= 0) && (this.objectKeyTable[k].equals(paramObject1)));
+            } while ((k >= 0) && (this.objectKeyTable[k].equals(paramObject1)));
             return localObject;
           }
           if (this.objectValueTable[k].equals(paramObject2))
@@ -363,12 +386,12 @@ public class BaseHashMap
               this.hashIndex.unlinkNode(j, m, k);
               this.multiValueTable[k] = false;
               k = this.hashIndex.hashTable[j];
-            }
-            while ((k >= 0) && (paramLong1 == this.intKeyTable[k]));
+            } while ((k >= 0) && (paramLong1 == this.intKeyTable[k]));
             return null;
           }
-          if (this.intValueTable[k] == paramLong2)
+          if (this.intValueTable[k] == paramLong2) {
             return null;
+          }
           n = 1;
         }
       }
@@ -388,23 +411,25 @@ public class BaseHashMap
             this.hashIndex.unlinkNode(j, m, k);
             this.multiValueTable[k] = false;
             k = this.hashIndex.hashTable[j];
-          }
-          while ((k >= 0) && (paramLong1 == this.longKeyTable[k]));
+          } while ((k >= 0) && (paramLong1 == this.longKeyTable[k]));
           return null;
         }
-        if (this.intValueTable[k] == paramLong2)
+        if (this.intValueTable[k] == paramLong2) {
           return null;
+        }
         n = 1;
       }
       m = k;
       k = this.hashIndex.getNextLookup(k);
     }
-    if ((paramBoolean1) || (paramBoolean2))
+    if ((paramBoolean1) || (paramBoolean2)) {
       return localObject;
+    }
     if (this.hashIndex.elementCount >= this.threshold)
     {
-      if (reset())
+      if (reset()) {
         return addOrRemoveMultiVal(paramLong1, paramLong2, paramObject1, paramObject2, paramBoolean1, paramBoolean2);
+      }
       throw new NoSuchElementException("BaseHashMap");
     }
     k = this.hashIndex.linkNode(j, m);
@@ -430,19 +455,22 @@ public class BaseHashMap
         this.zeroKeyIndex = k;
       }
     }
-    if (this.isObjectValue)
+    if (this.isObjectValue) {
       this.objectValueTable[k] = paramObject2;
-    else if (this.isIntValue)
+    } else if (this.isIntValue) {
       this.intValueTable[k] = ((int)paramLong2);
-    else if (this.isLongValue)
+    } else if (this.isLongValue) {
       this.longValueTable[k] = paramLong2;
-    if (n != 0)
+    }
+    if (n != 0) {
       this.multiValueTable[k] = true;
-    if (this.accessTable != null)
+    }
+    if (this.accessTable != null) {
       this.accessTable[k] = (++this.accessCount);
+    }
     return localObject;
   }
-
+  
   protected Object addOrRemove(long paramLong, Object paramObject1, Object paramObject2, boolean paramBoolean)
   {
     int i = (int)paramLong;
@@ -464,17 +492,20 @@ public class BaseHashMap
           this.hasZeroKey = false;
           this.zeroKeyIndex = -1;
         }
-        if (this.isIntKey)
+        if (this.isIntKey) {
           this.intKeyTable[k] = 0;
-        else
+        } else {
           this.longKeyTable[k] = 0L;
+        }
         localObject = this.objectValueTable[k];
         this.objectValueTable[k] = null;
         this.hashIndex.unlinkNode(j, m, k);
-        if (this.isTwoObjectValue)
+        if (this.isTwoObjectValue) {
           this.objectKeyTable[k] = null;
-        if (this.accessTable != null)
+        }
+        if (this.accessTable != null) {
           this.accessTable[k] = 0;
+        }
         return localObject;
       }
       if (this.isObjectValue)
@@ -482,42 +513,50 @@ public class BaseHashMap
         localObject = this.objectValueTable[k];
         this.objectValueTable[k] = paramObject1;
       }
-      if (this.isTwoObjectValue)
+      if (this.isTwoObjectValue) {
         this.objectKeyTable[k] = paramObject2;
-      if (this.accessTable != null)
+      }
+      if (this.accessTable != null) {
         this.accessTable[k] = (++this.accessCount);
+      }
       return localObject;
     }
-    if (paramBoolean)
+    if (paramBoolean) {
       return localObject;
+    }
     if (this.hashIndex.elementCount >= this.threshold)
     {
-      if (reset())
+      if (reset()) {
         return addOrRemove(paramLong, paramObject1, paramObject2, paramBoolean);
+      }
       return null;
     }
     k = this.hashIndex.linkNode(j, m);
-    if (this.isIntKey)
+    if (this.isIntKey) {
       this.intKeyTable[k] = ((int)paramLong);
-    else
+    } else {
       this.longKeyTable[k] = paramLong;
+    }
     if (paramLong == 0L)
     {
       this.hasZeroKey = true;
       this.zeroKeyIndex = k;
     }
     this.objectValueTable[k] = paramObject1;
-    if (this.isTwoObjectValue)
+    if (this.isTwoObjectValue) {
       this.objectKeyTable[k] = paramObject2;
-    if (this.accessTable != null)
+    }
+    if (this.accessTable != null) {
       this.accessTable[k] = (++this.accessCount);
+    }
     return localObject;
   }
-
+  
   protected Object removeObject(Object paramObject, boolean paramBoolean)
   {
-    if (paramObject == null)
+    if (paramObject == null) {
       return null;
+    }
     int i = paramObject.hashCode();
     int j = this.hashIndex.getHashIndex(i);
     int k = this.hashIndex.hashTable[j];
@@ -535,8 +574,9 @@ public class BaseHashMap
           localObject = this.objectValueTable[k];
           this.objectValueTable[k] = null;
         }
-        if (paramBoolean)
+        if (paramBoolean) {
           removeRow(k);
+        }
         return localObject;
       }
       m = k;
@@ -544,7 +584,7 @@ public class BaseHashMap
     }
     return localObject;
   }
-
+  
   protected Object addOrRemoveObject(Object paramObject, long paramLong, boolean paramBoolean)
   {
     int i = (int)paramLong;
@@ -555,8 +595,9 @@ public class BaseHashMap
     while (k >= 0)
     {
       localObject = this.objectKeyTable[k];
-      if (this.comparator.longKey(localObject) == paramLong)
+      if (this.comparator.longKey(localObject) == paramLong) {
         break;
+      }
       m = k;
       k = this.hashIndex.getNextLookup(k);
     }
@@ -566,34 +607,40 @@ public class BaseHashMap
       {
         this.objectKeyTable[k] = null;
         this.hashIndex.unlinkNode(j, m, k);
-        if (this.accessTable != null)
+        if (this.accessTable != null) {
           this.accessTable[k] = 0;
-        if ((this.minimizeOnEmpty) && (this.hashIndex.elementCount == 0))
+        }
+        if ((this.minimizeOnEmpty) && (this.hashIndex.elementCount == 0)) {
           rehash(this.initialCapacity);
+        }
       }
       else
       {
         this.objectKeyTable[k] = paramObject;
-        if (this.accessTable != null)
+        if (this.accessTable != null) {
           this.accessTable[k] = (++this.accessCount);
+        }
       }
       return localObject;
     }
-    if (paramBoolean)
+    if (paramBoolean) {
       return null;
+    }
     if (this.hashIndex.elementCount >= this.threshold)
     {
-      if (reset())
+      if (reset()) {
         return addOrRemoveObject(paramObject, paramLong, paramBoolean);
+      }
       throw new NoSuchElementException("BaseHashMap");
     }
     k = this.hashIndex.linkNode(j, m);
     this.objectKeyTable[k] = paramObject;
-    if (this.accessTable != null)
+    if (this.accessTable != null) {
       this.accessTable[k] = (++this.accessCount);
+    }
     return localObject;
   }
-
+  
   protected boolean reset()
   {
     if ((this.maxCapacity == 0) || (this.maxCapacity > this.threshold))
@@ -618,23 +665,25 @@ public class BaseHashMap
     }
     return this.purgePolicy != 0;
   }
-
+  
   protected void rehash(int paramInt)
   {
     int i = this.hashIndex.newNodePointer;
     boolean bool = this.hasZeroKey;
     int j = this.zeroKeyIndex;
-    if (paramInt < this.hashIndex.elementCount)
+    if (paramInt < this.hashIndex.elementCount) {
       return;
+    }
     this.hashIndex.reset((int)(paramInt * this.loadFactor), paramInt);
     if (this.multiValueTable != null)
     {
       k = this.multiValueTable.length;
-      while (true)
+      for (;;)
       {
         k--;
-        if (k < 0)
+        if (k < 0) {
           break;
+        }
         this.multiValueTable[k] = false;
       }
     }
@@ -648,28 +697,32 @@ public class BaseHashMap
       long l2 = 0L;
       Object localObject1 = null;
       Object localObject2 = null;
-      if (this.isObjectKey)
+      if (this.isObjectKey) {
         localObject1 = this.objectKeyTable[k];
-      else if (this.isIntKey)
+      } else if (this.isIntKey) {
         l1 = this.intKeyTable[k];
-      else
+      } else {
         l1 = this.longKeyTable[k];
-      if (this.isObjectValue)
+      }
+      if (this.isObjectValue) {
         localObject2 = this.objectValueTable[k];
-      else if (this.isIntValue)
+      } else if (this.isIntValue) {
         l2 = this.intValueTable[k];
-      else if (this.isLongValue)
+      } else if (this.isLongValue) {
         l2 = this.longValueTable[k];
-      if (this.multiValueTable == null)
+      }
+      if (this.multiValueTable == null) {
         addOrRemove(l1, l2, localObject1, localObject2, false);
-      else
+      } else {
         addOrRemoveMultiVal(l1, l2, localObject1, localObject2, false, false);
-      if (this.accessTable != null)
+      }
+      if (this.accessTable != null) {
         this.accessTable[(this.hashIndex.elementCount - 1)] = this.accessTable[k];
+      }
     }
     resizeElementArrays(this.hashIndex.newNodePointer, paramInt);
   }
-
+  
   private void resizeElementArrays(int paramInt1, int paramInt2)
   {
     int i = paramInt2 > paramInt1 ? paramInt1 : paramInt2;
@@ -729,100 +782,108 @@ public class BaseHashMap
       System.arraycopy(localObject, 0, this.multiValueTable, 0, i);
     }
   }
-
+  
   private void clearElementArrays(int paramInt1, int paramInt2)
   {
     int i;
     if (this.isIntKey)
     {
       i = paramInt2;
-      while (true)
+      for (;;)
       {
         i--;
-        if (i < paramInt1)
+        if (i < paramInt1) {
           break;
+        }
         this.intKeyTable[i] = 0;
       }
     }
     else if (this.isLongKey)
     {
       i = paramInt2;
-      while (true)
+      for (;;)
       {
         i--;
-        if (i < paramInt1)
+        if (i < paramInt1) {
           break;
+        }
         this.longKeyTable[i] = 0L;
       }
     }
     else if ((this.isObjectKey) || (this.objectKeyTable != null))
     {
       i = paramInt2;
-      while (true)
+      for (;;)
       {
         i--;
-        if (i < paramInt1)
+        if (i < paramInt1) {
           break;
+        }
         this.objectKeyTable[i] = null;
       }
     }
     if (this.isIntValue)
     {
       i = paramInt2;
-      while (true)
+      for (;;)
       {
         i--;
-        if (i < paramInt1)
+        if (i < paramInt1) {
           break;
+        }
         this.intValueTable[i] = 0;
       }
     }
     else if (this.isLongValue)
     {
       i = paramInt2;
-      while (true)
+      for (;;)
       {
         i--;
-        if (i < paramInt1)
+        if (i < paramInt1) {
           break;
+        }
         this.longValueTable[i] = 0L;
       }
     }
     else if (this.isObjectValue)
     {
       i = paramInt2;
-      while (true)
+      for (;;)
       {
         i--;
-        if (i < paramInt1)
+        if (i < paramInt1) {
           break;
+        }
         this.objectValueTable[i] = null;
       }
     }
     if (this.accessTable != null)
     {
       i = paramInt2;
-      while (true)
+      for (;;)
       {
         i--;
-        if (i < paramInt1)
+        if (i < paramInt1) {
           break;
+        }
         this.accessTable[i] = 0;
       }
     }
     if (this.multiValueTable != null)
     {
       i = paramInt2;
-      while (true)
+      for (;;)
       {
         i--;
-        if (i < paramInt1)
+        if (i < paramInt1) {
           break;
+        }
         this.multiValueTable[i] = false;
       }
     }
   }
-
+  
   void removeFromElementArrays(int paramInt)
   {
     int i = this.hashIndex.newNodePointer;
@@ -864,71 +925,81 @@ public class BaseHashMap
       this.objectValueTable[i] = null;
     }
   }
-
+  
   int nextLookup(int paramInt1, int paramInt2, boolean paramBoolean, int paramInt3)
   {
-    paramInt1++;
+    
     while (paramInt1 < paramInt2)
     {
       if (this.isObjectKey)
       {
-        if (this.objectKeyTable[paramInt1] != null)
+        if (this.objectKeyTable[paramInt1] != null) {
           return paramInt1;
+        }
       }
       else if (this.isIntKey)
       {
-        if (this.intKeyTable[paramInt1] != 0)
+        if (this.intKeyTable[paramInt1] != 0) {
           return paramInt1;
-        if ((paramBoolean) && (paramInt1 == paramInt3))
+        }
+        if ((paramBoolean) && (paramInt1 == paramInt3)) {
           return paramInt1;
+        }
       }
       else
       {
-        if (this.longKeyTable[paramInt1] != 0L)
+        if (this.longKeyTable[paramInt1] != 0L) {
           return paramInt1;
-        if ((paramBoolean) && (paramInt1 == paramInt3))
+        }
+        if ((paramBoolean) && (paramInt1 == paramInt3)) {
           return paramInt1;
+        }
       }
       paramInt1++;
     }
     return paramInt1;
   }
-
+  
   protected int nextLookup(int paramInt)
   {
-    paramInt++;
+    
     while (paramInt < this.hashIndex.newNodePointer)
     {
       if (this.isObjectKey)
       {
-        if (this.objectKeyTable[paramInt] != null)
+        if (this.objectKeyTable[paramInt] != null) {
           return paramInt;
+        }
       }
       else if (this.isIntKey)
       {
-        if (this.intKeyTable[paramInt] != 0)
+        if (this.intKeyTable[paramInt] != 0) {
           return paramInt;
-        if ((this.hasZeroKey) && (paramInt == this.zeroKeyIndex))
+        }
+        if ((this.hasZeroKey) && (paramInt == this.zeroKeyIndex)) {
           return paramInt;
+        }
       }
       else
       {
-        if (this.longKeyTable[paramInt] != 0L)
+        if (this.longKeyTable[paramInt] != 0L) {
           return paramInt;
-        if ((this.hasZeroKey) && (paramInt == this.zeroKeyIndex))
+        }
+        if ((this.hasZeroKey) && (paramInt == this.zeroKeyIndex)) {
           return paramInt;
+        }
       }
       paramInt++;
     }
     return -1;
   }
-
+  
   protected void removeRow(int paramInt)
   {
     this.hashIndex.removeEmptyNode(paramInt);
     removeFromElementArrays(paramInt);
   }
-
+  
   public void clear()
   {
     if (this.hashIndex.modified)
@@ -939,147 +1010,167 @@ public class BaseHashMap
       this.zeroKeyIndex = -1;
       clearElementArrays(0, this.hashIndex.linkTable.length);
       this.hashIndex.clear();
-      if (this.minimizeOnEmpty)
+      if (this.minimizeOnEmpty) {
         rehash(this.initialCapacity);
+      }
     }
   }
-
+  
   public int getAccessCountCeiling(int paramInt1, int paramInt2)
   {
     return ArrayCounter.rank(this.accessTable, this.hashIndex.newNodePointer, paramInt1, this.accessMin + 1, this.accessCount, paramInt2);
   }
-
+  
   public void setAccessCountFloor(int paramInt)
   {
     this.accessMin = paramInt;
   }
-
+  
   public int incrementAccessCount()
   {
     return ++this.accessCount;
   }
-
+  
   protected void clear(int paramInt1, int paramInt2)
   {
-    if (paramInt2 < 64)
+    if (paramInt2 < 64) {
       paramInt2 = 64;
+    }
     int i = this.hashIndex.newNodePointer;
     int j = getAccessCountCeiling(paramInt1, paramInt2);
     for (int k = 0; k < i; k++)
     {
       Object localObject = this.objectKeyTable[k];
-      if ((localObject != null) && (this.accessTable[k] < j))
+      if ((localObject != null) && (this.accessTable[k] < j)) {
         removeObject(localObject, false);
+      }
     }
     this.accessMin = j;
   }
-
+  
   protected void resetAccessCount()
   {
-    if (this.accessCount < 2146435071)
+    if (this.accessCount < 2146435071) {
       return;
-    if (this.accessMin < 2130706431)
+    }
+    if (this.accessMin < 2130706431) {
       this.accessMin = 2130706431;
+    }
     int i = this.accessTable.length;
-    while (true)
+    for (;;)
     {
       i--;
-      if (i < 0)
+      if (i < 0) {
         break;
-      if (this.accessTable[i] <= this.accessMin)
+      }
+      if (this.accessTable[i] <= this.accessMin) {
         this.accessTable[i] = 0;
-      else
+      } else {
         this.accessTable[i] -= this.accessMin;
+      }
     }
     this.accessCount -= this.accessMin;
     this.accessMin = 0;
   }
-
+  
   public int capacity()
   {
     return this.hashIndex.linkTable.length;
   }
-
+  
   public int size()
   {
     return this.hashIndex.elementCount;
   }
-
+  
   public boolean isEmpty()
   {
     return this.hashIndex.elementCount == 0;
   }
-
+  
   protected void setComparator(ObjectComparator paramObjectComparator)
   {
     this.comparator = paramObjectComparator;
   }
-
+  
   protected boolean containsKey(Object paramObject)
   {
-    if (paramObject == null)
+    if (paramObject == null) {
       return false;
-    if (this.hashIndex.elementCount == 0)
+    }
+    if (this.hashIndex.elementCount == 0) {
       return false;
+    }
     int i = getLookup(paramObject, paramObject.hashCode());
     return i != -1;
   }
-
+  
   protected boolean containsKey(int paramInt)
   {
-    if (this.hashIndex.elementCount == 0)
+    if (this.hashIndex.elementCount == 0) {
       return false;
+    }
     int i = getLookup(paramInt);
     return i != -1;
   }
-
+  
   protected boolean containsKey(long paramLong)
   {
-    if (this.hashIndex.elementCount == 0)
+    if (this.hashIndex.elementCount == 0) {
       return false;
+    }
     int i = getLookup(paramLong);
     return i != -1;
   }
-
+  
   protected boolean containsValue(Object paramObject)
   {
     int i = 0;
-    if (this.hashIndex.elementCount == 0)
+    if (this.hashIndex.elementCount == 0) {
       return false;
-    if (paramObject == null)
+    }
+    if (paramObject == null) {
       while (i < this.hashIndex.newNodePointer)
       {
-        if (this.objectValueTable[i] == null)
+        if (this.objectValueTable[i] == null) {
           if (this.isObjectKey)
           {
-            if (this.objectKeyTable[i] != null)
+            if (this.objectKeyTable[i] != null) {
               return true;
+            }
           }
           else if (this.isIntKey)
           {
-            if (this.intKeyTable[i] != 0)
+            if (this.intKeyTable[i] != 0) {
               return true;
-            if ((this.hasZeroKey) && (i == this.zeroKeyIndex))
+            }
+            if ((this.hasZeroKey) && (i == this.zeroKeyIndex)) {
               return true;
+            }
           }
           else
           {
-            if (this.longKeyTable[i] != 0L)
+            if (this.longKeyTable[i] != 0L) {
               return true;
-            if ((this.hasZeroKey) && (i == this.zeroKeyIndex))
+            }
+            if ((this.hasZeroKey) && (i == this.zeroKeyIndex)) {
               return true;
+            }
           }
+        }
         i++;
       }
+    }
     while (i < this.hashIndex.newNodePointer)
     {
-      if (paramObject.equals(this.objectValueTable[i]))
+      if (paramObject.equals(this.objectValueTable[i])) {
         return true;
+      }
       i++;
     }
     return false;
   }
-
+  
   protected class BaseHashIterator
     implements Iterator
   {
@@ -1087,134 +1178,143 @@ public class BaseHashMap
     int lookup = -1;
     int counter;
     boolean removed;
-
-    public BaseHashIterator()
+    
+    public BaseHashIterator() {}
+    
+    public BaseHashIterator(boolean paramBoolean)
     {
+      this.keys = paramBoolean;
     }
-
-    public BaseHashIterator(boolean arg2)
-    {
-      boolean bool;
-      this.keys = bool;
-    }
-
+    
     public void reset()
     {
       this.lookup = -1;
       this.counter = 0;
       this.removed = false;
     }
-
+    
     public boolean hasNext()
     {
       return this.counter < BaseHashMap.this.hashIndex.elementCount;
     }
-
+    
     public Object next()
       throws NoSuchElementException
     {
-      if (((this.keys) && (!BaseHashMap.this.isObjectKey)) || ((!this.keys) && (!BaseHashMap.this.isObjectValue)))
+      if (((this.keys) && (!BaseHashMap.this.isObjectKey)) || ((!this.keys) && (!BaseHashMap.this.isObjectValue))) {
         throw new NoSuchElementException("Hash Iterator");
+      }
       this.removed = false;
       if (hasNext())
       {
         this.counter += 1;
         this.lookup = BaseHashMap.this.nextLookup(this.lookup);
-        if (this.keys)
+        if (this.keys) {
           return BaseHashMap.this.objectKeyTable[this.lookup];
+        }
         return BaseHashMap.this.objectValueTable[this.lookup];
       }
       throw new NoSuchElementException("Hash Iterator");
     }
-
+    
     public int nextInt()
       throws NoSuchElementException
     {
-      if (((this.keys) && (!BaseHashMap.this.isIntKey)) || ((!this.keys) && (!BaseHashMap.this.isIntValue)))
+      if (((this.keys) && (!BaseHashMap.this.isIntKey)) || ((!this.keys) && (!BaseHashMap.this.isIntValue))) {
         throw new NoSuchElementException("Hash Iterator");
+      }
       this.removed = false;
       if (hasNext())
       {
         this.counter += 1;
         this.lookup = BaseHashMap.this.nextLookup(this.lookup);
-        if (this.keys)
+        if (this.keys) {
           return BaseHashMap.this.intKeyTable[this.lookup];
+        }
         return BaseHashMap.this.intValueTable[this.lookup];
       }
       throw new NoSuchElementException("Hash Iterator");
     }
-
+    
     public long nextLong()
       throws NoSuchElementException
     {
-      if ((!BaseHashMap.this.isLongKey) || (!this.keys))
+      if ((!BaseHashMap.this.isLongKey) || (!this.keys)) {
         throw new NoSuchElementException("Hash Iterator");
+      }
       this.removed = false;
       if (hasNext())
       {
         this.counter += 1;
         this.lookup = BaseHashMap.this.nextLookup(this.lookup);
-        if (this.keys)
+        if (this.keys) {
           return BaseHashMap.this.longKeyTable[this.lookup];
+        }
         return BaseHashMap.this.longValueTable[this.lookup];
       }
       throw new NoSuchElementException("Hash Iterator");
     }
-
+    
     public void remove()
       throws NoSuchElementException
     {
-      if (this.removed)
+      if (this.removed) {
         throw new NoSuchElementException("Hash Iterator");
+      }
       this.counter -= 1;
       this.removed = true;
       if (BaseHashMap.this.isObjectKey)
       {
-        if (BaseHashMap.this.multiValueTable == null)
+        if (BaseHashMap.this.multiValueTable == null) {
           BaseHashMap.this.addOrRemove(0L, 0L, BaseHashMap.this.objectKeyTable[this.lookup], null, true);
-        else if (this.keys)
+        } else if (this.keys) {
           BaseHashMap.this.addOrRemoveMultiVal(0L, 0L, BaseHashMap.this.objectKeyTable[this.lookup], null, true, false);
-        else
+        } else {
           BaseHashMap.this.addOrRemoveMultiVal(0L, 0L, BaseHashMap.this.objectKeyTable[this.lookup], BaseHashMap.this.objectValueTable[this.lookup], false, true);
+        }
       }
-      else if (BaseHashMap.this.isIntKey)
+      else if (BaseHashMap.this.isIntKey) {
         BaseHashMap.this.addOrRemove(BaseHashMap.this.intKeyTable[this.lookup], 0L, null, null, true);
-      else
+      } else {
         BaseHashMap.this.addOrRemove(BaseHashMap.this.longKeyTable[this.lookup], 0L, null, null, true);
+      }
       if (BaseHashMap.this.isList)
       {
         BaseHashMap.this.removeRow(this.lookup);
         this.lookup -= 1;
       }
     }
-
+    
     public void setValue(Object paramObject)
     {
-      if (this.keys)
+      if (this.keys) {
         throw new NoSuchElementException();
+      }
       BaseHashMap.this.objectValueTable[this.lookup] = paramObject;
     }
-
+    
     public int getAccessCount()
     {
-      if ((this.removed) || (BaseHashMap.this.accessTable == null))
+      if ((this.removed) || (BaseHashMap.this.accessTable == null)) {
         throw new NoSuchElementException();
+      }
       return BaseHashMap.this.accessTable[this.lookup];
     }
-
+    
     public void setAccessCount(int paramInt)
     {
-      if ((this.removed) || (BaseHashMap.this.accessTable == null))
+      if ((this.removed) || (BaseHashMap.this.accessTable == null)) {
         throw new NoSuchElementException();
+      }
       BaseHashMap.this.accessTable[this.lookup] = paramInt;
     }
-
+    
     public int getLookup()
     {
       return this.lookup;
     }
   }
-
+  
   protected class MultiValueKeyIterator
     implements Iterator
   {
@@ -1222,28 +1322,30 @@ public class BaseHashMap
     int lookup = -1;
     int counter;
     boolean removed;
-
+    
     public MultiValueKeyIterator()
     {
       toNextLookup();
     }
-
+    
     private void toNextLookup()
     {
-      while (true)
+      for (;;)
       {
         this.lookup = BaseHashMap.this.nextLookup(this.lookup);
-        if (this.lookup != -1)
-          if (BaseHashMap.this.multiValueTable[this.lookup] == 0)
+        if (this.lookup != -1) {
+          if (BaseHashMap.this.multiValueTable[this.lookup] == 0) {
             break;
+          }
+        }
       }
     }
-
+    
     public boolean hasNext()
     {
       return this.lookup != -1;
     }
-
+    
     public Object next()
       throws NoSuchElementException
     {
@@ -1251,86 +1353,87 @@ public class BaseHashMap
       toNextLookup();
       return localObject;
     }
-
+    
     public int nextInt()
       throws NoSuchElementException
     {
       throw new NoSuchElementException("Hash Iterator");
     }
-
+    
     public long nextLong()
       throws NoSuchElementException
     {
       throw new NoSuchElementException("Hash Iterator");
     }
-
+    
     public void remove()
       throws NoSuchElementException
     {
       throw new NoSuchElementException("Hash Iterator");
     }
-
+    
     public void setValue(Object paramObject)
     {
       throw new NoSuchElementException("Hash Iterator");
     }
   }
-
+  
   protected class ValuesIterator
     implements Iterator
   {
     int lookup = -1;
     Object key;
-
-    protected ValuesIterator()
-    {
-    }
-
+    
+    protected ValuesIterator() {}
+    
     private void reset(Object paramObject, int paramInt)
     {
       this.key = paramObject;
       this.lookup = paramInt;
     }
-
+    
     public boolean hasNext()
     {
       return this.lookup != -1;
     }
-
+    
     public Object next()
       throws NoSuchElementException
     {
-      if (this.lookup == -1)
+      if (this.lookup == -1) {
         return null;
+      }
       Object localObject = BaseHashMap.this.objectValueTable[this.lookup];
-      while (true)
+      for (;;)
       {
         this.lookup = BaseHashMap.this.hashIndex.getNextLookup(this.lookup);
-        if (this.lookup != -1)
-          if (BaseHashMap.this.objectKeyTable[this.lookup].equals(this.key))
+        if (this.lookup != -1) {
+          if (BaseHashMap.this.objectKeyTable[this.lookup].equals(this.key)) {
             break;
+          }
+        }
       }
       return localObject;
     }
-
+    
     public int nextInt()
       throws NoSuchElementException
     {
       throw new NoSuchElementException("Hash Iterator");
     }
-
+    
     public long nextLong()
       throws NoSuchElementException
     {
       throw new NoSuchElementException("Hash Iterator");
     }
-
+    
     public void remove()
       throws NoSuchElementException
     {
       throw new NoSuchElementException("Hash Iterator");
     }
-
+    
     public void setValue(Object paramObject)
     {
       throw new NoSuchElementException("Hash Iterator");
@@ -1338,7 +1441,8 @@ public class BaseHashMap
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.store.BaseHashMap
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

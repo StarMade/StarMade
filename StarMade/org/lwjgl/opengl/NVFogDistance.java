@@ -7,7 +7,8 @@ public final class NVFogDistance
   public static final int GL_EYE_PLANE_ABSOLUTE_NV = 34140;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.opengl.NVFogDistance
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

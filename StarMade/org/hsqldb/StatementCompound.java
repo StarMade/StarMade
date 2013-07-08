@@ -10,7 +10,8 @@ import org.hsqldb.result.Result;
 import org.hsqldb.result.ResultMetaData;
 import org.hsqldb.types.Type;
 
-public class StatementCompound extends Statement
+public class StatementCompound
+  extends Statement
   implements RangeGroup
 {
   final boolean isLoop;
@@ -28,7 +29,7 @@ public class StatementCompound extends Statement
   Table[] tables = Table.emptyArray;
   HashMappedList scopeTables;
   public static final StatementCompound[] emptyStatementArray = new StatementCompound[0];
-
+  
   StatementCompound(int paramInt, HsqlNameManager.HsqlName paramHsqlName)
   {
     super(paramInt, 2007);
@@ -36,64 +37,71 @@ public class StatementCompound extends Statement
     this.isTransactionStatement = false;
     switch (paramInt)
     {
-    case 46:
-    case 90:
-    case 95:
-    case 97:
+    case 46: 
+    case 90: 
+    case 95: 
+    case 97: 
       this.isLoop = true;
       break;
-    case 12:
-    case 88:
+    case 12: 
+    case 88: 
       this.isLoop = false;
       break;
-    default:
+    default: 
       throw Error.runtimeError(201, "StatementCompound");
     }
   }
-
+  
   public String getSQL()
   {
     return this.sql;
   }
-
+  
   protected String describe(Session paramSession, int paramInt)
   {
     StringBuffer localStringBuffer = new StringBuffer();
     localStringBuffer.append('\n');
-    for (int i = 0; i < paramInt; i++)
+    for (int i = 0; i < paramInt; i++) {
       localStringBuffer.append(' ');
+    }
     localStringBuffer.append("STATEMENT");
     return localStringBuffer.toString();
   }
-
+  
   public void setLocalDeclarations(Object[] paramArrayOfObject)
   {
     int i = 0;
     int j = 0;
     int k = 0;
     int m = 0;
-    for (int n = 0; n < paramArrayOfObject.length; n++)
-      if ((paramArrayOfObject[n] instanceof ColumnSchema))
+    for (int n = 0; n < paramArrayOfObject.length; n++) {
+      if ((paramArrayOfObject[n] instanceof ColumnSchema)) {
         i++;
-      else if ((paramArrayOfObject[n] instanceof StatementHandler))
+      } else if ((paramArrayOfObject[n] instanceof StatementHandler)) {
         j++;
-      else if ((paramArrayOfObject[n] instanceof Table))
+      } else if ((paramArrayOfObject[n] instanceof Table)) {
         m++;
-      else
+      } else {
         k++;
-    if (i > 0)
+      }
+    }
+    if (i > 0) {
       this.variables = new ColumnSchema[i];
-    if (j > 0)
+    }
+    if (j > 0) {
       this.handlers = new StatementHandler[j];
-    if (m > 0)
+    }
+    if (m > 0) {
       this.tables = new Table[m];
-    if (k > 0)
+    }
+    if (k > 0) {
       this.cursors = new StatementCursor[k];
+    }
     i = 0;
     j = 0;
     m = 0;
     k = 0;
-    for (n = 0; n < paramArrayOfObject.length; n++)
+    for (n = 0; n < paramArrayOfObject.length; n++) {
       if ((paramArrayOfObject[n] instanceof ColumnSchema))
       {
         this.variables[(i++)] = ((ColumnSchema)paramArrayOfObject[n]);
@@ -106,8 +114,9 @@ public class StatementCompound extends Statement
           localObject = (StatementHandler)paramArrayOfObject[n];
           ((StatementHandler)localObject).setParent(this);
           this.handlers[(j++)] = localObject;
-          if (((StatementHandler)localObject).handlerType == 7)
+          if (((StatementHandler)localObject).handlerType == 7) {
             this.hasUndoHandler = true;
+          }
         }
         else if ((paramArrayOfObject[n] instanceof Table))
         {
@@ -120,12 +129,13 @@ public class StatementCompound extends Statement
           this.cursors[(k++)] = localObject;
         }
       }
+    }
     setVariables();
     setHandlers();
     setTables();
     setCursors();
   }
-
+  
   public void setLoopStatement(StatementQuery paramStatementQuery)
   {
     this.loopCursor = paramStatementQuery;
@@ -139,47 +149,49 @@ public class StatementCompound extends Statement
     }
     setLocalDeclarations(arrayOfColumnSchema);
   }
-
+  
   void setStatements(Statement[] paramArrayOfStatement)
   {
-    for (int i = 0; i < paramArrayOfStatement.length; i++)
+    for (int i = 0; i < paramArrayOfStatement.length; i++) {
       paramArrayOfStatement[i].setParent(this);
+    }
     this.statements = paramArrayOfStatement;
   }
-
+  
   public void setCondition(StatementExpression paramStatementExpression)
   {
     this.condition = paramStatementExpression;
   }
-
+  
   public Result execute(Session paramSession)
   {
     Result localResult;
     switch (this.type)
     {
-    case 12:
+    case 12: 
       initialiseVariables(paramSession);
       localResult = executeBlock(paramSession);
       break;
-    case 46:
+    case 46: 
       localResult = executeForLoop(paramSession);
       break;
-    case 90:
-    case 95:
-    case 97:
+    case 90: 
+    case 95: 
+    case 97: 
       localResult = executeLoop(paramSession);
       break;
-    case 88:
+    case 88: 
       localResult = executeIf(paramSession);
       break;
-    default:
+    default: 
       throw Error.runtimeError(201, "StatementCompound");
     }
-    if (localResult.isError())
+    if (localResult.isError()) {
       localResult.getException().setStatementType(this.group, this.type);
+    }
     return localResult;
   }
-
+  
   private Result executeBlock(Session paramSession)
   {
     Result localResult = Result.updateZeroResult;
@@ -197,28 +209,33 @@ public class StatementCompound extends Statement
     {
       localResult = this.statements[j].execute(paramSession);
       localResult = handleCondition(paramSession, localResult);
-      if ((localResult.isError()) || (localResult.getType() == 42) || (localResult.getType() == 3))
+      if ((localResult.isError()) || (localResult.getType() == 42) || (localResult.getType() == 3)) {
         break;
+      }
     }
-    if ((localResult.getType() == 42) && (localResult.getErrorCode() == 89))
-      if (localResult.getMainString() == null)
+    if ((localResult.getType() == 42) && (localResult.getErrorCode() == 89)) {
+      if (localResult.getMainString() == null) {
         localResult = Result.updateZeroResult;
-      else if ((this.label != null) && (this.label.name.equals(localResult.getMainString())))
+      } else if ((this.label != null) && (this.label.name.equals(localResult.getMainString()))) {
         localResult = Result.updateZeroResult;
-    if (i != 0)
+      }
+    }
+    if (i != 0) {
       paramSession.sessionContext.pop();
+    }
     return localResult;
   }
-
+  
   private Result handleCondition(Session paramSession, Result paramResult)
   {
     String str1 = null;
-    if (paramResult.isError())
+    if (paramResult.isError()) {
       str1 = paramResult.getSubString();
-    else if (paramSession.getLastWarning() != null)
+    } else if (paramSession.getLastWarning() != null) {
       str1 = paramSession.getLastWarning().getSQLState();
-    else
+    } else {
       return paramResult;
+    }
     if (str1 != null)
     {
       for (int i = 0; i < this.handlers.length; i++)
@@ -231,14 +248,14 @@ public class StatementCompound extends Statement
           String str2 = this.label == null ? null : this.label.name;
           switch (localStatementHandler.handlerType)
           {
-          case 5:
+          case 5: 
             paramResult = Result.updateZeroResult;
             break;
-          case 7:
+          case 7: 
             paramSession.rollbackToSavepoint();
             paramResult = Result.newPSMResult(89, str2, null);
             break;
-          case 6:
+          case 6: 
             paramResult = Result.newPSMResult(89, null, null);
           }
           Result localResult = localStatementHandler.statement.execute(paramSession);
@@ -253,17 +270,19 @@ public class StatementCompound extends Statement
           }
         }
       }
-      if (this.parent != null)
+      if (this.parent != null) {
         return this.parent.handleCondition(paramSession, paramResult);
+      }
     }
     return paramResult;
   }
-
+  
   private Result executeForLoop(Session paramSession)
   {
     Result localResult1 = this.loopCursor.execute(paramSession);
-    if (localResult1.isError())
+    if (localResult1.isError()) {
       return localResult1;
+    }
     Result localResult2 = Result.updateZeroResult;
     while (localResult1.navigator.hasNext())
     {
@@ -273,97 +292,112 @@ public class StatementCompound extends Statement
       for (int i = 0; i < this.statements.length; i++)
       {
         localResult2 = this.statements[i].execute(paramSession);
-        if ((localResult2.isError()) || (localResult2.getType() == 42) || (localResult2.getType() == 3))
+        if ((localResult2.isError()) || (localResult2.getType() == 42) || (localResult2.getType() == 3)) {
           break;
+        }
       }
-      if (localResult2.isError())
+      if (localResult2.isError()) {
         break;
+      }
       if (localResult2.getType() == 42)
       {
         if (localResult2.getErrorCode() == 102)
         {
-          if (localResult2.getMainString() != null)
-            if ((this.label == null) || (!this.label.name.equals(localResult2.getMainString())))
+          if (localResult2.getMainString() != null) {
+            if ((this.label == null) || (!this.label.name.equals(localResult2.getMainString()))) {
               break;
+            }
+          }
         }
         else
         {
-          if (localResult2.getErrorCode() != 89)
+          if (localResult2.getErrorCode() != 89) {
             break;
+          }
           break;
         }
       }
-      else
-        if (localResult2.getType() == 3)
+      else {
+        if (localResult2.getType() == 3) {
           break;
+        }
+      }
     }
     localResult1.navigator.release();
     return localResult2;
   }
-
+  
   private Result executeLoop(Session paramSession)
   {
     Result localResult = Result.updateZeroResult;
-    label229: 
+    label229:
     do
     {
       do
       {
-        while (true)
+        for (;;)
         {
           if (this.type == 97)
           {
             localResult = this.condition.execute(paramSession);
-            if (localResult.isError())
-              break label288;
-            if (!Boolean.TRUE.equals(localResult.getValueObject()))
-            {
-              localResult = Result.updateZeroResult;
-              break label288;
+            if (localResult.isError()) {
+              return localResult;
+            }
+            if (!Boolean.TRUE.equals(localResult.getValueObject())) {
+              return Result.updateZeroResult;
             }
           }
           for (int i = 0; i < this.statements.length; i++)
           {
             localResult = this.statements[i].execute(paramSession);
-            if ((localResult.isError()) || (localResult.getType() == 42) || (localResult.getType() == 3))
+            if ((localResult.isError()) || (localResult.getType() == 42) || (localResult.getType() == 3)) {
               break;
+            }
           }
-          if (localResult.isError())
-            break label288;
-          if (localResult.getType() != 42)
+          if (localResult.isError()) {
+            return localResult;
+          }
+          if (localResult.getType() != 42) {
             break label229;
-          if (localResult.getErrorCode() != 102)
+          }
+          if (localResult.getErrorCode() != 102) {
             break;
-          if (localResult.getMainString() != null)
-            if ((this.label == null) || (!this.label.name.equals(localResult.getMainString())))
-              break label288;
+          }
+          if (localResult.getMainString() != null) {
+            if ((this.label == null) || (!this.label.name.equals(localResult.getMainString()))) {
+              return localResult;
+            }
+          }
         }
-        if (localResult.getErrorCode() != 89)
+        if (localResult.getErrorCode() != 89) {
           break;
-        if (localResult.getMainString() == null)
+        }
+        if (localResult.getMainString() == null) {
           localResult = Result.updateZeroResult;
-        if ((this.label == null) || (!this.label.name.equals(localResult.getMainString())))
+        }
+        if ((this.label == null) || (!this.label.name.equals(localResult.getMainString()))) {
           break;
+        }
         localResult = Result.updateZeroResult;
         break;
-        if (localResult.getType() == 3)
+        if (localResult.getType() == 3) {
           break;
-      }
-      while (this.type != 95);
+        }
+      } while (this.type != 95);
       localResult = this.condition.execute(paramSession);
-      if (localResult.isError())
+      if (localResult.isError()) {
         break;
-    }
-    while (!Boolean.TRUE.equals(localResult.getValueObject()));
+      }
+    } while (!Boolean.TRUE.equals(localResult.getValueObject()));
     localResult = Result.updateZeroResult;
-    label288: return localResult;
+    return localResult;
   }
-
+  
   private Result executeIf(Session paramSession)
   {
     Result localResult = Result.updateZeroResult;
     boolean bool = false;
-    for (int i = 0; i < this.statements.length; i++)
+    for (int i = 0; i < this.statements.length; i++) {
       if (this.statements[i].getType() == 1201)
       {
         if (!bool)
@@ -383,35 +417,43 @@ public class StatementCompound extends Statement
         if (bool)
         {
           localResult = this.statements[i].execute(paramSession);
-          if ((localResult.isError()) || (localResult.getType() == 42))
+          if ((localResult.isError()) || (localResult.getType() == 42)) {
             break;
+          }
         }
       }
+    }
     return localResult;
   }
-
+  
   public void resolve(Session paramSession)
   {
-    for (int i = 0; i < this.statements.length; i++)
+    for (int i = 0; i < this.statements.length; i++) {
       if ((this.statements[i].getType() == 89) || (this.statements[i].getType() == 102))
       {
-        if (!findLabel((StatementSimple)this.statements[i]))
+        if (!findLabel((StatementSimple)this.statements[i])) {
           throw Error.error(5508, ((StatementSimple)this.statements[i]).label.name);
+        }
       }
-      else if ((this.statements[i].getType() == 58) && (!this.root.isFunction()))
+      else if ((this.statements[i].getType() == 58) && (!this.root.isFunction())) {
         throw Error.error(5602, "RETURN");
-    for (i = 0; i < this.statements.length; i++)
+      }
+    }
+    for (i = 0; i < this.statements.length; i++) {
       this.statements[i].resolve(paramSession);
-    for (i = 0; i < this.handlers.length; i++)
+    }
+    for (i = 0; i < this.handlers.length; i++) {
       this.handlers[i].resolve(paramSession);
+    }
     OrderedHashSet localOrderedHashSet1 = new OrderedHashSet();
     OrderedHashSet localOrderedHashSet2 = new OrderedHashSet();
     OrderedHashSet localOrderedHashSet3 = new OrderedHashSet();
     for (int j = 0; j < this.variables.length; j++)
     {
       OrderedHashSet localOrderedHashSet4 = this.variables[j].getReferences();
-      if (localOrderedHashSet4 != null)
+      if (localOrderedHashSet4 != null) {
         localOrderedHashSet3.addAll(localOrderedHashSet4);
+      }
     }
     if (this.condition != null)
     {
@@ -437,160 +479,176 @@ public class StatementCompound extends Statement
     localOrderedHashSet1.toArray(this.writeTableNames);
     this.references = localOrderedHashSet3;
   }
-
+  
   public void setRoot(Routine paramRoutine)
   {
     this.root = paramRoutine;
   }
-
+  
   public String describe(Session paramSession)
   {
     return "";
   }
-
+  
   public OrderedHashSet getReferences()
   {
     return this.references;
   }
-
+  
   public void setAtomic(boolean paramBoolean)
   {
     this.isAtomic = paramBoolean;
   }
-
+  
   private void setVariables()
   {
     HashMappedList localHashMappedList = new HashMappedList();
     if (this.variables.length == 0)
     {
-      if (this.parent == null)
+      if (this.parent == null) {
         this.rangeVariables = this.root.getRangeVariables();
-      else
+      } else {
         this.rangeVariables = this.parent.rangeVariables;
+      }
       this.scopeVariables = localHashMappedList;
       return;
     }
-    if ((this.parent != null) && (this.parent.scopeVariables != null))
-      for (i = 0; i < this.parent.scopeVariables.size(); i++)
+    if ((this.parent != null) && (this.parent.scopeVariables != null)) {
+      for (i = 0; i < this.parent.scopeVariables.size(); i++) {
         localHashMappedList.add(this.parent.scopeVariables.getKey(i), this.parent.scopeVariables.get(i));
+      }
+    }
     for (int i = 0; i < this.variables.length; i++)
     {
       localObject = this.variables[i].getName().name;
       j = localHashMappedList.add(localObject, this.variables[i]);
-      if (j == 0)
+      if (j == 0) {
         throw Error.error(5606, (String)localObject);
-      if (this.root.getParameterIndex((String)localObject) != -1)
+      }
+      if (this.root.getParameterIndex((String)localObject) != -1) {
         throw Error.error(5606, (String)localObject);
+      }
     }
     this.scopeVariables = localHashMappedList;
     RangeVariable[] arrayOfRangeVariable = this.root.getRangeVariables();
     Object localObject = new RangeVariable(localHashMappedList, null, true, 4);
     this.rangeVariables = new RangeVariable[arrayOfRangeVariable.length + 1];
-    for (int j = 0; j < arrayOfRangeVariable.length; j++)
+    for (int j = 0; j < arrayOfRangeVariable.length; j++) {
       this.rangeVariables[j] = arrayOfRangeVariable[j];
+    }
     this.rangeVariables[arrayOfRangeVariable.length] = localObject;
     this.root.variableCount = localHashMappedList.size();
   }
-
+  
   private void setHandlers()
   {
-    if (this.handlers.length == 0)
+    if (this.handlers.length == 0) {
       return;
+    }
     HashSet localHashSet = new HashSet();
     OrderedIntHashSet localOrderedIntHashSet = new OrderedIntHashSet();
     for (int i = 0; i < this.handlers.length; i++)
     {
       int[] arrayOfInt = this.handlers[i].getConditionTypes();
-      for (int j = 0; j < arrayOfInt.length; j++)
-        if (!localOrderedIntHashSet.add(arrayOfInt[j]))
+      for (int j = 0; j < arrayOfInt.length; j++) {
+        if (!localOrderedIntHashSet.add(arrayOfInt[j])) {
           throw Error.error(5601);
+        }
+      }
       String[] arrayOfString = this.handlers[i].getConditionStates();
-      for (int k = 0; k < arrayOfString.length; k++)
-        if (!localHashSet.add(arrayOfString[k]))
+      for (int k = 0; k < arrayOfString.length; k++) {
+        if (!localHashSet.add(arrayOfString[k])) {
           throw Error.error(5601);
+        }
+      }
     }
   }
-
+  
   private void setTables()
   {
-    if (this.tables.length == 0)
+    if (this.tables.length == 0) {
       return;
+    }
     HashMappedList localHashMappedList = new HashMappedList();
-    if ((this.parent != null) && (this.parent.scopeTables != null))
-      for (i = 0; i < this.parent.scopeTables.size(); i++)
+    if ((this.parent != null) && (this.parent.scopeTables != null)) {
+      for (i = 0; i < this.parent.scopeTables.size(); i++) {
         localHashMappedList.add(this.parent.scopeTables.getKey(i), this.parent.scopeTables.get(i));
+      }
+    }
     for (int i = 0; i < this.tables.length; i++)
     {
       String str = this.tables[i].getName().name;
       boolean bool = localHashMappedList.add(str, this.tables[i]);
-      if (!bool)
+      if (!bool) {
         throw Error.error(5606, str);
+      }
     }
     this.scopeTables = localHashMappedList;
   }
-
+  
   private void setCursors()
   {
-    if (this.cursors.length == 0)
+    if (this.cursors.length == 0) {
       return;
+    }
     HashSet localHashSet = new HashSet();
     for (int i = 0; i < this.cursors.length; i++)
     {
       StatementCursor localStatementCursor = this.cursors[i];
       boolean bool = localHashSet.add(localStatementCursor.getCursorName().name);
-      if (!bool)
+      if (!bool) {
         throw Error.error(5606, localStatementCursor.getCursorName().name);
+      }
     }
   }
-
+  
   private boolean findLabel(StatementSimple paramStatementSimple)
   {
-    if ((this.label != null) && (paramStatementSimple.label.name.equals(this.label.name)))
+    if ((this.label != null) && (paramStatementSimple.label.name.equals(this.label.name))) {
       return (this.isLoop) || (paramStatementSimple.getType() != 102);
-    if (this.parent == null)
+    }
+    if (this.parent == null) {
       return false;
+    }
     return this.parent.findLabel(paramStatementSimple);
   }
-
+  
   private void initialiseVariables(Session paramSession)
   {
     Object[] arrayOfObject = paramSession.sessionContext.routineVariables;
     int i = this.parent == null ? 0 : this.parent.scopeVariables.size();
-    for (int j = 0; j < this.variables.length; j++)
+    for (int j = 0; j < this.variables.length; j++) {
       try
       {
         arrayOfObject[(i + j)] = this.variables[j].getDefaultValue(paramSession);
       }
-      catch (HsqlException localHsqlException)
-      {
-      }
+      catch (HsqlException localHsqlException) {}
+    }
   }
-
+  
   private void initialiseVariables(Session paramSession, Object[] paramArrayOfObject, int paramInt)
   {
     Object[] arrayOfObject = paramSession.sessionContext.routineVariables;
     int i = this.parent == null ? 0 : this.parent.scopeVariables.size();
-    for (int j = 0; j < paramInt; j++)
+    for (int j = 0; j < paramInt; j++) {
       try
       {
         arrayOfObject[(i + j)] = paramArrayOfObject[j];
       }
-      catch (HsqlException localHsqlException)
-      {
-      }
+      catch (HsqlException localHsqlException) {}
+    }
   }
-
+  
   public RangeVariable[] getRangeVariables()
   {
     return this.rangeVariables;
   }
-
-  public void setCorrelated()
-  {
-  }
+  
+  public void setCorrelated() {}
 }
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.StatementCompound
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

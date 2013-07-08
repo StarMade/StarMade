@@ -28,7 +28,7 @@ public class Token
   boolean isMalformed;
   int position;
   Object expression;
-
+  
   void reset()
   {
     this.tokenString = "";
@@ -55,7 +55,7 @@ public class Token
     this.isHostParameter = false;
     this.isMalformed = false;
   }
-
+  
   Token duplicate()
   {
     Token localToken = new Token();
@@ -83,17 +83,17 @@ public class Token
     localToken.isMalformed = this.isMalformed;
     return localToken;
   }
-
+  
   public String getFullString()
   {
     return this.fullString;
   }
-
+  
   public void setExpression(Object paramObject)
   {
     this.expression = paramObject;
   }
-
+  
   String getSQL()
   {
     if ((this.expression instanceof ExpressionColumn))
@@ -111,8 +111,9 @@ public class Token
             ColumnSchema localColumnSchema = localExpression2.getColumn();
             if (localExpression2.opType == 3)
             {
-              if (i > 0)
+              if (i > 0) {
                 ((StringBuffer)localObject).append(',');
+              }
               ((StringBuffer)localObject).append(localExpression2.getColumnName());
             }
             else
@@ -127,8 +128,9 @@ public class Token
                 RangeVariable localRangeVariable = localExpression2.getRangeVariable();
                 str = localRangeVariable.tableAlias.getStatementName() + '.' + localColumnSchema.getName().statementName;
               }
-              if (i > 0)
+              if (i > 0) {
                 ((StringBuffer)localObject).append(',');
+              }
               ((StringBuffer)localObject).append(str);
             }
           }
@@ -147,8 +149,9 @@ public class Token
       {
         this.isDelimiter = false;
         localObject = (Type)this.expression;
-        if ((((Type)localObject).isDistinctType()) || (((Type)localObject).isDomainType()))
+        if ((((Type)localObject).isDistinctType()) || (((Type)localObject).isDomainType())) {
           return ((Type)localObject).getName().getSchemaQualifiedStatementName();
+        }
         return ((Type)localObject).getNameString();
       }
       if ((this.expression instanceof SchemaObject))
@@ -157,10 +160,12 @@ public class Token
         return ((SchemaObject)this.expression).getName().getSchemaQualifiedStatementName();
       }
     }
-    if ((this.namePrefix == null) && (this.isUndelimitedIdentifier))
+    if ((this.namePrefix == null) && (this.isUndelimitedIdentifier)) {
       return this.tokenString;
-    if (this.tokenType == 845)
+    }
+    if (this.tokenType == 845) {
       return this.dataType.convertToSQLString(this.tokenValue);
+    }
     Object localObject = new StringBuffer();
     if (this.namePrePrefix != null)
     {
@@ -203,7 +208,7 @@ public class Token
     }
     return ((StringBuffer)localObject).toString();
   }
-
+  
   static String getSQL(Token[] paramArrayOfToken)
   {
     boolean bool = true;
@@ -211,27 +216,31 @@ public class Token
     for (int i = 0; i < paramArrayOfToken.length; i++)
     {
       String str = paramArrayOfToken[i].getSQL();
-      if ((!paramArrayOfToken[i].isDelimiter) && (!bool))
+      if ((!paramArrayOfToken[i].isDelimiter) && (!bool)) {
         localStringBuffer.append(' ');
+      }
       localStringBuffer.append(str);
       bool = paramArrayOfToken[i].isDelimiter;
     }
     return localStringBuffer.toString();
   }
-
+  
   static Object[] getSimplifiedTokens(Token[] paramArrayOfToken)
   {
     Object[] arrayOfObject = new Object[paramArrayOfToken.length];
-    for (int i = 0; i < paramArrayOfToken.length; i++)
-      if (paramArrayOfToken[i].expression == null)
+    for (int i = 0; i < paramArrayOfToken.length; i++) {
+      if (paramArrayOfToken[i].expression == null) {
         arrayOfObject[i] = paramArrayOfToken[i].getSQL();
-      else
+      } else {
         arrayOfObject[i] = paramArrayOfToken[i].expression;
+      }
+    }
     return arrayOfObject;
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.Token
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

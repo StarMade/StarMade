@@ -26,95 +26,110 @@ class Like
   boolean isVariable = true;
   boolean isBinary = false;
   Type dataType;
-
+  
   void setParams(boolean paramBoolean)
   {
     this.hasCollation = paramBoolean;
   }
-
+  
   void setIgnoreCase(boolean paramBoolean)
   {
     this.isIgnoreCase = paramBoolean;
   }
-
+  
   private Object getStartsWith()
   {
-    if (this.iLen == 0)
+    if (this.iLen == 0) {
       return this.isBinary ? BinaryData.zeroLengthBinary : "";
+    }
     StringBuffer localStringBuffer = null;
     HsqlByteArrayOutputStream localHsqlByteArrayOutputStream = null;
-    if (this.isBinary)
+    if (this.isBinary) {
       localHsqlByteArrayOutputStream = new HsqlByteArrayOutputStream();
-    else
+    } else {
       localStringBuffer = new StringBuffer();
-    for (int i = 0; (i < this.iLen) && (this.wildCardType[i] == 0); i++)
-      if (this.isBinary)
+    }
+    for (int i = 0; (i < this.iLen) && (this.wildCardType[i] == 0); i++) {
+      if (this.isBinary) {
         localHsqlByteArrayOutputStream.writeByte(this.cLike[i]);
-      else
+      } else {
         localStringBuffer.append(this.cLike[i]);
-    if (i == 0)
+      }
+    }
+    if (i == 0) {
       return null;
+    }
     return this.isBinary ? new BinaryData(localHsqlByteArrayOutputStream.toByteArray(), false) : localStringBuffer.toString();
   }
-
+  
   Boolean compare(Session paramSession, Object paramObject)
   {
-    if (paramObject == null)
+    if (paramObject == null) {
       return null;
-    if (this.isNull)
+    }
+    if (this.isNull) {
       return null;
+    }
     int i = getLength(paramSession, paramObject);
-    if (this.isIgnoreCase)
+    if (this.isIgnoreCase) {
       paramObject = ((CharacterType)this.dataType).upper(paramSession, paramObject);
-    if ((paramObject instanceof ClobData))
+    }
+    if ((paramObject instanceof ClobData)) {
       paramObject = ((ClobData)paramObject).getChars(paramSession, 0L, (int)((ClobData)paramObject).length(paramSession));
+    }
     return compareAt(paramObject, 0, 0, this.iLen, i, this.cLike, this.wildCardType) ? Boolean.TRUE : Boolean.FALSE;
   }
-
+  
   char getChar(Object paramObject, int paramInt)
   {
     char c;
-    if (this.isBinary)
+    if (this.isBinary) {
       c = (char)((org.hsqldb.types.BlobData)paramObject).getBytes()[paramInt];
-    else if ((paramObject instanceof char[]))
+    } else if ((paramObject instanceof char[])) {
       c = ((char[])(char[])paramObject)[paramInt];
-    else
+    } else {
       c = ((String)paramObject).charAt(paramInt);
+    }
     return c;
   }
-
+  
   int getLength(SessionInterface paramSessionInterface, Object paramObject)
   {
     int i;
-    if ((paramObject instanceof LobData))
+    if ((paramObject instanceof LobData)) {
       i = (int)((LobData)paramObject).length(paramSessionInterface);
-    else
+    } else {
       i = ((String)paramObject).length();
+    }
     return i;
   }
-
+  
   private boolean compareAt(Object paramObject, int paramInt1, int paramInt2, int paramInt3, int paramInt4, char[] paramArrayOfChar, int[] paramArrayOfInt)
   {
     while (paramInt1 < paramInt3)
     {
       switch (paramArrayOfInt[paramInt1])
       {
-      case 0:
-        if ((paramInt2 >= paramInt4) || (paramArrayOfChar[paramInt1] != getChar(paramObject, paramInt2++)))
+      case 0: 
+        if ((paramInt2 >= paramInt4) || (paramArrayOfChar[paramInt1] != getChar(paramObject, paramInt2++))) {
           return false;
+        }
         break;
-      case 1:
-        if (paramInt2++ >= paramInt4)
+      case 1: 
+        if (paramInt2++ >= paramInt4) {
           return false;
+        }
         break;
-      case 2:
+      case 2: 
         paramInt1++;
-        if (paramInt1 >= paramInt3)
+        if (paramInt1 >= paramInt3) {
           return true;
+        }
         while (paramInt2 < paramInt4)
         {
-          if ((paramArrayOfChar[paramInt1] == getChar(paramObject, paramInt2)) && (compareAt(paramObject, paramInt1, paramInt2, paramInt3, paramInt4, paramArrayOfChar, paramArrayOfInt)))
+          if ((paramArrayOfChar[paramInt1] == getChar(paramObject, paramInt2)) && (compareAt(paramObject, paramInt1, paramInt2, paramInt3, paramInt4, paramArrayOfChar, paramArrayOfInt))) {
             return true;
+          }
           paramInt2++;
         }
         return false;
@@ -123,7 +138,7 @@ class Like
     }
     return paramInt2 == paramInt4;
   }
-
+  
   void setPattern(Session paramSession, Object paramObject1, Object paramObject2, boolean paramBoolean)
   {
     this.isNull = (paramObject1 == null);
@@ -141,16 +156,19 @@ class Like
       i = getLength(paramSession, paramObject2);
       if (i != 1)
       {
-        if (this.isBinary)
+        if (this.isBinary) {
           throw Error.error(3412);
+        }
         throw Error.error(3439);
       }
       this.escapeChar = getChar(paramObject2, 0);
     }
-    if (this.isNull)
+    if (this.isNull) {
       return;
-    if (this.isIgnoreCase)
+    }
+    if (this.isIgnoreCase) {
       paramObject1 = (String)((CharacterType)this.dataType).upper(null, paramObject1);
+    }
     this.iLen = 0;
     this.iFirstWildCard = -1;
     int i = getLength(paramSession, paramObject1);
@@ -171,17 +189,20 @@ class Like
         if (n == 95)
         {
           this.wildCardType[this.iLen] = 1;
-          if (this.iFirstWildCard == -1)
+          if (this.iFirstWildCard == -1) {
             this.iFirstWildCard = this.iLen;
+          }
         }
         else if (n == 37)
         {
-          if (k != 0)
+          if (k != 0) {
             continue;
+          }
           k = 1;
           this.wildCardType[this.iLen] = 2;
-          if (this.iFirstWildCard == -1)
+          if (this.iFirstWildCard == -1) {
             this.iFirstWildCard = this.iLen;
+          }
         }
         else
         {
@@ -199,56 +220,63 @@ class Like
       }
       this.cLike[(this.iLen++)] = n;
     }
-    if (j != 0)
+    if (j != 0) {
       throw Error.error(3458);
-    for (m = 0; m < this.iLen - 1; m++)
+    }
+    for (m = 0; m < this.iLen - 1; m++) {
       if ((this.wildCardType[m] == 2) && (this.wildCardType[(m + 1)] == 1))
       {
         this.wildCardType[m] = 1;
         this.wildCardType[(m + 1)] = 2;
       }
+    }
   }
-
+  
   boolean isEquivalentToUnknownPredicate()
   {
     return (!this.isVariable) && (this.isNull);
   }
-
+  
   boolean isEquivalentToEqualsPredicate()
   {
     return (!this.isVariable) && (this.iFirstWildCard == -1);
   }
-
+  
   boolean isEquivalentToNotNullPredicate()
   {
-    if ((this.isVariable) || (this.isNull) || (this.iFirstWildCard == -1))
+    if ((this.isVariable) || (this.isNull) || (this.iFirstWildCard == -1)) {
       return false;
-    for (int i = 0; i < this.wildCardType.length; i++)
-      if (this.wildCardType[i] != 2)
+    }
+    for (int i = 0; i < this.wildCardType.length; i++) {
+      if (this.wildCardType[i] != 2) {
         return false;
+      }
+    }
     return true;
   }
-
+  
   int getFirstWildCardIndex()
   {
     return this.iFirstWildCard;
   }
-
+  
   Object getRangeLow()
   {
     return getStartsWith();
   }
-
+  
   Object getRangeHigh(Session paramSession)
   {
     Object localObject = getStartsWith();
-    if (localObject == null)
+    if (localObject == null) {
       return null;
-    if (this.isBinary)
+    }
+    if (this.isBinary) {
       return new BinaryData(paramSession, (BinaryData)localObject, maxByteValue);
+    }
     return this.dataType.concat(paramSession, localObject, "ð¿¿");
   }
-
+  
   public String describe(Session paramSession)
   {
     StringBuffer localStringBuffer = new StringBuffer();
@@ -266,7 +294,7 @@ class Like
     localStringBuffer.append(']');
     return localStringBuffer.toString();
   }
-
+  
   public Like duplicate()
   {
     try
@@ -275,12 +303,13 @@ class Like
     }
     catch (CloneNotSupportedException localCloneNotSupportedException)
     {
+      throw Error.runtimeError(201, "Expression");
     }
-    throw Error.runtimeError(201, "Expression");
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.Like
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

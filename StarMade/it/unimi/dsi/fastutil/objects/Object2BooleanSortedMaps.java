@@ -1,182 +1,168 @@
-/*     */ package it.unimi.dsi.fastutil.objects;
-/*     */ 
-/*     */ import java.io.Serializable;
-/*     */ import java.util.Comparator;
-/*     */ import java.util.Map.Entry;
-/*     */ import java.util.NoSuchElementException;
-/*     */ 
-/*     */ public class Object2BooleanSortedMaps
-/*     */ {
-/* 103 */   public static final EmptySortedMap EMPTY_MAP = new EmptySortedMap();
-/*     */ 
-/*     */   public static <K> Comparator<? super Map.Entry<K, ?>> entryComparator(Comparator<K> comparator)
-/*     */   {
-/*  63 */     return new Comparator() {
-/*     */       public int compare(Map.Entry<K, ?> x, Map.Entry<K, ?> y) {
-/*  65 */         return this.val$comparator.compare(x.getKey(), y.getKey());
-/*     */       }
-/*     */     };
-/*     */   }
-/*     */ 
-/*     */   public static <K> Object2BooleanSortedMap<K> singleton(K key, Boolean value)
-/*     */   {
-/* 162 */     return new Singleton(key, value.booleanValue());
-/*     */   }
-/*     */ 
-/*     */   public static <K> Object2BooleanSortedMap<K> singleton(K key, Boolean value, Comparator<? super K> comparator)
-/*     */   {
-/* 174 */     return new Singleton(key, value.booleanValue(), comparator);
-/*     */   }
-/*     */ 
-/*     */   public static <K> Object2BooleanSortedMap<K> singleton(K key, boolean value)
-/*     */   {
-/* 185 */     return new Singleton(key, value);
-/*     */   }
-/*     */ 
-/*     */   public static <K> Object2BooleanSortedMap<K> singleton(K key, boolean value, Comparator<? super K> comparator)
-/*     */   {
-/* 197 */     return new Singleton(key, value, comparator);
-/*     */   }
-/*     */ 
-/*     */   public static <K> Object2BooleanSortedMap<K> synchronize(Object2BooleanSortedMap<K> m)
-/*     */   {
-/* 228 */     return new SynchronizedSortedMap(m);
-/*     */   }
-/*     */ 
-/*     */   public static <K> Object2BooleanSortedMap<K> synchronize(Object2BooleanSortedMap<K> m, Object sync)
-/*     */   {
-/* 236 */     return new SynchronizedSortedMap(m, sync);
-/*     */   }
-/*     */ 
-/*     */   public static <K> Object2BooleanSortedMap<K> unmodifiable(Object2BooleanSortedMap<K> m)
-/*     */   {
-/* 262 */     return new UnmodifiableSortedMap(m);
-/*     */   }
-/*     */ 
-/*     */   public static class UnmodifiableSortedMap<K> extends Object2BooleanMaps.UnmodifiableMap<K>
-/*     */     implements Object2BooleanSortedMap<K>, Serializable
-/*     */   {
-/*     */     public static final long serialVersionUID = -7046029254386353129L;
-/*     */     protected final Object2BooleanSortedMap<K> sortedMap;
-/*     */ 
-/*     */     protected UnmodifiableSortedMap(Object2BooleanSortedMap<K> m)
-/*     */     {
-/* 242 */       super();
-/* 243 */       this.sortedMap = m;
-/*     */     }
-/* 245 */     public Comparator<? super K> comparator() { return this.sortedMap.comparator(); } 
-/* 246 */     public ObjectSortedSet<Object2BooleanMap.Entry<K>> object2BooleanEntrySet() { if (this.entries == null) this.entries = ObjectSortedSets.unmodifiable(this.sortedMap.object2BooleanEntrySet()); return (ObjectSortedSet)this.entries; } 
-/*     */     public ObjectSortedSet<Map.Entry<K, Boolean>> entrySet() {
-/* 248 */       return object2BooleanEntrySet(); } 
-/* 249 */     public ObjectSortedSet<K> keySet() { if (this.keys == null) this.keys = ObjectSortedSets.unmodifiable(this.sortedMap.keySet()); return (ObjectSortedSet)this.keys; } 
-/* 250 */     public Object2BooleanSortedMap<K> subMap(K from, K to) { return new UnmodifiableSortedMap(this.sortedMap.subMap(from, to)); } 
-/* 251 */     public Object2BooleanSortedMap<K> headMap(K to) { return new UnmodifiableSortedMap(this.sortedMap.headMap(to)); } 
-/* 252 */     public Object2BooleanSortedMap<K> tailMap(K from) { return new UnmodifiableSortedMap(this.sortedMap.tailMap(from)); } 
-/* 253 */     public K firstKey() { return this.sortedMap.firstKey(); } 
-/* 254 */     public K lastKey() { return this.sortedMap.lastKey(); }
-/*     */ 
-/*     */   }
-/*     */ 
-/*     */   public static class SynchronizedSortedMap<K> extends Object2BooleanMaps.SynchronizedMap<K>
-/*     */     implements Object2BooleanSortedMap<K>, Serializable
-/*     */   {
-/*     */     public static final long serialVersionUID = -7046029254386353129L;
-/*     */     protected final Object2BooleanSortedMap<K> sortedMap;
-/*     */ 
-/*     */     protected SynchronizedSortedMap(Object2BooleanSortedMap<K> m, Object sync)
-/*     */     {
-/* 204 */       super(sync);
-/* 205 */       this.sortedMap = m;
-/*     */     }
-/*     */     protected SynchronizedSortedMap(Object2BooleanSortedMap<K> m) {
-/* 208 */       super();
-/* 209 */       this.sortedMap = m;
-/*     */     }
-/* 211 */     public Comparator<? super K> comparator() { synchronized (this.sync) { return this.sortedMap.comparator(); }  } 
-/* 212 */     public ObjectSortedSet<Object2BooleanMap.Entry<K>> object2BooleanEntrySet() { if (this.entries == null) this.entries = ObjectSortedSets.synchronize(this.sortedMap.object2BooleanEntrySet(), this.sync); return (ObjectSortedSet)this.entries; } 
-/*     */     public ObjectSortedSet<Map.Entry<K, Boolean>> entrySet() {
-/* 214 */       return object2BooleanEntrySet(); } 
-/* 215 */     public ObjectSortedSet<K> keySet() { if (this.keys == null) this.keys = ObjectSortedSets.synchronize(this.sortedMap.keySet(), this.sync); return (ObjectSortedSet)this.keys; } 
-/* 216 */     public Object2BooleanSortedMap<K> subMap(K from, K to) { return new SynchronizedSortedMap(this.sortedMap.subMap(from, to), this.sync); } 
-/* 217 */     public Object2BooleanSortedMap<K> headMap(K to) { return new SynchronizedSortedMap(this.sortedMap.headMap(to), this.sync); } 
-/* 218 */     public Object2BooleanSortedMap<K> tailMap(K from) { return new SynchronizedSortedMap(this.sortedMap.tailMap(from), this.sync); } 
-/* 219 */     public K firstKey() { synchronized (this.sync) { return this.sortedMap.firstKey(); }  } 
-/* 220 */     public K lastKey() { synchronized (this.sync) { return this.sortedMap.lastKey(); }
-/*     */ 
-/*     */     }
-/*     */   }
-/*     */ 
-/*     */   public static class Singleton<K> extends Object2BooleanMaps.Singleton<K>
-/*     */     implements Object2BooleanSortedMap<K>, Serializable, Cloneable
-/*     */   {
-/*     */     public static final long serialVersionUID = -7046029254386353129L;
-/*     */     protected final Comparator<? super K> comparator;
-/*     */ 
-/*     */     protected Singleton(K key, boolean value, Comparator<? super K> comparator)
-/*     */     {
-/* 119 */       super(value);
-/* 120 */       this.comparator = comparator;
-/*     */     }
-/*     */ 
-/*     */     protected Singleton(K key, boolean value) {
-/* 124 */       this(key, value, null);
-/*     */     }
-/*     */ 
-/*     */     final int compare(K k1, K k2)
-/*     */     {
-/* 129 */       return this.comparator == null ? ((Comparable)k1).compareTo(k2) : this.comparator.compare(k1, k2);
-/*     */     }
-/*     */     public Comparator<? super K> comparator() {
-/* 132 */       return this.comparator;
-/*     */     }
-/*     */     public ObjectSortedSet<Object2BooleanMap.Entry<K>> object2BooleanEntrySet() {
-/* 135 */       if (this.entries == null) this.entries = ObjectSortedSets.singleton(new Object2BooleanMaps.Singleton.SingletonEntry(this), Object2BooleanSortedMaps.entryComparator(this.comparator)); return (ObjectSortedSet)this.entries;
-/*     */     }
-/* 137 */     public ObjectSortedSet<Map.Entry<K, Boolean>> entrySet() { return object2BooleanEntrySet(); } 
-/*     */     public ObjectSortedSet<K> keySet() {
-/* 139 */       if (this.keys == null) this.keys = ObjectSortedSets.singleton(this.key, this.comparator); return (ObjectSortedSet)this.keys;
-/*     */     }
-/*     */     public Object2BooleanSortedMap<K> subMap(K from, K to) {
-/* 142 */       if ((compare(from, this.key) <= 0) && (compare(this.key, to) < 0)) return this; return Object2BooleanSortedMaps.EMPTY_MAP;
-/*     */     }
-/*     */     public Object2BooleanSortedMap<K> headMap(K to) {
-/* 145 */       if (compare(this.key, to) < 0) return this; return Object2BooleanSortedMaps.EMPTY_MAP;
-/*     */     }
-/*     */     public Object2BooleanSortedMap<K> tailMap(K from) {
-/* 148 */       if (compare(from, this.key) <= 0) return this; return Object2BooleanSortedMaps.EMPTY_MAP;
-/*     */     }
-/* 150 */     public K firstKey() { return this.key; } 
-/* 151 */     public K lastKey() { return this.key; }
-/*     */ 
-/*     */   }
-/*     */ 
-/*     */   public static class EmptySortedMap<K> extends Object2BooleanMaps.EmptyMap<K>
-/*     */     implements Object2BooleanSortedMap<K>, Serializable, Cloneable
-/*     */   {
-/*     */     public static final long serialVersionUID = -7046029254386353129L;
-/*     */ 
-/*     */     public Comparator<? super K> comparator()
-/*     */     {
-/*  77 */       return null;
-/*     */     }
-/*  79 */     public ObjectSortedSet<Object2BooleanMap.Entry<K>> object2BooleanEntrySet() { return ObjectSortedSets.EMPTY_SET; } 
-/*     */     public ObjectSortedSet<Map.Entry<K, Boolean>> entrySet() {
-/*  81 */       return ObjectSortedSets.EMPTY_SET;
-/*     */     }
-/*  83 */     public ObjectSortedSet<K> keySet() { return ObjectSortedSets.EMPTY_SET; } 
-/*     */     public Object2BooleanSortedMap<K> subMap(K from, K to) {
-/*  85 */       return Object2BooleanSortedMaps.EMPTY_MAP;
-/*     */     }
-/*  87 */     public Object2BooleanSortedMap<K> headMap(K to) { return Object2BooleanSortedMaps.EMPTY_MAP; } 
-/*     */     public Object2BooleanSortedMap<K> tailMap(K from) {
-/*  89 */       return Object2BooleanSortedMaps.EMPTY_MAP; } 
-/*  90 */     public K firstKey() { throw new NoSuchElementException(); } 
-/*  91 */     public K lastKey() { throw new NoSuchElementException(); }
-/*     */ 
-/*     */   }
-/*     */ }
+/*   1:    */package it.unimi.dsi.fastutil.objects;
+/*   2:    */
+/*   3:    */import java.io.Serializable;
+/*   4:    */import java.util.Comparator;
+/*   5:    */import java.util.Map.Entry;
+/*   6:    */import java.util.NoSuchElementException;
+/*   7:    */
+/*  59:    */public class Object2BooleanSortedMaps
+/*  60:    */{
+/*  61:    */  public static <K> Comparator<? super Map.Entry<K, ?>> entryComparator(Comparator<K> comparator)
+/*  62:    */  {
+/*  63: 63 */    new Comparator() {
+/*  64:    */      public int compare(Map.Entry<K, ?> x, Map.Entry<K, ?> y) {
+/*  65: 65 */        return this.val$comparator.compare(x.getKey(), y.getKey());
+/*  66:    */      }
+/*  67:    */    };
+/*  68:    */  }
+/*  69:    */  
+/*  71:    */  public static class EmptySortedMap<K>
+/*  72:    */    extends Object2BooleanMaps.EmptyMap<K>
+/*  73:    */    implements Object2BooleanSortedMap<K>, Serializable, Cloneable
+/*  74:    */  {
+/*  75:    */    public static final long serialVersionUID = -7046029254386353129L;
+/*  76:    */    
+/*  77: 77 */    public Comparator<? super K> comparator() { return null; }
+/*  78:    */    
+/*  79: 79 */    public ObjectSortedSet<Object2BooleanMap.Entry<K>> object2BooleanEntrySet() { return ObjectSortedSets.EMPTY_SET; }
+/*  80:    */    
+/*  81: 81 */    public ObjectSortedSet<Map.Entry<K, Boolean>> entrySet() { return ObjectSortedSets.EMPTY_SET; }
+/*  82:    */    
+/*  83: 83 */    public ObjectSortedSet<K> keySet() { return ObjectSortedSets.EMPTY_SET; }
+/*  84:    */    
+/*  85: 85 */    public Object2BooleanSortedMap<K> subMap(K from, K to) { return Object2BooleanSortedMaps.EMPTY_MAP; }
+/*  86:    */    
+/*  87: 87 */    public Object2BooleanSortedMap<K> headMap(K to) { return Object2BooleanSortedMaps.EMPTY_MAP; }
+/*  88:    */    
+/*  89: 89 */    public Object2BooleanSortedMap<K> tailMap(K from) { return Object2BooleanSortedMaps.EMPTY_MAP; }
+/*  90: 90 */    public K firstKey() { throw new NoSuchElementException(); }
+/*  91: 91 */    public K lastKey() { throw new NoSuchElementException(); }
+/*  92:    */  }
+/*  93:    */  
+/* 103:103 */  public static final EmptySortedMap EMPTY_MAP = new EmptySortedMap();
+/* 104:    */  
+/* 107:    */  public static class Singleton<K>
+/* 108:    */    extends Object2BooleanMaps.Singleton<K>
+/* 109:    */    implements Object2BooleanSortedMap<K>, Serializable, Cloneable
+/* 110:    */  {
+/* 111:    */    public static final long serialVersionUID = -7046029254386353129L;
+/* 112:    */    
+/* 114:    */    protected final Comparator<? super K> comparator;
+/* 115:    */    
+/* 117:    */    protected Singleton(K key, boolean value, Comparator<? super K> comparator)
+/* 118:    */    {
+/* 119:119 */      super(value);
+/* 120:120 */      this.comparator = comparator;
+/* 121:    */    }
+/* 122:    */    
+/* 123:    */    protected Singleton(K key, boolean value) {
+/* 124:124 */      this(key, value, null);
+/* 125:    */    }
+/* 126:    */    
+/* 127:    */    final int compare(K k1, K k2)
+/* 128:    */    {
+/* 129:129 */      return this.comparator == null ? ((Comparable)k1).compareTo(k2) : this.comparator.compare(k1, k2);
+/* 130:    */    }
+/* 131:    */    
+/* 132:132 */    public Comparator<? super K> comparator() { return this.comparator; }
+/* 133:    */    
+/* 134:    */    public ObjectSortedSet<Object2BooleanMap.Entry<K>> object2BooleanEntrySet() {
+/* 135:135 */      if (this.entries == null) this.entries = ObjectSortedSets.singleton(new Object2BooleanMaps.Singleton.SingletonEntry(this), Object2BooleanSortedMaps.entryComparator(this.comparator)); return (ObjectSortedSet)this.entries; }
+/* 136:    */    
+/* 137:137 */    public ObjectSortedSet<Map.Entry<K, Boolean>> entrySet() { return object2BooleanEntrySet(); }
+/* 138:    */    
+/* 139:139 */    public ObjectSortedSet<K> keySet() { if (this.keys == null) this.keys = ObjectSortedSets.singleton(this.key, this.comparator); return (ObjectSortedSet)this.keys;
+/* 140:    */    }
+/* 141:    */    
+/* 142:142 */    public Object2BooleanSortedMap<K> subMap(K from, K to) { if ((compare(from, this.key) <= 0) && (compare(this.key, to) < 0)) return this; return Object2BooleanSortedMaps.EMPTY_MAP;
+/* 143:    */    }
+/* 144:    */    
+/* 145:145 */    public Object2BooleanSortedMap<K> headMap(K to) { if (compare(this.key, to) < 0) return this; return Object2BooleanSortedMaps.EMPTY_MAP;
+/* 146:    */    }
+/* 147:    */    
+/* 148:148 */    public Object2BooleanSortedMap<K> tailMap(K from) { if (compare(from, this.key) <= 0) return this; return Object2BooleanSortedMaps.EMPTY_MAP; }
+/* 149:    */    
+/* 150:150 */    public K firstKey() { return this.key; }
+/* 151:151 */    public K lastKey() { return this.key; }
+/* 152:    */  }
+/* 153:    */  
+/* 160:    */  public static <K> Object2BooleanSortedMap<K> singleton(K key, Boolean value)
+/* 161:    */  {
+/* 162:162 */    return new Singleton(key, value.booleanValue());
+/* 163:    */  }
+/* 164:    */  
+/* 172:    */  public static <K> Object2BooleanSortedMap<K> singleton(K key, Boolean value, Comparator<? super K> comparator)
+/* 173:    */  {
+/* 174:174 */    return new Singleton(key, value.booleanValue(), comparator);
+/* 175:    */  }
+/* 176:    */  
+/* 183:    */  public static <K> Object2BooleanSortedMap<K> singleton(K key, boolean value)
+/* 184:    */  {
+/* 185:185 */    return new Singleton(key, value);
+/* 186:    */  }
+/* 187:    */  
+/* 197:197 */  public static <K> Object2BooleanSortedMap<K> singleton(K key, boolean value, Comparator<? super K> comparator) { return new Singleton(key, value, comparator); }
+/* 198:    */  
+/* 199:    */  public static class SynchronizedSortedMap<K> extends Object2BooleanMaps.SynchronizedMap<K> implements Object2BooleanSortedMap<K>, Serializable {
+/* 200:    */    public static final long serialVersionUID = -7046029254386353129L;
+/* 201:    */    protected final Object2BooleanSortedMap<K> sortedMap;
+/* 202:    */    
+/* 203:    */    protected SynchronizedSortedMap(Object2BooleanSortedMap<K> m, Object sync) {
+/* 204:204 */      super(sync);
+/* 205:205 */      this.sortedMap = m;
+/* 206:    */    }
+/* 207:    */    
+/* 208:208 */    protected SynchronizedSortedMap(Object2BooleanSortedMap<K> m) { super();
+/* 209:209 */      this.sortedMap = m; }
+/* 210:    */    
+/* 211:211 */    public Comparator<? super K> comparator() { synchronized (this.sync) { return this.sortedMap.comparator(); } }
+/* 212:212 */    public ObjectSortedSet<Object2BooleanMap.Entry<K>> object2BooleanEntrySet() { if (this.entries == null) this.entries = ObjectSortedSets.synchronize(this.sortedMap.object2BooleanEntrySet(), this.sync); return (ObjectSortedSet)this.entries; }
+/* 213:    */    
+/* 214:214 */    public ObjectSortedSet<Map.Entry<K, Boolean>> entrySet() { return object2BooleanEntrySet(); }
+/* 215:215 */    public ObjectSortedSet<K> keySet() { if (this.keys == null) this.keys = ObjectSortedSets.synchronize(this.sortedMap.keySet(), this.sync); return (ObjectSortedSet)this.keys; }
+/* 216:216 */    public Object2BooleanSortedMap<K> subMap(K from, K to) { return new SynchronizedSortedMap(this.sortedMap.subMap(from, to), this.sync); }
+/* 217:217 */    public Object2BooleanSortedMap<K> headMap(K to) { return new SynchronizedSortedMap(this.sortedMap.headMap(to), this.sync); }
+/* 218:218 */    public Object2BooleanSortedMap<K> tailMap(K from) { return new SynchronizedSortedMap(this.sortedMap.tailMap(from), this.sync); }
+/* 219:219 */    public K firstKey() { synchronized (this.sync) { return this.sortedMap.firstKey(); } }
+/* 220:220 */    public K lastKey() { synchronized (this.sync) { return this.sortedMap.lastKey();
+/* 221:    */      }
+/* 222:    */    }
+/* 223:    */  }
+/* 224:    */  
+/* 226:    */  public static <K> Object2BooleanSortedMap<K> synchronize(Object2BooleanSortedMap<K> m)
+/* 227:    */  {
+/* 228:228 */    return new SynchronizedSortedMap(m);
+/* 229:    */  }
+/* 230:    */  
+/* 236:236 */  public static <K> Object2BooleanSortedMap<K> synchronize(Object2BooleanSortedMap<K> m, Object sync) { return new SynchronizedSortedMap(m, sync); }
+/* 237:    */  
+/* 238:    */  public static class UnmodifiableSortedMap<K> extends Object2BooleanMaps.UnmodifiableMap<K> implements Object2BooleanSortedMap<K>, Serializable {
+/* 239:    */    public static final long serialVersionUID = -7046029254386353129L;
+/* 240:    */    protected final Object2BooleanSortedMap<K> sortedMap;
+/* 241:    */    
+/* 242:242 */    protected UnmodifiableSortedMap(Object2BooleanSortedMap<K> m) { super();
+/* 243:243 */      this.sortedMap = m; }
+/* 244:    */    
+/* 245:245 */    public Comparator<? super K> comparator() { return this.sortedMap.comparator(); }
+/* 246:246 */    public ObjectSortedSet<Object2BooleanMap.Entry<K>> object2BooleanEntrySet() { if (this.entries == null) this.entries = ObjectSortedSets.unmodifiable(this.sortedMap.object2BooleanEntrySet()); return (ObjectSortedSet)this.entries; }
+/* 247:    */    
+/* 248:248 */    public ObjectSortedSet<Map.Entry<K, Boolean>> entrySet() { return object2BooleanEntrySet(); }
+/* 249:249 */    public ObjectSortedSet<K> keySet() { if (this.keys == null) this.keys = ObjectSortedSets.unmodifiable(this.sortedMap.keySet()); return (ObjectSortedSet)this.keys; }
+/* 250:250 */    public Object2BooleanSortedMap<K> subMap(K from, K to) { return new UnmodifiableSortedMap(this.sortedMap.subMap(from, to)); }
+/* 251:251 */    public Object2BooleanSortedMap<K> headMap(K to) { return new UnmodifiableSortedMap(this.sortedMap.headMap(to)); }
+/* 252:252 */    public Object2BooleanSortedMap<K> tailMap(K from) { return new UnmodifiableSortedMap(this.sortedMap.tailMap(from)); }
+/* 253:253 */    public K firstKey() { return this.sortedMap.firstKey(); }
+/* 254:254 */    public K lastKey() { return this.sortedMap.lastKey(); }
+/* 255:    */  }
+/* 256:    */  
+/* 260:    */  public static <K> Object2BooleanSortedMap<K> unmodifiable(Object2BooleanSortedMap<K> m)
+/* 261:    */  {
+/* 262:262 */    return new UnmodifiableSortedMap(m);
+/* 263:    */  }
+/* 264:    */}
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     it.unimi.dsi.fastutil.objects.Object2BooleanSortedMaps
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

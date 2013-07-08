@@ -14,12 +14,13 @@ import org.hsqldb.persist.Crypto;
 import org.hsqldb.persist.Logger;
 import org.hsqldb.rowio.RowOutputTextLog;
 
-public class ScriptWriterEncode extends ScriptWriterText
+public class ScriptWriterEncode
+  extends ScriptWriterText
 {
   Crypto crypto;
   HsqlByteArrayOutputStream byteOut;
   OutputStream cryptOut;
-
+  
   public ScriptWriterEncode(Database paramDatabase, OutputStream paramOutputStream, FileAccess.FileSync paramFileSync, boolean paramBoolean, Crypto paramCrypto)
   {
     super(paramDatabase, paramOutputStream, paramFileSync, paramBoolean);
@@ -34,7 +35,7 @@ public class ScriptWriterEncode extends ScriptWriterText
       throw Error.error(localIOException, 452, 26, new Object[] { localIOException.toString(), this.outFile });
     }
   }
-
+  
   public ScriptWriterEncode(Database paramDatabase, String paramString, boolean paramBoolean, Crypto paramCrypto)
   {
     super(paramDatabase, paramString, paramBoolean, true, false);
@@ -49,7 +50,7 @@ public class ScriptWriterEncode extends ScriptWriterText
       throw Error.error(localIOException, 452, 26, new Object[] { localIOException.toString(), this.outFile });
     }
   }
-
+  
   public ScriptWriterEncode(Database paramDatabase, String paramString, Crypto paramCrypto)
   {
     super(paramDatabase, paramString, false, false, false);
@@ -57,7 +58,7 @@ public class ScriptWriterEncode extends ScriptWriterText
     this.byteOut = new HsqlByteArrayOutputStream();
     this.isCrypt = true;
   }
-
+  
   protected void openFile()
   {
     try
@@ -73,14 +74,15 @@ public class ScriptWriterEncode extends ScriptWriterText
       throw Error.error(localIOException, 452, 26, new Object[] { localIOException.toString(), this.outFile });
     }
   }
-
+  
   protected void finishStream()
     throws IOException
   {
-    if ((this.fileStreamOut instanceof GZIPOutputStream))
+    if ((this.fileStreamOut instanceof GZIPOutputStream)) {
       ((GZIPOutputStream)this.fileStreamOut).finish();
+    }
   }
-
+  
   void writeRowOutToFile()
     throws IOException
   {
@@ -105,7 +107,8 @@ public class ScriptWriterEncode extends ScriptWriterText
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.scriptio.ScriptWriterEncode
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -38,7 +38,7 @@ public class SessionContext
   public int rownum;
   HashSet constraintPath;
   StatementResultUpdate rowUpdateStatement = new StatementResultUpdate();
-
+  
   SessionContext(Session paramSession)
   {
     this.session = paramSession;
@@ -53,14 +53,16 @@ public class SessionContext
     this.isReadOnly = Boolean.FALSE;
     this.noSQL = Boolean.FALSE;
   }
-
+  
   public void push()
   {
-    if (this.session.sessionContext.depth > 256)
+    if (this.session.sessionContext.depth > 256) {
       throw Error.error(458);
+    }
     this.session.sessionData.persistentStoreCollection.push();
-    if (this.stack == null)
+    if (this.stack == null) {
       this.stack = new HsqlArrayList(32, true);
+    }
     this.stack.add(this.diagnosticsVariables);
     this.stack.add(this.dynamicArguments);
     this.stack.add(this.routineArguments);
@@ -83,7 +85,7 @@ public class SessionContext
     this.currentMaxRows = 0;
     this.depth += 1;
   }
-
+  
   public void pop()
   {
     this.session.sessionData.persistentStoreCollection.pop();
@@ -103,48 +105,51 @@ public class SessionContext
     this.diagnosticsVariables = ((Object[])this.stack.remove(this.stack.size() - 1));
     this.depth -= 1;
   }
-
+  
   public void pushDynamicArguments(Object[] paramArrayOfObject)
   {
     push();
     this.dynamicArguments = paramArrayOfObject;
   }
-
+  
   public void pushStatementState()
   {
-    if (this.stack == null)
+    if (this.stack == null) {
       this.stack = new HsqlArrayList(32, true);
+    }
     this.stack.add(ValuePool.getInt(this.rownum));
   }
-
+  
   public void popStatementState()
   {
     this.rownum = ((Integer)this.stack.remove(this.stack.size() - 1)).intValue();
   }
-
+  
   public void setDynamicArguments(Object[] paramArrayOfObject)
   {
     this.dynamicArguments = paramArrayOfObject;
   }
-
+  
   RowSetNavigatorDataChange getRowSetDataChange()
   {
     return new RowSetNavigatorDataChangeMemory(this.session);
   }
-
+  
   void clearStructures(StatementDMQL paramStatementDMQL)
   {
     int i = paramStatementDMQL.rangeIteratorCount;
-    if (i > this.rangeIterators.length)
+    if (i > this.rangeIterators.length) {
       i = this.rangeIterators.length;
-    for (int j = 0; j < i; j++)
+    }
+    for (int j = 0; j < i; j++) {
       if (this.rangeIterators[j] != null)
       {
         this.rangeIterators[j].release();
         this.rangeIterators[j] = null;
       }
+    }
   }
-
+  
   public RangeVariable.RangeIteratorBase getCheckIterator(RangeVariable paramRangeVariable)
   {
     Object localObject = this.rangeIterators[0];
@@ -155,79 +160,84 @@ public class SessionContext
     }
     return (RangeVariable.RangeIteratorBase)localObject;
   }
-
+  
   public void setRangeIterator(RangeIterator paramRangeIterator)
   {
     int i = paramRangeIterator.getRangePosition();
-    if (i >= this.rangeIterators.length)
+    if (i >= this.rangeIterators.length) {
       this.rangeIterators = ((RangeIterator[])ArrayUtil.resizeArray(this.rangeIterators, i + 4));
+    }
     this.rangeIterators[i] = paramRangeIterator;
   }
-
+  
   public void unsetRangeIterator(RangeIterator paramRangeIterator)
   {
     int i = paramRangeIterator.getRangePosition();
     this.rangeIterators[i] = null;
   }
-
+  
   public HashSet getConstraintPath()
   {
-    if (this.constraintPath == null)
+    if (this.constraintPath == null) {
       this.constraintPath = new HashSet();
-    else
+    } else {
       this.constraintPath.clear();
+    }
     return this.constraintPath;
   }
-
+  
   public void addSessionVariable(ColumnSchema paramColumnSchema)
   {
     int i = this.sessionVariables.size();
-    if (!this.sessionVariables.add(paramColumnSchema.getName().name, paramColumnSchema))
+    if (!this.sessionVariables.add(paramColumnSchema.getName().name, paramColumnSchema)) {
       throw Error.error(5504);
+    }
     Object[] arrayOfObject = new Object[this.sessionVariables.size()];
     ArrayUtil.copyArray(this.routineVariables, arrayOfObject, this.routineVariables.length);
     this.routineVariables = arrayOfObject;
     this.routineVariables[i] = paramColumnSchema.getDefaultValue(this.session);
   }
-
+  
   public void pushRoutineTables(HashMappedList paramHashMappedList)
   {
     this.popSessionTables = this.sessionTables;
     this.sessionTables = paramHashMappedList;
   }
-
+  
   public void popRoutineTables()
   {
     this.sessionTables = this.popSessionTables;
   }
-
+  
   public void addSessionTable(Table paramTable)
   {
-    if (this.sessionTables == null)
+    if (this.sessionTables == null) {
       this.sessionTables = new HashMappedList();
-    if (this.sessionTables.containsKey(paramTable.getName().name))
+    }
+    if (this.sessionTables.containsKey(paramTable.getName().name)) {
       throw Error.error(5504);
+    }
     this.sessionTables.add(paramTable.getName().name, paramTable);
   }
-
-  public void setSessionTables(Table[] paramArrayOfTable)
-  {
-  }
-
+  
+  public void setSessionTables(Table[] paramArrayOfTable) {}
+  
   public Table findSessionTable(String paramString)
   {
-    if (this.sessionTables == null)
+    if (this.sessionTables == null) {
       return null;
+    }
     return (Table)this.sessionTables.get(paramString);
   }
-
+  
   public void dropSessionTable(String paramString)
   {
     this.sessionTables.remove(paramString);
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.SessionContext
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -4,12 +4,11 @@ import javax.swing.event.ListSelectionListener;
 final class ro
   implements ListSelectionListener
 {
-  public final void valueChanged(ListSelectionEvent paramListSelectionEvent)
-  {
-  }
+  public final void valueChanged(ListSelectionEvent paramListSelectionEvent) {}
 }
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     ro
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

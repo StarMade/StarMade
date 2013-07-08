@@ -8,14 +8,15 @@ import org.hsqldb.lib.FileAccess;
 import org.hsqldb.lib.FileUtil;
 import org.hsqldb.lib.Iterator;
 
-public class DataFileCacheSession extends DataFileCache
+public class DataFileCacheSession
+  extends DataFileCache
 {
   public DataFileCacheSession(Database paramDatabase, String paramString)
   {
     super(paramDatabase, paramString);
     this.logEvents = false;
   }
-
+  
   protected void initParams(Database paramDatabase, String paramString)
   {
     this.dataFileName = (paramString + ".data.tmp");
@@ -29,7 +30,7 @@ public class DataFileCacheSession extends DataFileCache
     this.maxDataFileSize = (2147483647L * this.dataFileScale);
     this.dataFile = null;
   }
-
+  
   public void open(boolean paramBoolean)
   {
     try
@@ -46,7 +47,7 @@ public class DataFileCacheSession extends DataFileCache
       throw Error.error(localThrowable, 452, 52, new Object[] { localThrowable.toString(), this.dataFileName });
     }
   }
-
+  
   public void close(boolean paramBoolean)
   {
     this.writeLock.lock();
@@ -70,7 +71,7 @@ public class DataFileCacheSession extends DataFileCache
       this.writeLock.unlock();
     }
   }
-
+  
   protected void clear()
   {
     Iterator localIterator = this.cache.getIterator();
@@ -86,7 +87,8 @@ public class DataFileCacheSession extends DataFileCache
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.persist.DataFileCacheSession
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -13,7 +13,8 @@ import org.hsqldb.lib.Iterator;
 import org.hsqldb.lib.Set;
 import org.hsqldb.lib.StringUtil;
 
-public class HsqlDatabaseProperties extends HsqlProperties
+public class HsqlDatabaseProperties
+  extends HsqlProperties
 {
   private static final String hsqldb_method_class_names = "hsqldb.method_class_names";
   private static HashSet accessibleJavaMethodNames;
@@ -124,34 +125,39 @@ public class HsqlDatabaseProperties extends HsqlProperties
   public static final String textdb_lvs = "textdb.lvs";
   private Database database;
   public static final int NO_MESSAGE = 1;
-
+  
   public static boolean supportsJavaMethod(String paramString)
   {
-    if (accessibleJavaMethodNames == null)
+    if (accessibleJavaMethodNames == null) {
       return true;
-    if (paramString.startsWith("java.lang.Math."))
+    }
+    if (paramString.startsWith("java.lang.Math.")) {
       return true;
-    if (accessibleJavaMethodNames.contains(paramString))
+    }
+    if (accessibleJavaMethodNames.contains(paramString)) {
       return true;
+    }
     Iterator localIterator = accessibleJavaMethodNames.iterator();
     while (localIterator.hasNext())
     {
       String str = (String)localIterator.next();
       int i = str.lastIndexOf(".*");
-      if (i >= 1)
-        if (paramString.startsWith(str.substring(0, i + 1)))
+      if (i >= 1) {
+        if (paramString.startsWith(str.substring(0, i + 1))) {
           return true;
+        }
+      }
     }
     return false;
   }
-
+  
   public HsqlDatabaseProperties(Database paramDatabase)
   {
     super(dbMeta, paramDatabase.getPath(), paramDatabase.logger.getFileAccess(), paramDatabase.isFilesInJar());
     this.database = paramDatabase;
     setNewDatabaseProperties();
   }
-
+  
   void setNewDatabaseProperties()
   {
     setProperty("version", "2.2.9");
@@ -168,11 +174,12 @@ public class HsqlDatabaseProperties extends HsqlProperties
       setProperty("jdbc.translate_tti_types", true);
     }
   }
-
+  
   public boolean load()
   {
-    if (!DatabaseURL.isFileBasedDatabaseType(this.database.getType()))
+    if (!DatabaseURL.isFileBasedDatabaseType(this.database.getType())) {
       return true;
+    }
     boolean bool;
     try
     {
@@ -182,32 +189,38 @@ public class HsqlDatabaseProperties extends HsqlProperties
     {
       throw Error.error(localThrowable, 452, 27, new Object[] { localThrowable.toString(), this.fileName });
     }
-    if (!bool)
+    if (!bool) {
       return false;
+    }
     filterLoadedProperties();
     String str = getStringProperty("version");
     int i = str.substring(0, 5).compareTo("1.8.0");
-    if (i < 0)
+    if (i < 0) {
       throw Error.error(453);
-    if ((i == 0) && (getIntegerProperty("hsqldb.script_format") != 0))
+    }
+    if ((i == 0) && (getIntegerProperty("hsqldb.script_format") != 0)) {
       throw Error.error(453);
+    }
     i = str.substring(0, 2).compareTo("2.2.9");
-    if (i > 0)
+    if (i > 0) {
       throw Error.error(453);
+    }
     return true;
   }
-
+  
   public void save()
   {
-    if ((!DatabaseURL.isFileBasedDatabaseType(this.database.getType())) || (this.database.isFilesReadOnly()) || (this.database.isFilesInJar()))
+    if ((!DatabaseURL.isFileBasedDatabaseType(this.database.getType())) || (this.database.isFilesReadOnly()) || (this.database.isFilesInJar())) {
       return;
+    }
     try
     {
       HsqlProperties localHsqlProperties = new HsqlProperties(dbMeta, this.database.getPath(), this.database.logger.getFileAccess(), false);
-      if (getIntegerProperty("hsqldb.script_format") == 3)
+      if (getIntegerProperty("hsqldb.script_format") == 3) {
         localHsqlProperties.setProperty("hsqldb.script_format", 3);
+      }
       localHsqlProperties.setProperty("version", "2.2.9");
-      if ((this.database.logger.isStoredFileAccess()) && (!this.database.logger.isNewStoredFileAccess()));
+      if ((this.database.logger.isStoredFileAccess()) && (!this.database.logger.isNewStoredFileAccess())) {}
       localHsqlProperties.setProperty("modified", getProperty("modified"));
       localHsqlProperties.save(this.fileName + ".properties" + ".new");
       this.fa.renameElement(this.fileName + ".properties" + ".new", this.fileName + ".properties");
@@ -218,27 +231,30 @@ public class HsqlDatabaseProperties extends HsqlProperties
       throw Error.error(localThrowable, 452, 27, new Object[] { localThrowable.toString(), this.fileName });
     }
   }
-
+  
   void filterLoadedProperties()
   {
     String str1 = this.stringProps.getProperty("sql.enforce_strict_size");
-    if (str1 != null)
+    if (str1 != null) {
       this.stringProps.setProperty("sql.enforce_size", str1);
+    }
     Enumeration localEnumeration = this.stringProps.propertyNames();
     while (localEnumeration.hasMoreElements())
     {
       String str2 = (String)localEnumeration.nextElement();
       boolean bool = dbMeta.containsKey(str2);
-      if (!bool)
+      if (!bool) {
         this.stringProps.remove(str2);
+      }
     }
   }
-
+  
   public void setURLProperties(HsqlProperties paramHsqlProperties)
   {
     boolean bool = false;
-    if (paramHsqlProperties == null)
+    if (paramHsqlProperties == null) {
       return;
+    }
     String str1 = paramHsqlProperties.getProperty("sql.enforce_strict_size");
     if (str1 != null)
     {
@@ -265,10 +281,12 @@ public class HsqlDatabaseProperties extends HsqlProperties
       }
       if ((str2.startsWith("sql.")) || (str2.startsWith("hsqldb.")) || (str2.startsWith("textdb.")))
       {
-        if ((bool) && (i == 0))
+        if ((bool) && (i == 0)) {
           throw Error.error(5555, str2);
-        if ((bool) && (j == 0))
+        }
+        if ((bool) && (j == 0)) {
           throw Error.error(5556, str2);
+        }
       }
     }
     localEnumeration = paramHsqlProperties.propertyNames();
@@ -276,11 +294,12 @@ public class HsqlDatabaseProperties extends HsqlProperties
     {
       str2 = (String)localEnumeration.nextElement();
       localObject = (Object[])dbMeta.get(str2);
-      if ((localObject != null) && (((Integer)localObject[1]).intValue() == 2))
+      if ((localObject != null) && (((Integer)localObject[1]).intValue() == 2)) {
         setDatabaseProperty(str2, paramHsqlProperties.getProperty(str2));
+      }
     }
   }
-
+  
   public Set getUserDefinedPropertyData()
   {
     HashSet localHashSet = new HashSet();
@@ -288,187 +307,198 @@ public class HsqlDatabaseProperties extends HsqlProperties
     while (localIterator.hasNext())
     {
       Object[] arrayOfObject = (Object[])localIterator.next();
-      if (((Integer)arrayOfObject[1]).intValue() == 2)
+      if (((Integer)arrayOfObject[1]).intValue() == 2) {
         localHashSet.add(arrayOfObject);
+      }
     }
     return localHashSet;
   }
-
+  
   public boolean isUserDefinedProperty(String paramString)
   {
     Object[] arrayOfObject = (Object[])dbMeta.get(paramString);
     return (arrayOfObject != null) && (((Integer)arrayOfObject[1]).intValue() == 2);
   }
-
+  
   public boolean isBoolean(String paramString)
   {
     Object[] arrayOfObject = (Object[])dbMeta.get(paramString);
     return (arrayOfObject != null) && (arrayOfObject[2].equals("Boolean")) && (((Integer)arrayOfObject[1]).intValue() == 2);
   }
-
+  
   public boolean isIntegral(String paramString)
   {
     Object[] arrayOfObject = (Object[])dbMeta.get(paramString);
     return (arrayOfObject != null) && (arrayOfObject[2].equals("Integer")) && (((Integer)arrayOfObject[1]).intValue() == 2);
   }
-
+  
   public boolean isString(String paramString)
   {
     Object[] arrayOfObject = (Object[])dbMeta.get(paramString);
     return (arrayOfObject != null) && (arrayOfObject[2].equals("String")) && (((Integer)arrayOfObject[1]).intValue() == 2);
   }
-
+  
   public boolean setDatabaseProperty(String paramString1, String paramString2)
   {
     Object[] arrayOfObject = (Object[])dbMeta.get(paramString1);
     String str = HsqlProperties.validateProperty(paramString1, paramString2, arrayOfObject);
-    if (str != null)
+    if (str != null) {
       return false;
+    }
     this.stringProps.put(paramString1, paramString2);
     return true;
   }
-
+  
   public int getDefaultWriteDelay()
   {
-    if (this.database.logger.isStoredFileAccess())
+    if (this.database.logger.isStoredFileAccess()) {
       return 2000;
+    }
     return 500;
   }
-
+  
   public int getErrorLevel()
   {
     return 1;
   }
-
+  
   public boolean divisionByZero()
   {
     return false;
   }
-
+  
   public void setDBModified(int paramInt)
   {
     String str;
     switch (paramInt)
     {
-    case 0:
+    case 0: 
       str = "no";
       break;
-    case 1:
+    case 1: 
       str = "yes";
       break;
-    case 2:
+    case 2: 
       str = "yes-new-files";
       break;
-    default:
+    default: 
       throw Error.runtimeError(201, "HsqlDatabaseProperties");
     }
     this.stringProps.put("modified", str);
     save();
   }
-
+  
   public int getDBModified()
   {
     String str = getStringProperty("modified");
-    if ("yes".equals(str))
+    if ("yes".equals(str)) {
       return 1;
-    if ("yes-new-files".equals(str))
+    }
+    if ("yes-new-files".equals(str)) {
       return 2;
-    if ("no-new-files".equals(str))
+    }
+    if ("no-new-files".equals(str)) {
       return 3;
+    }
     return 0;
   }
-
+  
   public String getProperty(String paramString)
   {
     Object[] arrayOfObject = (Object[])dbMeta.get(paramString);
-    if (arrayOfObject == null)
+    if (arrayOfObject == null) {
       throw Error.error(5555, paramString);
+    }
     return this.stringProps.getProperty(paramString);
   }
-
+  
   public String getPropertyString(String paramString)
   {
     Object[] arrayOfObject = (Object[])dbMeta.get(paramString);
-    if (arrayOfObject == null)
+    if (arrayOfObject == null) {
       throw Error.error(5555, paramString);
+    }
     String str = this.stringProps.getProperty(paramString);
     int i = ((Integer)arrayOfObject[1]).intValue() == 0 ? 1 : 0;
-    if ((str == null) && (i != 0))
+    if ((str == null) && (i != 0)) {
       try
       {
         str = System.getProperty(paramString);
       }
-      catch (SecurityException localSecurityException)
-      {
-      }
+      catch (SecurityException localSecurityException) {}
+    }
     if (str == null)
     {
       Object localObject = arrayOfObject[4];
-      if (localObject == null)
+      if (localObject == null) {
         return null;
+      }
       return String.valueOf(localObject);
     }
     return str;
   }
-
+  
   public boolean isPropertyTrue(String paramString)
   {
     Object[] arrayOfObject = (Object[])dbMeta.get(paramString);
-    if (arrayOfObject == null)
+    if (arrayOfObject == null) {
       throw Error.error(5555, paramString);
+    }
     Boolean localBoolean = (Boolean)arrayOfObject[4];
     String str = null;
     int i = ((Integer)arrayOfObject[1]).intValue() == 0 ? 1 : 0;
-    if (i != 0)
+    if (i != 0) {
       try
       {
         str = System.getProperty(paramString);
       }
-      catch (SecurityException localSecurityException)
-      {
-      }
-    else
+      catch (SecurityException localSecurityException) {}
+    } else {
       str = this.stringProps.getProperty(paramString);
-    if (str != null)
+    }
+    if (str != null) {
       localBoolean = Boolean.valueOf(str);
+    }
     return localBoolean.booleanValue();
   }
-
+  
   public String getStringProperty(String paramString)
   {
     Object[] arrayOfObject = (Object[])dbMeta.get(paramString);
-    if (arrayOfObject == null)
+    if (arrayOfObject == null) {
       throw Error.error(5555, paramString);
+    }
     Object localObject = (String)arrayOfObject[4];
     String str = this.stringProps.getProperty(paramString);
-    if (str != null)
+    if (str != null) {
       localObject = str;
+    }
     return localObject;
   }
-
+  
   public int getIntegerProperty(String paramString)
   {
     Object[] arrayOfObject = (Object[])dbMeta.get(paramString);
-    if (arrayOfObject == null)
+    if (arrayOfObject == null) {
       throw Error.error(5555, paramString);
+    }
     int i = ((Integer)arrayOfObject[4]).intValue();
     String str = this.stringProps.getProperty(paramString);
-    if (str != null)
+    if (str != null) {
       try
       {
         i = Integer.parseInt(str);
       }
-      catch (NumberFormatException localNumberFormatException)
-      {
-      }
+      catch (NumberFormatException localNumberFormatException) {}
+    }
     return i;
   }
-
+  
   public static Iterator getPropertiesMetaIterator()
   {
     return dbMeta.values().iterator();
   }
-
+  
   public String getClientPropertiesAsString()
   {
     if (isPropertyTrue("jdbc.translate_tti_types"))
@@ -479,13 +509,13 @@ public class HsqlDatabaseProperties extends HsqlProperties
     }
     return "";
   }
-
+  
   public boolean isVersion18()
   {
     String str = getProperty("hsqldb.cache_version", "2.2.9");
     return str.substring(0, 4).equals("1.7.");
   }
-
+  
   static
   {
     try
@@ -495,16 +525,16 @@ public class HsqlDatabaseProperties extends HsqlProperties
       {
         accessibleJavaMethodNames = new HashSet();
         String[] arrayOfString = StringUtil.split(str, ";");
-        for (int i = 0; i < arrayOfString.length; i++)
+        for (int i = 0; i < arrayOfString.length; i++) {
           accessibleJavaMethodNames.add(arrayOfString[i]);
+        }
       }
       str = System.getProperty("hsqldb.method_class_names");
-      if ((str != null) && (Boolean.valueOf(str).booleanValue()))
+      if ((str != null) && (Boolean.valueOf(str).booleanValue())) {
         allowFullPath = true;
+      }
     }
-    catch (Exception localException)
-    {
-    }
+    catch (Exception localException) {}
     dbMeta = new HashMap(67);
     textMeta = new HashMap(17);
     textMeta.put("textdb.allow_full_path", HsqlProperties.getMeta("textdb.allow_full_path", 0, allowFullPath));
@@ -576,7 +606,8 @@ public class HsqlDatabaseProperties extends HsqlProperties
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.persist.HsqlDatabaseProperties
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

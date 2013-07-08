@@ -23,7 +23,7 @@ public class Matrix4d
   public double m32;
   public double m33;
   private static final double EPS = 1.0E-010D;
-
+  
   public Matrix4d(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4, double paramDouble5, double paramDouble6, double paramDouble7, double paramDouble8, double paramDouble9, double paramDouble10, double paramDouble11, double paramDouble12, double paramDouble13, double paramDouble14, double paramDouble15, double paramDouble16)
   {
     this.m00 = paramDouble1;
@@ -43,7 +43,7 @@ public class Matrix4d
     this.m32 = paramDouble15;
     this.m33 = paramDouble16;
   }
-
+  
   public Matrix4d(double[] paramArrayOfDouble)
   {
     this.m00 = paramArrayOfDouble[0];
@@ -63,7 +63,7 @@ public class Matrix4d
     this.m32 = paramArrayOfDouble[14];
     this.m33 = paramArrayOfDouble[15];
   }
-
+  
   public Matrix4d(Quat4d paramQuat4d, Vector3d paramVector3d, double paramDouble)
   {
     this.m00 = (paramDouble * (1.0D - 2.0D * paramQuat4d.y * paramQuat4d.y - 2.0D * paramQuat4d.z * paramQuat4d.z));
@@ -83,7 +83,7 @@ public class Matrix4d
     this.m32 = 0.0D;
     this.m33 = 1.0D;
   }
-
+  
   public Matrix4d(Quat4f paramQuat4f, Vector3d paramVector3d, double paramDouble)
   {
     this.m00 = (paramDouble * (1.0D - 2.0D * paramQuat4f.y * paramQuat4f.y - 2.0D * paramQuat4f.z * paramQuat4f.z));
@@ -103,7 +103,7 @@ public class Matrix4d
     this.m32 = 0.0D;
     this.m33 = 1.0D;
   }
-
+  
   public Matrix4d(Matrix4d paramMatrix4d)
   {
     this.m00 = paramMatrix4d.m00;
@@ -123,7 +123,7 @@ public class Matrix4d
     this.m32 = paramMatrix4d.m32;
     this.m33 = paramMatrix4d.m33;
   }
-
+  
   public Matrix4d(Matrix4f paramMatrix4f)
   {
     this.m00 = paramMatrix4f.m00;
@@ -143,7 +143,7 @@ public class Matrix4d
     this.m32 = paramMatrix4f.m32;
     this.m33 = paramMatrix4f.m33;
   }
-
+  
   public Matrix4d(Matrix3f paramMatrix3f, Vector3d paramVector3d, double paramDouble)
   {
     this.m00 = (paramMatrix3f.m00 * paramDouble);
@@ -163,7 +163,7 @@ public class Matrix4d
     this.m32 = 0.0D;
     this.m33 = 1.0D;
   }
-
+  
   public Matrix4d(Matrix3d paramMatrix3d, Vector3d paramVector3d, double paramDouble)
   {
     this.m00 = (paramMatrix3d.m00 * paramDouble);
@@ -183,7 +183,7 @@ public class Matrix4d
     this.m32 = 0.0D;
     this.m33 = 1.0D;
   }
-
+  
   public Matrix4d()
   {
     this.m00 = 0.0D;
@@ -203,12 +203,12 @@ public class Matrix4d
     this.m32 = 0.0D;
     this.m33 = 0.0D;
   }
-
+  
   public String toString()
   {
     return this.m00 + ", " + this.m01 + ", " + this.m02 + ", " + this.m03 + "\n" + this.m10 + ", " + this.m11 + ", " + this.m12 + ", " + this.m13 + "\n" + this.m20 + ", " + this.m21 + ", " + this.m22 + ", " + this.m23 + "\n" + this.m30 + ", " + this.m31 + ", " + this.m32 + ", " + this.m33 + "\n";
   }
-
+  
   public final void setIdentity()
   {
     this.m00 = 1.0D;
@@ -228,152 +228,152 @@ public class Matrix4d
     this.m32 = 0.0D;
     this.m33 = 1.0D;
   }
-
+  
   public final void setElement(int paramInt1, int paramInt2, double paramDouble)
   {
     switch (paramInt1)
     {
-    case 0:
+    case 0: 
       switch (paramInt2)
       {
-      case 0:
+      case 0: 
         this.m00 = paramDouble;
         break;
-      case 1:
+      case 1: 
         this.m01 = paramDouble;
         break;
-      case 2:
+      case 2: 
         this.m02 = paramDouble;
         break;
-      case 3:
+      case 3: 
         this.m03 = paramDouble;
         break;
-      default:
+      default: 
         throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix4d0"));
       }
       break;
-    case 1:
+    case 1: 
       switch (paramInt2)
       {
-      case 0:
+      case 0: 
         this.m10 = paramDouble;
         break;
-      case 1:
+      case 1: 
         this.m11 = paramDouble;
         break;
-      case 2:
+      case 2: 
         this.m12 = paramDouble;
         break;
-      case 3:
+      case 3: 
         this.m13 = paramDouble;
         break;
-      default:
+      default: 
         throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix4d0"));
       }
       break;
-    case 2:
+    case 2: 
       switch (paramInt2)
       {
-      case 0:
+      case 0: 
         this.m20 = paramDouble;
         break;
-      case 1:
+      case 1: 
         this.m21 = paramDouble;
         break;
-      case 2:
+      case 2: 
         this.m22 = paramDouble;
         break;
-      case 3:
+      case 3: 
         this.m23 = paramDouble;
         break;
-      default:
+      default: 
         throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix4d0"));
       }
       break;
-    case 3:
+    case 3: 
       switch (paramInt2)
       {
-      case 0:
+      case 0: 
         this.m30 = paramDouble;
         break;
-      case 1:
+      case 1: 
         this.m31 = paramDouble;
         break;
-      case 2:
+      case 2: 
         this.m32 = paramDouble;
         break;
-      case 3:
+      case 3: 
         this.m33 = paramDouble;
         break;
-      default:
+      default: 
         throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix4d0"));
       }
       break;
-    default:
+    default: 
       throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix4d0"));
     }
   }
-
+  
   public final double getElement(int paramInt1, int paramInt2)
   {
     switch (paramInt1)
     {
-    case 0:
+    case 0: 
       switch (paramInt2)
       {
-      case 0:
+      case 0: 
         return this.m00;
-      case 1:
+      case 1: 
         return this.m01;
-      case 2:
+      case 2: 
         return this.m02;
-      case 3:
+      case 3: 
         return this.m03;
       }
       break;
-    case 1:
+    case 1: 
       switch (paramInt2)
       {
-      case 0:
+      case 0: 
         return this.m10;
-      case 1:
+      case 1: 
         return this.m11;
-      case 2:
+      case 2: 
         return this.m12;
-      case 3:
+      case 3: 
         return this.m13;
       }
       break;
-    case 2:
+    case 2: 
       switch (paramInt2)
       {
-      case 0:
+      case 0: 
         return this.m20;
-      case 1:
+      case 1: 
         return this.m21;
-      case 2:
+      case 2: 
         return this.m22;
-      case 3:
+      case 3: 
         return this.m23;
       }
       break;
-    case 3:
+    case 3: 
       switch (paramInt2)
       {
-      case 0:
+      case 0: 
         return this.m30;
-      case 1:
+      case 1: 
         return this.m31;
-      case 2:
+      case 2: 
         return this.m32;
-      case 3:
+      case 3: 
         return this.m33;
       }
       break;
     }
     throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix4d1"));
   }
-
+  
   public final void getRow(int paramInt, Vector4d paramVector4d)
   {
     if (paramInt == 0)
@@ -409,7 +409,7 @@ public class Matrix4d
       throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix4d2"));
     }
   }
-
+  
   public final void getRow(int paramInt, double[] paramArrayOfDouble)
   {
     if (paramInt == 0)
@@ -445,7 +445,7 @@ public class Matrix4d
       throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix4d2"));
     }
   }
-
+  
   public final void getColumn(int paramInt, Vector4d paramVector4d)
   {
     if (paramInt == 0)
@@ -481,7 +481,7 @@ public class Matrix4d
       throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix4d3"));
     }
   }
-
+  
   public final void getColumn(int paramInt, double[] paramArrayOfDouble)
   {
     if (paramInt == 0)
@@ -517,7 +517,7 @@ public class Matrix4d
       throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix4d3"));
     }
   }
-
+  
   public final void get(Matrix3d paramMatrix3d)
   {
     double[] arrayOfDouble1 = new double[9];
@@ -533,7 +533,7 @@ public class Matrix4d
     paramMatrix3d.m21 = arrayOfDouble1[7];
     paramMatrix3d.m22 = arrayOfDouble1[8];
   }
-
+  
   public final void get(Matrix3f paramMatrix3f)
   {
     double[] arrayOfDouble1 = new double[9];
@@ -549,7 +549,7 @@ public class Matrix4d
     paramMatrix3f.m21 = ((float)arrayOfDouble1[7]);
     paramMatrix3f.m22 = ((float)arrayOfDouble1[8]);
   }
-
+  
   public final double get(Matrix3d paramMatrix3d, Vector3d paramVector3d)
   {
     double[] arrayOfDouble1 = new double[9];
@@ -569,7 +569,7 @@ public class Matrix4d
     paramVector3d.z = this.m23;
     return Matrix3d.max3(arrayOfDouble2);
   }
-
+  
   public final double get(Matrix3f paramMatrix3f, Vector3d paramVector3d)
   {
     double[] arrayOfDouble1 = new double[9];
@@ -589,7 +589,7 @@ public class Matrix4d
     paramVector3d.z = this.m23;
     return Matrix3d.max3(arrayOfDouble2);
   }
-
+  
   public final void get(Quat4f paramQuat4f)
   {
     double[] arrayOfDouble1 = new double[9];
@@ -626,7 +626,7 @@ public class Matrix4d
     paramQuat4f.y = 0.0F;
     paramQuat4f.z = 1.0F;
   }
-
+  
   public final void get(Quat4d paramQuat4d)
   {
     double[] arrayOfDouble1 = new double[9];
@@ -663,14 +663,14 @@ public class Matrix4d
     paramQuat4d.y = 0.0D;
     paramQuat4d.z = 1.0D;
   }
-
+  
   public final void get(Vector3d paramVector3d)
   {
     paramVector3d.x = this.m03;
     paramVector3d.y = this.m13;
     paramVector3d.z = this.m23;
   }
-
+  
   public final void getRotationScale(Matrix3f paramMatrix3f)
   {
     paramMatrix3f.m00 = ((float)this.m00);
@@ -683,7 +683,7 @@ public class Matrix4d
     paramMatrix3f.m21 = ((float)this.m21);
     paramMatrix3f.m22 = ((float)this.m22);
   }
-
+  
   public final void getRotationScale(Matrix3d paramMatrix3d)
   {
     paramMatrix3d.m00 = this.m00;
@@ -696,7 +696,7 @@ public class Matrix4d
     paramMatrix3d.m21 = this.m21;
     paramMatrix3d.m22 = this.m22;
   }
-
+  
   public final double getScale()
   {
     double[] arrayOfDouble1 = new double[9];
@@ -704,7 +704,7 @@ public class Matrix4d
     getScaleRotate(arrayOfDouble2, arrayOfDouble1);
     return Matrix3d.max3(arrayOfDouble2);
   }
-
+  
   public final void setRotationScale(Matrix3d paramMatrix3d)
   {
     this.m00 = paramMatrix3d.m00;
@@ -717,7 +717,7 @@ public class Matrix4d
     this.m21 = paramMatrix3d.m21;
     this.m22 = paramMatrix3d.m22;
   }
-
+  
   public final void setRotationScale(Matrix3f paramMatrix3f)
   {
     this.m00 = paramMatrix3f.m00;
@@ -730,7 +730,7 @@ public class Matrix4d
     this.m21 = paramMatrix3f.m21;
     this.m22 = paramMatrix3f.m22;
   }
-
+  
   public final void setScale(double paramDouble)
   {
     double[] arrayOfDouble1 = new double[9];
@@ -746,205 +746,205 @@ public class Matrix4d
     this.m21 = (arrayOfDouble1[7] * paramDouble);
     this.m22 = (arrayOfDouble1[8] * paramDouble);
   }
-
+  
   public final void setRow(int paramInt, double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4)
   {
     switch (paramInt)
     {
-    case 0:
+    case 0: 
       this.m00 = paramDouble1;
       this.m01 = paramDouble2;
       this.m02 = paramDouble3;
       this.m03 = paramDouble4;
       break;
-    case 1:
+    case 1: 
       this.m10 = paramDouble1;
       this.m11 = paramDouble2;
       this.m12 = paramDouble3;
       this.m13 = paramDouble4;
       break;
-    case 2:
+    case 2: 
       this.m20 = paramDouble1;
       this.m21 = paramDouble2;
       this.m22 = paramDouble3;
       this.m23 = paramDouble4;
       break;
-    case 3:
+    case 3: 
       this.m30 = paramDouble1;
       this.m31 = paramDouble2;
       this.m32 = paramDouble3;
       this.m33 = paramDouble4;
       break;
-    default:
+    default: 
       throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix4d4"));
     }
   }
-
+  
   public final void setRow(int paramInt, Vector4d paramVector4d)
   {
     switch (paramInt)
     {
-    case 0:
+    case 0: 
       this.m00 = paramVector4d.x;
       this.m01 = paramVector4d.y;
       this.m02 = paramVector4d.z;
       this.m03 = paramVector4d.w;
       break;
-    case 1:
+    case 1: 
       this.m10 = paramVector4d.x;
       this.m11 = paramVector4d.y;
       this.m12 = paramVector4d.z;
       this.m13 = paramVector4d.w;
       break;
-    case 2:
+    case 2: 
       this.m20 = paramVector4d.x;
       this.m21 = paramVector4d.y;
       this.m22 = paramVector4d.z;
       this.m23 = paramVector4d.w;
       break;
-    case 3:
+    case 3: 
       this.m30 = paramVector4d.x;
       this.m31 = paramVector4d.y;
       this.m32 = paramVector4d.z;
       this.m33 = paramVector4d.w;
       break;
-    default:
+    default: 
       throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix4d4"));
     }
   }
-
+  
   public final void setRow(int paramInt, double[] paramArrayOfDouble)
   {
     switch (paramInt)
     {
-    case 0:
+    case 0: 
       this.m00 = paramArrayOfDouble[0];
       this.m01 = paramArrayOfDouble[1];
       this.m02 = paramArrayOfDouble[2];
       this.m03 = paramArrayOfDouble[3];
       break;
-    case 1:
+    case 1: 
       this.m10 = paramArrayOfDouble[0];
       this.m11 = paramArrayOfDouble[1];
       this.m12 = paramArrayOfDouble[2];
       this.m13 = paramArrayOfDouble[3];
       break;
-    case 2:
+    case 2: 
       this.m20 = paramArrayOfDouble[0];
       this.m21 = paramArrayOfDouble[1];
       this.m22 = paramArrayOfDouble[2];
       this.m23 = paramArrayOfDouble[3];
       break;
-    case 3:
+    case 3: 
       this.m30 = paramArrayOfDouble[0];
       this.m31 = paramArrayOfDouble[1];
       this.m32 = paramArrayOfDouble[2];
       this.m33 = paramArrayOfDouble[3];
       break;
-    default:
+    default: 
       throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix4d4"));
     }
   }
-
+  
   public final void setColumn(int paramInt, double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4)
   {
     switch (paramInt)
     {
-    case 0:
+    case 0: 
       this.m00 = paramDouble1;
       this.m10 = paramDouble2;
       this.m20 = paramDouble3;
       this.m30 = paramDouble4;
       break;
-    case 1:
+    case 1: 
       this.m01 = paramDouble1;
       this.m11 = paramDouble2;
       this.m21 = paramDouble3;
       this.m31 = paramDouble4;
       break;
-    case 2:
+    case 2: 
       this.m02 = paramDouble1;
       this.m12 = paramDouble2;
       this.m22 = paramDouble3;
       this.m32 = paramDouble4;
       break;
-    case 3:
+    case 3: 
       this.m03 = paramDouble1;
       this.m13 = paramDouble2;
       this.m23 = paramDouble3;
       this.m33 = paramDouble4;
       break;
-    default:
+    default: 
       throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix4d7"));
     }
   }
-
+  
   public final void setColumn(int paramInt, Vector4d paramVector4d)
   {
     switch (paramInt)
     {
-    case 0:
+    case 0: 
       this.m00 = paramVector4d.x;
       this.m10 = paramVector4d.y;
       this.m20 = paramVector4d.z;
       this.m30 = paramVector4d.w;
       break;
-    case 1:
+    case 1: 
       this.m01 = paramVector4d.x;
       this.m11 = paramVector4d.y;
       this.m21 = paramVector4d.z;
       this.m31 = paramVector4d.w;
       break;
-    case 2:
+    case 2: 
       this.m02 = paramVector4d.x;
       this.m12 = paramVector4d.y;
       this.m22 = paramVector4d.z;
       this.m32 = paramVector4d.w;
       break;
-    case 3:
+    case 3: 
       this.m03 = paramVector4d.x;
       this.m13 = paramVector4d.y;
       this.m23 = paramVector4d.z;
       this.m33 = paramVector4d.w;
       break;
-    default:
+    default: 
       throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix4d7"));
     }
   }
-
+  
   public final void setColumn(int paramInt, double[] paramArrayOfDouble)
   {
     switch (paramInt)
     {
-    case 0:
+    case 0: 
       this.m00 = paramArrayOfDouble[0];
       this.m10 = paramArrayOfDouble[1];
       this.m20 = paramArrayOfDouble[2];
       this.m30 = paramArrayOfDouble[3];
       break;
-    case 1:
+    case 1: 
       this.m01 = paramArrayOfDouble[0];
       this.m11 = paramArrayOfDouble[1];
       this.m21 = paramArrayOfDouble[2];
       this.m31 = paramArrayOfDouble[3];
       break;
-    case 2:
+    case 2: 
       this.m02 = paramArrayOfDouble[0];
       this.m12 = paramArrayOfDouble[1];
       this.m22 = paramArrayOfDouble[2];
       this.m32 = paramArrayOfDouble[3];
       break;
-    case 3:
+    case 3: 
       this.m03 = paramArrayOfDouble[0];
       this.m13 = paramArrayOfDouble[1];
       this.m23 = paramArrayOfDouble[2];
       this.m33 = paramArrayOfDouble[3];
       break;
-    default:
+    default: 
       throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix4d7"));
     }
   }
-
+  
   public final void add(double paramDouble)
   {
     this.m00 += paramDouble;
@@ -964,7 +964,7 @@ public class Matrix4d
     this.m32 += paramDouble;
     this.m33 += paramDouble;
   }
-
+  
   public final void add(double paramDouble, Matrix4d paramMatrix4d)
   {
     paramMatrix4d.m00 += paramDouble;
@@ -984,7 +984,7 @@ public class Matrix4d
     paramMatrix4d.m32 += paramDouble;
     paramMatrix4d.m33 += paramDouble;
   }
-
+  
   public final void add(Matrix4d paramMatrix4d1, Matrix4d paramMatrix4d2)
   {
     paramMatrix4d1.m00 += paramMatrix4d2.m00;
@@ -1004,7 +1004,7 @@ public class Matrix4d
     paramMatrix4d1.m32 += paramMatrix4d2.m32;
     paramMatrix4d1.m33 += paramMatrix4d2.m33;
   }
-
+  
   public final void add(Matrix4d paramMatrix4d)
   {
     this.m00 += paramMatrix4d.m00;
@@ -1024,7 +1024,7 @@ public class Matrix4d
     this.m32 += paramMatrix4d.m32;
     this.m33 += paramMatrix4d.m33;
   }
-
+  
   public final void sub(Matrix4d paramMatrix4d1, Matrix4d paramMatrix4d2)
   {
     paramMatrix4d1.m00 -= paramMatrix4d2.m00;
@@ -1044,7 +1044,7 @@ public class Matrix4d
     paramMatrix4d1.m32 -= paramMatrix4d2.m32;
     paramMatrix4d1.m33 -= paramMatrix4d2.m33;
   }
-
+  
   public final void sub(Matrix4d paramMatrix4d)
   {
     this.m00 -= paramMatrix4d.m00;
@@ -1064,7 +1064,7 @@ public class Matrix4d
     this.m32 -= paramMatrix4d.m32;
     this.m33 -= paramMatrix4d.m33;
   }
-
+  
   public final void transpose()
   {
     double d = this.m10;
@@ -1086,7 +1086,7 @@ public class Matrix4d
     this.m32 = this.m23;
     this.m23 = d;
   }
-
+  
   public final void transpose(Matrix4d paramMatrix4d)
   {
     if (this != paramMatrix4d)
@@ -1113,7 +1113,7 @@ public class Matrix4d
       transpose();
     }
   }
-
+  
   public final void set(double[] paramArrayOfDouble)
   {
     this.m00 = paramArrayOfDouble[0];
@@ -1133,7 +1133,7 @@ public class Matrix4d
     this.m32 = paramArrayOfDouble[14];
     this.m33 = paramArrayOfDouble[15];
   }
-
+  
   public final void set(Matrix3f paramMatrix3f)
   {
     this.m00 = paramMatrix3f.m00;
@@ -1153,7 +1153,7 @@ public class Matrix4d
     this.m32 = 0.0D;
     this.m33 = 1.0D;
   }
-
+  
   public final void set(Matrix3d paramMatrix3d)
   {
     this.m00 = paramMatrix3d.m00;
@@ -1173,7 +1173,7 @@ public class Matrix4d
     this.m32 = 0.0D;
     this.m33 = 1.0D;
   }
-
+  
   public final void set(Quat4d paramQuat4d)
   {
     this.m00 = (1.0D - 2.0D * paramQuat4d.y * paramQuat4d.y - 2.0D * paramQuat4d.z * paramQuat4d.z);
@@ -1193,7 +1193,7 @@ public class Matrix4d
     this.m32 = 0.0D;
     this.m33 = 1.0D;
   }
-
+  
   public final void set(AxisAngle4d paramAxisAngle4d)
   {
     double d1 = Math.sqrt(paramAxisAngle4d.x * paramAxisAngle4d.x + paramAxisAngle4d.y * paramAxisAngle4d.y + paramAxisAngle4d.z * paramAxisAngle4d.z);
@@ -1239,7 +1239,7 @@ public class Matrix4d
     this.m32 = 0.0D;
     this.m33 = 1.0D;
   }
-
+  
   public final void set(Quat4f paramQuat4f)
   {
     this.m00 = (1.0D - 2.0D * paramQuat4f.y * paramQuat4f.y - 2.0D * paramQuat4f.z * paramQuat4f.z);
@@ -1259,7 +1259,7 @@ public class Matrix4d
     this.m32 = 0.0D;
     this.m33 = 1.0D;
   }
-
+  
   public final void set(AxisAngle4f paramAxisAngle4f)
   {
     double d1 = Math.sqrt(paramAxisAngle4f.x * paramAxisAngle4f.x + paramAxisAngle4f.y * paramAxisAngle4f.y + paramAxisAngle4f.z * paramAxisAngle4f.z);
@@ -1305,7 +1305,7 @@ public class Matrix4d
     this.m32 = 0.0D;
     this.m33 = 1.0D;
   }
-
+  
   public final void set(Quat4d paramQuat4d, Vector3d paramVector3d, double paramDouble)
   {
     this.m00 = (paramDouble * (1.0D - 2.0D * paramQuat4d.y * paramQuat4d.y - 2.0D * paramQuat4d.z * paramQuat4d.z));
@@ -1325,7 +1325,7 @@ public class Matrix4d
     this.m32 = 0.0D;
     this.m33 = 1.0D;
   }
-
+  
   public final void set(Quat4f paramQuat4f, Vector3d paramVector3d, double paramDouble)
   {
     this.m00 = (paramDouble * (1.0D - 2.0D * paramQuat4f.y * paramQuat4f.y - 2.0D * paramQuat4f.z * paramQuat4f.z));
@@ -1345,7 +1345,7 @@ public class Matrix4d
     this.m32 = 0.0D;
     this.m33 = 1.0D;
   }
-
+  
   public final void set(Quat4f paramQuat4f, Vector3f paramVector3f, float paramFloat)
   {
     this.m00 = (paramFloat * (1.0D - 2.0D * paramQuat4f.y * paramQuat4f.y - 2.0D * paramQuat4f.z * paramQuat4f.z));
@@ -1365,7 +1365,7 @@ public class Matrix4d
     this.m32 = 0.0D;
     this.m33 = 1.0D;
   }
-
+  
   public final void set(Matrix4f paramMatrix4f)
   {
     this.m00 = paramMatrix4f.m00;
@@ -1385,7 +1385,7 @@ public class Matrix4d
     this.m32 = paramMatrix4f.m32;
     this.m33 = paramMatrix4f.m33;
   }
-
+  
   public final void set(Matrix4d paramMatrix4d)
   {
     this.m00 = paramMatrix4d.m00;
@@ -1405,17 +1405,17 @@ public class Matrix4d
     this.m32 = paramMatrix4d.m32;
     this.m33 = paramMatrix4d.m33;
   }
-
+  
   public final void invert(Matrix4d paramMatrix4d)
   {
     invertGeneral(paramMatrix4d);
   }
-
+  
   public final void invert()
   {
     invertGeneral(this);
   }
-
+  
   final void invertGeneral(Matrix4d paramMatrix4d)
   {
     double[] arrayOfDouble1 = new double[16];
@@ -1437,10 +1437,12 @@ public class Matrix4d
     arrayOfDouble2[13] = paramMatrix4d.m31;
     arrayOfDouble2[14] = paramMatrix4d.m32;
     arrayOfDouble2[15] = paramMatrix4d.m33;
-    if (!luDecomposition(arrayOfDouble2, arrayOfInt))
+    if (!luDecomposition(arrayOfDouble2, arrayOfInt)) {
       throw new SingularMatrixException(VecMathI18N.getString("Matrix4d10"));
-    for (int i = 0; i < 16; i++)
+    }
+    for (int i = 0; i < 16; i++) {
       arrayOfDouble1[i] = 0.0D;
+    }
     arrayOfDouble1[0] = 1.0D;
     arrayOfDouble1[5] = 1.0D;
     arrayOfDouble1[10] = 1.0D;
@@ -1463,7 +1465,7 @@ public class Matrix4d
     this.m32 = arrayOfDouble1[14];
     this.m33 = arrayOfDouble1[15];
   }
-
+  
   static boolean luDecomposition(double[] paramArrayOfDouble, int[] paramArrayOfInt)
   {
     double[] arrayOfDouble = new double[4];
@@ -1479,11 +1481,13 @@ public class Matrix4d
       {
         double d4 = paramArrayOfDouble[(d2++)];
         d4 = Math.abs(d4);
-        if (d4 > d3)
+        if (d4 > d3) {
           d3 = d4;
+        }
       }
-      if (d3 == 0.0D)
+      if (d3 == 0.0D) {
         return false;
+      }
       arrayOfDouble[(j++)] = (1.0D / d3);
     }
     int i = 0;
@@ -1528,8 +1532,9 @@ public class Matrix4d
           j = d2;
         }
       }
-      if (j < 0)
+      if (j < 0) {
         throw new RuntimeException(VecMathI18N.getString("Matrix4d11"));
+      }
       if (d1 != j)
       {
         k = 4;
@@ -1544,8 +1549,9 @@ public class Matrix4d
         arrayOfDouble[j] = arrayOfDouble[d1];
       }
       paramArrayOfInt[d1] = j;
-      if (paramArrayOfDouble[(i + 4 * d1 + d1)] == 0.0D)
+      if (paramArrayOfDouble[(i + 4 * d1 + d1)] == 0.0D) {
         return false;
+      }
       if (d1 != 3)
       {
         d7 = 1.0D / paramArrayOfDouble[(i + 4 * d1 + d1)];
@@ -1560,7 +1566,7 @@ public class Matrix4d
     }
     return true;
   }
-
+  
   static void luBacksubstitution(double[] paramArrayOfDouble1, int[] paramArrayOfInt, double[] paramArrayOfDouble2)
   {
     int i1 = 0;
@@ -1576,11 +1582,13 @@ public class Matrix4d
         if (j >= 0)
         {
           i3 = i * 4;
-          for (int m = j; m <= i - 1; m++)
+          for (int m = j; m <= i - 1; m++) {
             d -= paramArrayOfDouble1[(i3 + m)] * paramArrayOfDouble2[(i2 + 4 * m)];
+          }
         }
-        if (d != 0.0D)
+        if (d != 0.0D) {
           j = i;
+        }
         paramArrayOfDouble2[(i2 + 4 * i)] = d;
       }
       int i3 = 12;
@@ -1593,7 +1601,7 @@ public class Matrix4d
       paramArrayOfDouble2[(i2 + 0)] = ((paramArrayOfDouble2[(i2 + 0)] - paramArrayOfDouble1[(i3 + 1)] * paramArrayOfDouble2[(i2 + 4)] - paramArrayOfDouble1[(i3 + 2)] * paramArrayOfDouble2[(i2 + 8)] - paramArrayOfDouble1[(i3 + 3)] * paramArrayOfDouble2[(i2 + 12)]) / paramArrayOfDouble1[(i3 + 0)]);
     }
   }
-
+  
   public final double determinant()
   {
     double d = this.m00 * (this.m11 * this.m22 * this.m33 + this.m12 * this.m23 * this.m31 + this.m13 * this.m21 * this.m32 - this.m13 * this.m22 * this.m31 - this.m11 * this.m23 * this.m32 - this.m12 * this.m21 * this.m33);
@@ -1602,7 +1610,7 @@ public class Matrix4d
     d -= this.m03 * (this.m10 * this.m21 * this.m32 + this.m11 * this.m22 * this.m30 + this.m12 * this.m20 * this.m31 - this.m12 * this.m21 * this.m30 - this.m10 * this.m22 * this.m31 - this.m11 * this.m20 * this.m32);
     return d;
   }
-
+  
   public final void set(double paramDouble)
   {
     this.m00 = paramDouble;
@@ -1622,7 +1630,7 @@ public class Matrix4d
     this.m32 = 0.0D;
     this.m33 = 1.0D;
   }
-
+  
   public final void set(Vector3d paramVector3d)
   {
     this.m00 = 1.0D;
@@ -1642,7 +1650,7 @@ public class Matrix4d
     this.m32 = 0.0D;
     this.m33 = 1.0D;
   }
-
+  
   public final void set(double paramDouble, Vector3d paramVector3d)
   {
     this.m00 = paramDouble;
@@ -1662,7 +1670,7 @@ public class Matrix4d
     this.m32 = 0.0D;
     this.m33 = 1.0D;
   }
-
+  
   public final void set(Vector3d paramVector3d, double paramDouble)
   {
     this.m00 = paramDouble;
@@ -1682,7 +1690,7 @@ public class Matrix4d
     this.m32 = 0.0D;
     this.m33 = 1.0D;
   }
-
+  
   public final void set(Matrix3f paramMatrix3f, Vector3f paramVector3f, float paramFloat)
   {
     this.m00 = (paramMatrix3f.m00 * paramFloat);
@@ -1702,7 +1710,7 @@ public class Matrix4d
     this.m32 = 0.0D;
     this.m33 = 1.0D;
   }
-
+  
   public final void set(Matrix3d paramMatrix3d, Vector3d paramVector3d, double paramDouble)
   {
     this.m00 = (paramMatrix3d.m00 * paramDouble);
@@ -1722,14 +1730,14 @@ public class Matrix4d
     this.m32 = 0.0D;
     this.m33 = 1.0D;
   }
-
+  
   public final void setTranslation(Vector3d paramVector3d)
   {
     this.m03 = paramVector3d.x;
     this.m13 = paramVector3d.y;
     this.m23 = paramVector3d.z;
   }
-
+  
   public final void rotX(double paramDouble)
   {
     double d1 = Math.sin(paramDouble);
@@ -1751,7 +1759,7 @@ public class Matrix4d
     this.m32 = 0.0D;
     this.m33 = 1.0D;
   }
-
+  
   public final void rotY(double paramDouble)
   {
     double d1 = Math.sin(paramDouble);
@@ -1773,7 +1781,7 @@ public class Matrix4d
     this.m32 = 0.0D;
     this.m33 = 1.0D;
   }
-
+  
   public final void rotZ(double paramDouble)
   {
     double d1 = Math.sin(paramDouble);
@@ -1795,7 +1803,7 @@ public class Matrix4d
     this.m32 = 0.0D;
     this.m33 = 1.0D;
   }
-
+  
   public final void mul(double paramDouble)
   {
     this.m00 *= paramDouble;
@@ -1815,7 +1823,7 @@ public class Matrix4d
     this.m32 *= paramDouble;
     this.m33 *= paramDouble;
   }
-
+  
   public final void mul(double paramDouble, Matrix4d paramMatrix4d)
   {
     paramMatrix4d.m00 *= paramDouble;
@@ -1835,7 +1843,7 @@ public class Matrix4d
     paramMatrix4d.m32 *= paramDouble;
     paramMatrix4d.m33 *= paramDouble;
   }
-
+  
   public final void mul(Matrix4d paramMatrix4d)
   {
     double d1 = this.m00 * paramMatrix4d.m00 + this.m01 * paramMatrix4d.m10 + this.m02 * paramMatrix4d.m20 + this.m03 * paramMatrix4d.m30;
@@ -1871,7 +1879,7 @@ public class Matrix4d
     this.m32 = d15;
     this.m33 = d16;
   }
-
+  
   public final void mul(Matrix4d paramMatrix4d1, Matrix4d paramMatrix4d2)
   {
     if ((this != paramMatrix4d1) && (this != paramMatrix4d2))
@@ -1929,7 +1937,7 @@ public class Matrix4d
       this.m33 = d16;
     }
   }
-
+  
   public final void mulTransposeBoth(Matrix4d paramMatrix4d1, Matrix4d paramMatrix4d2)
   {
     if ((this != paramMatrix4d1) && (this != paramMatrix4d2))
@@ -1987,7 +1995,7 @@ public class Matrix4d
       this.m33 = d16;
     }
   }
-
+  
   public final void mulTransposeRight(Matrix4d paramMatrix4d1, Matrix4d paramMatrix4d2)
   {
     if ((this != paramMatrix4d1) && (this != paramMatrix4d2))
@@ -2045,7 +2053,7 @@ public class Matrix4d
       this.m33 = d16;
     }
   }
-
+  
   public final void mulTransposeLeft(Matrix4d paramMatrix4d1, Matrix4d paramMatrix4d2)
   {
     if ((this != paramMatrix4d1) && (this != paramMatrix4d2))
@@ -2103,19 +2111,17 @@ public class Matrix4d
       this.m33 = d16;
     }
   }
-
+  
   public boolean equals(Matrix4d paramMatrix4d)
   {
     try
     {
       return (this.m00 == paramMatrix4d.m00) && (this.m01 == paramMatrix4d.m01) && (this.m02 == paramMatrix4d.m02) && (this.m03 == paramMatrix4d.m03) && (this.m10 == paramMatrix4d.m10) && (this.m11 == paramMatrix4d.m11) && (this.m12 == paramMatrix4d.m12) && (this.m13 == paramMatrix4d.m13) && (this.m20 == paramMatrix4d.m20) && (this.m21 == paramMatrix4d.m21) && (this.m22 == paramMatrix4d.m22) && (this.m23 == paramMatrix4d.m23) && (this.m30 == paramMatrix4d.m30) && (this.m31 == paramMatrix4d.m31) && (this.m32 == paramMatrix4d.m32) && (this.m33 == paramMatrix4d.m33);
     }
-    catch (NullPointerException localNullPointerException)
-    {
-    }
+    catch (NullPointerException localNullPointerException) {}
     return false;
   }
-
+  
   public boolean equals(Object paramObject)
   {
     try
@@ -2127,69 +2133,84 @@ public class Matrix4d
     {
       return false;
     }
-    catch (NullPointerException localNullPointerException)
-    {
-    }
+    catch (NullPointerException localNullPointerException) {}
     return false;
   }
-
-  /** @deprecated */
+  
+  /**
+   * @deprecated
+   */
   public boolean epsilonEquals(Matrix4d paramMatrix4d, float paramFloat)
   {
     return epsilonEquals(paramMatrix4d, paramFloat);
   }
-
+  
   public boolean epsilonEquals(Matrix4d paramMatrix4d, double paramDouble)
   {
     double d = this.m00 - paramMatrix4d.m00;
-    if ((d < 0.0D ? -d : d) > paramDouble)
+    if ((d < 0.0D ? -d : d) > paramDouble) {
       return false;
+    }
     d = this.m01 - paramMatrix4d.m01;
-    if ((d < 0.0D ? -d : d) > paramDouble)
+    if ((d < 0.0D ? -d : d) > paramDouble) {
       return false;
+    }
     d = this.m02 - paramMatrix4d.m02;
-    if ((d < 0.0D ? -d : d) > paramDouble)
+    if ((d < 0.0D ? -d : d) > paramDouble) {
       return false;
+    }
     d = this.m03 - paramMatrix4d.m03;
-    if ((d < 0.0D ? -d : d) > paramDouble)
+    if ((d < 0.0D ? -d : d) > paramDouble) {
       return false;
+    }
     d = this.m10 - paramMatrix4d.m10;
-    if ((d < 0.0D ? -d : d) > paramDouble)
+    if ((d < 0.0D ? -d : d) > paramDouble) {
       return false;
+    }
     d = this.m11 - paramMatrix4d.m11;
-    if ((d < 0.0D ? -d : d) > paramDouble)
+    if ((d < 0.0D ? -d : d) > paramDouble) {
       return false;
+    }
     d = this.m12 - paramMatrix4d.m12;
-    if ((d < 0.0D ? -d : d) > paramDouble)
+    if ((d < 0.0D ? -d : d) > paramDouble) {
       return false;
+    }
     d = this.m13 - paramMatrix4d.m13;
-    if ((d < 0.0D ? -d : d) > paramDouble)
+    if ((d < 0.0D ? -d : d) > paramDouble) {
       return false;
+    }
     d = this.m20 - paramMatrix4d.m20;
-    if ((d < 0.0D ? -d : d) > paramDouble)
+    if ((d < 0.0D ? -d : d) > paramDouble) {
       return false;
+    }
     d = this.m21 - paramMatrix4d.m21;
-    if ((d < 0.0D ? -d : d) > paramDouble)
+    if ((d < 0.0D ? -d : d) > paramDouble) {
       return false;
+    }
     d = this.m22 - paramMatrix4d.m22;
-    if ((d < 0.0D ? -d : d) > paramDouble)
+    if ((d < 0.0D ? -d : d) > paramDouble) {
       return false;
+    }
     d = this.m23 - paramMatrix4d.m23;
-    if ((d < 0.0D ? -d : d) > paramDouble)
+    if ((d < 0.0D ? -d : d) > paramDouble) {
       return false;
+    }
     d = this.m30 - paramMatrix4d.m30;
-    if ((d < 0.0D ? -d : d) > paramDouble)
+    if ((d < 0.0D ? -d : d) > paramDouble) {
       return false;
+    }
     d = this.m31 - paramMatrix4d.m31;
-    if ((d < 0.0D ? -d : d) > paramDouble)
+    if ((d < 0.0D ? -d : d) > paramDouble) {
       return false;
+    }
     d = this.m32 - paramMatrix4d.m32;
-    if ((d < 0.0D ? -d : d) > paramDouble)
+    if ((d < 0.0D ? -d : d) > paramDouble) {
       return false;
+    }
     d = this.m33 - paramMatrix4d.m33;
     return (d < 0.0D ? -d : d) <= paramDouble;
   }
-
+  
   public int hashCode()
   {
     long l = 1L;
@@ -2211,7 +2232,7 @@ public class Matrix4d
     l = 31L * l + VecMathUtil.doubleToLongBits(this.m33);
     return (int)(l ^ l >> 32);
   }
-
+  
   public final void transform(Tuple4d paramTuple4d1, Tuple4d paramTuple4d2)
   {
     double d1 = this.m00 * paramTuple4d1.x + this.m01 * paramTuple4d1.y + this.m02 * paramTuple4d1.z + this.m03 * paramTuple4d1.w;
@@ -2222,7 +2243,7 @@ public class Matrix4d
     paramTuple4d2.y = d2;
     paramTuple4d2.z = d3;
   }
-
+  
   public final void transform(Tuple4d paramTuple4d)
   {
     double d1 = this.m00 * paramTuple4d.x + this.m01 * paramTuple4d.y + this.m02 * paramTuple4d.z + this.m03 * paramTuple4d.w;
@@ -2233,7 +2254,7 @@ public class Matrix4d
     paramTuple4d.y = d2;
     paramTuple4d.z = d3;
   }
-
+  
   public final void transform(Tuple4f paramTuple4f1, Tuple4f paramTuple4f2)
   {
     float f1 = (float)(this.m00 * paramTuple4f1.x + this.m01 * paramTuple4f1.y + this.m02 * paramTuple4f1.z + this.m03 * paramTuple4f1.w);
@@ -2244,7 +2265,7 @@ public class Matrix4d
     paramTuple4f2.y = f2;
     paramTuple4f2.z = f3;
   }
-
+  
   public final void transform(Tuple4f paramTuple4f)
   {
     float f1 = (float)(this.m00 * paramTuple4f.x + this.m01 * paramTuple4f.y + this.m02 * paramTuple4f.z + this.m03 * paramTuple4f.w);
@@ -2255,7 +2276,7 @@ public class Matrix4d
     paramTuple4f.y = f2;
     paramTuple4f.z = f3;
   }
-
+  
   public final void transform(Point3d paramPoint3d1, Point3d paramPoint3d2)
   {
     double d1 = this.m00 * paramPoint3d1.x + this.m01 * paramPoint3d1.y + this.m02 * paramPoint3d1.z + this.m03;
@@ -2264,7 +2285,7 @@ public class Matrix4d
     paramPoint3d2.x = d1;
     paramPoint3d2.y = d2;
   }
-
+  
   public final void transform(Point3d paramPoint3d)
   {
     double d1 = this.m00 * paramPoint3d.x + this.m01 * paramPoint3d.y + this.m02 * paramPoint3d.z + this.m03;
@@ -2273,7 +2294,7 @@ public class Matrix4d
     paramPoint3d.x = d1;
     paramPoint3d.y = d2;
   }
-
+  
   public final void transform(Point3f paramPoint3f1, Point3f paramPoint3f2)
   {
     float f1 = (float)(this.m00 * paramPoint3f1.x + this.m01 * paramPoint3f1.y + this.m02 * paramPoint3f1.z + this.m03);
@@ -2282,7 +2303,7 @@ public class Matrix4d
     paramPoint3f2.x = f1;
     paramPoint3f2.y = f2;
   }
-
+  
   public final void transform(Point3f paramPoint3f)
   {
     float f1 = (float)(this.m00 * paramPoint3f.x + this.m01 * paramPoint3f.y + this.m02 * paramPoint3f.z + this.m03);
@@ -2291,7 +2312,7 @@ public class Matrix4d
     paramPoint3f.x = f1;
     paramPoint3f.y = f2;
   }
-
+  
   public final void transform(Vector3d paramVector3d1, Vector3d paramVector3d2)
   {
     double d1 = this.m00 * paramVector3d1.x + this.m01 * paramVector3d1.y + this.m02 * paramVector3d1.z;
@@ -2300,7 +2321,7 @@ public class Matrix4d
     paramVector3d2.x = d1;
     paramVector3d2.y = d2;
   }
-
+  
   public final void transform(Vector3d paramVector3d)
   {
     double d1 = this.m00 * paramVector3d.x + this.m01 * paramVector3d.y + this.m02 * paramVector3d.z;
@@ -2309,7 +2330,7 @@ public class Matrix4d
     paramVector3d.x = d1;
     paramVector3d.y = d2;
   }
-
+  
   public final void transform(Vector3f paramVector3f1, Vector3f paramVector3f2)
   {
     float f1 = (float)(this.m00 * paramVector3f1.x + this.m01 * paramVector3f1.y + this.m02 * paramVector3f1.z);
@@ -2318,7 +2339,7 @@ public class Matrix4d
     paramVector3f2.x = f1;
     paramVector3f2.y = f2;
   }
-
+  
   public final void transform(Vector3f paramVector3f)
   {
     float f1 = (float)(this.m00 * paramVector3f.x + this.m01 * paramVector3f.y + this.m02 * paramVector3f.z);
@@ -2327,7 +2348,7 @@ public class Matrix4d
     paramVector3f.x = f1;
     paramVector3f.y = f2;
   }
-
+  
   public final void setRotation(Matrix3d paramMatrix3d)
   {
     double[] arrayOfDouble1 = new double[9];
@@ -2343,7 +2364,7 @@ public class Matrix4d
     this.m21 = (paramMatrix3d.m21 * arrayOfDouble2[1]);
     this.m22 = (paramMatrix3d.m22 * arrayOfDouble2[2]);
   }
-
+  
   public final void setRotation(Matrix3f paramMatrix3f)
   {
     double[] arrayOfDouble1 = new double[9];
@@ -2359,7 +2380,7 @@ public class Matrix4d
     this.m21 = (paramMatrix3f.m21 * arrayOfDouble2[1]);
     this.m22 = (paramMatrix3f.m22 * arrayOfDouble2[2]);
   }
-
+  
   public final void setRotation(Quat4f paramQuat4f)
   {
     double[] arrayOfDouble1 = new double[9];
@@ -2375,7 +2396,7 @@ public class Matrix4d
     this.m12 = (2.0D * (paramQuat4f.y * paramQuat4f.z - paramQuat4f.w * paramQuat4f.x) * arrayOfDouble2[2]);
     this.m22 = ((1.0D - 2.0F * paramQuat4f.x * paramQuat4f.x - 2.0F * paramQuat4f.y * paramQuat4f.y) * arrayOfDouble2[2]);
   }
-
+  
   public final void setRotation(Quat4d paramQuat4d)
   {
     double[] arrayOfDouble1 = new double[9];
@@ -2391,7 +2412,7 @@ public class Matrix4d
     this.m12 = (2.0D * (paramQuat4d.y * paramQuat4d.z - paramQuat4d.w * paramQuat4d.x) * arrayOfDouble2[2]);
     this.m22 = ((1.0D - 2.0D * paramQuat4d.x * paramQuat4d.x - 2.0D * paramQuat4d.y * paramQuat4d.y) * arrayOfDouble2[2]);
   }
-
+  
   public final void setRotation(AxisAngle4d paramAxisAngle4d)
   {
     double[] arrayOfDouble1 = new double[9];
@@ -2417,7 +2438,7 @@ public class Matrix4d
     this.m21 = ((d7 * d10 + d5 * d2) * arrayOfDouble2[1]);
     this.m22 = ((d7 * d4 * d4 + d6) * arrayOfDouble2[2]);
   }
-
+  
   public final void setZero()
   {
     this.m00 = 0.0D;
@@ -2437,7 +2458,7 @@ public class Matrix4d
     this.m32 = 0.0D;
     this.m33 = 0.0D;
   }
-
+  
   public final void negate()
   {
     this.m00 = (-this.m00);
@@ -2457,7 +2478,7 @@ public class Matrix4d
     this.m32 = (-this.m32);
     this.m33 = (-this.m33);
   }
-
+  
   public final void negate(Matrix4d paramMatrix4d)
   {
     this.m00 = (-paramMatrix4d.m00);
@@ -2477,7 +2498,7 @@ public class Matrix4d
     this.m32 = (-paramMatrix4d.m32);
     this.m33 = (-paramMatrix4d.m33);
   }
-
+  
   private final void getScaleRotate(double[] paramArrayOfDouble1, double[] paramArrayOfDouble2)
   {
     double[] arrayOfDouble = new double[9];
@@ -2492,7 +2513,7 @@ public class Matrix4d
     arrayOfDouble[8] = this.m22;
     Matrix3d.compute_svd(arrayOfDouble, paramArrayOfDouble1, paramArrayOfDouble2);
   }
-
+  
   public Object clone()
   {
     Matrix4d localMatrix4d = null;
@@ -2508,7 +2529,8 @@ public class Matrix4d
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     javax.vecmath.Matrix4d
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

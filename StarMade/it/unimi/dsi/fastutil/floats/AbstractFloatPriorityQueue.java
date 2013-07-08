@@ -1,25 +1,24 @@
-/*    */ package it.unimi.dsi.fastutil.floats;
-/*    */ 
-/*    */ import it.unimi.dsi.fastutil.AbstractPriorityQueue;
-/*    */ 
-/*    */ public abstract class AbstractFloatPriorityQueue extends AbstractPriorityQueue<Float>
-/*    */   implements FloatPriorityQueue
-/*    */ {
-/*    */   public void enqueue(Float x)
-/*    */   {
-/* 51 */     enqueue(x.floatValue());
-/*    */   }
-/* 53 */   public Float dequeue() { return Float.valueOf(dequeueFloat()); } 
-/*    */   public Float first() {
-/* 55 */     return Float.valueOf(firstFloat());
-/*    */   }
-/* 57 */   public Float last() { return Float.valueOf(lastFloat()); } 
-/*    */   public float lastFloat() {
-/* 59 */     throw new UnsupportedOperationException();
-/*    */   }
-/*    */ }
+/*  1:   */package it.unimi.dsi.fastutil.floats;
+/*  2:   */
+/*  3:   */import it.unimi.dsi.fastutil.AbstractPriorityQueue;
+/*  4:   */
+/* 47:   */public abstract class AbstractFloatPriorityQueue
+/* 48:   */  extends AbstractPriorityQueue<Float>
+/* 49:   */  implements FloatPriorityQueue
+/* 50:   */{
+/* 51:51 */  public void enqueue(Float x) { enqueue(x.floatValue()); }
+/* 52:   */  
+/* 53:53 */  public Float dequeue() { return Float.valueOf(dequeueFloat()); }
+/* 54:   */  
+/* 55:55 */  public Float first() { return Float.valueOf(firstFloat()); }
+/* 56:   */  
+/* 57:57 */  public Float last() { return Float.valueOf(lastFloat()); }
+/* 58:   */  
+/* 59:59 */  public float lastFloat() { throw new UnsupportedOperationException(); }
+/* 60:   */}
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     it.unimi.dsi.fastutil.floats.AbstractFloatPriorityQueue
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

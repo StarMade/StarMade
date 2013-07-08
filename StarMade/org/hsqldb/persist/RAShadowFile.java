@@ -23,7 +23,7 @@ public class RAShadowFile
   long synchLength;
   byte[] buffer;
   HsqlByteArrayOutputStream byteArrayOutputStream;
-
+  
   RAShadowFile(Database paramDatabase, RandomAccessInterface paramRandomAccessInterface, String paramString, long paramLong, int paramInt)
   {
     this.database = paramDatabase;
@@ -32,13 +32,14 @@ public class RAShadowFile
     this.pageSize = paramInt;
     this.maxSize = paramLong;
     int i = (int)(paramLong / paramInt);
-    if (paramLong % paramInt != 0L)
+    if (paramLong % paramInt != 0L) {
       i++;
+    }
     this.bitMap = new BitMap(i);
     this.buffer = new byte[paramInt + 12];
     this.byteArrayOutputStream = new HsqlByteArrayOutputStream(this.buffer);
   }
-
+  
   void copy(long paramLong, int paramInt)
     throws IOException
   {
@@ -48,31 +49,36 @@ public class RAShadowFile
       this.bitMap.set(0);
       this.zeroPageSet = true;
     }
-    if (paramLong >= this.maxSize)
+    if (paramLong >= this.maxSize) {
       return;
+    }
     long l = paramLong + paramInt;
     int i = (int)(paramLong / this.pageSize);
     int j = (int)(l / this.pageSize);
-    if (l % this.pageSize == 0L)
+    if (l % this.pageSize == 0L) {
       j--;
+    }
     while (i <= j)
     {
       copy(i);
       i++;
     }
   }
-
+  
   private void copy(int paramInt)
     throws IOException
   {
-    if (this.bitMap.set(paramInt) == 1)
+    if (this.bitMap.set(paramInt) == 1) {
       return;
+    }
     long l1 = paramInt * this.pageSize;
     int i = this.pageSize;
-    if (this.maxSize - l1 < this.pageSize)
+    if (this.maxSize - l1 < this.pageSize) {
       i = (int)(this.maxSize - l1);
-    if (this.dest == null)
+    }
+    if (this.dest == null) {
       open();
+    }
     long l2 = this.dest.length();
     try
     {
@@ -100,20 +106,19 @@ public class RAShadowFile
       this.database.logger.logWarningEvent("pos" + l1 + " " + i, localThrowable);
       throw JavaSystem.toIOException(localThrowable);
     }
-    finally
-    {
-    }
+    finally {}
   }
-
+  
   private void open()
     throws IOException
   {
-    if (this.database.logger.isStoredFileAccess())
+    if (this.database.logger.isStoredFileAccess()) {
       this.dest = ScaledRAFile.newScaledRAFile(this.database, this.pathName, false, 3);
-    else
+    } else {
       this.dest = new ScaledRAFileSimple(this.database, this.pathName, "rws");
+    }
   }
-
+  
   void close()
     throws IOException
   {
@@ -124,7 +129,7 @@ public class RAShadowFile
       this.dest = null;
     }
   }
-
+  
   public void synch()
   {
     if (this.dest != null)
@@ -133,25 +138,26 @@ public class RAShadowFile
       this.dest.synch();
     }
   }
-
+  
   public long getSavedLength()
   {
     return this.savedLength;
   }
-
+  
   public InputStreamInterface getInputStream()
   {
     return new InputStreamShadow();
   }
-
+  
   private static RandomAccessInterface getStorage(Database paramDatabase, String paramString1, String paramString2)
     throws IOException
   {
-    if (paramDatabase.logger.isStoredFileAccess())
+    if (paramDatabase.logger.isStoredFileAccess()) {
       return ScaledRAFile.newScaledRAFile(paramDatabase, paramString1, paramString2.equals("r"), 3);
+    }
     return new ScaledRAFileSimple(paramDatabase, paramString1, paramString2);
   }
-
+  
   public static void restoreFile(Database paramDatabase, String paramString1, String paramString2)
     throws IOException
   {
@@ -170,7 +176,7 @@ public class RAShadowFile
     localRandomAccessInterface2.synch();
     localRandomAccessInterface2.close();
   }
-
+  
   class InputStreamShadow
     implements InputStreamInterface
   {
@@ -178,96 +184,103 @@ public class RAShadowFile
     long limitSize = 0L;
     long fetchedSize = 0L;
     boolean initialised = false;
-
-    InputStreamShadow()
-    {
-    }
-
+    
+    InputStreamShadow() {}
+    
     public int read()
       throws IOException
     {
-      if (!this.initialised)
+      if (!this.initialised) {
         initialise();
-      if (this.fetchedSize == this.limitSize)
+      }
+      if (this.fetchedSize == this.limitSize) {
         return -1;
+      }
       int i = this.is.read();
-      if (i < 0)
+      if (i < 0) {
         throw new IOException("backup file not complete " + this.fetchedSize + " " + this.limitSize);
+      }
       this.fetchedSize += 1L;
       return i;
     }
-
+    
     public int read(byte[] paramArrayOfByte)
       throws IOException
     {
       return read(paramArrayOfByte, 0, paramArrayOfByte.length);
     }
-
+    
     public int read(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
       throws IOException
     {
-      if (!this.initialised)
+      if (!this.initialised) {
         initialise();
-      if (this.fetchedSize == this.limitSize)
+      }
+      if (this.fetchedSize == this.limitSize) {
         return -1;
-      if ((this.limitSize >= 0L) && (this.limitSize - this.fetchedSize < paramInt2))
+      }
+      if ((this.limitSize >= 0L) && (this.limitSize - this.fetchedSize < paramInt2)) {
         paramInt2 = (int)(this.limitSize - this.fetchedSize);
+      }
       int i = this.is.read(paramArrayOfByte, paramInt1, paramInt2);
-      if (i < 0)
+      if (i < 0) {
         throw new IOException("backup file not complete " + this.fetchedSize + " " + this.limitSize);
+      }
       this.fetchedSize += i;
       return i;
     }
-
+    
     public long skip(long paramLong)
       throws IOException
     {
       return 0L;
     }
-
+    
     public int available()
       throws IOException
     {
       return 0;
     }
-
+    
     public void close()
       throws IOException
     {
-      if (this.is != null)
+      if (this.is != null) {
         this.is.close();
+      }
     }
-
+    
     public void setSizeLimit(long paramLong)
     {
       this.limitSize = paramLong;
     }
-
+    
     public long getSizeLimit()
     {
-      if (!this.initialised)
+      if (!this.initialised) {
         initialise();
+      }
       return this.limitSize;
     }
-
+    
     private void initialise()
     {
       this.limitSize = RAShadowFile.this.synchLength;
       RAShadowFile.this.database.logger.logDetailEvent("shadow file size for backup: " + this.limitSize);
-      if (this.limitSize > 0L)
+      if (this.limitSize > 0L) {
         try
         {
           this.is = new FileInputStream(RAShadowFile.this.pathName);
         }
-        catch (FileNotFoundException localFileNotFoundException)
-        {
-        }
+        catch (FileNotFoundException localFileNotFoundException) {}
+      }
       this.initialised = true;
     }
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.persist.RAShadowFile
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

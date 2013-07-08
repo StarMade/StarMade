@@ -9,12 +9,13 @@ import java.lang.annotation.Target;
 @Target({java.lang.annotation.ElementType.FIELD})
 public @interface MappedField
 {
-  public abstract long byteOffset();
-
-  public abstract long byteLength();
+  long byteOffset() default -1L;
+  
+  long byteLength() default -1L;
 }
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.util.mapped.MappedField
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

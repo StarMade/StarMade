@@ -32,33 +32,35 @@ class JDBCStatementBase
   static final int EXECUTE_FAILED = -3;
   static final int RETURN_GENERATED_KEYS = 1;
   static final int NO_GENERATED_KEYS = 2;
-
+  
   public synchronized void close()
     throws SQLException
-  {
-  }
-
+  {}
+  
   void checkClosed()
     throws SQLException
   {
-    if (this.isClosed)
+    if (this.isClosed) {
       throw Util.sqlException(1251);
+    }
     if (this.connection.isClosed)
     {
       close();
       throw Util.sqlException(1353);
     }
-    if (this.connectionIncarnation != this.connection.incarnation)
+    if (this.connectionIncarnation != this.connection.incarnation) {
       throw Util.sqlException(1353);
+    }
   }
-
+  
   void performPostExecute()
     throws SQLException
   {
     this.resultOut.clearLobResults();
     this.generatedResult = null;
-    if (this.resultIn == null)
+    if (this.resultIn == null) {
       return;
+    }
     this.rootWarning = null;
     Result localResult = this.resultIn;
     while (localResult.getChainedResult() != null)
@@ -67,10 +69,11 @@ class JDBCStatementBase
       if (localResult.getType() == 19)
       {
         SQLWarning localSQLWarning = Util.sqlWarning(localResult);
-        if (this.rootWarning == null)
+        if (this.rootWarning == null) {
           this.rootWarning = localSQLWarning;
-        else
+        } else {
           this.rootWarning.setNextWarning(localSQLWarning);
+        }
       }
       else if (localResult.getType() == 2)
       {
@@ -85,17 +88,18 @@ class JDBCStatementBase
         this.resultIn.addChainedResult(localResult);
       }
     }
-    if (this.rootWarning != null)
+    if (this.rootWarning != null) {
       this.connection.setWarnings(this.rootWarning);
+    }
   }
-
+  
   int getUpdateCount()
     throws SQLException
   {
     checkClosed();
     return (this.resultIn == null) || (this.resultIn.isData()) ? -1 : this.resultIn.getUpdateCount();
   }
-
+  
   ResultSet getResultSet()
     throws SQLException
   {
@@ -104,22 +108,24 @@ class JDBCStatementBase
     this.currentResultSet = null;
     return localJDBCResultSet;
   }
-
+  
   boolean getMoreResults()
     throws SQLException
   {
     return getMoreResults(1);
   }
-
+  
   boolean getMoreResults(int paramInt)
     throws SQLException
   {
     checkClosed();
-    if (this.resultIn == null)
+    if (this.resultIn == null) {
       return false;
+    }
     this.resultIn = this.resultIn.getChainedResult();
-    if ((this.currentResultSet != null) && (paramInt != 2))
+    if ((this.currentResultSet != null) && (paramInt != 2)) {
       this.currentResultSet.close();
+    }
     this.currentResultSet = null;
     if (this.resultIn != null)
     {
@@ -128,37 +134,41 @@ class JDBCStatementBase
     }
     return false;
   }
-
+  
   ResultSet getGeneratedResultSet()
     throws SQLException
   {
-    if (this.generatedResultSet != null)
+    if (this.generatedResultSet != null) {
       this.generatedResultSet.close();
-    if (this.generatedResult == null)
+    }
+    if (this.generatedResult == null) {
       this.generatedResult = Result.emptyGeneratedResult;
+    }
     this.generatedResultSet = new JDBCResultSet(this.connection, null, this.generatedResult, this.generatedResult.metaData);
     return this.generatedResultSet;
   }
-
+  
   void closeResultData()
     throws SQLException
   {
-    if (this.currentResultSet != null)
+    if (this.currentResultSet != null) {
       this.currentResultSet.close();
-    if (this.generatedResultSet != null)
+    }
+    if (this.generatedResultSet != null) {
       this.generatedResultSet.close();
+    }
     this.generatedResultSet = null;
     this.generatedResult = null;
     this.resultIn = null;
     this.currentResultSet = null;
   }
-
+  
   public void closeOnCompletion()
     throws SQLException
   {
     checkClosed();
   }
-
+  
   public boolean isCloseOnCompletion()
     throws SQLException
   {
@@ -167,7 +177,8 @@ class JDBCStatementBase
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.jdbc.JDBCStatementBase
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

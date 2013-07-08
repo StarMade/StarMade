@@ -1,6 +1,7 @@
 package org.hsqldb.lib.tar;
 
-public class TarMalformatException extends Exception
+public class TarMalformatException
+  extends Exception
 {
   public TarMalformatException(String paramString)
   {
@@ -8,7 +9,8 @@ public class TarMalformatException extends Exception
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.lib.tar.TarMalformatException
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

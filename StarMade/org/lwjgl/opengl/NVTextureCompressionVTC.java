@@ -8,7 +8,8 @@ public final class NVTextureCompressionVTC
   public static final int GL_COMPRESSED_RGBA_S3TC_DXT5_EXT = 33779;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.opengl.NVTextureCompressionVTC
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

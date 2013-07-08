@@ -1,19 +1,20 @@
-/*    */ import org.dom4j.Document;
-/*    */ 
-/*    */ public final class jp
-/*    */ {
-/*    */   public String a;
-/*    */   public String b;
-/*    */   public String c;
-/*    */   public Document a;
-/*    */ 
-/*    */   public final String toString()
-/*    */   {
-/* 15 */     return "Session [user=" + this.a + ", id=" + this.b + ", sname=" + this.c + "]";
-/*    */   }
-/*    */ }
+/*  1:   */import org.dom4j.Document;
+/*  2:   */
+/*  6:   */public final class jp
+/*  7:   */{
+/*  8:   */  public String a;
+/*  9:   */  public String b;
+/* 10:   */  public String c;
+/* 11:   */  public Document a;
+/* 12:   */  
+/* 13:   */  public final String toString()
+/* 14:   */  {
+/* 15:15 */    return "Session [user=" + this.a + ", id=" + this.b + ", sname=" + this.c + "]";
+/* 16:   */  }
+/* 17:   */}
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     jp
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

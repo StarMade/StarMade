@@ -1,110 +1,117 @@
-/*     */ package it.unimi.dsi.fastutil.longs;
-/*     */ 
-/*     */ import java.util.NoSuchElementException;
-/*     */ 
-/*     */ public class LongArrayFIFOQueue extends AbstractLongPriorityQueue
-/*     */ {
-/*     */   public static final int INITIAL_CAPACITY = 16;
-/*  58 */   protected long[] array = LongArrays.EMPTY_ARRAY;
-/*     */   protected int length;
-/*     */   protected int start;
-/*     */   protected int end;
-/*     */ 
-/*     */   public LongArrayFIFOQueue(int capacity)
-/*     */   {
-/*  73 */     if (capacity > 0) this.array = new long[capacity];
-/*  74 */     this.length = this.array.length;
-/*     */   }
-/*     */ 
-/*     */   public LongArrayFIFOQueue()
-/*     */   {
-/*  79 */     this(16);
-/*     */   }
-/*     */ 
-/*     */   public LongComparator comparator()
-/*     */   {
-/*  86 */     return null;
-/*     */   }
-/*     */ 
-/*     */   public long dequeueLong() {
-/*  90 */     if (this.start == this.end) throw new NoSuchElementException();
-/*  91 */     long t = this.array[this.start];
-/*  92 */     if (++this.start == this.length) this.start = 0;
-/*  93 */     return t;
-/*     */   }
-/*     */ 
-/*     */   public long dequeueLastLong()
-/*     */   {
-/* 101 */     if (this.start == this.end) throw new NoSuchElementException();
-/* 102 */     if (this.end == 0) this.end = this.length;
-/* 103 */     long t = this.array[(--this.end)];
-/*     */ 
-/* 106 */     return t;
-/*     */   }
-/*     */ 
-/*     */   private final void expand() {
-/* 110 */     long[] newArray = LongArrays.grow(this.array, this.length + 1, 0);
-/* 111 */     System.arraycopy(this.array, this.start, newArray, 0, this.length - this.start);
-/* 112 */     System.arraycopy(this.array, 0, newArray, this.length - this.start, this.end);
-/* 113 */     this.start = 0;
-/* 114 */     this.end = this.length;
-/* 115 */     this.length = (this.array = newArray).length;
-/*     */   }
-/*     */ 
-/*     */   public void enqueue(long x)
-/*     */   {
-/* 120 */     this.array[(this.end++)] = x;
-/* 121 */     if (this.end == this.length) this.end = 0;
-/* 122 */     if (this.end == this.start) expand();
-/*     */   }
-/*     */ 
-/*     */   public void enqueueFirst(long x)
-/*     */   {
-/* 128 */     if (this.start == 0) this.start = this.length;
-/* 129 */     this.array[(--this.start)] = x;
-/* 130 */     if (this.end == this.start) expand();
-/*     */   }
-/*     */ 
-/*     */   public long firstLong()
-/*     */   {
-/* 137 */     if (this.start == this.end) throw new NoSuchElementException();
-/* 138 */     return this.array[this.start];
-/*     */   }
-/*     */ 
-/*     */   public long lastLong()
-/*     */   {
-/* 146 */     if (this.start == this.end) throw new NoSuchElementException();
-/* 147 */     return this.array[(this.end - 1)];
-/*     */   }
-/*     */ 
-/*     */   public void clear()
-/*     */   {
-/* 159 */     this.start = (this.end = 0);
-/*     */   }
-/*     */ 
-/*     */   public void trim()
-/*     */   {
-/* 165 */     int size = size();
-/* 166 */     long[] newArray = new long[size + 1];
-/*     */ 
-/* 172 */     if (this.start <= this.end) { System.arraycopy(this.array, this.start, newArray, 0, this.end - this.start);
-/*     */     } else {
-/* 174 */       System.arraycopy(this.array, this.start, newArray, 0, this.length - this.start);
-/* 175 */       System.arraycopy(this.array, 0, newArray, this.length - this.start, this.end);
-/*     */     }
-/* 177 */     this.start = 0;
-/* 178 */     this.length = ((this.end = size) + 1);
-/* 179 */     this.array = newArray;
-/*     */   }
-/*     */ 
-/*     */   public int size()
-/*     */   {
-/* 184 */     int apparentLength = this.end - this.start;
-/* 185 */     return apparentLength >= 0 ? apparentLength : this.length + apparentLength;
-/*     */   }
-/*     */ }
+/*   1:    */package it.unimi.dsi.fastutil.longs;
+/*   2:    */
+/*   3:    */import java.util.NoSuchElementException;
+/*   4:    */
+/*  54:    */public class LongArrayFIFOQueue
+/*  55:    */  extends AbstractLongPriorityQueue
+/*  56:    */{
+/*  57:    */  public static final int INITIAL_CAPACITY = 16;
+/*  58: 58 */  protected long[] array = LongArrays.EMPTY_ARRAY;
+/*  59:    */  
+/*  61:    */  protected int length;
+/*  62:    */  
+/*  64:    */  protected int start;
+/*  65:    */  
+/*  67:    */  protected int end;
+/*  68:    */  
+/*  71:    */  public LongArrayFIFOQueue(int capacity)
+/*  72:    */  {
+/*  73: 73 */    if (capacity > 0) this.array = new long[capacity];
+/*  74: 74 */    this.length = this.array.length;
+/*  75:    */  }
+/*  76:    */  
+/*  77:    */  public LongArrayFIFOQueue()
+/*  78:    */  {
+/*  79: 79 */    this(16);
+/*  80:    */  }
+/*  81:    */  
+/*  84:    */  public LongComparator comparator()
+/*  85:    */  {
+/*  86: 86 */    return null;
+/*  87:    */  }
+/*  88:    */  
+/*  89:    */  public long dequeueLong() {
+/*  90: 90 */    if (this.start == this.end) throw new NoSuchElementException();
+/*  91: 91 */    long t = this.array[this.start];
+/*  92: 92 */    if (++this.start == this.length) this.start = 0;
+/*  93: 93 */    return t;
+/*  94:    */  }
+/*  95:    */  
+/*  99:    */  public long dequeueLastLong()
+/* 100:    */  {
+/* 101:101 */    if (this.start == this.end) throw new NoSuchElementException();
+/* 102:102 */    if (this.end == 0) this.end = this.length;
+/* 103:103 */    long t = this.array[(--this.end)];
+/* 104:    */    
+/* 106:106 */    return t;
+/* 107:    */  }
+/* 108:    */  
+/* 109:    */  private final void expand() {
+/* 110:110 */    long[] newArray = LongArrays.grow(this.array, this.length + 1, 0);
+/* 111:111 */    System.arraycopy(this.array, this.start, newArray, 0, this.length - this.start);
+/* 112:112 */    System.arraycopy(this.array, 0, newArray, this.length - this.start, this.end);
+/* 113:113 */    this.start = 0;
+/* 114:114 */    this.end = this.length;
+/* 115:115 */    this.length = (this.array = newArray).length;
+/* 116:    */  }
+/* 117:    */  
+/* 118:    */  public void enqueue(long x)
+/* 119:    */  {
+/* 120:120 */    this.array[(this.end++)] = x;
+/* 121:121 */    if (this.end == this.length) this.end = 0;
+/* 122:122 */    if (this.end == this.start) { expand();
+/* 123:    */    }
+/* 124:    */  }
+/* 125:    */  
+/* 126:    */  public void enqueueFirst(long x)
+/* 127:    */  {
+/* 128:128 */    if (this.start == 0) this.start = this.length;
+/* 129:129 */    this.array[(--this.start)] = x;
+/* 130:130 */    if (this.end == this.start) { expand();
+/* 131:    */    }
+/* 132:    */  }
+/* 133:    */  
+/* 135:    */  public long firstLong()
+/* 136:    */  {
+/* 137:137 */    if (this.start == this.end) throw new NoSuchElementException();
+/* 138:138 */    return this.array[this.start];
+/* 139:    */  }
+/* 140:    */  
+/* 144:    */  public long lastLong()
+/* 145:    */  {
+/* 146:146 */    if (this.start == this.end) throw new NoSuchElementException();
+/* 147:147 */    return this.array[(this.end - 1)];
+/* 148:    */  }
+/* 149:    */  
+/* 157:    */  public void clear()
+/* 158:    */  {
+/* 159:159 */    this.start = (this.end = 0);
+/* 160:    */  }
+/* 161:    */  
+/* 163:    */  public void trim()
+/* 164:    */  {
+/* 165:165 */    int size = size();
+/* 166:166 */    long[] newArray = new long[size + 1];
+/* 167:    */    
+/* 172:172 */    if (this.start <= this.end) { System.arraycopy(this.array, this.start, newArray, 0, this.end - this.start);
+/* 173:    */    } else {
+/* 174:174 */      System.arraycopy(this.array, this.start, newArray, 0, this.length - this.start);
+/* 175:175 */      System.arraycopy(this.array, 0, newArray, this.length - this.start, this.end);
+/* 176:    */    }
+/* 177:177 */    this.start = 0;
+/* 178:178 */    this.length = ((this.end = size) + 1);
+/* 179:179 */    this.array = newArray;
+/* 180:    */  }
+/* 181:    */  
+/* 182:    */  public int size()
+/* 183:    */  {
+/* 184:184 */    int apparentLength = this.end - this.start;
+/* 185:185 */    return apparentLength >= 0 ? apparentLength : this.length + apparentLength;
+/* 186:    */  }
+/* 187:    */}
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     it.unimi.dsi.fastutil.longs.LongArrayFIFOQueue
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

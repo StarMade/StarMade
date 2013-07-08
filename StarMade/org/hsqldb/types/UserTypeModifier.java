@@ -16,19 +16,19 @@ public class UserTypeModifier
   Constraint[] constraints = Constraint.emptyArray;
   Expression defaultExpression;
   boolean isNullable = true;
-
+  
   public UserTypeModifier(HsqlNameManager.HsqlName paramHsqlName, int paramInt, Type paramType)
   {
     this.name = paramHsqlName;
     this.schemaObjectType = paramInt;
     this.dataType = paramType;
   }
-
+  
   public int schemaObjectType()
   {
     return this.schemaObjectType;
   }
-
+  
   public void addConstraint(Constraint paramConstraint)
   {
     int i = this.constraints.length;
@@ -36,106 +36,114 @@ public class UserTypeModifier
     this.constraints[i] = paramConstraint;
     setNotNull();
   }
-
+  
   public void removeConstraint(String paramString)
   {
-    for (int i = 0; i < this.constraints.length; i++)
+    for (int i = 0; i < this.constraints.length; i++) {
       if (this.constraints[i].getName().name.equals(paramString))
       {
         this.constraints = ((Constraint[])ArrayUtil.toAdjustedArray(this.constraints, null, i, -1));
         break;
       }
+    }
     setNotNull();
   }
-
+  
   public Constraint getConstraint(String paramString)
   {
-    for (int i = 0; i < this.constraints.length; i++)
-      if (this.constraints[i].getName().name.equals(paramString))
+    for (int i = 0; i < this.constraints.length; i++) {
+      if (this.constraints[i].getName().name.equals(paramString)) {
         return this.constraints[i];
+      }
+    }
     return null;
   }
-
+  
   public Constraint[] getConstraints()
   {
     return this.constraints;
   }
-
+  
   public boolean isNullable()
   {
     return this.isNullable;
   }
-
+  
   public Expression getDefaultClause()
   {
     return this.defaultExpression;
   }
-
+  
   public void setDefaultClause(Expression paramExpression)
   {
     this.defaultExpression = paramExpression;
   }
-
+  
   public void removeDefaultClause()
   {
     this.defaultExpression = null;
   }
-
+  
   private void setNotNull()
   {
     this.isNullable = true;
-    for (int i = 0; i < this.constraints.length; i++)
-      if (this.constraints[i].isNotNull())
+    for (int i = 0; i < this.constraints.length; i++) {
+      if (this.constraints[i].isNotNull()) {
         this.isNullable = false;
+      }
+    }
   }
-
+  
   public int getType()
   {
     return this.schemaObjectType;
   }
-
+  
   public HsqlNameManager.HsqlName getName()
   {
     return this.name;
   }
-
+  
   public HsqlNameManager.HsqlName getSchemaName()
   {
     return this.name.schema;
   }
-
+  
   public Grantee getOwner()
   {
     return this.name.schema.owner;
   }
-
+  
   public OrderedHashSet getReferences()
   {
     OrderedHashSet localOrderedHashSet1 = new OrderedHashSet();
     for (int i = 0; i < this.constraints.length; i++)
     {
       OrderedHashSet localOrderedHashSet2 = this.constraints[i].getReferences();
-      if (localOrderedHashSet2 != null)
+      if (localOrderedHashSet2 != null) {
         localOrderedHashSet1.addAll(localOrderedHashSet2);
+      }
     }
     return localOrderedHashSet1;
   }
-
+  
   public final OrderedHashSet getComponents()
   {
-    if (this.constraints == null)
+    if (this.constraints == null) {
       return null;
+    }
     OrderedHashSet localOrderedHashSet = new OrderedHashSet();
     localOrderedHashSet.addAll(this.constraints);
     return localOrderedHashSet;
   }
-
+  
   public void compile(Session paramSession)
   {
-    for (int i = 0; i < this.constraints.length; i++)
+    for (int i = 0; i < this.constraints.length; i++) {
       this.constraints[i].compile(paramSession, null);
+    }
   }
-
+  
   public String getSQL()
   {
     StringBuffer localStringBuffer = new StringBuffer();
@@ -173,7 +181,8 @@ public class UserTypeModifier
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.types.UserTypeModifier
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

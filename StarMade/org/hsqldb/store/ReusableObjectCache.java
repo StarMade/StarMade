@@ -16,32 +16,28 @@ public class ReusableObjectCache
       localException.printStackTrace();
     }
   }
-
+  
   public static HashMappedList getHashMappedList()
   {
     return new HashMappedList();
   }
-
-  public static void putHashMappedList(HashMappedList paramHashMappedList)
-  {
-  }
-
+  
+  public static void putHashMappedList(HashMappedList paramHashMappedList) {}
+  
   public static HashSet getHashSet()
   {
     return new HashSet();
   }
-
-  public static void putHashSet(HashSet paramHashSet)
-  {
-  }
-
+  
+  public static void putHashSet(HashSet paramHashSet) {}
+  
   private void jbInit()
     throws Exception
-  {
-  }
+  {}
 }
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.store.ReusableObjectCache
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -11,21 +11,22 @@ import org.hsqldb.lib.FrameworkLogger;
 public class AuthUtils
 {
   private static FrameworkLogger logger = FrameworkLogger.getLog(AuthUtils.class);
-
+  
   static String getInitialSchema(Connection paramConnection)
     throws SQLException
   {
     ResultSet localResultSet = paramConnection.createStatement().executeQuery("SELECT initial_schema FROM information_schema.system_users\nWHERE user_name = current_user");
     try
     {
-      if (!localResultSet.next())
+      if (!localResultSet.next()) {
         throw new IllegalStateException("Failed to retrieve initial_schema for current user");
+      }
       String str = localResultSet.getString(1);
       return str;
     }
     finally
     {
-      if (localResultSet != null)
+      if (localResultSet != null) {
         try
         {
           localResultSet.close();
@@ -34,10 +35,11 @@ public class AuthUtils
         {
           logger.error("Failed to close ResultSet for retrieving initial schema");
         }
+      }
       localResultSet = null;
     }
   }
-
+  
   static Set getEnabledRoles(Connection paramConnection)
     throws SQLException
   {
@@ -45,12 +47,13 @@ public class AuthUtils
     ResultSet localResultSet = paramConnection.createStatement().executeQuery("SELECT * FROM information_schema.enabled_roles");
     try
     {
-      while (localResultSet.next())
+      while (localResultSet.next()) {
         localHashSet.add(localResultSet.getString(1));
+      }
     }
     finally
     {
-      if (localResultSet != null)
+      if (localResultSet != null) {
         try
         {
           localResultSet.close();
@@ -59,13 +62,15 @@ public class AuthUtils
         {
           logger.error("Failed to close ResultSet for retrieving db name");
         }
+      }
       localResultSet = null;
     }
     return localHashSet;
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.auth.AuthUtils
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

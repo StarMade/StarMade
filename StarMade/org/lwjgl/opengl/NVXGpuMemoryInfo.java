@@ -9,7 +9,8 @@ public final class NVXGpuMemoryInfo
   public static final int GL_GPU_MEMORY_INFO_EVICTED_MEMORY_NVX = 36939;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.opengl.NVXGpuMemoryInfo
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

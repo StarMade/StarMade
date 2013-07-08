@@ -20,55 +20,58 @@ public class JDBCArray
   Object[] data;
   JDBCConnection connection;
   SessionInterface sessionProxy;
-
+  
   public String getBaseTypeName()
     throws SQLException
   {
     checkClosed();
     return this.elementType.getNameString();
   }
-
+  
   public int getBaseType()
     throws SQLException
   {
     checkClosed();
     return this.elementType.getJDBCTypeCode();
   }
-
+  
   public Object getArray()
     throws SQLException
   {
     checkClosed();
     Object[] arrayOfObject = new Object[this.data.length];
-    for (int i = 0; i < this.data.length; i++)
+    for (int i = 0; i < this.data.length; i++) {
       arrayOfObject[i] = this.elementType.convertSQLToJava(this.sessionProxy, this.data[i]);
+    }
     return arrayOfObject;
   }
-
+  
   public Object getArray(Map<String, Class<?>> paramMap)
     throws SQLException
   {
     return getArray();
   }
-
+  
   public Object getArray(long paramLong, int paramInt)
     throws SQLException
   {
     checkClosed();
-    if (!JDBCClobClient.isInLimits(this.data.length, paramLong - 1L, paramInt))
+    if (!JDBCClobClient.isInLimits(this.data.length, paramLong - 1L, paramInt)) {
       throw Util.outOfRangeArgument();
+    }
     Object[] arrayOfObject = new Object[paramInt];
-    for (int i = 0; i < paramInt; i++)
+    for (int i = 0; i < paramInt; i++) {
       arrayOfObject[i] = this.elementType.convertSQLToJava(this.sessionProxy, this.data[((int)paramLong + i - 1)]);
+    }
     return arrayOfObject;
   }
-
+  
   public Object getArray(long paramLong, int paramInt, Map<String, Class<?>> paramMap)
     throws SQLException
   {
     return getArray(paramLong, paramInt);
   }
-
+  
   public ResultSet getResultSet()
     throws SQLException
   {
@@ -76,13 +79,13 @@ public class JDBCArray
     Result localResult = newColumnResult(0L, this.data.length);
     return new JDBCResultSet(this.connection, localResult, localResult.metaData);
   }
-
+  
   public ResultSet getResultSet(Map<String, Class<?>> paramMap)
     throws SQLException
   {
     return getResultSet();
   }
-
+  
   public ResultSet getResultSet(long paramLong, int paramInt)
     throws SQLException
   {
@@ -90,20 +93,21 @@ public class JDBCArray
     Result localResult = newColumnResult(paramLong - 1L, paramInt);
     return new JDBCResultSet(this.connection, localResult, localResult.metaData);
   }
-
+  
   public ResultSet getResultSet(long paramLong, int paramInt, Map<String, Class<?>> paramMap)
     throws SQLException
   {
     return getResultSet(paramLong, paramInt);
   }
-
+  
   public String toString()
   {
-    if (this.arrayType == null)
+    if (this.arrayType == null) {
       this.arrayType = Type.getDefaultArrayType(this.elementType.typeCode);
+    }
     return this.arrayType.convertToString(this.data);
   }
-
+  
   public void free()
     throws SQLException
   {
@@ -114,19 +118,19 @@ public class JDBCArray
       this.sessionProxy = null;
     }
   }
-
+  
   public JDBCArray(Object[] paramArrayOfObject, Type paramType1, Type paramType2, SessionInterface paramSessionInterface)
   {
     this(paramArrayOfObject, paramType1, paramType2, paramSessionInterface.getJDBCConnection());
     this.sessionProxy = paramSessionInterface;
   }
-
+  
   JDBCArray(Object[] paramArrayOfObject, Type paramType, JDBCConnection paramJDBCConnection)
     throws SQLException
   {
     this(paramArrayOfObject, paramType, null, paramJDBCConnection);
   }
-
+  
   JDBCArray(Object[] paramArrayOfObject, Type paramType1, Type paramType2, JDBCConnection paramJDBCConnection)
   {
     this.data = paramArrayOfObject;
@@ -135,17 +139,18 @@ public class JDBCArray
     this.connection = paramJDBCConnection;
     this.sessionProxy = paramJDBCConnection.sessionProxy;
   }
-
+  
   public Object[] getArrayInternal()
   {
     return this.data;
   }
-
+  
   private Result newColumnResult(long paramLong, int paramInt)
     throws SQLException
   {
-    if (!JDBCClobClient.isInLimits(this.data.length, paramLong, paramInt))
+    if (!JDBCClobClient.isInLimits(this.data.length, paramLong, paramInt)) {
       throw Util.outOfRangeArgument();
+    }
     Type[] arrayOfType = new Type[2];
     arrayOfType[0] = Type.SQL_INTEGER;
     arrayOfType[1] = this.elementType;
@@ -171,16 +176,18 @@ public class JDBCArray
     localResult.setNavigator(localRowSetNavigatorClient);
     return localResult;
   }
-
+  
   private void checkClosed()
     throws SQLException
   {
-    if (this.closed)
+    if (this.closed) {
       throw Util.sqlException(1251);
+    }
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.jdbc.JDBCArray
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

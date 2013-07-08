@@ -11,7 +11,8 @@ public final class NVDeviceAttributeQuery
   public static final int CL_DEVICE_INTEGRATED_MEMORY_NV = 16390;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.opencl.NVDeviceAttributeQuery
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -27,7 +27,7 @@ public class ValuePool
   public static final Object[] emptyObjectArray = new Object[0];
   public static final int[] emptyIntArray = new int[0];
   public static String spaceString;
-
+  
   private static void initPool()
   {
     int[] arrayOfInt = defaultPoolLookupSize;
@@ -47,17 +47,18 @@ public class ValuePool
       bigdecimalPool = poolList[3];
       stringPool = poolList[4];
       char[] arrayOfChar = new char[64];
-      for (int k = 0; k < 64; k++)
+      for (int k = 0; k < 64; k++) {
         arrayOfChar[k] = ' ';
+      }
       spaceString = new String(arrayOfChar);
     }
   }
-
+  
   public static int getMaxStringLength()
   {
     return maxStringLength;
   }
-
+  
   public static void resetPool(int[] paramArrayOfInt, int paramInt)
   {
     synchronized (ValuePool.class)
@@ -69,7 +70,7 @@ public class ValuePool
       }
     }
   }
-
+  
   public static void resetPool()
   {
     synchronized (ValuePool.class)
@@ -77,16 +78,17 @@ public class ValuePool
       resetPool(defaultPoolLookupSize, 2);
     }
   }
-
+  
   public static void clearPool()
   {
     synchronized (ValuePool.class)
     {
-      for (int i = 0; i < POOLS_COUNT; i++)
+      for (int i = 0; i < POOLS_COUNT; i++) {
         poolList[i].clear();
+      }
     }
   }
-
+  
   public static Integer getInt(int paramInt)
   {
     synchronized (intPool)
@@ -94,7 +96,7 @@ public class ValuePool
       return intPool.getOrAddInteger(paramInt);
     }
   }
-
+  
   public static Long getLong(long paramLong)
   {
     synchronized (longPool)
@@ -102,7 +104,7 @@ public class ValuePool
       return longPool.getOrAddLong(paramLong);
     }
   }
-
+  
   public static Double getDouble(long paramLong)
   {
     synchronized (doublePool)
@@ -110,17 +112,18 @@ public class ValuePool
       return doublePool.getOrAddDouble(paramLong);
     }
   }
-
+  
   public static String getString(String paramString)
   {
-    if ((paramString == null) || (paramString.length() > maxStringLength))
+    if ((paramString == null) || (paramString.length() > maxStringLength)) {
       return paramString;
+    }
     synchronized (stringPool)
     {
       return stringPool.getOrAddString(paramString);
     }
   }
-
+  
   public static String getSubString(String paramString, int paramInt1, int paramInt2)
   {
     synchronized (stringPool)
@@ -128,29 +131,31 @@ public class ValuePool
       return stringPool.getOrAddString(paramString.substring(paramInt1, paramInt2));
     }
   }
-
+  
   public static BigDecimal getBigDecimal(BigDecimal paramBigDecimal)
   {
-    if (paramBigDecimal == null)
+    if (paramBigDecimal == null) {
       return paramBigDecimal;
+    }
     synchronized (bigdecimalPool)
     {
       return (BigDecimal)bigdecimalPool.getOrAddObject(paramBigDecimal);
     }
   }
-
+  
   public static Boolean getBoolean(boolean paramBoolean)
   {
     return paramBoolean ? Boolean.TRUE : Boolean.FALSE;
   }
-
+  
   static
   {
     initPool();
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.store.ValuePool
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

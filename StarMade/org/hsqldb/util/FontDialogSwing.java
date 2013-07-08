@@ -20,7 +20,8 @@ import javax.swing.JFrame;
 import javax.swing.JTextArea;
 import javax.swing.JTree;
 
-public class FontDialogSwing extends JDialog
+public class FontDialogSwing
+  extends JDialog
 {
   private static boolean isRunning = false;
   private static final String BACKGROUND = "Background";
@@ -36,7 +37,7 @@ public class FontDialogSwing extends JDialog
   private static DatabaseManagerSwing fOwner;
   private static JFrame frame = new JFrame("DataBaseManagerSwing Font Selection Dialog");
   private static JCheckBox ckbitalic;
-
+  
   public static void creatFontDialog(DatabaseManagerSwing paramDatabaseManagerSwing)
   {
     if (isRunning)
@@ -55,19 +56,13 @@ public class FontDialogSwing extends JDialog
       ckbitalic.putClientProperty("is3DEnabled", Boolean.TRUE);
       ckbitalic.addActionListener(new ActionListener()
       {
-        public void actionPerformed(ActionEvent paramAnonymousActionEvent)
-        {
-          FontDialogSwing.setStyle();
-        }
+        public void actionPerformed(ActionEvent paramAnonymousActionEvent) {}
       });
       ckbbold = new JCheckBox(new ImageIcon(CommonSwing.getIcon("BoldFont")));
       ckbbold.putClientProperty("is3DEnabled", Boolean.TRUE);
       ckbbold.addActionListener(new ActionListener()
       {
-        public void actionPerformed(ActionEvent paramAnonymousActionEvent)
-        {
-          FontDialogSwing.setStyle();
-        }
+        public void actionPerformed(ActionEvent paramAnonymousActionEvent) {}
       });
       fgColorButton = new JButton("Foreground", new ImageIcon(CommonSwing.getIcon("ColorSelection")));
       fgColorButton.putClientProperty("is3DEnabled", Boolean.TRUE);
@@ -108,10 +103,7 @@ public class FontDialogSwing extends JDialog
       fontsComboBox.setSelectedItem(defaultFont);
       fontsComboBox.addActionListener(new ActionListener()
       {
-        public void actionPerformed(ActionEvent paramAnonymousActionEvent)
-        {
-          FontDialogSwing.setFont();
-        }
+        public void actionPerformed(ActionEvent paramAnonymousActionEvent) {}
       });
       fontSizesComboBox = new JComboBox(fontSizes);
       Dimension localDimension2 = new Dimension(45, 25);
@@ -123,8 +115,9 @@ public class FontDialogSwing extends JDialog
       {
         public void itemStateChanged(ItemEvent paramAnonymousItemEvent)
         {
-          if (paramAnonymousItemEvent.getStateChange() == 1)
+          if (paramAnonymousItemEvent.getStateChange() == 1) {
             FontDialogSwing.setFontSize((String)paramAnonymousItemEvent.getItem());
+          }
         }
       });
       Container localContainer = frame.getContentPane();
@@ -140,7 +133,7 @@ public class FontDialogSwing extends JDialog
       frame.setVisible(false);
     }
   }
-
+  
   public static void setFont()
   {
     Font localFont1 = fOwner.txtResult.getFont();
@@ -150,7 +143,7 @@ public class FontDialogSwing extends JDialog
     Font localFont3 = fOwner.txtResult.getFont();
     fOwner.tTree.setFont(new Font(fontsComboBox.getSelectedItem().toString(), localFont3.getStyle(), localFont3.getSize()));
   }
-
+  
   public static void setFontSize(String paramString)
   {
     Float localFloat = new Float(paramString);
@@ -162,19 +155,21 @@ public class FontDialogSwing extends JDialog
     Font localFont3 = fOwner.txtResult.getFont().deriveFont(f);
     fOwner.txtResult.setFont(localFont3);
   }
-
+  
   public static void setStyle()
   {
     int i = 0;
-    if (ckbbold.isSelected())
+    if (ckbbold.isSelected()) {
       i |= 1;
-    if (ckbitalic.isSelected())
+    }
+    if (ckbitalic.isSelected()) {
       i |= 2;
+    }
     fOwner.tTree.setFont(fOwner.txtCommand.getFont().deriveFont(i));
     fOwner.txtCommand.setFont(fOwner.txtCommand.getFont().deriveFont(i));
     fOwner.txtResult.setFont(fOwner.txtResult.getFont().deriveFont(i));
   }
-
+  
   public static void setColor(String paramString)
   {
     Color localColor;
@@ -201,7 +196,8 @@ public class FontDialogSwing extends JDialog
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.util.FontDialogSwing
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

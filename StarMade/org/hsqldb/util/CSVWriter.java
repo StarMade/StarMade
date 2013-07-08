@@ -11,42 +11,44 @@ public class CSVWriter
   private OutputStreamWriter writer = null;
   private int nbrCols = 0;
   private int nbrRows = 0;
-
+  
   public CSVWriter(File paramFile, String paramString)
     throws IOException
   {
-    if (paramString == null)
+    if (paramString == null) {
       paramString = System.getProperty("file.encoding");
+    }
     FileOutputStream localFileOutputStream = new FileOutputStream(paramFile);
     this.writer = new OutputStreamWriter(localFileOutputStream, paramString);
   }
-
+  
   public void writeHeader(String[] paramArrayOfString)
     throws IOException
   {
     this.nbrCols = paramArrayOfString.length;
     doWriteData(paramArrayOfString);
   }
-
+  
   public void writeData(String[] paramArrayOfString)
     throws IOException
   {
     doWriteData(paramArrayOfString);
   }
-
+  
   public void close()
     throws IOException
   {
     this.writer.close();
   }
-
+  
   private void doWriteData(String[] paramArrayOfString)
     throws IOException
   {
     for (int i = 0; i < paramArrayOfString.length; i++)
     {
-      if (i > 0)
+      if (i > 0) {
         this.writer.write(";");
+      }
       if (paramArrayOfString[i] != null)
       {
         this.writer.write("\"");
@@ -57,7 +59,7 @@ public class CSVWriter
     this.writer.write(this.newline);
     this.nbrRows += 1;
   }
-
+  
   private String toCsvValue(String paramString)
   {
     StringBuffer localStringBuffer = new StringBuffer();
@@ -67,7 +69,7 @@ public class CSVWriter
       localStringBuffer.append(c);
       switch (c)
       {
-      case '"':
+      case '"': 
         localStringBuffer.append('"');
       }
     }
@@ -75,7 +77,8 @@ public class CSVWriter
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.util.CSVWriter
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

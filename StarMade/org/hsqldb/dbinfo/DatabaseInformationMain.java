@@ -37,7 +37,8 @@ import org.hsqldb.types.IntervalType;
 import org.hsqldb.types.NumberType;
 import org.hsqldb.types.Type;
 
-class DatabaseInformationMain extends DatabaseInformation
+class DatabaseInformationMain
+  extends DatabaseInformation
 {
   static Type CARDINAL_NUMBER = TypeInvariants.CARDINAL_NUMBER;
   static Type YES_OR_NO = TypeInvariants.YES_OR_NO;
@@ -49,157 +50,103 @@ class DatabaseInformationMain extends DatabaseInformation
   protected static final HashSet nonCachedTablesSet;
   protected static final String[] tableTypes = { "GLOBAL TEMPORARY", "SYSTEM TABLE", "TABLE", "VIEW" };
   protected final Table[] sysTables = new Table[sysTableNames.length];
-
+  
   DatabaseInformationMain(Database paramDatabase)
   {
     super(paramDatabase);
     Session localSession = paramDatabase.sessionManager.getSysSession();
     init(localSession);
   }
-
+  
   protected final void addColumn(Table paramTable, String paramString, Type paramType)
   {
     HsqlNameManager.HsqlName localHsqlName = HsqlNameManager.newInfoSchemaColumnName(paramString, paramTable.getName());
     ColumnSchema localColumnSchema = new ColumnSchema(localHsqlName, paramType, true, false, null);
     paramTable.addColumn(localColumnSchema);
   }
-
+  
   protected final Iterator allTables()
   {
     return new WrapperIterator(this.database.schemaManager.databaseObjectIterator(3), new WrapperIterator(this.sysTables, true));
   }
-
+  
   protected final void cacheClear(Session paramSession)
   {
     int i = this.sysTables.length;
     while (i-- > 0)
     {
       Table localTable = this.sysTables[i];
-      if (localTable != null)
+      if (localTable != null) {
         localTable.clearAllData(paramSession);
+      }
     }
   }
-
+  
   protected Table generateTable(Session paramSession, PersistentStore paramPersistentStore, int paramInt)
   {
     switch (paramInt)
     {
-    case 0:
+    case 0: 
       return SYSTEM_BESTROWIDENTIFIER(paramSession, paramPersistentStore);
-    case 1:
+    case 1: 
       return SYSTEM_COLUMNS(paramSession, paramPersistentStore);
-    case 18:
+    case 18: 
       return SYSTEM_CONNECTION_PROPERTIES(paramSession, paramPersistentStore);
-    case 2:
+    case 2: 
       return SYSTEM_CROSSREFERENCE(paramSession, paramPersistentStore);
-    case 3:
+    case 3: 
       return SYSTEM_INDEXINFO(paramSession, paramPersistentStore);
-    case 4:
+    case 4: 
       return SYSTEM_PRIMARYKEYS(paramSession, paramPersistentStore);
-    case 5:
+    case 5: 
       return SYSTEM_PROCEDURECOLUMNS(paramSession, paramPersistentStore);
-    case 6:
+    case 6: 
       return SYSTEM_PROCEDURES(paramSession, paramPersistentStore);
-    case 7:
+    case 7: 
       return SYSTEM_SCHEMAS(paramSession, paramPersistentStore);
-    case 14:
+    case 14: 
       return SYSTEM_SEQUENCES(paramSession, paramPersistentStore);
-    case 8:
+    case 8: 
       return SYSTEM_TABLES(paramSession, paramPersistentStore);
-    case 9:
+    case 9: 
       return SYSTEM_TABLETYPES(paramSession, paramPersistentStore);
-    case 10:
+    case 10: 
       return SYSTEM_TYPEINFO(paramSession, paramPersistentStore);
-    case 12:
+    case 12: 
       return SYSTEM_USERS(paramSession, paramPersistentStore);
-    case 11:
+    case 11: 
       return SYSTEM_UDTS(paramSession, paramPersistentStore);
-    case 13:
+    case 13: 
       return SYSTEM_VERSIONCOLUMNS(paramSession, paramPersistentStore);
-    case 33:
+    case 33: 
       return COLUMN_PRIVILEGES(paramSession, paramPersistentStore);
-    case 69:
+    case 69: 
       return SEQUENCES(paramSession, paramPersistentStore);
-    case 77:
+    case 77: 
       return TABLE_PRIVILEGES(paramSession, paramPersistentStore);
-    case 43:
+    case 43: 
       return INFORMATION_SCHEMA_CATALOG_NAME(paramSession, paramPersistentStore);
-    case 15:
-    case 16:
-    case 17:
-    case 19:
-    case 20:
-    case 21:
-    case 22:
-    case 23:
-    case 24:
-    case 25:
-    case 26:
-    case 27:
-    case 28:
-    case 29:
-    case 30:
-    case 31:
-    case 32:
-    case 34:
-    case 35:
-    case 36:
-    case 37:
-    case 38:
-    case 39:
-    case 40:
-    case 41:
-    case 42:
-    case 44:
-    case 45:
-    case 46:
-    case 47:
-    case 48:
-    case 49:
-    case 50:
-    case 51:
-    case 52:
-    case 53:
-    case 54:
-    case 55:
-    case 56:
-    case 57:
-    case 58:
-    case 59:
-    case 60:
-    case 61:
-    case 62:
-    case 63:
-    case 64:
-    case 65:
-    case 66:
-    case 67:
-    case 68:
-    case 70:
-    case 71:
-    case 72:
-    case 73:
-    case 74:
-    case 75:
-    case 76:
     }
     return null;
   }
-
+  
   protected final void init(Session paramSession)
   {
     for (int i = 0; i < this.sysTables.length; i++)
     {
       Table localTable = this.sysTables[i] =  = generateTable(paramSession, null, i);
-      if (localTable != null)
+      if (localTable != null) {
         localTable.setDataReadOnly(true);
+      }
     }
     GranteeManager localGranteeManager = this.database.getGranteeManager();
     Right localRight = new Right();
     localRight.set(1, null);
-    for (int j = 0; j < sysTableHsqlNames.length; j++)
-      if (this.sysTables[j] != null)
+    for (int j = 0; j < sysTableHsqlNames.length; j++) {
+      if (this.sysTables[j] != null) {
         localGranteeManager.grantSystemToPublic(this.sysTables[j], localRight);
+      }
+    }
     localRight = Right.fullRights;
     localGranteeManager.grantSystemToPublic(TypeInvariants.YES_OR_NO, localRight);
     localGranteeManager.grantSystemToPublic(TypeInvariants.TIME_STAMP, localRight);
@@ -210,47 +157,51 @@ class DatabaseInformationMain extends DatabaseInformation
     localGranteeManager.grantSystemToPublic(TypeInvariants.SQL_IDENTIFIER, localRight);
     localGranteeManager.grantSystemToPublic(TypeInvariants.SQL_TEXT, localRight);
   }
-
+  
   protected final boolean isAccessibleTable(Session paramSession, Table paramTable)
   {
     return paramSession.getGrantee().isAccessible(paramTable);
   }
-
+  
   protected final Table createBlankTable(HsqlNameManager.HsqlName paramHsqlName)
   {
     Table localTable = new Table(this.database, paramHsqlName, 1);
     return localTable;
   }
-
+  
   public final Table getSystemTable(Session paramSession, String paramString)
   {
-    if (!isSystemTable(paramString))
+    if (!isSystemTable(paramString)) {
       return null;
+    }
     int i = getSysTableID(paramString);
     Table localTable = this.sysTables[i];
-    if (localTable == null)
+    if (localTable == null) {
       return localTable;
-    if (!this.withContent)
+    }
+    if (!this.withContent) {
       return localTable;
+    }
     return localTable;
   }
-
+  
   public boolean isNonCachedTable(String paramString)
   {
     return nonCachedTablesSet.contains(paramString);
   }
-
+  
   public final void setStore(Session paramSession, Table paramTable, PersistentStore paramPersistentStore)
   {
     long l = this.database.schemaManager.getSchemaChangeTimestamp();
-    if ((paramPersistentStore.getTimestamp() == l) && (!isNonCachedTable(paramTable.getName().name)))
+    if ((paramPersistentStore.getTimestamp() == l) && (!isNonCachedTable(paramTable.getName().name))) {
       return;
+    }
     paramPersistentStore.removeAll();
     paramPersistentStore.setTimestamp(l);
     int i = getSysTableID(paramTable.getName().name);
     generateTable(paramSession, paramPersistentStore, i);
   }
-
+  
   final Table SYSTEM_BESTROWIDENTIFIER(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable1 = this.sysTables[0];
@@ -298,11 +249,13 @@ class DatabaseInformationMain extends DatabaseInformation
           {
             ColumnSchema localColumnSchema = localTable2.getColumn(i);
             Object localObject2 = arrayOfType[i];
-            if (bool)
-              if (((Type)localObject2).isIntervalType())
+            if (bool) {
+              if (((Type)localObject2).isIntervalType()) {
                 localObject2 = ((IntervalType)localObject2).getCharacterType();
-              else if (((Type)localObject2).isDateTimeTypeWithZone())
+              } else if (((Type)localObject2).isDateTimeTypeWithZone()) {
                 localObject2 = ((DateTimeType)localObject2).getDateTimeTypeWithoutZone();
+              }
+            }
             Object[] arrayOfObject = localTable1.getEmptyRowData();
             arrayOfObject[0] = localObject1;
             arrayOfObject[1] = localColumnSchema.getName().name;
@@ -324,7 +277,7 @@ class DatabaseInformationMain extends DatabaseInformation
     }
     return localTable1;
   }
-
+  
   final Table SYSTEM_COLUMNS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable1 = this.sysTables[1];
@@ -377,11 +330,13 @@ class DatabaseInformationMain extends DatabaseInformation
         {
           ColumnSchema localColumnSchema = localTable2.getColumn(j);
           Object localObject2 = localColumnSchema.getDataType();
-          if (bool)
-            if (((Type)localObject2).isIntervalType())
+          if (bool) {
+            if (((Type)localObject2).isIntervalType()) {
               localObject2 = ((IntervalType)localObject2).getCharacterType();
-            else if (((Type)localObject2).isDateTimeTypeWithZone())
+            } else if (((Type)localObject2).isDateTimeTypeWithZone()) {
               localObject2 = ((DateTimeType)localObject2).getDateTimeTypeWithoutZone();
+            }
+          }
           Object[] arrayOfObject = localTable1.getEmptyRowData();
           arrayOfObject[0] = localObject1;
           arrayOfObject[1] = str1;
@@ -391,8 +346,9 @@ class DatabaseInformationMain extends DatabaseInformation
           arrayOfObject[5] = ((Type)localObject2).getNameString();
           arrayOfObject[6] = ValuePool.INTEGER_0;
           arrayOfObject[15] = ValuePool.INTEGER_0;
-          if (((Type)localObject2).isArrayType())
+          if (((Type)localObject2).isArrayType()) {
             arrayOfObject[5] = ((Type)localObject2).getDefinition();
+          }
           if (((Type)localObject2).isCharacterType())
           {
             arrayOfObject[6] = ValuePool.getInt(((Type)localObject2).getJDBCPrecision());
@@ -407,8 +363,9 @@ class DatabaseInformationMain extends DatabaseInformation
           {
             arrayOfObject[6] = ValuePool.getInt(((NumberType)localObject2).getNumericPrecisionInRadix());
             arrayOfObject[9] = ValuePool.getInt(((Type)localObject2).getPrecisionRadix());
-            if (((Type)localObject2).isExactNumberType())
+            if (((Type)localObject2).isExactNumberType()) {
               arrayOfObject[8] = ValuePool.getLong(((Type)localObject2).scale);
+            }
           }
           if (((Type)localObject2).isDateTimeType())
           {
@@ -422,8 +379,9 @@ class DatabaseInformationMain extends DatabaseInformation
           arrayOfObject[13] = ValuePool.getInt(((Type)localObject2).typeCode);
           arrayOfObject[16] = ValuePool.getInt(j + 1);
           arrayOfObject[17] = (localColumnSchema.isNullable() ? "YES" : "NO");
-          if (((Type)localObject2).isDistinctType())
+          if (((Type)localObject2).isDistinctType()) {
             arrayOfObject[21] = ((Type)localObject2).getName().getSchemaQualifiedStatementName();
+          }
           arrayOfObject[22] = (localColumnSchema.isIdentity() ? "YES" : "NO");
           arrayOfObject[23] = (localColumnSchema.isGenerated() ? "YES" : "NO");
           localTable1.insertSys(paramSession, paramPersistentStore, arrayOfObject);
@@ -432,7 +390,7 @@ class DatabaseInformationMain extends DatabaseInformation
     }
     return localTable1;
   }
-
+  
   final Table SYSTEM_CROSSREFERENCE(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable1 = this.sysTables[2];
@@ -464,10 +422,13 @@ class DatabaseInformationMain extends DatabaseInformation
     while (localIterator.hasNext())
     {
       Table localTable2 = (Table)localIterator.next();
-      if ((!localTable2.isView()) && (isAccessibleTable(paramSession, localTable2)))
-        for (localConstraint : localTable2.getConstraints())
-          if ((localConstraint.getConstraintType() == 0) && (isAccessibleTable(paramSession, localConstraint.getRef())))
+      if ((!localTable2.isView()) && (isAccessibleTable(paramSession, localTable2))) {
+        for (localConstraint : localTable2.getConstraints()) {
+          if ((localConstraint.getConstraintType() == 0) && (isAccessibleTable(paramSession, localConstraint.getRef()))) {
             localHsqlArrayList.add(localConstraint);
+          }
+        }
+      }
     }
     for (??? = 0; ??? < localHsqlArrayList.size(); ???++)
     {
@@ -513,7 +474,7 @@ class DatabaseInformationMain extends DatabaseInformation
     }
     return localTable1;
   }
-
+  
   final Table SYSTEM_INDEXINFO(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable1 = this.sysTables[3];
@@ -590,7 +551,7 @@ class DatabaseInformationMain extends DatabaseInformation
     }
     return localTable1;
   }
-
+  
   final Table SYSTEM_PRIMARYKEYS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable1 = this.sysTables[4];
@@ -637,7 +598,7 @@ class DatabaseInformationMain extends DatabaseInformation
     }
     return localTable1;
   }
-
+  
   Table SYSTEM_PROCEDURECOLUMNS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[5];
@@ -685,11 +646,13 @@ class DatabaseInformationMain extends DatabaseInformation
             ColumnSchema localColumnSchema = localRoutine.getParameter(k);
             Object[] arrayOfObject = localTable.getEmptyRowData();
             Object localObject = localColumnSchema.getDataType();
-            if (bool)
-              if (((Type)localObject).isIntervalType())
+            if (bool) {
+              if (((Type)localObject).isIntervalType()) {
                 localObject = ((IntervalType)localObject).getCharacterType();
-              else if (((Type)localObject).isDateTimeTypeWithZone())
+              } else if (((Type)localObject).isDateTimeTypeWithZone()) {
                 localObject = ((DateTimeType)localObject).getDateTimeTypeWithoutZone();
+              }
+            }
             arrayOfObject[0] = this.database.getCatalogName().name;
             arrayOfObject[1] = localRoutine.getSchemaName().name;
             arrayOfObject[19] = localRoutine.getSpecificName().name;
@@ -715,8 +678,9 @@ class DatabaseInformationMain extends DatabaseInformation
             {
               arrayOfObject[7] = ValuePool.getInt(((NumberType)localObject).getNumericPrecisionInRadix());
               arrayOfObject[10] = ValuePool.getLong(((Type)localObject).getPrecisionRadix());
-              if (((Type)localObject).isExactNumberType())
+              if (((Type)localObject).isExactNumberType()) {
                 arrayOfObject[9] = ValuePool.getLong(((Type)localObject).scale);
+              }
             }
             if (((Type)localObject).isDateTimeType())
             {
@@ -733,7 +697,7 @@ class DatabaseInformationMain extends DatabaseInformation
     }
     return localTable;
   }
-
+  
   Table SYSTEM_PROCEDURES(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[6];
@@ -770,7 +734,7 @@ class DatabaseInformationMain extends DatabaseInformation
     }
     return localTable;
   }
-
+  
   final Table SYSTEM_CONNECTION_PROPERTIES(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[18];
@@ -804,7 +768,7 @@ class DatabaseInformationMain extends DatabaseInformation
     }
     return localTable;
   }
-
+  
   protected void addProcRows(Session paramSession, Table paramTable, HsqlArrayList paramHsqlArrayList, String paramString1, String paramString2, String paramString3, Integer paramInteger1, Integer paramInteger2, Integer paramInteger3, String paramString4, Integer paramInteger4, String paramString5, String paramString6)
   {
     PersistentStore localPersistentStore = paramTable.getRowStore(paramSession);
@@ -841,7 +805,7 @@ class DatabaseInformationMain extends DatabaseInformation
       }
     }
   }
-
+  
   protected void addPColRows(Session paramSession, Table paramTable, HsqlArrayList paramHsqlArrayList, String paramString1, String paramString2, String paramString3, String paramString4, Integer paramInteger1, Integer paramInteger2, String paramString5, Integer paramInteger3, Integer paramInteger4, Integer paramInteger5, Integer paramInteger6, Integer paramInteger7, String paramString6, String paramString7, Integer paramInteger8, Integer paramInteger9, Integer paramInteger10, Integer paramInteger11, String paramString8, String paramString9)
   {
     PersistentStore localPersistentStore = paramTable.getRowStore(paramSession);
@@ -898,7 +862,7 @@ class DatabaseInformationMain extends DatabaseInformation
       }
     }
   }
-
+  
   final Table SYSTEM_SCHEMAS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[7];
@@ -926,7 +890,7 @@ class DatabaseInformationMain extends DatabaseInformation
     }
     return localTable;
   }
-
+  
   final Table SYSTEM_TABLES(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable1 = this.sysTables[8];
@@ -972,7 +936,7 @@ class DatabaseInformationMain extends DatabaseInformation
     }
     return localTable1;
   }
-
+  
   Table SYSTEM_TABLETYPES(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[9];
@@ -993,7 +957,7 @@ class DatabaseInformationMain extends DatabaseInformation
     }
     return localTable;
   }
-
+  
   final Table SYSTEM_TYPEINFO(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[10];
@@ -1032,11 +996,13 @@ class DatabaseInformationMain extends DatabaseInformation
       Object localObject = Type.getDefaultType(i);
       if (localObject != null)
       {
-        if (bool)
-          if (((Type)localObject).isIntervalType())
+        if (bool) {
+          if (((Type)localObject).isIntervalType()) {
             localObject = ((IntervalType)localObject).getCharacterType();
-          else if (((Type)localObject).isDateTimeTypeWithZone())
+          } else if (((Type)localObject).isDateTimeTypeWithZone()) {
             localObject = ((DateTimeType)localObject).getDateTimeTypeWithoutZone();
+          }
+        }
         arrayOfObject = localTable.getEmptyRowData();
         arrayOfObject[0] = str;
         arrayOfObject[1] = ValuePool.getInt(((Type)localObject).getJDBCTypeCode());
@@ -1047,20 +1013,22 @@ class DatabaseInformationMain extends DatabaseInformation
           arrayOfObject[3] = "'";
           arrayOfObject[4] = "'";
         }
-        if ((((Type)localObject).acceptsPrecision()) && (((Type)localObject).acceptsScale()))
+        if ((((Type)localObject).acceptsPrecision()) && (((Type)localObject).acceptsScale())) {
           arrayOfObject[5] = "PRECISION,SCALE";
-        else if (((Type)localObject).acceptsPrecision())
+        } else if (((Type)localObject).acceptsPrecision()) {
           arrayOfObject[5] = (((Type)localObject).isNumberType() ? "PRECISION" : "LENGTH");
-        else if (((Type)localObject).acceptsScale())
+        } else if (((Type)localObject).acceptsScale()) {
           arrayOfObject[5] = "SCALE";
+        }
         arrayOfObject[6] = ValuePool.INTEGER_1;
         arrayOfObject[7] = ((((Type)localObject).isCharacterType()) && (((Type)localObject).typeCode != 100) ? Boolean.TRUE : Boolean.FALSE);
-        if (((Type)localObject).isLobType())
+        if (((Type)localObject).isLobType()) {
           arrayOfObject[8] = ValuePool.INTEGER_0;
-        else if ((((Type)localObject).isCharacterType()) || ((((Type)localObject).isBinaryType()) && (!((Type)localObject).isBitType())))
+        } else if ((((Type)localObject).isCharacterType()) || ((((Type)localObject).isBinaryType()) && (!((Type)localObject).isBitType()))) {
           arrayOfObject[8] = ValuePool.getInt(3);
-        else
+        } else {
           arrayOfObject[8] = ValuePool.getInt(2);
+        }
         arrayOfObject[9] = Boolean.FALSE;
         arrayOfObject[10] = ((((Type)localObject).typeCode == 2) || (((Type)localObject).typeCode == 3) ? Boolean.TRUE : Boolean.FALSE);
         arrayOfObject[11] = (((Type)localObject).isIntegralType() ? Boolean.TRUE : Boolean.FALSE);
@@ -1070,8 +1038,9 @@ class DatabaseInformationMain extends DatabaseInformation
         arrayOfObject[15] = null;
         arrayOfObject[16] = null;
         arrayOfObject[17] = ValuePool.getInt(((Type)localObject).getPrecisionRadix());
-        if (((Type)localObject).isIntervalType())
+        if (((Type)localObject).isIntervalType()) {
           arrayOfObject[18] = null;
+        }
         localTable.insertSys(paramSession, paramPersistentStore, arrayOfObject);
       }
     }
@@ -1080,7 +1049,7 @@ class DatabaseInformationMain extends DatabaseInformation
     arrayOfObject[1] = ValuePool.getInt(2001);
     return localTable;
   }
-
+  
   Table SYSTEM_UDTS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[11];
@@ -1107,11 +1076,13 @@ class DatabaseInformationMain extends DatabaseInformation
       {
         Object[] arrayOfObject = localTable.getEmptyRowData();
         Object localObject = localType;
-        if (bool)
-          if (((Type)localObject).isIntervalType())
+        if (bool) {
+          if (((Type)localObject).isIntervalType()) {
             localObject = ((IntervalType)localObject).getCharacterType();
-          else if (((Type)localObject).isDateTimeTypeWithZone())
+          } else if (((Type)localObject).isDateTimeTypeWithZone()) {
             localObject = ((DateTimeType)localObject).getDateTimeTypeWithoutZone();
+          }
+        }
         arrayOfObject[0] = this.database.getCatalogName().name;
         arrayOfObject[1] = localType.getSchemaName().name;
         arrayOfObject[2] = localType.getName().name;
@@ -1124,7 +1095,7 @@ class DatabaseInformationMain extends DatabaseInformation
     }
     return localTable;
   }
-
+  
   Table SYSTEM_VERSIONCOLUMNS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[13];
@@ -1148,7 +1119,7 @@ class DatabaseInformationMain extends DatabaseInformation
     }
     return localTable;
   }
-
+  
   Table SYSTEM_USERS(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[12];
@@ -1179,7 +1150,7 @@ class DatabaseInformationMain extends DatabaseInformation
     }
     return localTable;
   }
-
+  
   final Table COLUMN_PRIVILEGES(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable1 = this.sysTables[33];
@@ -1241,9 +1212,7 @@ class DatabaseInformationMain extends DatabaseInformation
               {
                 localTable1.insertSys(paramSession, paramPersistentStore, arrayOfObject);
               }
-              catch (HsqlException localHsqlException)
-              {
-              }
+              catch (HsqlException localHsqlException) {}
             }
           }
         }
@@ -1251,7 +1220,7 @@ class DatabaseInformationMain extends DatabaseInformation
     }
     return localTable1;
   }
-
+  
   final Table SEQUENCES(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[69];
@@ -1308,7 +1277,7 @@ class DatabaseInformationMain extends DatabaseInformation
     }
     return localTable;
   }
-
+  
   final Table SYSTEM_SEQUENCES(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[14];
@@ -1365,7 +1334,7 @@ class DatabaseInformationMain extends DatabaseInformation
     }
     return localTable;
   }
-
+  
   final Table TABLE_PRIVILEGES(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable1 = this.sysTables[77];
@@ -1407,7 +1376,7 @@ class DatabaseInformationMain extends DatabaseInformation
         {
           Right localRight1 = (Right)((OrderedHashSet)localObject2).get(j);
           Right localRight2 = localRight1.getGrantableRights();
-          for (int k = 0; k < Right.privilegeTypes.length; k++)
+          for (int k = 0; k < Right.privilegeTypes.length; k++) {
             if (localRight1.canAccessFully(Right.privilegeTypes[k]))
             {
               String str3 = Right.privilegeNames[k];
@@ -1424,16 +1393,15 @@ class DatabaseInformationMain extends DatabaseInformation
               {
                 localTable1.insertSys(paramSession, paramPersistentStore, arrayOfObject);
               }
-              catch (HsqlException localHsqlException)
-              {
-              }
+              catch (HsqlException localHsqlException) {}
             }
+          }
         }
       }
     }
     return localTable1;
   }
-
+  
   Table TABLES(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable1 = this.sysTables[78];
@@ -1468,21 +1436,21 @@ class DatabaseInformationMain extends DatabaseInformation
         arrayOfObject[2] = localTable2.getName().name;
         switch (localTable2.getTableType())
         {
-        case 1:
-        case 8:
+        case 1: 
+        case 8: 
           arrayOfObject[3] = "VIEW";
           arrayOfObject[9] = (localTable2.isInsertable() ? "YES" : "NO");
           break;
-        case 3:
-        case 6:
+        case 3: 
+        case 6: 
           arrayOfObject[3] = "GLOBAL TEMPORARY";
           arrayOfObject[9] = "YES";
           break;
-        case 2:
-        case 4:
-        case 5:
-        case 7:
-        default:
+        case 2: 
+        case 4: 
+        case 5: 
+        case 7: 
+        default: 
           arrayOfObject[3] = "BASE TABLE";
           arrayOfObject[9] = (localTable2.isInsertable() ? "YES" : "NO");
         }
@@ -1498,7 +1466,7 @@ class DatabaseInformationMain extends DatabaseInformation
     }
     return localTable1;
   }
-
+  
   final Table INFORMATION_SCHEMA_CATALOG_NAME(Session paramSession, PersistentStore paramPersistentStore)
   {
     Table localTable = this.sysTables[43];
@@ -1515,7 +1483,7 @@ class DatabaseInformationMain extends DatabaseInformation
     localTable.insertSys(paramSession, paramPersistentStore, (Object[])localObject);
     return localTable;
   }
-
+  
   static
   {
     synchronized (DatabaseInformationMain.class)
@@ -1537,7 +1505,8 @@ class DatabaseInformationMain extends DatabaseInformation
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.dbinfo.DatabaseInformationMain
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

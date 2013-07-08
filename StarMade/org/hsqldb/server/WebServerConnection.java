@@ -52,17 +52,18 @@ class WebServerConnection
   static byte[] BYTES_CONTENT;
   static final byte[] BYTES_WHITESPACE = { 32, 9 };
   private static final int hnd_content_types = BundleHandler.getBundleHandle("content-types", null);
-
+  
   WebServerConnection(Socket paramSocket, WebServer paramWebServer)
   {
     this.server = paramWebServer;
     this.socket = paramSocket;
   }
-
+  
   private String getMimeTypeString(String paramString)
   {
-    if (paramString == null)
+    if (paramString == null) {
       return "text/html";
+    }
     int i = paramString.lastIndexOf(46);
     String str1 = null;
     String str2 = null;
@@ -71,11 +72,12 @@ class WebServerConnection
       str1 = paramString.substring(i).toLowerCase();
       str2 = this.server.serverProperties.getProperty(str1);
     }
-    if ((str2 == null) && (str1.length() > 1))
+    if ((str2 == null) && (str1.length() > 1)) {
       str2 = BundleHandler.getString(hnd_content_types, str1.substring(1));
+    }
     return str2 == null ? "text/html" : str2;
   }
-
+  
   public void run()
   {
     DataInputStream localDataInputStream = null;
@@ -87,10 +89,10 @@ class WebServerConnection
       do
       {
         i = InOutUtil.readLine(localDataInputStream, this.rowOut);
-        if (i == 0)
+        if (i == 0) {
           throw new Exception();
-      }
-      while (i < 2);
+        }
+      } while (i < 2);
       byte[] arrayOfByte = this.rowOut.toByteArray();
       int k = this.rowOut.size() - i;
       if (ArrayUtil.containsAt(arrayOfByte, k, BYTES_POST))
@@ -113,25 +115,27 @@ class WebServerConnection
         j = 0;
       }
       int i = ArrayUtil.countStartElementsAt(arrayOfByte, k, BYTES_WHITESPACE);
-      if (i == 0)
+      if (i == 0) {
         j = 0;
+      }
       k += i;
       i = ArrayUtil.countNonStartElementsAt(arrayOfByte, k, BYTES_WHITESPACE);
       str = new String(arrayOfByte, k, i, "ISO-8859-1");
       switch (j)
       {
-      case 3:
+      case 3: 
         processPost(localDataInputStream, str);
         break;
-      case 0:
+      case 0: 
         processError(0);
         break;
-      case 1:
+      case 1: 
         processGet(str, true);
         break;
-      case 2:
+      case 2: 
         processGet(str, false);
       }
+      return;
     }
     catch (Exception localException)
     {
@@ -141,8 +145,9 @@ class WebServerConnection
     {
       try
       {
-        if (localDataInputStream != null)
+        if (localDataInputStream != null) {
           localDataInputStream.close();
+        }
         this.socket.close();
       }
       catch (IOException localIOException3)
@@ -151,7 +156,7 @@ class WebServerConnection
       }
     }
   }
-
+  
   private void processPost(InputStream paramInputStream, String paramString)
     throws IOException
   {
@@ -159,11 +164,13 @@ class WebServerConnection
     {
       int i;
       do
+      {
         i = InOutUtil.readLine(paramInputStream, this.rowOut);
-      while (i > 2);
+      } while (i > 2);
       String str = this.iso_8859_1_decoder.decode(ByteBuffer.wrap(this.rowOut.toByteArray())).toString();
-      if (str.indexOf("Content-Type: application/octet-stream") < 0)
+      if (str.indexOf("Content-Type: application/octet-stream") < 0) {
         throw new Exception();
+      }
     }
     catch (Exception localException)
     {
@@ -172,7 +179,7 @@ class WebServerConnection
     }
     processQuery(paramInputStream);
   }
-
+  
   void processQuery(InputStream paramInputStream)
   {
     try
@@ -246,21 +253,23 @@ class WebServerConnection
       this.server.printStackTrace(localException);
     }
   }
-
+  
   private void processGet(String paramString, boolean paramBoolean)
   {
     try
     {
-      if (paramString.endsWith("/"))
+      if (paramString.endsWith("/")) {
         paramString = paramString + this.server.getDefaultWebPage();
+      }
       if (paramString.indexOf("..") != -1)
       {
         processError(403);
         return;
       }
       paramString = this.server.getWebRoot() + paramString;
-      if (File.separatorChar != '/')
+      if (File.separatorChar != '/') {
         paramString = paramString.replace('/', File.separatorChar);
+      }
       DataInputStream localDataInputStream = null;
       this.server.printWithThread("GET " + paramString);
       String str;
@@ -273,8 +282,9 @@ class WebServerConnection
       catch (IOException localIOException)
       {
         processError(404);
-        if (localDataInputStream != null)
+        if (localDataInputStream != null) {
           localDataInputStream.close();
+        }
         return;
       }
       BufferedOutputStream localBufferedOutputStream = new BufferedOutputStream(this.socket.getOutputStream());
@@ -282,8 +292,9 @@ class WebServerConnection
       if (paramBoolean)
       {
         int i;
-        while ((i = localDataInputStream.read()) != -1)
+        while ((i = localDataInputStream.read()) != -1) {
           localBufferedOutputStream.write(i);
+        }
       }
       localBufferedOutputStream.flush();
       localBufferedOutputStream.close();
@@ -295,7 +306,7 @@ class WebServerConnection
       this.server.printStackTrace(localException);
     }
   }
-
+  
   String getHead(String paramString1, boolean paramBoolean, String paramString2, int paramInt)
   {
     StringBuffer localStringBuffer = new StringBuffer(128);
@@ -313,25 +324,25 @@ class WebServerConnection
     localStringBuffer.append("\r\n");
     return localStringBuffer.toString();
   }
-
+  
   private void processError(int paramInt)
   {
     this.server.printWithThread("processError " + paramInt);
     String str;
     switch (paramInt)
     {
-    case 400:
+    case 400: 
       str = getHead("HTTP/1.0 400 Bad Request", false, null, 0);
       str = str + BundleHandler.getString(WebServer.webBundleHandle, "BAD_REQUEST");
       break;
-    case 403:
+    case 403: 
       str = getHead("HTTP/1.0 403 Forbidden", false, null, 0);
       str = str + BundleHandler.getString(WebServer.webBundleHandle, "FORBIDDEN");
       break;
-    case 401:
-    case 402:
-    case 404:
-    default:
+    case 401: 
+    case 402: 
+    case 404: 
+    default: 
       str = getHead("HTTP/1.0 404 Not Found", false, null, 0);
       str = str + BundleHandler.getString(WebServer.webBundleHandle, "NOT_FOUND");
     }
@@ -348,12 +359,12 @@ class WebServerConnection
       this.server.printStackTrace(localException);
     }
   }
-
+  
   String getConnectionThreadName()
   {
     return "HSQLDB HTTP Connection @" + Integer.toString(hashCode(), 16);
   }
-
+  
   static
   {
     try
@@ -370,7 +381,8 @@ class WebServerConnection
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.server.WebServerConnection
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

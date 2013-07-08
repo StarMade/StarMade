@@ -3,40 +3,39 @@ package javax.vecmath;
 import java.awt.Color;
 import java.io.Serializable;
 
-public class Color4b extends Tuple4b
+public class Color4b
+  extends Tuple4b
   implements Serializable
 {
   static final long serialVersionUID = -105080578052502155L;
-
+  
   public Color4b(byte paramByte1, byte paramByte2, byte paramByte3, byte paramByte4)
   {
     super(paramByte1, paramByte2, paramByte3, paramByte4);
   }
-
+  
   public Color4b(byte[] paramArrayOfByte)
   {
     super(paramArrayOfByte);
   }
-
+  
   public Color4b(Color4b paramColor4b)
   {
     super(paramColor4b);
   }
-
+  
   public Color4b(Tuple4b paramTuple4b)
   {
     super(paramTuple4b);
   }
-
+  
   public Color4b(Color paramColor)
   {
     super((byte)paramColor.getRed(), (byte)paramColor.getGreen(), (byte)paramColor.getBlue(), (byte)paramColor.getAlpha());
   }
-
-  public Color4b()
-  {
-  }
-
+  
+  public Color4b() {}
+  
   public final void set(Color paramColor)
   {
     this.x = ((byte)paramColor.getRed());
@@ -44,7 +43,7 @@ public class Color4b extends Tuple4b
     this.z = ((byte)paramColor.getBlue());
     this.w = ((byte)paramColor.getAlpha());
   }
-
+  
   public final Color get()
   {
     int i = this.x & 0xFF;
@@ -55,7 +54,8 @@ public class Color4b extends Tuple4b
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     javax.vecmath.Color4b
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

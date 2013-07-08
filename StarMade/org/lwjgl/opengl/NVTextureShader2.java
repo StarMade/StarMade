@@ -32,7 +32,8 @@ public final class NVTextureShader2
   public static final int GL_DSDT8_MAG8_INTENSITY8_NV = 34571;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.opengl.NVTextureShader2
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

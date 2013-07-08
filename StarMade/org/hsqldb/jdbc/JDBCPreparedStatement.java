@@ -52,7 +52,8 @@ import org.hsqldb.types.TimeData;
 import org.hsqldb.types.TimestampData;
 import org.hsqldb.types.Type;
 
-public class JDBCPreparedStatement extends JDBCStatementBase
+public class JDBCPreparedStatement
+  extends JDBCStatementBase
   implements PreparedStatement
 {
   boolean poolable = true;
@@ -73,49 +74,52 @@ public class JDBCPreparedStatement extends JDBCStatementBase
   protected int statementRetType;
   protected final boolean isResult;
   protected SessionInterface session;
-
+  
   public synchronized ResultSet executeQuery()
     throws SQLException
   {
-    if (this.statementRetType != 2)
+    if (this.statementRetType != 2) {
       checkStatementType(2);
+    }
     fetchResult();
     return getResultSet();
   }
-
+  
   public synchronized int executeUpdate()
     throws SQLException
   {
-    if (this.statementRetType != 1)
+    if (this.statementRetType != 1) {
       checkStatementType(1);
+    }
     fetchResult();
     return this.resultIn.getUpdateCount();
   }
-
+  
   public synchronized void setNull(int paramInt1, int paramInt2)
     throws SQLException
   {
     setParameter(paramInt1, null);
   }
-
+  
   public synchronized void setBoolean(int paramInt, boolean paramBoolean)
     throws SQLException
   {
     Boolean localBoolean = paramBoolean ? Boolean.TRUE : Boolean.FALSE;
     setParameter(paramInt, localBoolean);
   }
-
+  
   public synchronized void setByte(int paramInt, byte paramByte)
     throws SQLException
   {
     setIntParameter(paramInt, paramByte);
   }
-
+  
   public synchronized void setShort(int paramInt, short paramShort)
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
+    }
     checkSetParameterIndex(paramInt);
     if (this.parameterTypes[(paramInt - 1)].typeCode == 5)
     {
@@ -125,12 +129,13 @@ public class JDBCPreparedStatement extends JDBCStatementBase
     }
     setIntParameter(paramInt, paramShort);
   }
-
+  
   public synchronized void setInt(int paramInt1, int paramInt2)
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
+    }
     checkSetParameterIndex(paramInt1);
     if (this.parameterTypes[(paramInt1 - 1)].typeCode == 4)
     {
@@ -140,12 +145,13 @@ public class JDBCPreparedStatement extends JDBCStatementBase
     }
     setIntParameter(paramInt1, paramInt2);
   }
-
+  
   public synchronized void setLong(int paramInt, long paramLong)
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
+    }
     checkSetParameterIndex(paramInt);
     if (this.parameterTypes[(paramInt - 1)].typeCode == 25)
     {
@@ -155,70 +161,73 @@ public class JDBCPreparedStatement extends JDBCStatementBase
     }
     setLongParameter(paramInt, paramLong);
   }
-
+  
   public synchronized void setFloat(int paramInt, float paramFloat)
     throws SQLException
   {
     setDouble(paramInt, paramFloat);
   }
-
+  
   public synchronized void setDouble(int paramInt, double paramDouble)
     throws SQLException
   {
     Double localDouble = new Double(paramDouble);
     setParameter(paramInt, localDouble);
   }
-
+  
   public synchronized void setBigDecimal(int paramInt, BigDecimal paramBigDecimal)
     throws SQLException
   {
     setParameter(paramInt, paramBigDecimal);
   }
-
+  
   public synchronized void setString(int paramInt, String paramString)
     throws SQLException
   {
     setParameter(paramInt, paramString);
   }
-
+  
   public synchronized void setBytes(int paramInt, byte[] paramArrayOfByte)
     throws SQLException
   {
     setParameter(paramInt, paramArrayOfByte);
   }
-
+  
   public synchronized void setDate(int paramInt, Date paramDate)
     throws SQLException
   {
     setParameter(paramInt, paramDate);
   }
-
+  
   public synchronized void setTime(int paramInt, Time paramTime)
     throws SQLException
   {
     setParameter(paramInt, paramTime);
   }
-
+  
   public synchronized void setTimestamp(int paramInt, Timestamp paramTimestamp)
     throws SQLException
   {
     setParameter(paramInt, paramTimestamp);
   }
-
+  
   public synchronized void setAsciiStream(int paramInt1, InputStream paramInputStream, int paramInt2)
     throws SQLException
   {
     setAsciiStream(paramInt1, paramInputStream, paramInt2);
   }
-
-  /** @deprecated */
+  
+  /**
+   * @deprecated
+   */
   public synchronized void setUnicodeStream(int paramInt1, InputStream paramInputStream, int paramInt2)
     throws SQLException
   {
     checkSetParameterIndex(paramInt1);
     Object localObject = null;
-    if (paramInputStream == null)
+    if (paramInputStream == null) {
       throw Util.nullArgument("x");
+    }
     String str = "UTF8";
     StringWriter localStringWriter = new StringWriter();
     try
@@ -228,8 +237,9 @@ public class JDBCPreparedStatement extends JDBCStatementBase
       char[] arrayOfChar = new char[1024];
       localCountdownInputStream.setCount(paramInt2);
       int i;
-      while (-1 != (i = localInputStreamReader.read(arrayOfChar)))
+      while (-1 != (i = localInputStreamReader.read(arrayOfChar))) {
         localStringWriter.write(arrayOfChar, 0, i);
+      }
     }
     catch (IOException localIOException)
     {
@@ -237,58 +247,61 @@ public class JDBCPreparedStatement extends JDBCStatementBase
     }
     setParameter(paramInt1, localStringWriter.toString());
   }
-
+  
   public synchronized void setBinaryStream(int paramInt1, InputStream paramInputStream, int paramInt2)
     throws SQLException
   {
     setBinaryStream(paramInt1, paramInputStream, paramInt2);
   }
-
+  
   public synchronized void clearParameters()
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
+    }
     ArrayUtil.fillArray(this.parameterValues, null);
     ArrayUtil.fillArray(this.parameterSet, null);
     ArrayUtil.clearArray(74, this.streamLengths, 0, this.streamLengths.length);
   }
-
+  
   public synchronized void setObject(int paramInt1, Object paramObject, int paramInt2, int paramInt3)
     throws SQLException
   {
-    if ((paramObject instanceof InputStream))
+    if ((paramObject instanceof InputStream)) {
       setBinaryStream(paramInt1, (InputStream)paramObject, paramInt3);
-    else if ((paramObject instanceof Reader))
+    } else if ((paramObject instanceof Reader)) {
       setCharacterStream(paramInt1, (Reader)paramObject, paramInt3);
-    else
+    } else {
       setObject(paramInt1, paramObject);
+    }
   }
-
+  
   public synchronized void setObject(int paramInt1, Object paramObject, int paramInt2)
     throws SQLException
   {
     setObject(paramInt1, paramObject);
   }
-
+  
   public synchronized void setObject(int paramInt, Object paramObject)
     throws SQLException
   {
     setParameter(paramInt, paramObject);
   }
-
+  
   public synchronized boolean execute()
     throws SQLException
   {
     fetchResult();
     return this.statementRetType == 2;
   }
-
+  
   public synchronized void addBatch()
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
+    }
     checkParametersSet();
     if (!this.isBatch)
     {
@@ -308,19 +321,19 @@ public class JDBCPreparedStatement extends JDBCStatementBase
     System.arraycopy(this.parameterValues, 0, arrayOfObject, 0, i);
     this.resultOut.addBatchedPreparedExecuteRequest(arrayOfObject);
   }
-
+  
   public synchronized void setCharacterStream(int paramInt1, Reader paramReader, int paramInt2)
     throws SQLException
   {
     setCharacterStream(paramInt1, paramReader, paramInt2);
   }
-
+  
   public void setRef(int paramInt, Ref paramRef)
     throws SQLException
   {
     throw Util.notSupported();
   }
-
+  
   public synchronized void setBlob(int paramInt, Blob paramBlob)
     throws SQLException
   {
@@ -328,18 +341,18 @@ public class JDBCPreparedStatement extends JDBCStatementBase
     Type localType = this.parameterTypes[(paramInt - 1)];
     switch (localType.typeCode)
     {
-    case 60:
-    case 61:
+    case 60: 
+    case 61: 
       setBlobForBinaryParameter(paramInt, paramBlob);
       return;
-    case 30:
+    case 30: 
       setBlobParameter(paramInt, paramBlob);
       break;
-    default:
+    default: 
       throw Util.invalidArgument();
     }
   }
-
+  
   private void setBlobForBinaryParameter(int paramInt, Blob paramBlob)
     throws SQLException
   {
@@ -371,7 +384,7 @@ public class JDBCPreparedStatement extends JDBCStatementBase
       throw Util.sqlException(422, localThrowable.toString(), localThrowable);
     }
   }
-
+  
   public synchronized void setClob(int paramInt, Clob paramClob)
     throws SQLException
   {
@@ -379,17 +392,17 @@ public class JDBCPreparedStatement extends JDBCStatementBase
     Type localType = this.parameterTypes[(paramInt - 1)];
     switch (localType.typeCode)
     {
-    case 1:
-    case 12:
+    case 1: 
+    case 12: 
       setClobForStringParameter(paramInt, paramClob);
       return;
-    case 40:
+    case 40: 
       setClobParameter(paramInt, paramClob);
       return;
     }
     throw Util.invalidArgument();
   }
-
+  
   private void setClobForStringParameter(int paramInt, Clob paramClob)
     throws SQLException
   {
@@ -421,14 +434,15 @@ public class JDBCPreparedStatement extends JDBCStatementBase
       throw Util.sqlException(401, localThrowable.toString(), localThrowable);
     }
   }
-
+  
   public synchronized void setArray(int paramInt, Array paramArray)
     throws SQLException
   {
     checkParameterIndex(paramInt);
     Type localType1 = this.parameterMetaData.columnTypes[(paramInt - 1)];
-    if (!localType1.isArrayType())
+    if (!localType1.isArrayType()) {
       throw Util.sqlException(5561);
+    }
     if (paramArray == null)
     {
       setParameter(paramInt, null);
@@ -447,8 +461,9 @@ public class JDBCPreparedStatement extends JDBCStatementBase
         Type localType2 = localType1.collectionBaseType();
         Object[] arrayOfObject2 = (Object[])localObject;
         arrayOfObject1 = new Object[arrayOfObject2.length];
-        for (int i = 0; i < arrayOfObject1.length; i++)
+        for (int i = 0; i < arrayOfObject1.length; i++) {
           arrayOfObject1[i] = localType2.convertJavaToSQL(this.session, arrayOfObject2[i]);
+        }
       }
       else
       {
@@ -458,30 +473,34 @@ public class JDBCPreparedStatement extends JDBCStatementBase
     this.parameterValues[(paramInt - 1)] = arrayOfObject1;
     this.parameterSet[(paramInt - 1)] = Boolean.TRUE;
   }
-
+  
   public synchronized ResultSetMetaData getMetaData()
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
-    if (this.statementRetType != 2)
+    }
+    if (this.statementRetType != 2) {
       return null;
+    }
     if (this.resultSetMetaData == null)
     {
       boolean bool1 = ResultProperties.isUpdatable(this.rsProperties);
       boolean bool2 = bool1;
-      if (bool2)
-        for (int i = 0; i < this.resultMetaData.colIndexes.length; i++)
+      if (bool2) {
+        for (int i = 0; i < this.resultMetaData.colIndexes.length; i++) {
           if (this.resultMetaData.colIndexes[i] < 0)
           {
             bool2 = false;
             break;
           }
+        }
+      }
       this.resultSetMetaData = new JDBCResultSetMetaData(this.resultMetaData, bool1, bool2, this.connection);
     }
     return this.resultSetMetaData;
   }
-
+  
   public synchronized void setDate(int paramInt, Date paramDate, Calendar paramCalendar)
     throws SQLException
   {
@@ -499,22 +518,22 @@ public class JDBCPreparedStatement extends JDBCStatementBase
     l = HsqlDateTime.getNormalisedDate(l);
     switch (localType.typeCode)
     {
-    case 91:
-    case 93:
+    case 91: 
+    case 93: 
       this.parameterValues[i] = new TimestampData(l / 1000L);
       break;
-    case 95:
+    case 95: 
       int j = HsqlDateTime.getZoneMillis(localCalendar, l);
       this.parameterValues[i] = new TimestampData(l / 1000L, 0, j / 1000);
       break;
-    case 92:
-    case 94:
-    default:
+    case 92: 
+    case 94: 
+    default: 
       throw Util.sqlException(5561);
     }
     this.parameterSet[i] = Boolean.TRUE;
   }
-
+  
   public synchronized void setTime(int paramInt, Time paramTime, Calendar paramCalendar)
     throws SQLException
   {
@@ -534,18 +553,18 @@ public class JDBCPreparedStatement extends JDBCStatementBase
     l = HsqlDateTime.convertToNormalisedTime(l);
     switch (localType.typeCode)
     {
-    case 92:
+    case 92: 
       break;
-    case 94:
+    case 94: 
       j = HsqlDateTime.getZoneMillis(localCalendar, l);
       break;
-    default:
+    default: 
       throw Util.sqlException(5561);
     }
     this.parameterValues[i] = new TimeData((int)(l / 1000L), 0, j / 1000);
     this.parameterSet[i] = Boolean.TRUE;
   }
-
+  
   public synchronized void setTimestamp(int paramInt, Timestamp paramTimestamp, Calendar paramCalendar)
     throws SQLException
   {
@@ -564,43 +583,45 @@ public class JDBCPreparedStatement extends JDBCStatementBase
     l = HsqlDateTime.convertMillisFromCalendar(localCalendar, l);
     switch (localType.typeCode)
     {
-    case 95:
+    case 95: 
       j = HsqlDateTime.getZoneMillis(localCalendar, l);
-    case 93:
+    case 93: 
       this.parameterValues[i] = new TimestampData(l / 1000L, paramTimestamp.getNanos(), j / 1000);
       break;
-    case 92:
+    case 92: 
       l = HsqlDateTime.getNormalisedTime(l);
       this.parameterValues[i] = new TimeData((int)(l / 1000L), paramTimestamp.getNanos(), 0);
       break;
-    case 94:
+    case 94: 
       j = HsqlDateTime.getZoneMillis(localCalendar, l);
       this.parameterValues[i] = new TimeData((int)(l / 1000L), paramTimestamp.getNanos(), j / 1000);
       break;
-    case 91:
+    case 91: 
       l = HsqlDateTime.getNormalisedDate(l);
       this.parameterValues[i] = new TimestampData(l / 1000L);
       break;
-    default:
+    default: 
       throw Util.sqlException(5561);
     }
     this.parameterSet[i] = Boolean.TRUE;
   }
-
+  
   public synchronized void setNull(int paramInt1, int paramInt2, String paramString)
     throws SQLException
   {
     setParameter(paramInt1, null);
   }
-
+  
   public synchronized int[] executeBatch()
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
+    }
     checkStatementType(1);
-    if (!this.isBatch)
+    if (!this.isBatch) {
       throw Util.sqlExceptionSQL(1256);
+    }
     this.generatedResult = null;
     int i = this.resultOut.getNavigator().getSize();
     this.resultIn = null;
@@ -618,8 +639,9 @@ public class JDBCPreparedStatement extends JDBCStatementBase
       this.resultOut.getNavigator().clear();
       this.isBatch = false;
     }
-    if (this.resultIn.mode == 2)
+    if (this.resultIn.mode == 2) {
       throw Util.sqlException(this.resultIn);
+    }
     RowSetNavigator localRowSetNavigator = this.resultIn.getNavigator();
     int[] arrayOfInt = new int[localRowSetNavigator.getSize()];
     for (int j = 0; j < arrayOfInt.length; j++)
@@ -629,55 +651,58 @@ public class JDBCPreparedStatement extends JDBCStatementBase
     }
     if (arrayOfInt.length != i)
     {
-      if (this.errorResult == null)
+      if (this.errorResult == null) {
         throw new BatchUpdateException(arrayOfInt);
+      }
       this.errorResult.getMainString();
       throw new BatchUpdateException(this.errorResult.getMainString(), this.errorResult.getSubString(), this.errorResult.getErrorCode(), arrayOfInt);
     }
     return arrayOfInt;
   }
-
+  
   public void setEscapeProcessing(boolean paramBoolean)
     throws SQLException
   {
     checkClosed();
   }
-
+  
   public void addBatch(String paramString)
     throws SQLException
   {
     throw Util.notSupported();
   }
-
+  
   public synchronized ResultSet executeQuery(String paramString)
     throws SQLException
   {
     throw Util.notSupported();
   }
-
+  
   public boolean execute(String paramString)
     throws SQLException
   {
     throw Util.notSupported();
   }
-
+  
   public int executeUpdate(String paramString)
     throws SQLException
   {
     throw Util.notSupported();
   }
-
+  
   public synchronized void close()
     throws SQLException
   {
-    if (isClosed())
+    if (isClosed()) {
       return;
+    }
     closeResultData();
     Object localObject = null;
     try
     {
-      if (!this.connection.isClosed)
+      if (!this.connection.isClosed) {
         this.session.execute(Result.newFreeStmtRequest(this.statementID));
+      }
     }
     catch (HsqlException localHsqlException)
     {
@@ -696,10 +721,11 @@ public class JDBCPreparedStatement extends JDBCStatementBase
     this.resultIn = null;
     this.resultOut = null;
     this.isClosed = true;
-    if (localObject != null)
+    if (localObject != null) {
       throw Util.sqlException(localObject);
+    }
   }
-
+  
   public String toString()
   {
     StringBuffer localStringBuffer = new StringBuffer();
@@ -727,151 +753,157 @@ public class JDBCPreparedStatement extends JDBCStatementBase
     localStringBuffer.append(']');
     return localStringBuffer.toString();
   }
-
+  
   public void setURL(int paramInt, URL paramURL)
     throws SQLException
   {
     throw Util.notSupported();
   }
-
+  
   public synchronized ParameterMetaData getParameterMetaData()
     throws SQLException
   {
     checkClosed();
-    if (this.pmd == null)
+    if (this.pmd == null) {
       this.pmd = new JDBCParameterMetaData(this.connection, this.parameterMetaData);
+    }
     return (ParameterMetaData)this.pmd;
   }
-
+  
   public int executeUpdate(String paramString, int paramInt)
     throws SQLException
   {
     throw Util.notSupported();
   }
-
+  
   public boolean execute(String paramString, int paramInt)
     throws SQLException
   {
     throw Util.notSupported();
   }
-
+  
   public int executeUpdate(String paramString, int[] paramArrayOfInt)
     throws SQLException
   {
     throw Util.notSupported();
   }
-
+  
   public boolean execute(String paramString, int[] paramArrayOfInt)
     throws SQLException
   {
     throw Util.notSupported();
   }
-
+  
   public int executeUpdate(String paramString, String[] paramArrayOfString)
     throws SQLException
   {
     throw Util.notSupported();
   }
-
+  
   public boolean execute(String paramString, String[] paramArrayOfString)
     throws SQLException
   {
     throw Util.notSupported();
   }
-
+  
   public synchronized boolean getMoreResults(int paramInt)
     throws SQLException
   {
     return super.getMoreResults(paramInt);
   }
-
+  
   public synchronized ResultSet getGeneratedKeys()
     throws SQLException
   {
     return getGeneratedResultSet();
   }
-
+  
   public synchronized int getResultSetHoldability()
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
+    }
     return ResultProperties.getJDBCHoldability(this.rsProperties);
   }
-
+  
   public synchronized boolean isClosed()
   {
     return this.isClosed;
   }
-
+  
   public void setRowId(int paramInt, RowId paramRowId)
     throws SQLException
   {
     throw Util.notSupported();
   }
-
+  
   public synchronized void setNString(int paramInt, String paramString)
     throws SQLException
   {
     setString(paramInt, paramString);
   }
-
+  
   public synchronized void setNCharacterStream(int paramInt, Reader paramReader, long paramLong)
     throws SQLException
   {
     setCharacterStream(paramInt, paramReader, paramLong);
   }
-
+  
   public synchronized void setNClob(int paramInt, NClob paramNClob)
     throws SQLException
   {
     setClob(paramInt, paramNClob);
   }
-
+  
   public synchronized void setClob(int paramInt, Reader paramReader, long paramLong)
     throws SQLException
   {
     setCharacterStream(paramInt, paramReader, paramLong);
   }
-
+  
   public synchronized void setBlob(int paramInt, InputStream paramInputStream, long paramLong)
     throws SQLException
   {
     setBinaryStream(paramInt, paramInputStream, paramLong);
   }
-
+  
   public synchronized void setNClob(int paramInt, Reader paramReader, long paramLong)
     throws SQLException
   {
     setClob(paramInt, paramReader, paramLong);
   }
-
+  
   public void setSQLXML(int paramInt, SQLXML paramSQLXML)
     throws SQLException
   {
     throw Util.notSupported();
   }
-
+  
   public synchronized void setAsciiStream(int paramInt, InputStream paramInputStream, long paramLong)
     throws SQLException
   {
-    if (paramLong < 0L)
+    if (paramLong < 0L) {
       throw Util.sqlException(423, "length: " + paramLong);
+    }
     setAscStream(paramInt, paramInputStream, paramLong);
   }
-
+  
   void setAscStream(int paramInt, InputStream paramInputStream, long paramLong)
     throws SQLException
   {
-    if (paramLong > 2147483647L)
+    if (paramLong > 2147483647L) {
       Util.sqlException(3401);
-    if (paramInputStream == null)
+    }
+    if (paramInputStream == null) {
       throw Util.nullArgument("x");
+    }
     try
     {
       String str = StringConverter.inputStreamToString(paramInputStream, "US-ASCII");
-      if ((paramLong >= 0L) && (str.length() > paramLong))
+      if ((paramLong >= 0L) && (str.length() > paramLong)) {
         str = str.substring(0, (int)paramLong);
+      }
       setParameter(paramInt, str);
     }
     catch (IOException localIOException)
@@ -879,20 +911,22 @@ public class JDBCPreparedStatement extends JDBCStatementBase
       throw Util.sqlException(422, null, localIOException);
     }
   }
-
+  
   public synchronized void setBinaryStream(int paramInt, InputStream paramInputStream, long paramLong)
     throws SQLException
   {
-    if (paramLong < 0L)
+    if (paramLong < 0L) {
       throw Util.sqlException(423, "length: " + paramLong);
+    }
     setBinStream(paramInt, paramInputStream, paramLong);
   }
-
+  
   private void setBinStream(int paramInt, InputStream paramInputStream, long paramLong)
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
+    }
     if (this.parameterTypes[(paramInt - 1)].typeCode == 30)
     {
       setBlobParameter(paramInt, paramInputStream, paramLong);
@@ -906,10 +940,11 @@ public class JDBCPreparedStatement extends JDBCStatementBase
     }
     try
     {
-      if (paramLong < 0L)
+      if (paramLong < 0L) {
         localObject = new HsqlByteArrayOutputStream(paramInputStream);
-      else
+      } else {
         localObject = new HsqlByteArrayOutputStream(paramInputStream, (int)paramLong);
+      }
       setParameter(paramInt, ((HsqlByteArrayOutputStream)localObject).toByteArray());
     }
     catch (Throwable localThrowable)
@@ -917,15 +952,16 @@ public class JDBCPreparedStatement extends JDBCStatementBase
       throw Util.sqlException(422, localThrowable.toString(), localThrowable);
     }
   }
-
+  
   public synchronized void setCharacterStream(int paramInt, Reader paramReader, long paramLong)
     throws SQLException
   {
-    if (paramLong < 0L)
+    if (paramLong < 0L) {
       throw Util.sqlException(423, "length: " + paramLong);
+    }
     setCharStream(paramInt, paramReader, paramLong);
   }
-
+  
   private void setCharStream(int paramInt, Reader paramReader, long paramLong)
     throws SQLException
   {
@@ -943,10 +979,11 @@ public class JDBCPreparedStatement extends JDBCStatementBase
     }
     try
     {
-      if (paramLong < 0L)
+      if (paramLong < 0L) {
         localObject = new CharArrayWriter(paramReader);
-      else
+      } else {
         localObject = new CharArrayWriter(paramReader, (int)paramLong);
+      }
       setParameter(paramInt, ((CharArrayWriter)localObject).toString());
     }
     catch (Throwable localThrowable)
@@ -954,247 +991,272 @@ public class JDBCPreparedStatement extends JDBCStatementBase
       throw Util.sqlException(422, localThrowable.toString(), localThrowable);
     }
   }
-
+  
   public void setAsciiStream(int paramInt, InputStream paramInputStream)
     throws SQLException
   {
     setAscStream(paramInt, paramInputStream, -1L);
   }
-
+  
   public synchronized void setBinaryStream(int paramInt, InputStream paramInputStream)
     throws SQLException
   {
     setBinStream(paramInt, paramInputStream, -1L);
   }
-
+  
   public void setCharacterStream(int paramInt, Reader paramReader)
     throws SQLException
   {
     setCharStream(paramInt, paramReader, -1L);
   }
-
+  
   public void setNCharacterStream(int paramInt, Reader paramReader)
     throws SQLException
   {
     setCharStream(paramInt, paramReader, -1L);
   }
-
+  
   public void setClob(int paramInt, Reader paramReader)
     throws SQLException
   {
     setCharStream(paramInt, paramReader, -1L);
   }
-
+  
   public void setBlob(int paramInt, InputStream paramInputStream)
     throws SQLException
   {
     setBinStream(paramInt, paramInputStream, -1L);
   }
-
+  
   public void setNClob(int paramInt, Reader paramReader)
     throws SQLException
   {
     setCharStream(paramInt, paramReader, -1L);
   }
-
+  
   public synchronized int getMaxFieldSize()
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
+    }
     return 0;
   }
-
+  
   public synchronized void setMaxFieldSize(int paramInt)
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
-    if (paramInt < 0)
+    }
+    if (paramInt < 0) {
       throw Util.outOfRangeArgument();
+    }
   }
-
+  
   public synchronized int getMaxRows()
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
+    }
     return this.maxRows;
   }
-
+  
   public synchronized void setMaxRows(int paramInt)
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
-    if (paramInt < 0)
+    }
+    if (paramInt < 0) {
       throw Util.outOfRangeArgument();
+    }
     this.maxRows = paramInt;
   }
-
+  
   public synchronized int getQueryTimeout()
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
+    }
     return 0;
   }
-
+  
   public synchronized void setQueryTimeout(int paramInt)
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
-    if ((paramInt < 0) || (paramInt > 32767))
+    }
+    if ((paramInt < 0) || (paramInt > 32767)) {
       throw Util.outOfRangeArgument();
+    }
     this.queryTimeout = paramInt;
   }
-
+  
   public void cancel()
     throws SQLException
   {
     checkClosed();
   }
-
+  
   public synchronized SQLWarning getWarnings()
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
+    }
     return this.rootWarning;
   }
-
+  
   public synchronized void clearWarnings()
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
+    }
     this.rootWarning = null;
   }
-
+  
   public void setCursorName(String paramString)
     throws SQLException
   {
     checkClosed();
   }
-
+  
   public synchronized ResultSet getResultSet()
     throws SQLException
   {
     return super.getResultSet();
   }
-
+  
   public synchronized int getUpdateCount()
     throws SQLException
   {
     return super.getUpdateCount();
   }
-
+  
   public synchronized boolean getMoreResults()
     throws SQLException
   {
     return getMoreResults(1);
   }
-
+  
   public synchronized void setFetchDirection(int paramInt)
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
-    if ((paramInt != 1000) && (paramInt != 1001) && (paramInt != 1002))
+    }
+    if ((paramInt != 1000) && (paramInt != 1001) && (paramInt != 1002)) {
       throw Util.notSupported();
+    }
     this.fetchDirection = paramInt;
   }
-
+  
   public synchronized int getFetchDirection()
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
+    }
     return this.fetchDirection;
   }
-
+  
   public synchronized void setFetchSize(int paramInt)
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
-    if (paramInt < 0)
+    }
+    if (paramInt < 0) {
       throw Util.outOfRangeArgument();
+    }
     this.fetchSize = paramInt;
   }
-
+  
   public synchronized int getFetchSize()
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
+    }
     return this.fetchSize;
   }
-
+  
   public synchronized int getResultSetConcurrency()
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
+    }
     return ResultProperties.getJDBCConcurrency(this.rsProperties);
   }
-
+  
   public synchronized int getResultSetType()
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
+    }
     return ResultProperties.getJDBCScrollability(this.rsProperties);
   }
-
+  
   public synchronized void clearBatch()
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
-    if (this.isBatch)
+    }
+    if (this.isBatch) {
       this.resultOut.getNavigator().clear();
+    }
   }
-
+  
   public synchronized Connection getConnection()
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
+    }
     return this.connection;
   }
-
+  
   public synchronized void setPoolable(boolean paramBoolean)
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
+    }
     this.poolable = paramBoolean;
   }
-
+  
   public synchronized boolean isPoolable()
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
+    }
     return this.poolable;
   }
-
+  
   public <T> T unwrap(Class<T> paramClass)
     throws SQLException
   {
-    if (isWrapperFor(paramClass))
+    if (isWrapperFor(paramClass)) {
       return this;
+    }
     throw Util.invalidArgument("iface: " + paramClass);
   }
-
+  
   public boolean isWrapperFor(Class<?> paramClass)
     throws SQLException
   {
     return (paramClass != null) && (paramClass.isAssignableFrom(getClass()));
   }
-
+  
   JDBCPreparedStatement(JDBCConnection paramJDBCConnection, String paramString, int paramInt1, int paramInt2, int paramInt3, int paramInt4, int[] paramArrayOfInt, String[] paramArrayOfString)
     throws HsqlException, SQLException
   {
@@ -1207,15 +1269,17 @@ public class JDBCPreparedStatement extends JDBCStatementBase
     if (paramArrayOfInt != null)
     {
       arrayOfInt = new int[paramArrayOfInt.length];
-      for (i = 0; i < paramArrayOfInt.length; i++)
+      for (i = 0; i < paramArrayOfInt.length; i++) {
         paramArrayOfInt[i] -= 1;
+      }
     }
     this.resultOut = Result.newPrepareStatementRequest();
     int i = ResultProperties.getValueForJDBC(paramInt1, paramInt2, paramInt3);
     this.resultOut.setPrepareOrExecuteProperties(paramString, 0, 0, 0, this.queryTimeout, i, paramInt4, paramArrayOfInt, paramArrayOfString);
     Result localResult1 = this.session.execute(this.resultOut);
-    if (localResult1.mode == 2)
+    if (localResult1.mode == 2) {
       throw Util.sqlException(localResult1);
+    }
     this.rootWarning = null;
     Result localResult2 = localResult1;
     while (localResult2.getChainedResult() != null)
@@ -1224,10 +1288,11 @@ public class JDBCPreparedStatement extends JDBCStatementBase
       if (localResult2.isWarning())
       {
         SQLWarning localSQLWarning = Util.sqlWarning(localResult2);
-        if (this.rootWarning == null)
+        if (this.rootWarning == null) {
           this.rootWarning = localSQLWarning;
-        else
+        } else {
           this.rootWarning.setNextWarning(localSQLWarning);
+        }
       }
     }
     this.connection.setWarnings(this.rootWarning);
@@ -1242,17 +1307,18 @@ public class JDBCPreparedStatement extends JDBCStatementBase
     this.parameterValues = new Object[j];
     this.parameterSet = new Boolean[j];
     this.streamLengths = new long[j];
-    for (int k = 0; k < j; k++)
+    for (int k = 0; k < j; k++) {
       if (this.parameterTypes[k].isLobType())
       {
         this.hasLOBs = true;
         break;
       }
+    }
     this.resultOut = Result.newPreparedExecuteRequest(this.parameterTypes, this.statementID);
     this.resultOut.setStatement(localResult1.getStatement());
     this.sql = paramString;
   }
-
+  
   JDBCPreparedStatement(JDBCConnection paramJDBCConnection, Result paramResult)
   {
     this.isResult = true;
@@ -1269,40 +1335,44 @@ public class JDBCPreparedStatement extends JDBCStatementBase
     for (int j = 0; j < i; j++)
     {
       this.parameterModes[j] = 1;
-      if (this.parameterTypes[j].isLobType())
+      if (this.parameterTypes[j].isLobType()) {
         this.hasLOBs = true;
+      }
     }
     this.resultOut = Result.newUpdateResultRequest(this.parameterTypes, paramResult.getResultId());
   }
-
+  
   protected void checkStatementType(int paramInt)
     throws SQLException
   {
     if (paramInt != this.statementRetType)
     {
-      if (this.statementRetType == 1)
+      if (this.statementRetType == 1) {
         throw Util.sqlException(1254);
+      }
       throw Util.sqlException(1253);
     }
   }
-
+  
   protected void checkParameterIndex(int paramInt)
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
+    }
     if ((paramInt < 1) || (paramInt > this.parameterValues.length))
     {
       String str = "parameter index out of range: " + paramInt;
       throw Util.outOfRangeArgument(str);
     }
   }
-
+  
   protected void checkSetParameterIndex(int paramInt)
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
+    }
     String str;
     if ((paramInt < 1) || (paramInt > this.parameterValues.length))
     {
@@ -1315,12 +1385,13 @@ public class JDBCPreparedStatement extends JDBCStatementBase
       throw Util.invalidArgument(str);
     }
   }
-
+  
   protected void checkGetParameterIndex(int paramInt)
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
+    }
     String str;
     if ((paramInt < 1) || (paramInt > this.parameterValues.length))
     {
@@ -1330,28 +1401,31 @@ public class JDBCPreparedStatement extends JDBCStatementBase
     int i = this.parameterModes[(paramInt - 1)];
     switch (i)
     {
-    case 0:
-    case 2:
-    case 4:
+    case 0: 
+    case 2: 
+    case 4: 
       break;
-    case 1:
-    case 3:
-    default:
+    case 1: 
+    case 3: 
+    default: 
       str = "Not OUT or INOUT mode: " + i + " for parameter: " + paramInt;
       throw Util.invalidArgument(str);
     }
   }
-
+  
   private void checkParametersSet()
     throws SQLException
   {
-    if (this.isResult)
+    if (this.isResult) {
       return;
-    for (int i = 0; i < this.parameterSet.length; i++)
-      if ((this.parameterModes[i] != 4) && (this.parameterSet[i] == null))
+    }
+    for (int i = 0; i < this.parameterSet.length; i++) {
+      if ((this.parameterModes[i] != 4) && (this.parameterSet[i] == null)) {
         throw Util.sqlException(424);
+      }
+    }
   }
-
+  
   void setParameter(int paramInt, Object paramObject)
     throws SQLException
   {
@@ -1366,7 +1440,7 @@ public class JDBCPreparedStatement extends JDBCStatementBase
     Type localType1 = this.parameterTypes[paramInt];
     switch (localType1.typeCode)
     {
-    case 1111:
+    case 1111: 
       try
       {
         if ((paramObject instanceof Serializable))
@@ -1380,8 +1454,8 @@ public class JDBCPreparedStatement extends JDBCStatementBase
         Util.throwError(localHsqlException1);
       }
       Util.throwError(Error.error(5563));
-    case 14:
-    case 15:
+    case 14: 
+    case 15: 
       try
       {
         if ((paramObject instanceof Boolean))
@@ -1410,8 +1484,8 @@ public class JDBCPreparedStatement extends JDBCStatementBase
         Util.throwError(localHsqlException2);
       }
       Util.throwError(Error.error(5563));
-    case 60:
-    case 61:
+    case 60: 
+    case 61: 
       if ((paramObject instanceof byte[]))
       {
         paramObject = new BinaryData((byte[])paramObject, !this.connection.isNetConn);
@@ -1433,56 +1507,59 @@ public class JDBCPreparedStatement extends JDBCStatementBase
         Util.throwError(Error.error(5563));
       }
       break;
-    case 50:
+    case 50: 
       if ((paramObject instanceof Array))
       {
         setArray(paramInt + 1, (Array)paramObject);
         return;
       }
-      if ((paramObject instanceof ArrayList))
+      if ((paramObject instanceof ArrayList)) {
         paramObject = ((ArrayList)paramObject).toArray();
+      }
       if ((paramObject instanceof Object[]))
       {
         Type localType2 = localType1.collectionBaseType();
         Object[] arrayOfObject1 = (Object[])paramObject;
         Object[] arrayOfObject2 = new Object[arrayOfObject1.length];
-        for (int i = 0; i < arrayOfObject2.length; i++)
+        for (int i = 0; i < arrayOfObject2.length; i++) {
           arrayOfObject2[i] = localType2.convertJavaToSQL(this.session, arrayOfObject1[i]);
+        }
         paramObject = arrayOfObject2;
         break label831;
       }
       Util.throwError(Error.error(5563));
-    case 30:
+    case 30: 
       setBlobParameter(paramInt + 1, paramObject);
       return;
-    case 40:
+    case 40: 
       setClobParameter(paramInt + 1, paramObject);
       return;
-    case 91:
-    case 92:
-    case 93:
-    case 94:
-    case 95:
+    case 91: 
+    case 92: 
+    case 93: 
+    case 94: 
+    case 95: 
       try
       {
-        if ((paramObject instanceof String))
+        if ((paramObject instanceof String)) {
           paramObject = localType1.convertToType(this.session, paramObject, Type.SQL_VARCHAR);
-        else
+        } else {
           paramObject = localType1.convertJavaToSQL(this.session, paramObject);
+        }
       }
       catch (HsqlException localHsqlException4)
       {
         Util.throwError(localHsqlException4);
       }
-    case -6:
-    case 2:
-    case 3:
-    case 4:
-    case 5:
-    case 6:
-    case 7:
-    case 8:
-    case 25:
+    case -6: 
+    case 2: 
+    case 3: 
+    case 4: 
+    case 5: 
+    case 6: 
+    case 7: 
+    case 8: 
+    case 25: 
       try
       {
         if ((paramObject instanceof String))
@@ -1503,17 +1580,20 @@ public class JDBCPreparedStatement extends JDBCStatementBase
       {
         Util.throwError(localHsqlException5);
       }
-    case 12:
-      if ((paramObject instanceof String))
+    case 12: 
+      if ((paramObject instanceof String)) {
         break label831;
+      }
       paramObject = localType1.convertToDefaultType(this.session, paramObject);
       break;
-    case 1:
-      if (localType1.precision == 1L)
-        if ((paramObject instanceof Character))
+    case 1: 
+      if (localType1.precision == 1L) {
+        if ((paramObject instanceof Character)) {
           paramObject = new String(new char[] { ((Character)paramObject).charValue() });
-        else if ((paramObject instanceof Boolean))
+        } else if ((paramObject instanceof Boolean)) {
           paramObject = ((Boolean)paramObject).booleanValue() ? "1" : "0";
+        }
+      }
       break;
     }
     try
@@ -1524,16 +1604,17 @@ public class JDBCPreparedStatement extends JDBCStatementBase
     {
       Util.throwError(localHsqlException6);
     }
-    label831: this.parameterValues[paramInt] = paramObject;
+    label831:
+    this.parameterValues[paramInt] = paramObject;
     this.parameterSet[paramInt] = Boolean.TRUE;
   }
-
+  
   void setClobParameter(int paramInt, Object paramObject)
     throws SQLException
   {
     setClobParameter(paramInt, paramObject, 0L);
   }
-
+  
   void setClobParameter(int paramInt, Object paramObject, long paramLong)
     throws SQLException
   {
@@ -1563,8 +1644,9 @@ public class JDBCPreparedStatement extends JDBCStatementBase
     if ((paramObject instanceof ClobInputStream))
     {
       localObject = (ClobInputStream)paramObject;
-      if (((ClobInputStream)localObject).session.getDatabaseUniqueName().equals(this.session.getDatabaseUniqueName()))
+      if (((ClobInputStream)localObject).session.getDatabaseUniqueName().equals(this.session.getDatabaseUniqueName())) {
         throw Util.sqlException(423, "invalid Reader");
+      }
       this.parameterValues[(paramInt - 1)] = paramObject;
       this.streamLengths[(paramInt - 1)] = paramLong;
       this.parameterSet[(paramInt - 1)] = Boolean.FALSE;
@@ -1586,13 +1668,13 @@ public class JDBCPreparedStatement extends JDBCStatementBase
     }
     throw Util.invalidArgument();
   }
-
+  
   void setBlobParameter(int paramInt, Object paramObject)
     throws SQLException
   {
     setBlobParameter(paramInt, paramObject, 0L);
   }
-
+  
   void setBlobParameter(int paramInt, Object paramObject, long paramLong)
     throws SQLException
   {
@@ -1622,8 +1704,9 @@ public class JDBCPreparedStatement extends JDBCStatementBase
     if ((paramObject instanceof BlobInputStream))
     {
       localObject = (BlobInputStream)paramObject;
-      if (((BlobInputStream)localObject).session.getDatabaseUniqueName().equals(this.session.getDatabaseUniqueName()))
+      if (((BlobInputStream)localObject).session.getDatabaseUniqueName().equals(this.session.getDatabaseUniqueName())) {
         throw Util.sqlException(423, "invalid Reader");
+      }
       this.parameterValues[(paramInt - 1)] = paramObject;
       this.streamLengths[(paramInt - 1)] = paramLong;
       this.parameterSet[(paramInt - 1)] = Boolean.FALSE;
@@ -1645,7 +1728,7 @@ public class JDBCPreparedStatement extends JDBCStatementBase
     }
     throw Util.invalidArgument();
   }
-
+  
   void setIntParameter(int paramInt1, int paramInt2)
     throws SQLException
   {
@@ -1654,27 +1737,27 @@ public class JDBCPreparedStatement extends JDBCStatementBase
     Object localObject;
     switch (i)
     {
-    case -6:
-    case 4:
-    case 5:
+    case -6: 
+    case 4: 
+    case 5: 
       localObject = Integer.valueOf(paramInt2);
       this.parameterValues[(paramInt1 - 1)] = localObject;
       this.parameterSet[(paramInt1 - 1)] = Boolean.TRUE;
       break;
-    case 25:
+    case 25: 
       localObject = Long.valueOf(paramInt2);
       this.parameterValues[(paramInt1 - 1)] = localObject;
       this.parameterSet[(paramInt1 - 1)] = Boolean.TRUE;
       break;
-    case 60:
-    case 61:
-    case 1111:
+    case 60: 
+    case 61: 
+    case 1111: 
       throw Util.sqlException(Error.error(5563));
-    default:
+    default: 
       setParameter(paramInt1, new Integer(paramInt2));
     }
   }
-
+  
   void setLongParameter(int paramInt, long paramLong)
     throws SQLException
   {
@@ -1682,25 +1765,26 @@ public class JDBCPreparedStatement extends JDBCStatementBase
     int i = this.parameterTypes[(paramInt - 1)].typeCode;
     switch (i)
     {
-    case 25:
+    case 25: 
       Long localLong = new Long(paramLong);
       this.parameterValues[(paramInt - 1)] = localLong;
       this.parameterSet[(paramInt - 1)] = Boolean.TRUE;
       break;
-    case 60:
-    case 61:
-    case 1111:
+    case 60: 
+    case 61: 
+    case 1111: 
       throw Util.sqlException(Error.error(5563));
-    default:
+    default: 
       setParameter(paramInt, new Long(paramLong));
     }
   }
-
+  
   private void performPreExecute()
     throws SQLException, HsqlException
   {
-    if (!this.hasLOBs)
+    if (!this.hasLOBs) {
       return;
+    }
     for (int i = 0; i < this.parameterValues.length; i++)
     {
       Object localObject1 = this.parameterValues[i];
@@ -1785,20 +1869,23 @@ public class JDBCPreparedStatement extends JDBCStatementBase
       }
     }
   }
-
+  
   void fetchResult()
     throws SQLException
   {
-    if ((this.isClosed) || (this.connection.isClosed))
+    if ((this.isClosed) || (this.connection.isClosed)) {
       checkClosed();
+    }
     closeResultData();
     checkParametersSet();
-    if (this.isBatch)
+    if (this.isBatch) {
       throw Util.sqlExceptionSQL(1255);
-    if (this.isResult)
+    }
+    if (this.isResult) {
       this.resultOut.setPreparedResultUpdateProperties(this.parameterValues);
-    else
+    } else {
       this.resultOut.setPreparedExecuteProperties(this.parameterValues, this.maxRows, this.fetchSize, this.rsProperties);
+    }
     try
     {
       performPreExecute();
@@ -1812,22 +1899,26 @@ public class JDBCPreparedStatement extends JDBCStatementBase
     {
       performPostExecute();
     }
-    if (this.resultIn.mode == 2)
+    if (this.resultIn.mode == 2) {
       throw Util.sqlException(this.resultIn);
-    if (this.resultIn.isData())
+    }
+    if (this.resultIn.isData()) {
       this.currentResultSet = new JDBCResultSet(this.connection, this, this.resultIn, this.resultIn.metaData);
-    else if (this.statementRetType == 2)
+    } else if (this.statementRetType == 2) {
       getMoreResults();
+    }
   }
-
+  
   boolean isAnyParameterSet()
   {
-    for (int i = 0; i < this.parameterValues.length; i++)
-      if (this.parameterSet[i] != null)
+    for (int i = 0; i < this.parameterValues.length; i++) {
+      if (this.parameterSet[i] != null) {
         return true;
+      }
+    }
     return false;
   }
-
+  
   void performPostExecute()
     throws SQLException
   {
@@ -1835,7 +1926,8 @@ public class JDBCPreparedStatement extends JDBCStatementBase
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.jdbc.JDBCPreparedStatement
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

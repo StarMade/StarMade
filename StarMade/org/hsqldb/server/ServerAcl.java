@@ -25,50 +25,54 @@ public final class ServerAcl
   private static AclEntry PROHIBIT_ALL_IPV6;
   private File aclFile;
   private long lastLoadTime = 0L;
-
+  
   public static String dottedNotation(byte[] paramArrayOfByte)
   {
     StringBuffer localStringBuffer = new StringBuffer();
     for (int i = 0; i < paramArrayOfByte.length; i++)
     {
-      if (i > 0)
+      if (i > 0) {
         localStringBuffer.append('.');
+      }
       localStringBuffer.append(paramArrayOfByte[i] & 0xFF);
     }
     return localStringBuffer.toString();
   }
-
+  
   public static String colonNotation(byte[] paramArrayOfByte)
   {
-    if (paramArrayOfByte.length / 2 * 2 != paramArrayOfByte.length)
+    if (paramArrayOfByte.length / 2 * 2 != paramArrayOfByte.length) {
       throw new RuntimeException("At this time .colonNotation only handles even byte quantities");
+    }
     StringBuffer localStringBuffer = new StringBuffer();
     for (int i = 0; i < paramArrayOfByte.length; i += 2)
     {
-      if (i > 0)
+      if (i > 0) {
         localStringBuffer.append(':');
+      }
       localStringBuffer.append(Integer.toHexString((paramArrayOfByte[i] & 0xFF) * 256 + (paramArrayOfByte[(i + 1)] & 0xFF)));
     }
     return localStringBuffer.toString();
   }
-
+  
   public void setPrintWriter(PrintWriter paramPrintWriter)
   {
     this.pw = paramPrintWriter;
   }
-
+  
   public String toString()
   {
     StringBuffer localStringBuffer = new StringBuffer();
     for (int i = 0; i < this.aclEntries.size(); i++)
     {
-      if (i > 0)
+      if (i > 0) {
         localStringBuffer.append('\n');
+      }
       localStringBuffer.append("Entry " + (i + 1) + ": " + this.aclEntries.get(i));
     }
     return localStringBuffer.toString();
   }
-
+  
   public boolean permitAccess(String paramString)
   {
     try
@@ -81,39 +85,42 @@ public final class ServerAcl
     }
     return false;
   }
-
+  
   public boolean permitAccess(byte[] paramArrayOfByte)
   {
     ensureAclsUptodate();
-    for (int i = 0; i < this.aclEntries.size(); i++)
+    for (int i = 0; i < this.aclEntries.size(); i++) {
       if (((AclEntry)this.aclEntries.get(i)).matches(paramArrayOfByte))
       {
         AclEntry localAclEntry = (AclEntry)this.aclEntries.get(i);
         println("Addr '" + dottedNotation(paramArrayOfByte) + "' matched rule #" + (i + 1) + ":  " + localAclEntry);
         return localAclEntry.allow;
       }
+    }
     throw new RuntimeException("No rule matches address '" + dottedNotation(paramArrayOfByte) + "'");
   }
-
+  
   private void println(String paramString)
   {
-    if (this.pw == null)
+    if (this.pw == null) {
       return;
+    }
     this.pw.println(paramString);
     this.pw.flush();
   }
-
+  
   public ServerAcl(File paramFile)
     throws IOException, ServerAcl.AclFormatException
   {
     this.aclFile = paramFile;
     this.aclEntries = load();
   }
-
+  
   protected synchronized void ensureAclsUptodate()
   {
-    if (this.lastLoadTime > this.aclFile.lastModified())
+    if (this.lastLoadTime > this.aclFile.lastModified()) {
       return;
+    }
     try
     {
       this.aclEntries = load();
@@ -125,16 +132,19 @@ public final class ServerAcl
       println("Failed to reload ACL file.  Retaining old ACLs.  " + localException);
     }
   }
-
+  
   protected List load()
     throws IOException, ServerAcl.AclFormatException
   {
-    if (!this.aclFile.exists())
+    if (!this.aclFile.exists()) {
       throw new IOException("File '" + this.aclFile.getAbsolutePath() + "' is not present");
-    if (!this.aclFile.isFile())
+    }
+    if (!this.aclFile.isFile()) {
       throw new IOException("'" + this.aclFile.getAbsolutePath() + "' is not a regular file");
-    if (!this.aclFile.canRead())
+    }
+    if (!this.aclFile.canRead()) {
       throw new IOException("'" + this.aclFile.getAbsolutePath() + "' is not accessible");
+    }
     String str4 = null;
     int j = 0;
     BufferedReader localBufferedReader = new BufferedReader(new FileReader(this.aclFile));
@@ -154,8 +164,9 @@ public final class ServerAcl
           boolean bool;
           try
           {
-            if (localStringTokenizer.countTokens() != 2)
+            if (localStringTokenizer.countTokens() != 2) {
               throw new InternalException(null);
+            }
             String str2 = localStringTokenizer.nextToken();
             String str3 = localStringTokenizer.nextToken();
             int i = str3.indexOf('/');
@@ -166,20 +177,21 @@ public final class ServerAcl
             }
             arrayOfByte = InetAddress.getByName(str3).getAddress();
             k = str4 == null ? arrayOfByte.length * 8 : Integer.parseInt(str4);
-            if (str2.equalsIgnoreCase("allow"))
+            if (str2.equalsIgnoreCase("allow")) {
               bool = true;
-            else if (str2.equalsIgnoreCase("permit"))
+            } else if (str2.equalsIgnoreCase("permit")) {
               bool = true;
-            else if (str2.equalsIgnoreCase("accept"))
+            } else if (str2.equalsIgnoreCase("accept")) {
               bool = true;
-            else if (str2.equalsIgnoreCase("prohibit"))
+            } else if (str2.equalsIgnoreCase("prohibit")) {
               bool = false;
-            else if (str2.equalsIgnoreCase("deny"))
+            } else if (str2.equalsIgnoreCase("deny")) {
               bool = false;
-            else if (str2.equalsIgnoreCase("reject"))
+            } else if (str2.equalsIgnoreCase("reject")) {
               bool = false;
-            else
+            } else {
               throw new InternalException(null);
+            }
           }
           catch (NumberFormatException localNumberFormatException)
           {
@@ -209,12 +221,13 @@ public final class ServerAcl
     this.lastLoadTime = new Date().getTime();
     return localArrayList;
   }
-
+  
   public static void main(String[] paramArrayOfString)
     throws ServerAcl.AclFormatException, IOException
   {
-    if (paramArrayOfString.length > 1)
+    if (paramArrayOfString.length > 1) {
       throw new RuntimeException("Try: java -cp path/to/hsqldb.jar " + ServerAcl.class.getName() + " --help");
+    }
     if ((paramArrayOfString.length > 0) && (paramArrayOfString[0].equals("--help")))
     {
       System.err.println("SYNTAX: java -cp path/to/hsqldb.jar " + ServerAcl.class.getName() + " [filepath.txt]");
@@ -230,11 +243,12 @@ public final class ServerAcl
     while ((str = localBufferedReader.readLine()) != null)
     {
       str = str.trim();
-      if (str.length() >= 1)
+      if (str.length() >= 1) {
         System.out.println(Boolean.toString(localServerAcl.permitAccess(str)));
+      }
     }
   }
-
+  
   static
   {
     try
@@ -251,44 +265,46 @@ public final class ServerAcl
       throw new RuntimeException("Unexpected problem in static initializer", localAclFormatException);
     }
   }
-
-  private static final class InternalException extends Exception
-  {
-  }
-
+  
+  private static final class InternalException
+    extends Exception
+  {}
+  
   private static final class AclEntry
   {
     private byte[] value;
     private byte[] mask;
     private int bitBlockSize;
     public boolean allow;
-
+    
     public AclEntry(byte[] paramArrayOfByte, int paramInt, boolean paramBoolean)
       throws ServerAcl.AclFormatException
     {
       byte[] arrayOfByte = null;
       switch (paramArrayOfByte.length)
       {
-      case 4:
+      case 4: 
         arrayOfByte = ServerAcl.ALL_SET_4BYTES;
         break;
-      case 16:
+      case 16: 
         arrayOfByte = ServerAcl.ALL_SET_16BYTES;
         break;
-      default:
+      default: 
         throw new IllegalArgumentException(new StringBuilder().append("Only 4 and 16 bytes supported, not ").append(paramArrayOfByte.length).toString());
       }
-      if (paramInt > paramArrayOfByte.length * 8)
+      if (paramInt > paramArrayOfByte.length * 8) {
         throw new IllegalArgumentException(new StringBuilder().append("Specified ").append(paramInt).append(" significant bits, but value only has ").append(paramArrayOfByte.length * 8).append(" bits").toString());
+      }
       this.bitBlockSize = paramInt;
       this.value = paramArrayOfByte;
       this.mask = BitMap.leftShift(arrayOfByte, paramArrayOfByte.length * 8 - paramInt);
-      if (this.mask.length != paramArrayOfByte.length)
+      if (this.mask.length != paramArrayOfByte.length) {
         throw new RuntimeException(new StringBuilder().append("Basic program assertion failed.  Generated mask length ").append(this.mask.length).append(" (bytes) does not match given value length ").append(paramArrayOfByte.length).append(" (bytes).").toString());
+      }
       this.allow = paramBoolean;
       validateMask();
     }
-
+    
     public String toString()
     {
       StringBuffer localStringBuffer = new StringBuffer("Addrs ");
@@ -296,23 +312,26 @@ public final class ServerAcl
       localStringBuffer.append(new StringBuilder().append("/").append(this.bitBlockSize).append(' ').append(this.allow ? "ALLOW" : "DENY").toString());
       return localStringBuffer.toString();
     }
-
+    
     public boolean matches(byte[] paramArrayOfByte)
     {
-      if (this.value.length != paramArrayOfByte.length)
+      if (this.value.length != paramArrayOfByte.length) {
         return false;
+      }
       return !BitMap.hasAnyBitSet(BitMap.xor(this.value, BitMap.and(paramArrayOfByte, this.mask)));
     }
-
+    
     public void validateMask()
       throws ServerAcl.AclFormatException
     {
-      if (BitMap.hasAnyBitSet(BitMap.and(this.value, BitMap.not(this.mask))))
+      if (BitMap.hasAnyBitSet(BitMap.and(this.value, BitMap.not(this.mask)))) {
         throw new ServerAcl.AclFormatException(new StringBuilder().append("The base address '").append(ServerAcl.dottedNotation(this.value)).append("' is too specific for block-size-spec /").append(this.bitBlockSize).toString());
+      }
     }
   }
-
-  public static final class AclFormatException extends Exception
+  
+  public static final class AclFormatException
+    extends Exception
   {
     public AclFormatException(String paramString)
     {
@@ -321,7 +340,8 @@ public final class ServerAcl
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.server.ServerAcl
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

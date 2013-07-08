@@ -20,7 +20,7 @@ public class StreamInJavaImpl
   private int curline;
   private int tabsize;
   private int tabs;
-
+  
   protected StreamInJavaImpl(InputStream paramInputStream, String paramString, int paramInt)
     throws UnsupportedEncodingException
   {
@@ -31,7 +31,7 @@ public class StreamInJavaImpl
     this.curcol = 1;
     this.endOfStream = false;
   }
-
+  
   protected StreamInJavaImpl(Reader paramReader, int paramInt)
   {
     this.reader = paramReader;
@@ -41,15 +41,16 @@ public class StreamInJavaImpl
     this.curcol = 1;
     this.endOfStream = false;
   }
-
+  
   public int readCharFromStream()
   {
     int i;
     try
     {
       i = this.reader.read();
-      if (i < 0)
+      if (i < 0) {
         this.endOfStream = true;
+      }
     }
     catch (IOException localIOException)
     {
@@ -58,14 +59,15 @@ public class StreamInJavaImpl
     }
     return i;
   }
-
+  
   public int readChar()
   {
     if (this.pushed)
     {
       i = this.charbuf[(--this.bufpos)];
-      if (this.bufpos == 0)
+      if (this.bufpos == 0) {
         this.pushed = false;
+      }
       if (i == 10)
       {
         this.curcol = 1;
@@ -99,8 +101,9 @@ public class StreamInJavaImpl
       i = readCharFromStream();
       if (i != 10)
       {
-        if (i != -1)
+        if (i != -1) {
           ungetChar(i);
+        }
         i = 10;
       }
       this.curcol = 1;
@@ -117,7 +120,7 @@ public class StreamInJavaImpl
     this.curcol += 1;
     return i;
   }
-
+  
   public void ungetChar(int paramInt)
   {
     this.pushed = true;
@@ -127,32 +130,32 @@ public class StreamInJavaImpl
       this.bufpos -= 1;
     }
     this.charbuf[(this.bufpos++)] = paramInt;
-    if (paramInt == 10)
+    if (paramInt == 10) {
       this.curline -= 1;
+    }
     this.curcol = this.lastcol;
   }
-
+  
   public boolean isEndOfStream()
   {
     return this.endOfStream;
   }
-
+  
   public int getCurcol()
   {
     return this.curcol;
   }
-
+  
   public int getCurline()
   {
     return this.curline;
   }
-
-  public void setLexer(Lexer paramLexer)
-  {
-  }
+  
+  public void setLexer(Lexer paramLexer) {}
 }
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.w3c.tidy.StreamInJavaImpl
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

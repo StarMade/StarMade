@@ -1,93 +1,83 @@
-/*    */ package org.schema.game.network.objects.remote;
-/*    */ 
-/*    */ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-/*    */ import java.io.DataInputStream;
-/*    */ import java.io.DataOutputStream;
-/*    */ import java.lang.reflect.Constructor;
-/*    */ import mf;
-/*    */ import mh;
-/*    */ import org.schema.common.util.ByteUtil;
-/*    */ import org.schema.schine.network.objects.NetworkObject;
-/*    */ import org.schema.schine.network.objects.remote.RemoteBuffer;
-/*    */ 
-/*    */ public class RemoteInventoryCluster extends RemoteBuffer
-/*    */ {
-/*    */   private mh holder;
-/*    */   private static Constructor staticConstructor;
-/*    */ 
-/*    */   public RemoteInventoryCluster(mh parammh, NetworkObject paramNetworkObject)
-/*    */   {
-/* 35 */     super(RemoteInventory.class, paramNetworkObject);
-/* 36 */     this.holder = parammh;
-/*    */   }
-/*    */ 
-/*    */   public void cacheConstructor()
-/*    */   {
-/*    */   }
-/*    */ 
-/*    */   public void clearReceiveBuffer()
-/*    */   {
-/* 45 */     getReceiveBuffer().clear();
-/*    */   }
-/*    */ 
-/*    */   public void fromByteStream(DataInputStream paramDataInputStream, int paramInt)
-/*    */   {
-/* 50 */     int i = ByteUtil.a(paramDataInputStream);
-/*    */ 
-/* 52 */     for (int j = 0; j < i; j++)
-/*    */     {
-/*    */       RemoteInventory localRemoteInventory;
-/* 53 */       (
-/* 54 */         localRemoteInventory = (RemoteInventory)staticConstructor.newInstance(new Object[] { null, this.holder, Boolean.valueOf(false), Boolean.valueOf(this.onServer) }))
-/* 54 */         .fromByteStream(paramDataInputStream, paramInt);
-/* 55 */       getReceiveBuffer().add(localRemoteInventory);
-/*    */     }
-/*    */   }
-/*    */ 
-/*    */   public int toByteStream(DataOutputStream paramDataOutputStream)
-/*    */   {
-/* 62 */     int i = 0;
-/* 63 */     synchronized ((ObjectArrayList)get())
-/*    */     {
-/* 65 */       paramDataOutputStream.writeInt(((ObjectArrayList)get()).size());
-/* 66 */       i += 4;
-/*    */ 
-/* 69 */       for (RemoteInventory localRemoteInventory : (ObjectArrayList)get()) {
-/* 70 */         i += localRemoteInventory.toByteStream(paramDataOutputStream);
-/*    */       }
-/*    */ 
-/* 73 */       ((ObjectArrayList)get()).clear();
-/*    */     }
-/*    */ 
-/* 76 */     return i;
-/*    */   }
-/*    */ 
-/*    */   static
-/*    */   {
-/*    */     try
-/*    */     {
-/* 20 */       if (staticConstructor == null) {
-/* 21 */         staticConstructor = RemoteInventory.class.getConstructor(new Class[] { mf.class, mh.class, Boolean.TYPE, Boolean.TYPE });
-/*    */       }
-/*    */ 
-/*    */       return;
-/*    */     }
-/*    */     catch (SecurityException localSecurityException)
-/*    */     {
-/* 30 */       localSecurityException.printStackTrace();
-/*    */ 
-/* 26 */       if (!$assertionsDisabled) throw new AssertionError(); return;
-/*    */     }
-/*    */     catch (NoSuchMethodException localNoSuchMethodException)
-/*    */     {
-/* 30 */       localNoSuchMethodException.printStackTrace();
-/*    */ 
-/* 29 */       if (!$assertionsDisabled) throw new AssertionError();
-/*    */     }
-/*    */   }
-/*    */ }
+/*  1:   */package org.schema.game.network.objects.remote;
+/*  2:   */
+/*  3:   */import java.io.DataInputStream;
+/*  4:   */import java.io.DataOutputStream;
+/*  5:   */import java.lang.reflect.Constructor;
+/*  6:   */import mf;
+/*  7:   */import org.schema.common.util.ByteUtil;
+/*  8:   */import org.schema.schine.network.objects.NetworkObject;
+/*  9:   */import org.schema.schine.network.objects.remote.RemoteBuffer;
+/* 10:   */
+/* 11:   */public class RemoteInventoryCluster extends RemoteBuffer
+/* 12:   */{
+/* 13:   */  private mh holder;
+/* 14:   */  private static Constructor staticConstructor;
+/* 15:   */  
+/* 16:   */  static
+/* 17:   */  {
+/* 18:   */    try
+/* 19:   */    {
+/* 20:20 */      if (staticConstructor == null)
+/* 21:21 */        staticConstructor = RemoteInventory.class.getConstructor(new Class[] { mf.class, mh.class, Boolean.TYPE, Boolean.TYPE });
+/* 22:   */      return;
+/* 23:23 */    } catch (SecurityException localSecurityException) { 
+/* 24:   */      
+/* 30:30 */        localSecurityException;
+/* 31:   */      
+/* 33:26 */      if (!$assertionsDisabled) throw new AssertionError();
+/* 34:   */      return; } catch (NoSuchMethodException localNoSuchMethodException) { 
+/* 35:   */      
+/* 37:30 */        localNoSuchMethodException;
+/* 38:   */      
+/* 39:29 */      if (!$assertionsDisabled) throw new AssertionError();
+/* 40:   */    }
+/* 41:   */  }
+/* 42:   */  
+/* 43:   */  public RemoteInventoryCluster(mh parammh, NetworkObject paramNetworkObject)
+/* 44:   */  {
+/* 45:35 */    super(RemoteInventory.class, paramNetworkObject);
+/* 46:36 */    this.holder = parammh;
+/* 47:   */  }
+/* 48:   */  
+/* 53:   */  public void clearReceiveBuffer()
+/* 54:   */  {
+/* 55:45 */    getReceiveBuffer().clear();
+/* 56:   */  }
+/* 57:   */  
+/* 58:   */  public void fromByteStream(DataInputStream paramDataInputStream, int paramInt)
+/* 59:   */  {
+/* 60:50 */    int i = ByteUtil.a(paramDataInputStream);
+/* 61:   */    
+/* 62:52 */    for (int j = 0; j < i; j++) {
+/* 63:   */      RemoteInventory localRemoteInventory;
+/* 64:54 */      (localRemoteInventory = (RemoteInventory)staticConstructor.newInstance(new Object[] { null, this.holder, Boolean.valueOf(false), Boolean.valueOf(this.onServer) })).fromByteStream(paramDataInputStream, paramInt);
+/* 65:55 */      getReceiveBuffer().add(localRemoteInventory);
+/* 66:   */    }
+/* 67:   */  }
+/* 68:   */  
+/* 70:   */  public int toByteStream(DataOutputStream paramDataOutputStream)
+/* 71:   */  {
+/* 72:62 */    int i = 0;
+/* 73:63 */    synchronized ((it.unimi.dsi.fastutil.objects.ObjectArrayList)get())
+/* 74:   */    {
+/* 75:65 */      paramDataOutputStream.writeInt(((it.unimi.dsi.fastutil.objects.ObjectArrayList)get()).size());
+/* 76:66 */      i += 4;
+/* 77:   */      
+/* 79:69 */      for (RemoteInventory localRemoteInventory : (it.unimi.dsi.fastutil.objects.ObjectArrayList)get()) {
+/* 80:70 */        i += localRemoteInventory.toByteStream(paramDataOutputStream);
+/* 81:   */      }
+/* 82:   */      
+/* 83:73 */      ((it.unimi.dsi.fastutil.objects.ObjectArrayList)get()).clear();
+/* 84:   */    }
+/* 85:   */    
+/* 86:76 */    return i;
+/* 87:   */  }
+/* 88:   */  
+/* 89:   */  public void cacheConstructor() {}
+/* 90:   */}
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.schema.game.network.objects.remote.RemoteInventoryCluster
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

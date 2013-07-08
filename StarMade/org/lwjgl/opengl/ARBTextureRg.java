@@ -26,7 +26,8 @@ public final class ARBTextureRg
   public static final int GL_RG_INTEGER = 33320;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.opengl.ARBTextureRg
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

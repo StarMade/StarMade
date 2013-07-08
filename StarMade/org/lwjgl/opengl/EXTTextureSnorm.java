@@ -29,7 +29,8 @@ public final class EXTTextureSnorm
   public static final int GL_SIGNED_NORMALIZED = 36764;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.opengl.EXTTextureSnorm
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

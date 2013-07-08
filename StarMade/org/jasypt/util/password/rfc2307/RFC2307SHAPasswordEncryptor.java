@@ -1,39 +1,40 @@
-/*     */ package org.jasypt.util.password.rfc2307;
-/*     */ 
-/*     */ import org.jasypt.digest.StandardStringDigester;
-/*     */ import org.jasypt.util.password.PasswordEncryptor;
-/*     */ 
-/*     */ public final class RFC2307SHAPasswordEncryptor
-/*     */   implements PasswordEncryptor
-/*     */ {
-/*     */   private final StandardStringDigester digester;
-/*     */ 
-/*     */   public RFC2307SHAPasswordEncryptor()
-/*     */   {
-/*  62 */     this.digester = new StandardStringDigester();
-/*  63 */     this.digester.setAlgorithm("SHA-1");
-/*  64 */     this.digester.setIterations(1);
-/*  65 */     this.digester.setSaltSizeBytes(0);
-/*  66 */     this.digester.setPrefix("{SHA}");
-/*     */   }
-/*     */ 
-/*     */   public void setStringOutputType(String stringOutputType)
-/*     */   {
-/*  83 */     this.digester.setStringOutputType(stringOutputType);
-/*     */   }
-/*     */ 
-/*     */   public String encryptPassword(String password)
-/*     */   {
-/*  95 */     return this.digester.digest(password);
-/*     */   }
-/*     */ 
-/*     */   public boolean checkPassword(String plainPassword, String encryptedPassword)
-/*     */   {
-/* 110 */     return this.digester.matches(plainPassword, encryptedPassword);
-/*     */   }
-/*     */ }
+/*   1:    */package org.jasypt.util.password.rfc2307;
+/*   2:    */
+/*   3:    */import org.jasypt.digest.StandardStringDigester;
+/*   4:    */import org.jasypt.util.password.PasswordEncryptor;
+/*   5:    */
+/*  55:    */public final class RFC2307SHAPasswordEncryptor
+/*  56:    */  implements PasswordEncryptor
+/*  57:    */{
+/*  58:    */  private final StandardStringDigester digester;
+/*  59:    */  
+/*  60:    */  public RFC2307SHAPasswordEncryptor()
+/*  61:    */  {
+/*  62: 62 */    this.digester = new StandardStringDigester();
+/*  63: 63 */    this.digester.setAlgorithm("SHA-1");
+/*  64: 64 */    this.digester.setIterations(1);
+/*  65: 65 */    this.digester.setSaltSizeBytes(0);
+/*  66: 66 */    this.digester.setPrefix("{SHA}");
+/*  67:    */  }
+/*  68:    */  
+/*  81:    */  public void setStringOutputType(String stringOutputType)
+/*  82:    */  {
+/*  83: 83 */    this.digester.setStringOutputType(stringOutputType);
+/*  84:    */  }
+/*  85:    */  
+/*  93:    */  public String encryptPassword(String password)
+/*  94:    */  {
+/*  95: 95 */    return this.digester.digest(password);
+/*  96:    */  }
+/*  97:    */  
+/* 108:    */  public boolean checkPassword(String plainPassword, String encryptedPassword)
+/* 109:    */  {
+/* 110:110 */    return this.digester.matches(plainPassword, encryptedPassword);
+/* 111:    */  }
+/* 112:    */}
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.jasypt.util.password.rfc2307.RFC2307SHAPasswordEncryptor
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

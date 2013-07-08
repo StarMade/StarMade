@@ -29,12 +29,12 @@ public final class ResultMetaData
   public ColumnBase[] columns;
   public byte[] paramModes;
   public byte[] paramNullable;
-
+  
   private ResultMetaData(int paramInt)
   {
     this.type = paramInt;
   }
-
+  
   public static ResultMetaData newUpdateResultMetaData(Type[] paramArrayOfType)
   {
     ResultMetaData localResultMetaData = new ResultMetaData(3);
@@ -44,7 +44,7 @@ public final class ResultMetaData
     ArrayUtil.copyArray(paramArrayOfType, localResultMetaData.columnTypes, paramArrayOfType.length);
     return localResultMetaData;
   }
-
+  
   public static ResultMetaData newSimpleResultMetaData(Type[] paramArrayOfType)
   {
     ResultMetaData localResultMetaData = new ResultMetaData(2);
@@ -53,13 +53,13 @@ public final class ResultMetaData
     localResultMetaData.extendedColumnCount = paramArrayOfType.length;
     return localResultMetaData;
   }
-
+  
   public static ResultMetaData newResultMetaData(int paramInt)
   {
     Type[] arrayOfType = new Type[paramInt];
     return newResultMetaData(arrayOfType, null, paramInt, paramInt);
   }
-
+  
   public static ResultMetaData newSingleColumnMetaData(String paramString)
   {
     ResultMetaData localResultMetaData = newResultMetaData(1);
@@ -68,7 +68,7 @@ public final class ResultMetaData
     localResultMetaData.prepareData();
     return localResultMetaData;
   }
-
+  
   public static ResultMetaData newResultMetaData(Type[] paramArrayOfType, int[] paramArrayOfInt, int paramInt1, int paramInt2)
   {
     ResultMetaData localResultMetaData = new ResultMetaData(1);
@@ -80,7 +80,7 @@ public final class ResultMetaData
     localResultMetaData.extendedColumnCount = paramInt2;
     return localResultMetaData;
   }
-
+  
   public static ResultMetaData newParameterMetaData(int paramInt)
   {
     ResultMetaData localResultMetaData = new ResultMetaData(4);
@@ -92,7 +92,7 @@ public final class ResultMetaData
     localResultMetaData.extendedColumnCount = paramInt;
     return localResultMetaData;
   }
-
+  
   public static ResultMetaData newGeneratedColumnsMetaData(int[] paramArrayOfInt, String[] paramArrayOfString)
   {
     ResultMetaData localResultMetaData;
@@ -102,8 +102,9 @@ public final class ResultMetaData
       localResultMetaData.columnCount = paramArrayOfInt.length;
       localResultMetaData.extendedColumnCount = paramArrayOfInt.length;
       localResultMetaData.colIndexes = new int[paramArrayOfInt.length];
-      for (int i = 0; i < paramArrayOfInt.length; i++)
+      for (int i = 0; i < paramArrayOfInt.length; i++) {
         localResultMetaData.colIndexes[i] = (paramArrayOfInt[i] - 1);
+      }
       return localResultMetaData;
     }
     if (paramArrayOfString != null)
@@ -117,52 +118,55 @@ public final class ResultMetaData
     }
     return null;
   }
-
+  
   public void prepareData()
   {
-    if (this.columns != null)
-      for (int i = 0; i < this.columnCount; i++)
-        if (this.columnTypes[i] == null)
+    if (this.columns != null) {
+      for (int i = 0; i < this.columnCount; i++) {
+        if (this.columnTypes[i] == null) {
           this.columnTypes[i] = this.columns[i].getDataType();
+        }
+      }
+    }
   }
-
+  
   public int getColumnCount()
   {
     return this.columnCount;
   }
-
+  
   public int getExtendedColumnCount()
   {
     return this.extendedColumnCount;
   }
-
+  
   public void resetExtendedColumnCount()
   {
     this.extendedColumnCount = this.columnCount;
   }
-
+  
   public Type[] getParameterTypes()
   {
     return this.columnTypes;
   }
-
+  
   public String[] getGeneratedColumnNames()
   {
     return this.columnLabels;
   }
-
+  
   public int[] getGeneratedColumnIndexes()
   {
     return this.colIndexes;
   }
-
+  
   public boolean isTableColumn(int paramInt)
   {
     String str1 = this.columns[paramInt].getNameString();
     String str2 = this.columns[paramInt].getTableNameString();
     return (str2 != null) && (str2.length() > 0) && (str1 != null) && (str1.length() > 0);
   }
-
+  
   private static void decodeTableColumnAttrs(int paramInt, ColumnBase paramColumnBase)
   {
     paramColumnBase.setNullability((byte)(paramInt & 0x3));
@@ -170,32 +174,35 @@ public final class ResultMetaData
     paramColumnBase.setWriteable((paramInt & 0x8) != 0);
     paramColumnBase.setSearchable((paramInt & 0x10) != 0);
   }
-
+  
   private static int encodeTableColumnAttrs(ColumnBase paramColumnBase)
   {
     int i = paramColumnBase.getNullability();
-    if (paramColumnBase.isIdentity())
+    if (paramColumnBase.isIdentity()) {
       i |= 4;
-    if (paramColumnBase.isWriteable())
+    }
+    if (paramColumnBase.isWriteable()) {
       i |= 8;
-    if (paramColumnBase.isSearchable())
+    }
+    if (paramColumnBase.isSearchable()) {
       i |= 16;
+    }
     return i;
   }
-
+  
   private void decodeParamColumnAttrs(int paramInt1, int paramInt2)
   {
     this.paramNullable[paramInt2] = ((byte)(paramInt1 & 0x3));
     this.paramModes[paramInt2] = ((byte)(paramInt1 >> 4 & 0xF));
   }
-
+  
   private int encodeParamColumnAttrs(int paramInt)
   {
     int i = this.paramModes[paramInt] << 4;
     i |= this.paramNullable[paramInt];
     return i;
   }
-
+  
   ResultMetaData(RowInputBinary paramRowInputBinary)
     throws IOException
   {
@@ -204,23 +211,26 @@ public final class ResultMetaData
     int i;
     switch (this.type)
     {
-    case 2:
-    case 3:
+    case 2: 
+    case 3: 
       this.columnTypes = new Type[this.columnCount];
-      for (i = 0; i < this.columnCount; i++)
+      for (i = 0; i < this.columnCount; i++) {
         this.columnTypes[i] = readDataTypeSimple(paramRowInputBinary);
+      }
       return;
-    case 5:
+    case 5: 
       this.colIndexes = new int[this.columnCount];
-      for (i = 0; i < this.columnCount; i++)
+      for (i = 0; i < this.columnCount; i++) {
         this.colIndexes[i] = paramRowInputBinary.readInt();
+      }
       return;
-    case 6:
+    case 6: 
       this.columnLabels = new String[this.columnCount];
-      for (i = 0; i < this.columnCount; i++)
+      for (i = 0; i < this.columnCount; i++) {
         this.columnLabels[i] = paramRowInputBinary.readString();
+      }
       return;
-    case 4:
+    case 4: 
       this.columnTypes = new Type[this.columnCount];
       this.columnLabels = new String[this.columnCount];
       this.paramModes = new byte[this.columnCount];
@@ -232,13 +242,14 @@ public final class ResultMetaData
         decodeParamColumnAttrs(paramRowInputBinary.readByte(), i);
       }
       return;
-    case 1:
+    case 1: 
       this.extendedColumnCount = paramRowInputBinary.readInt();
       this.columnTypes = new Type[this.extendedColumnCount];
       this.columnLabels = new String[this.columnCount];
       this.columns = new ColumnBase[this.columnCount];
-      if (this.columnCount != this.extendedColumnCount)
+      if (this.columnCount != this.extendedColumnCount) {
         this.colIndexes = new int[this.columnCount];
+      }
       Object localObject;
       for (i = 0; i < this.extendedColumnCount; i++)
       {
@@ -257,14 +268,16 @@ public final class ResultMetaData
         decodeTableColumnAttrs(paramRowInputBinary.readByte(), localColumnBase);
         this.columns[i] = localColumnBase;
       }
-      if (this.columnCount != this.extendedColumnCount)
-        for (i = 0; i < this.columnCount; i++)
+      if (this.columnCount != this.extendedColumnCount) {
+        for (i = 0; i < this.columnCount; i++) {
           this.colIndexes[i] = paramRowInputBinary.readInt();
+        }
+      }
       return;
     }
     throw Error.runtimeError(201, "ResultMetaData");
   }
-
+  
   Type readDataTypeSimple(RowInputBinary paramRowInputBinary)
     throws IOException
   {
@@ -277,38 +290,42 @@ public final class ResultMetaData
     }
     return Type.getDefaultType(i);
   }
-
+  
   Type readDataType(RowInputBinary paramRowInputBinary)
     throws IOException
   {
     int i = paramRowInputBinary.readType();
     int j = i == 50 ? 1 : 0;
-    if (j != 0)
+    if (j != 0) {
       i = paramRowInputBinary.readType();
+    }
     long l = paramRowInputBinary.readLong();
     int k = paramRowInputBinary.readInt();
     Object localObject = Type.getType(i, Type.SQL_VARCHAR.getCharacterSet(), Type.SQL_VARCHAR.getCollation(), l, k);
-    if (j != 0)
+    if (j != 0) {
       localObject = new ArrayType((Type)localObject, 1024);
+    }
     return localObject;
   }
-
+  
   void writeDataType(RowOutputInterface paramRowOutputInterface, Type paramType)
   {
     paramRowOutputInterface.writeType(paramType.typeCode);
-    if (paramType.isArrayType())
+    if (paramType.isArrayType()) {
       paramRowOutputInterface.writeType(paramType.collectionBaseType().typeCode);
+    }
     paramRowOutputInterface.writeLong(paramType.precision);
     paramRowOutputInterface.writeInt(paramType.scale);
   }
-
+  
   void writeDataTypeCodes(RowOutputInterface paramRowOutputInterface, Type paramType)
   {
     paramRowOutputInterface.writeType(paramType.typeCode);
-    if (paramType.isArrayType())
+    if (paramType.isArrayType()) {
       paramRowOutputInterface.writeType(paramType.collectionBaseType().typeCode);
+    }
   }
-
+  
   void write(RowOutputInterface paramRowOutputInterface)
     throws IOException
   {
@@ -317,20 +334,23 @@ public final class ResultMetaData
     int i;
     switch (this.type)
     {
-    case 2:
-    case 3:
-      for (i = 0; i < this.columnCount; i++)
+    case 2: 
+    case 3: 
+      for (i = 0; i < this.columnCount; i++) {
         writeDataTypeCodes(paramRowOutputInterface, this.columnTypes[i]);
+      }
       return;
-    case 5:
-      for (i = 0; i < this.columnCount; i++)
+    case 5: 
+      for (i = 0; i < this.columnCount; i++) {
         paramRowOutputInterface.writeInt(this.colIndexes[i]);
+      }
       return;
-    case 6:
-      for (i = 0; i < this.columnCount; i++)
+    case 6: 
+      for (i = 0; i < this.columnCount; i++) {
         paramRowOutputInterface.writeString(this.columnLabels[i]);
+      }
       return;
-    case 4:
+    case 4: 
       for (i = 0; i < this.columnCount; i++)
       {
         writeDataType(paramRowOutputInterface, this.columnTypes[i]);
@@ -338,7 +358,7 @@ public final class ResultMetaData
         paramRowOutputInterface.writeByte(encodeParamColumnAttrs(i));
       }
       return;
-    case 1:
+    case 1: 
       paramRowOutputInterface.writeInt(this.extendedColumnCount);
       ColumnBase localColumnBase;
       for (i = 0; i < this.extendedColumnCount; i++)
@@ -360,14 +380,16 @@ public final class ResultMetaData
         paramRowOutputInterface.writeString(localColumnBase.getNameString());
         paramRowOutputInterface.writeByte(encodeTableColumnAttrs(localColumnBase));
       }
-      if (this.columnCount != this.extendedColumnCount)
-        for (i = 0; i < this.colIndexes.length; i++)
+      if (this.columnCount != this.extendedColumnCount) {
+        for (i = 0; i < this.colIndexes.length; i++) {
           paramRowOutputInterface.writeInt(this.colIndexes[i]);
+        }
+      }
       return;
     }
     throw Error.runtimeError(201, "ResultMetaData");
   }
-
+  
   public ResultMetaData getNewMetaData(int[] paramArrayOfInt)
   {
     ResultMetaData localResultMetaData = newResultMetaData(paramArrayOfInt.length);
@@ -376,19 +398,23 @@ public final class ResultMetaData
     ArrayUtil.projectRow(this.columns, paramArrayOfInt, localResultMetaData.columns);
     return localResultMetaData;
   }
-
+  
   public boolean areTypesCompatible(ResultMetaData paramResultMetaData)
   {
-    if (this.columnCount != paramResultMetaData.columnCount)
+    if (this.columnCount != paramResultMetaData.columnCount) {
       return false;
-    for (int i = 0; i < this.columnCount; i++)
-      if (!this.columnTypes[i].canConvertFrom(paramResultMetaData.columnTypes[i]))
+    }
+    for (int i = 0; i < this.columnCount; i++) {
+      if (!this.columnTypes[i].canConvertFrom(paramResultMetaData.columnTypes[i])) {
         return false;
+      }
+    }
     return true;
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.result.ResultMetaData
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

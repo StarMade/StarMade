@@ -8,7 +8,8 @@ public final class EXTPackedDepthStencil
   public static final int GL_TEXTURE_STENCIL_SIZE_EXT = 35057;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.opengl.EXTPackedDepthStencil
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

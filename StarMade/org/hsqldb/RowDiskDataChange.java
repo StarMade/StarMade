@@ -9,7 +9,8 @@ import org.hsqldb.rowio.RowOutputInterface;
 import org.hsqldb.types.ArrayType;
 import org.hsqldb.types.Type;
 
-public class RowDiskDataChange extends RowAVLDisk
+public class RowDiskDataChange
+  extends RowAVLDisk
 {
   public static final int COL_POS_ROW_NUM = 0;
   public static final int COL_POS_ROW_ID = 1;
@@ -21,13 +22,13 @@ public class RowDiskDataChange extends RowAVLDisk
   Table targetTable;
   Object[] updateData;
   int[] updateColMap;
-
+  
   public RowDiskDataChange(TableBase paramTableBase, Object[] paramArrayOfObject, PersistentStore paramPersistentStore, Table paramTable)
   {
     super(paramTableBase, paramArrayOfObject, paramPersistentStore);
     this.targetTable = paramTable;
   }
-
+  
   public RowDiskDataChange(Session paramSession, TableBase paramTableBase, RowInputInterface paramRowInputInterface)
     throws IOException
   {
@@ -37,10 +38,11 @@ public class RowDiskDataChange extends RowAVLDisk
     {
       this.updateData = paramRowInputInterface.readData(this.targetTable.colTypes);
       RowInputBinary localRowInputBinary = (RowInputBinary)paramRowInputInterface;
-      if (localRowInputBinary.readNull())
+      if (localRowInputBinary.readNull()) {
         this.updateColMap = null;
-      else
+      } else {
         this.updateColMap = localRowInputBinary.readIntArray();
+      }
     }
     else
     {
@@ -48,7 +50,7 @@ public class RowDiskDataChange extends RowAVLDisk
       this.updateColMap = null;
     }
   }
-
+  
   public void write(RowOutputInterface paramRowOutputInterface)
   {
     writeNodes(paramRowOutputInterface);
@@ -60,41 +62,42 @@ public class RowDiskDataChange extends RowAVLDisk
         Type[] arrayOfType = this.targetTable.colTypes;
         paramRowOutputInterface.writeData(arrayOfType.length, arrayOfType, this.updateData, null, null);
         RowOutputBinary localRowOutputBinary = (RowOutputBinary)paramRowOutputInterface;
-        if (this.updateColMap == null)
+        if (this.updateColMap == null) {
           localRowOutputBinary.writeNull(Type.SQL_ARRAY_ALL_TYPES);
-        else
+        } else {
           localRowOutputBinary.writeArray(this.updateColMap);
+        }
       }
       paramRowOutputInterface.writeEnd();
       this.hasDataChanged = false;
     }
   }
-
+  
   public Object[] getUpdateData()
   {
     return this.updateData;
   }
-
+  
   public int[] getUpdateColumnMap()
   {
     return this.updateColMap;
   }
-
+  
   public void setTargetTable(Table paramTable)
   {
     this.targetTable = paramTable;
   }
-
+  
   public void setUpdateData(Object[] paramArrayOfObject)
   {
     this.updateData = paramArrayOfObject;
   }
-
+  
   public void setUpdateColumnMap(int[] paramArrayOfInt)
   {
     this.updateColMap = paramArrayOfInt;
   }
-
+  
   public int getRealSize(RowOutputInterface paramRowOutputInterface)
   {
     RowOutputBinary localRowOutputBinary = (RowOutputBinary)paramRowOutputInterface;
@@ -102,14 +105,16 @@ public class RowDiskDataChange extends RowAVLDisk
     if (this.updateData != null)
     {
       i += localRowOutputBinary.getSize(this.updateData, this.targetTable.getColumnCount(), this.targetTable.getColumnTypes());
-      if (this.updateColMap != null)
+      if (this.updateColMap != null) {
         i += localRowOutputBinary.getSize(this.updateColMap);
+      }
     }
     return i;
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.RowDiskDataChange
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

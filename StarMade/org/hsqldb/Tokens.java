@@ -1648,49 +1648,51 @@ public class Tokens
   public static final short[] SQL_INTERVAL_FIELD_CODES;
   public static final String[] SQL_INTERVAL_FIELD_NAMES;
   private static final IntKeyHashMap sqlTSILookup;
-
+  
   static int get(String paramString)
   {
     int i = reservedKeys.get(paramString, -1);
-    if (i == -1)
+    if (i == -1) {
       return commandSet.get(paramString, -1);
+    }
     return i;
   }
-
+  
   public static boolean isCoreKeyword(int paramInt)
   {
     return coreReservedWords.contains(paramInt);
   }
-
+  
   public static boolean isKeyword(String paramString)
   {
     return reservedKeys.containsKey(paramString);
   }
-
+  
   public static int getKeywordID(String paramString, int paramInt)
   {
     return reservedKeys.get(paramString, paramInt);
   }
-
+  
   public static int getNonKeywordID(String paramString, int paramInt)
   {
     return commandSet.get(paramString, paramInt);
   }
-
+  
   public static String getKeyword(int paramInt)
   {
     String str = (String)reservedKeys.getKey(paramInt);
-    if (str != null)
+    if (str != null) {
       return str;
+    }
     str = (String)commandSet.getKey(paramInt);
     return str;
   }
-
+  
   public static String getSQLTSIString(int paramInt)
   {
     return (String)sqlTSILookup.get(paramInt);
   }
-
+  
   static
   {
     reservedKeys.put("ABS", 1);
@@ -2371,8 +2373,9 @@ public class Tokens
     commandSet.put(";", 791);
     coreReservedWords = new OrderedIntHashSet(128);
     short[] arrayOfShort = { 10, 5, 2, 6, 13, 16, 24, 18, 23, 25, 29, 30, 51, 49, 52, 40, 55, 56, 78, 85, 86, 88, 92, 97, 101, 98, 112, 115, 116, 121, 122, 125, 141, 142, 130, 138, 144, 132, 153, 151, 154, 163, 168, 176, 187, 183, 194, 198, 197, 200, 214, 222, 240, 251, 254, 258, 269, 270, 274, 278, 280, 285, 286, 291, 298, 299, 306, 308, 309, 310, 314, 316, 319 };
-    for (int i = 0; i < arrayOfShort.length; i++)
+    for (int i = 0; i < arrayOfShort.length; i++) {
       coreReservedWords.add(arrayOfShort[i]);
+    }
     SQL_INTERVAL_FIELD_CODES = new short[] { 323, 173, 73, 127, 169, 250 };
     SQL_INTERVAL_FIELD_NAMES = new String[] { "YEAR", "MONTH", "DAY", "HOUR", "MINUTE", "SECOND" };
     sqlTSILookup = new IntKeyHashMap(10);
@@ -2389,7 +2392,8 @@ public class Tokens
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.Tokens
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

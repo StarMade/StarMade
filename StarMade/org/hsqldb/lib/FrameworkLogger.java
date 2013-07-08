@@ -26,12 +26,12 @@ public class FrameworkLogger
   private Object log4jLogger;
   private Logger jdkLogger;
   private static boolean noopMode;
-
+  
   public static String report()
   {
     return loggerInstances.size() + " logger instances:  " + loggerInstances.keySet();
   }
-
+  
   public static synchronized void clearLoggers(String paramString)
   {
     HashSet localHashSet = new HashSet();
@@ -40,12 +40,13 @@ public class FrameworkLogger
     while (localIterator.hasNext())
     {
       String str1 = (String)localIterator.next();
-      if ((str1.equals(paramString)) || (str1.startsWith(str2)))
+      if ((str1.equals(paramString)) || (str1.startsWith(str2))) {
         localHashSet.add(str1);
+      }
     }
     loggerInstances.keySet().removeAll(localHashSet);
   }
-
+  
   static void reconfigure()
   {
     noopMode = false;
@@ -58,10 +59,8 @@ public class FrameworkLogger
     {
       localClass = Class.forName("org.apache.log4j.Logger");
     }
-    catch (Exception localException1)
-    {
-    }
-    if (localClass != null)
+    catch (Exception localException1) {}
+    if (localClass != null) {
       try
       {
         if (jdkToLog4jLevels.size() < 1)
@@ -86,16 +85,16 @@ public class FrameworkLogger
         {
           System.err.println("<clinit> failure instantiating configured Log4j system: " + localException2);
         }
-        catch (Throwable localThrowable)
-        {
-        }
+        catch (Throwable localThrowable) {}
       }
+    }
     localClass = null;
     log4jLogMethod = null;
     log4jGetLogger = null;
     String str = System.getProperty("hsqldb.reconfig_logging");
-    if ((str != null) && (str.equalsIgnoreCase("false")))
+    if ((str != null) && (str.equalsIgnoreCase("false"))) {
       return;
+    }
     try
     {
       LogManager localLogManager = LogManager.getLogManager();
@@ -122,13 +121,13 @@ public class FrameworkLogger
       localException3.printStackTrace();
     }
   }
-
+  
   private FrameworkLogger(String paramString)
   {
-    if (!noopMode)
-      if (log4jGetLogger == null)
+    if (!noopMode) {
+      if (log4jGetLogger == null) {
         this.jdkLogger = Logger.getLogger(paramString);
-      else
+      } else {
         try
         {
           this.log4jLogger = log4jGetLogger.invoke(null, new Object[] { paramString });
@@ -137,49 +136,54 @@ public class FrameworkLogger
         {
           throw new RuntimeException("Failed to instantiate Log4j Logger", localException);
         }
+      }
+    }
     loggerInstances.put(paramString, this);
   }
-
+  
   public static FrameworkLogger getLog(Class paramClass)
   {
     return getLog(paramClass.getName());
   }
-
+  
   public static FrameworkLogger getLog(Class paramClass, String paramString)
   {
     return paramString == null ? getLog(paramClass) : getLog(paramString + '.' + paramClass.getName());
   }
-
+  
   public static FrameworkLogger getLog(String paramString1, String paramString2)
   {
     return paramString2 == null ? getLog(paramString1) : getLog(paramString2 + '.' + paramString1);
   }
-
+  
   public static FrameworkLogger getLog(String paramString)
   {
-    if (loggerInstances.containsKey(paramString))
+    if (loggerInstances.containsKey(paramString)) {
       return (FrameworkLogger)loggerInstances.get(paramString);
+    }
     return new FrameworkLogger(paramString);
   }
-
+  
   public void log(Level paramLevel, String paramString, Throwable paramThrowable)
   {
     privlog(paramLevel, paramString, paramThrowable, 2, FrameworkLogger.class);
   }
-
+  
   public void privlog(Level paramLevel, String paramString, Throwable paramThrowable, int paramInt, Class paramClass)
   {
-    if (noopMode)
+    if (noopMode) {
       return;
+    }
     if (this.log4jLogger == null)
     {
       StackTraceElement[] arrayOfStackTraceElement = new Throwable().getStackTrace();
       String str1 = arrayOfStackTraceElement[paramInt].getClassName();
       String str2 = arrayOfStackTraceElement[paramInt].getMethodName();
-      if (paramThrowable == null)
+      if (paramThrowable == null) {
         this.jdkLogger.logp(paramLevel, str1, str2, paramString);
-      else
+      } else {
         this.jdkLogger.logp(paramLevel, str1, str2, paramString, paramThrowable);
+      }
     }
     else
     {
@@ -193,11 +197,12 @@ public class FrameworkLogger
       }
     }
   }
-
+  
   public void enduserlog(Level paramLevel, String paramString)
   {
-    if (noopMode)
+    if (noopMode) {
       return;
+    }
     if (this.log4jLogger == null)
     {
       String str1 = FrameworkLogger.class.getName();
@@ -216,77 +221,78 @@ public class FrameworkLogger
       }
     }
   }
-
+  
   public void log(Level paramLevel, String paramString)
   {
     privlog(paramLevel, paramString, null, 2, FrameworkLogger.class);
   }
-
+  
   public void finer(String paramString)
   {
     privlog(Level.FINER, paramString, null, 2, FrameworkLogger.class);
   }
-
+  
   public void warning(String paramString)
   {
     privlog(Level.WARNING, paramString, null, 2, FrameworkLogger.class);
   }
-
+  
   public void severe(String paramString)
   {
     privlog(Level.SEVERE, paramString, null, 2, FrameworkLogger.class);
   }
-
+  
   public void info(String paramString)
   {
     privlog(Level.INFO, paramString, null, 2, FrameworkLogger.class);
   }
-
+  
   public void finest(String paramString)
   {
     privlog(Level.FINEST, paramString, null, 2, FrameworkLogger.class);
   }
-
+  
   public void error(String paramString)
   {
     privlog(Level.WARNING, paramString, null, 2, FrameworkLogger.class);
   }
-
+  
   public void finer(String paramString, Throwable paramThrowable)
   {
     privlog(Level.FINER, paramString, paramThrowable, 2, FrameworkLogger.class);
   }
-
+  
   public void warning(String paramString, Throwable paramThrowable)
   {
     privlog(Level.WARNING, paramString, paramThrowable, 2, FrameworkLogger.class);
   }
-
+  
   public void severe(String paramString, Throwable paramThrowable)
   {
     privlog(Level.SEVERE, paramString, paramThrowable, 2, FrameworkLogger.class);
   }
-
+  
   public void info(String paramString, Throwable paramThrowable)
   {
     privlog(Level.INFO, paramString, paramThrowable, 2, FrameworkLogger.class);
   }
-
+  
   public void finest(String paramString, Throwable paramThrowable)
   {
     privlog(Level.FINEST, paramString, paramThrowable, 2, FrameworkLogger.class);
   }
-
+  
   public void error(String paramString, Throwable paramThrowable)
   {
     privlog(Level.WARNING, paramString, paramThrowable, 2, FrameworkLogger.class);
   }
-
+  
   public static boolean isDefaultJdkConfig()
   {
     File localFile = new File(System.getProperty("java.home"), "lib/logging.properties");
-    if (!localFile.isFile())
+    if (!localFile.isFile()) {
       return false;
+    }
     FileInputStream localFileInputStream = null;
     LogManager localLogManager = LogManager.getLogManager();
     try
@@ -322,30 +328,28 @@ public class FrameworkLogger
     }
     finally
     {
-      if (localFileInputStream != null)
+      if (localFileInputStream != null) {
         try
         {
           localFileInputStream.close();
         }
-        catch (IOException localIOException6)
-        {
-        }
+        catch (IOException localIOException6) {}
+      }
     }
   }
-
+  
   static
   {
     try
     {
       reconfigure();
     }
-    catch (SecurityException localSecurityException)
-    {
-    }
+    catch (SecurityException localSecurityException) {}
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.lib.FrameworkLogger
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

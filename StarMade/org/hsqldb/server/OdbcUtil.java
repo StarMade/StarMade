@@ -30,7 +30,7 @@ public class OdbcUtil
   static final int ODBC_SEVERITY_INFO = 7;
   static final int ODBC_SEVERITY_LOG = 8;
   static IntKeyHashMap odbcSeverityMap = new IntKeyHashMap();
-
+  
   static void validateInputPacketSize(OdbcPacketInputStream paramOdbcPacketInputStream)
     throws RecoverableOdbcFailure
   {
@@ -39,18 +39,17 @@ public class OdbcUtil
     {
       i = paramOdbcPacketInputStream.available();
     }
-    catch (IOException localIOException)
-    {
-    }
-    if (i < 1)
+    catch (IOException localIOException) {}
+    if (i < 1) {
       return;
+    }
     throw new RecoverableOdbcFailure("Client supplied bad length for " + paramOdbcPacketInputStream.packetType + " packet.  " + i + " bytes available after processing", "Bad length for " + paramOdbcPacketInputStream.packetType + " packet.  " + i + " extra bytes", "08P01");
   }
-
+  
   static String echoBackReplyString(String paramString, int paramInt)
   {
     String str1 = paramString.trim().toUpperCase(Locale.ENGLISH);
-    for (int i = 0; (i < str1.length()) && (!Character.isWhitespace(str1.charAt(i))); i++);
+    for (int i = 0; (i < str1.length()) && (!Character.isWhitespace(str1.charAt(i))); i++) {}
     StringBuffer localStringBuffer = new StringBuffer(str1.substring(0, i));
     String str2 = localStringBuffer.toString();
     if ((str2.equals("UPDATE")) || (str2.equals("DELETE")))
@@ -59,8 +58,8 @@ public class OdbcUtil
     }
     else if ((str2.equals("CREATE")) || (str2.equals("DROP")))
     {
-      for (int j = i; (j < str1.length()) && (Character.isWhitespace(str1.charAt(j))); j++);
-      for (int k = j; (k < str1.length()) && (Character.isWhitespace(str1.charAt(k))); k++);
+      for (int j = i; (j < str1.length()) && (Character.isWhitespace(str1.charAt(j))); j++) {}
+      for (int k = j; (k < str1.length()) && (Character.isWhitespace(str1.charAt(k))); k++) {}
       localStringBuffer.append(" " + str1.substring(j, k));
     }
     else if (str2.equals("INSERT"))
@@ -69,7 +68,7 @@ public class OdbcUtil
     }
     return localStringBuffer.toString();
   }
-
+  
   static void writeParam(String paramString1, String paramString2, DataOutputStream paramDataOutputStream)
     throws IOException
   {
@@ -79,84 +78,94 @@ public class OdbcUtil
     localOdbcPacketOutputStream.xmit('S', paramDataOutputStream);
     localOdbcPacketOutputStream.close();
   }
-
+  
   static void alertClient(int paramInt, String paramString, DataOutputStream paramDataOutputStream)
     throws IOException
   {
     alertClient(paramInt, paramString, null, paramDataOutputStream);
   }
-
+  
   static void alertClient(int paramInt, String paramString1, String paramString2, DataOutputStream paramDataOutputStream)
     throws IOException
   {
-    if (paramString2 == null)
+    if (paramString2 == null) {
       paramString2 = "XX000";
-    if (!odbcSeverityMap.containsKey(paramInt))
+    }
+    if (!odbcSeverityMap.containsKey(paramInt)) {
       throw new IllegalArgumentException("Unknown severity value (" + paramInt + ')');
+    }
     OdbcPacketOutputStream localOdbcPacketOutputStream = OdbcPacketOutputStream.newOdbcPacketOutputStream();
     localOdbcPacketOutputStream.write("S" + odbcSeverityMap.get(paramInt));
-    if (paramInt < 5)
+    if (paramInt < 5) {
       localOdbcPacketOutputStream.write("C" + paramString2);
+    }
     localOdbcPacketOutputStream.write("M" + paramString1);
     localOdbcPacketOutputStream.writeByte(0);
     localOdbcPacketOutputStream.xmit(paramInt < 5 ? 'E' : 'N', paramDataOutputStream);
     localOdbcPacketOutputStream.close();
   }
-
+  
   static String revertMungledPreparedQuery(String paramString)
   {
     return paramString.replaceAll("\\$\\d+", "?");
   }
-
+  
   public static int getTableOidForColumn(int paramInt, ResultMetaData paramResultMetaData)
   {
-    if (!paramResultMetaData.isTableColumn(paramInt))
+    if (!paramResultMetaData.isTableColumn(paramInt)) {
       return 0;
+    }
     ColumnBase localColumnBase = paramResultMetaData.columns[paramInt];
     int i = (localColumnBase.getSchemaNameString() + '.' + localColumnBase.getTableNameString()).hashCode();
-    if (i < 0)
+    if (i < 0) {
       i *= -1;
+    }
     return i;
   }
-
+  
   public static short getIdForColumn(int paramInt, ResultMetaData paramResultMetaData)
   {
-    if (!paramResultMetaData.isTableColumn(paramInt))
+    if (!paramResultMetaData.isTableColumn(paramInt)) {
       return 0;
+    }
     short s = (short)paramResultMetaData.getGeneratedColumnNames()[paramInt].hashCode();
-    if (s < 0)
+    if (s < 0) {
       s = (short)(s * -1);
+    }
     return s;
   }
-
+  
   public static String hexCharsToOctalOctets(String paramString)
   {
     int i = paramString.length();
-    if (i != i / 2 * 2)
+    if (i != i / 2 * 2) {
       throw new IllegalArgumentException("Hex character lists contains an odd number of characters: " + i);
+    }
     StringBuffer localStringBuffer = new StringBuffer();
     for (int k = 0; k < i; k++)
     {
       int j = 0;
       char c = paramString.charAt(k);
-      if ((c >= 'a') && (c <= 'f'))
+      if ((c >= 'a') && (c <= 'f')) {
         j += '\n' + c - 97;
-      else if ((c >= 'A') && (c <= 'F'))
+      } else if ((c >= 'A') && (c <= 'F')) {
         j += '\n' + c - 65;
-      else if ((c >= '0') && (c <= '9'))
+      } else if ((c >= '0') && (c <= '9')) {
         j += c - '0';
-      else
+      } else {
         throw new IllegalArgumentException("Non-hex character in input at offset " + k + ": " + c);
+      }
       j <<= 4;
       c = paramString.charAt(++k);
-      if ((c >= 'a') && (c <= 'f'))
+      if ((c >= 'a') && (c <= 'f')) {
         j += '\n' + c - 97;
-      else if ((c >= 'A') && (c <= 'F'))
+      } else if ((c >= 'A') && (c <= 'F')) {
         j += '\n' + c - 65;
-      else if ((c >= '0') && (c <= '9'))
+      } else if ((c >= '0') && (c <= '9')) {
         j += c - '0';
-      else
+      } else {
         throw new IllegalArgumentException("Non-hex character in input at offset " + k + ": " + c);
+      }
       localStringBuffer.append('\\');
       localStringBuffer.append((char)(48 + (j >> 6)));
       localStringBuffer.append((char)(48 + (j >> 3 & 0x7)));
@@ -164,12 +173,12 @@ public class OdbcUtil
     }
     return localStringBuffer.toString();
   }
-
+  
   public static void main(String[] paramArrayOfString)
   {
     System.out.println("(" + hexCharsToOctalOctets(paramArrayOfString[0]) + ')');
   }
-
+  
   static
   {
     odbcSeverityMap.put(1, "FATAL");
@@ -183,7 +192,8 @@ public class OdbcUtil
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.server.OdbcUtil
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

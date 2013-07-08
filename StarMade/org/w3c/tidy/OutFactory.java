@@ -17,14 +17,15 @@ public final class OutFactory
       throw new RuntimeException("Unsupported encoding: " + localUnsupportedEncodingException.getMessage());
     }
   }
-
+  
   public static Out getOut(Configuration paramConfiguration, Writer paramWriter)
   {
     return new OutJavaImpl(paramConfiguration, paramWriter);
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.w3c.tidy.OutFactory
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

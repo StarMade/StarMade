@@ -16,18 +16,19 @@ import org.hsqldb.persist.Crypto;
 import org.hsqldb.persist.Logger;
 import org.hsqldb.rowio.RowInputTextLog;
 
-public class ScriptReaderDecode extends ScriptReaderText
+public class ScriptReaderDecode
+  extends ScriptReaderText
 {
   DataInputStream dataInput;
   Crypto crypto;
   byte[] buffer = new byte[256];
-
+  
   public ScriptReaderDecode(Database paramDatabase, String paramString, Crypto paramCrypto, boolean paramBoolean)
     throws IOException
   {
     this(paramDatabase, paramDatabase.logger.getFileAccess().openInputStreamElement(paramString), paramCrypto, paramBoolean);
   }
-
+  
   public ScriptReaderDecode(Database paramDatabase, InputStream paramInputStream, Crypto paramCrypto, boolean paramBoolean)
     throws IOException
   {
@@ -45,16 +46,18 @@ public class ScriptReaderDecode extends ScriptReaderText
       this.dataStreamIn = new LineReader((InputStream)localObject, "ISO-8859-1");
     }
   }
-
+  
   public boolean readLoggedStatement(Session paramSession)
   {
-    if (this.dataInput == null)
+    if (this.dataInput == null) {
       return super.readLoggedStatement(paramSession);
+    }
     try
     {
       i = this.dataInput.readInt();
-      if (i * 2 > this.buffer.length)
+      if (i * 2 > this.buffer.length) {
         this.buffer = new byte[i * 2];
+      }
       this.dataInput.readFully(this.buffer, 0, i);
     }
     catch (Throwable localThrowable)
@@ -73,28 +76,30 @@ public class ScriptReaderDecode extends ScriptReaderText
     }
     this.lineCount += 1;
     this.statement = StringConverter.unicodeStringToString(str);
-    if (this.statement == null)
+    if (this.statement == null) {
       return false;
+    }
     processStatement(paramSession);
     return true;
   }
-
+  
   public void close()
   {
     try
     {
-      if (this.dataStreamIn != null)
+      if (this.dataStreamIn != null) {
         this.dataStreamIn.close();
-      if (this.dataInput != null)
+      }
+      if (this.dataInput != null) {
         this.dataInput.close();
+      }
     }
-    catch (Exception localException)
-    {
-    }
+    catch (Exception localException) {}
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.scriptio.ScriptReaderDecode
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -9,16 +9,17 @@ import java.lang.annotation.Target;
 @Target({java.lang.annotation.ElementType.TYPE})
 public @interface MappedType
 {
-  public abstract int padding();
-
-  public abstract boolean cacheLinePadding();
-
-  public abstract int align();
-
-  public abstract boolean autoGenerateOffsets();
+  int padding() default 0;
+  
+  boolean cacheLinePadding() default false;
+  
+  int align() default 4;
+  
+  boolean autoGenerateOffsets() default true;
 }
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.util.mapped.MappedType
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

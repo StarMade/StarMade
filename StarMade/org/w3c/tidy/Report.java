@@ -11,7 +11,7 @@ import java.util.ResourceBundle;
 public final class Report
 {
   public static final String ACCESS_URL = "http://www.w3.org/WAI/GL";
-  public static final String RELEASE_DATE_STRING = readReleaseDate();
+  public static final String RELEASE_DATE_STRING = ;
   public static final short MISSING_SEMICOLON = 1;
   public static final short MISSING_SEMICOLON_NCR = 2;
   public static final short UNKNOWN_ENTITY = 3;
@@ -120,7 +120,7 @@ public final class Report
   private static ResourceBundle res;
   private String currentFile;
   private TidyMessageListener listener;
-
+  
   private static String readReleaseDate()
   {
     Properties localProperties = new Properties();
@@ -136,28 +136,31 @@ public final class Report
     }
     return localProperties.getProperty("date");
   }
-
+  
   protected String getMessage(int paramInt, Lexer paramLexer, String paramString, Object[] paramArrayOfObject, TidyMessage.Level paramLevel)
     throws MissingResourceException
   {
     String str1 = res.getString(paramString);
     String str2;
-    if ((paramLexer != null) && (paramLevel != TidyMessage.Level.SUMMARY))
+    if ((paramLexer != null) && (paramLevel != TidyMessage.Level.SUMMARY)) {
       str2 = getPosition(paramLexer);
-    else
+    } else {
       str2 = "";
+    }
     String str3;
-    if (paramLevel == TidyMessage.Level.ERROR)
+    if (paramLevel == TidyMessage.Level.ERROR) {
       str3 = res.getString("error");
-    else if (paramLevel == TidyMessage.Level.WARNING)
+    } else if (paramLevel == TidyMessage.Level.WARNING) {
       str3 = res.getString("warning");
-    else
+    } else {
       str3 = "";
+    }
     String str4;
-    if (paramArrayOfObject != null)
+    if (paramArrayOfObject != null) {
       str4 = MessageFormat.format(str1, paramArrayOfObject);
-    else
+    } else {
       str4 = str1;
+    }
     if (this.listener != null)
     {
       TidyMessage localTidyMessage = new TidyMessage(paramInt, paramLexer != null ? paramLexer.lines : 0, paramLexer != null ? paramLexer.columns : 0, paramLevel, str4);
@@ -165,7 +168,7 @@ public final class Report
     }
     return str2 + str3 + str4;
   }
-
+  
   private void printMessage(int paramInt, Lexer paramLexer, String paramString, Object[] paramArrayOfObject, TidyMessage.Level paramLevel)
   {
     String str;
@@ -180,7 +183,7 @@ public final class Report
     }
     paramLexer.errout.println(str);
   }
-
+  
   private void printMessage(PrintWriter paramPrintWriter, String paramString, Object[] paramArrayOfObject, TidyMessage.Level paramLevel)
   {
     String str;
@@ -195,29 +198,33 @@ public final class Report
     }
     paramPrintWriter.println(str);
   }
-
+  
   public void showVersion(PrintWriter paramPrintWriter)
   {
     printMessage(paramPrintWriter, "version_summary", new Object[] { RELEASE_DATE_STRING }, TidyMessage.Level.SUMMARY);
   }
-
+  
   private String getTagName(Node paramNode)
   {
     if (paramNode != null)
     {
-      if (paramNode.type == 5)
+      if (paramNode.type == 5) {
         return "<" + paramNode.element + ">";
-      if (paramNode.type == 6)
+      }
+      if (paramNode.type == 6) {
         return "</" + paramNode.element + ">";
-      if (paramNode.type == 1)
+      }
+      if (paramNode.type == 1) {
         return "<!DOCTYPE>";
-      if (paramNode.type == 4)
+      }
+      if (paramNode.type == 4) {
         return "plain text";
+      }
       return paramNode.element;
     }
     return "";
   }
-
+  
   public void unknownOption(String paramString)
   {
     try
@@ -229,7 +236,7 @@ public final class Report
       System.err.println(localMissingResourceException.toString());
     }
   }
-
+  
   public void badArgument(String paramString1, String paramString2)
   {
     try
@@ -241,13 +248,14 @@ public final class Report
       System.err.println(localMissingResourceException.toString());
     }
   }
-
+  
   private String getPosition(Lexer paramLexer)
   {
     try
     {
-      if (paramLexer.configuration.emacs)
+      if (paramLexer.configuration.emacs) {
         return MessageFormat.format(res.getString("emacs_format"), new Object[] { this.currentFile, new Integer(paramLexer.lines), new Integer(paramLexer.columns) }) + " ";
+      }
       return MessageFormat.format(res.getString("line_column"), new Object[] { new Integer(paramLexer.lines), new Integer(paramLexer.columns) });
     }
     catch (MissingResourceException localMissingResourceException)
@@ -256,13 +264,14 @@ public final class Report
     }
     return "";
   }
-
+  
   public void encodingError(Lexer paramLexer, int paramInt1, int paramInt2)
   {
     Lexer tmp1_0 = paramLexer;
     tmp1_0.warnings = ((short)(tmp1_0.warnings + 1));
-    if (paramLexer.errors > paramLexer.configuration.showErrors)
+    if (paramLexer.errors > paramLexer.configuration.showErrors) {
       return;
+    }
     if (paramLexer.configuration.showWarnings)
     {
       String str = Integer.toHexString(paramInt2);
@@ -304,34 +313,36 @@ public final class Report
       }
     }
   }
-
+  
   public void entityError(Lexer paramLexer, short paramShort, String paramString, int paramInt)
   {
     Lexer tmp1_0 = paramLexer;
     tmp1_0.warnings = ((short)(tmp1_0.warnings + 1));
-    if (paramLexer.errors > paramLexer.configuration.showErrors)
+    if (paramLexer.errors > paramLexer.configuration.showErrors) {
       return;
-    if (paramLexer.configuration.showWarnings)
+    }
+    if (paramLexer.configuration.showWarnings) {
       switch (paramShort)
       {
-      case 1:
+      case 1: 
         printMessage(paramShort, paramLexer, "missing_semicolon", new Object[] { paramString }, TidyMessage.Level.WARNING);
         break;
-      case 2:
+      case 2: 
         printMessage(paramShort, paramLexer, "missing_semicolon_ncr", new Object[] { paramString }, TidyMessage.Level.WARNING);
         break;
-      case 3:
+      case 3: 
         printMessage(paramShort, paramLexer, "unknown_entity", new Object[] { paramString }, TidyMessage.Level.WARNING);
         break;
-      case 4:
+      case 4: 
         printMessage(paramShort, paramLexer, "unescaped_ampersand", null, TidyMessage.Level.WARNING);
         break;
-      case 5:
+      case 5: 
         printMessage(paramShort, paramLexer, "apos_undefined", null, TidyMessage.Level.WARNING);
         break;
       }
+    }
   }
-
+  
   public void attrError(Lexer paramLexer, Node paramNode, AttVal paramAttVal, short paramShort)
   {
     if (paramShort == 52)
@@ -344,105 +355,96 @@ public final class Report
       Lexer tmp22_21 = paramLexer;
       tmp22_21.warnings = ((short)(tmp22_21.warnings + 1));
     }
-    if (paramLexer.errors > paramLexer.configuration.showErrors)
+    if (paramLexer.errors > paramLexer.configuration.showErrors) {
       return;
-    if (paramShort == 52)
+    }
+    if (paramShort == 52) {
       printMessage(paramShort, paramLexer, "unexpected_gt", new Object[] { getTagName(paramNode) }, TidyMessage.Level.ERROR);
-    if (!paramLexer.configuration.showWarnings)
+    }
+    if (!paramLexer.configuration.showWarnings) {
       return;
+    }
     switch (paramShort)
     {
-    case 48:
+    case 48: 
       printMessage(paramShort, paramLexer, "unknown_attribute", new Object[] { paramAttVal.attribute }, TidyMessage.Level.WARNING);
       break;
-    case 49:
+    case 49: 
       printMessage(paramShort, paramLexer, "missing_attribute", new Object[] { getTagName(paramNode), paramAttVal.attribute }, TidyMessage.Level.WARNING);
       break;
-    case 50:
+    case 50: 
       printMessage(paramShort, paramLexer, "missing_attr_value", new Object[] { getTagName(paramNode), paramAttVal.attribute }, TidyMessage.Level.WARNING);
       break;
-    case 56:
+    case 56: 
       printMessage(paramShort, paramLexer, "missing_imagemap", new Object[] { getTagName(paramNode) }, TidyMessage.Level.WARNING);
       Lexer tmp367_366 = paramLexer;
       tmp367_366.badAccess = ((short)(tmp367_366.badAccess | 0x8));
       break;
-    case 51:
+    case 51: 
       printMessage(paramShort, paramLexer, "bad_attribute_value", new Object[] { getTagName(paramNode), paramAttVal.attribute, paramAttVal.value }, TidyMessage.Level.WARNING);
       break;
-    case 71:
+    case 71: 
       printMessage(paramShort, paramLexer, "xml_id_sintax", new Object[] { getTagName(paramNode), paramAttVal.attribute }, TidyMessage.Level.WARNING);
       break;
-    case 57:
+    case 57: 
       printMessage(paramShort, paramLexer, "xml_attribute_value", new Object[] { getTagName(paramNode), paramAttVal.attribute }, TidyMessage.Level.WARNING);
       break;
-    case 59:
+    case 59: 
       printMessage(paramShort, paramLexer, "unexpected_quotemark", new Object[] { getTagName(paramNode) }, TidyMessage.Level.WARNING);
       break;
-    case 58:
+    case 58: 
       printMessage(paramShort, paramLexer, "missing_quotemark", new Object[] { getTagName(paramNode) }, TidyMessage.Level.WARNING);
       break;
-    case 55:
+    case 55: 
       printMessage(paramShort, paramLexer, "repeated_attribute", new Object[] { getTagName(paramNode), paramAttVal.value, paramAttVal.attribute }, TidyMessage.Level.WARNING);
       break;
-    case 54:
+    case 54: 
       printMessage(paramShort, paramLexer, "proprietary_attr_value", new Object[] { getTagName(paramNode), paramAttVal.value }, TidyMessage.Level.WARNING);
       break;
-    case 53:
+    case 53: 
       printMessage(paramShort, paramLexer, "proprietary_attribute", new Object[] { getTagName(paramNode), paramAttVal.attribute }, TidyMessage.Level.WARNING);
       break;
-    case 36:
+    case 36: 
       paramLexer.lines = paramLexer.in.getCurline();
       paramLexer.columns = paramLexer.in.getCurcol();
       printMessage(paramShort, paramLexer, "unexpected_end_of_file", new Object[] { getTagName(paramNode) }, TidyMessage.Level.WARNING);
       break;
-    case 60:
+    case 60: 
       printMessage(paramShort, paramLexer, "id_name_mismatch", new Object[] { getTagName(paramNode) }, TidyMessage.Level.WARNING);
       break;
-    case 61:
+    case 61: 
       printMessage(paramShort, paramLexer, "backslash_in_uri", new Object[] { getTagName(paramNode) }, TidyMessage.Level.WARNING);
       break;
-    case 62:
+    case 62: 
       printMessage(paramShort, paramLexer, "fixed_backslash", new Object[] { getTagName(paramNode) }, TidyMessage.Level.WARNING);
       break;
-    case 63:
+    case 63: 
       printMessage(paramShort, paramLexer, "illegal_uri_reference", new Object[] { getTagName(paramNode) }, TidyMessage.Level.WARNING);
       break;
-    case 64:
+    case 64: 
       printMessage(paramShort, paramLexer, "escaped_illegal_uri", new Object[] { getTagName(paramNode) }, TidyMessage.Level.WARNING);
       break;
-    case 65:
+    case 65: 
       printMessage(paramShort, paramLexer, "newline_in_uri", new Object[] { getTagName(paramNode) }, TidyMessage.Level.WARNING);
       break;
-    case 66:
+    case 66: 
       printMessage(paramShort, paramLexer, "anchor_not_unique", new Object[] { getTagName(paramNode), paramAttVal.value }, TidyMessage.Level.WARNING);
       break;
-    case 67:
+    case 67: 
       printMessage(paramShort, paramLexer, "entity_in_id", null, TidyMessage.Level.WARNING);
       break;
-    case 68:
+    case 68: 
       printMessage(paramShort, paramLexer, "joining_attribute", new Object[] { getTagName(paramNode), paramAttVal.attribute }, TidyMessage.Level.WARNING);
       break;
-    case 69:
+    case 69: 
       printMessage(paramShort, paramLexer, "expected_equalsign", new Object[] { getTagName(paramNode) }, TidyMessage.Level.WARNING);
       break;
-    case 70:
+    case 70: 
       printMessage(paramShort, paramLexer, "attr_value_not_lcase", new Object[] { getTagName(paramNode), paramAttVal.value, paramAttVal.attribute }, TidyMessage.Level.WARNING);
       break;
-    case 37:
-    case 38:
-    case 39:
-    case 40:
-    case 41:
-    case 42:
-    case 43:
-    case 44:
-    case 45:
-    case 46:
-    case 47:
-    case 52:
     }
   }
-
+  
   public void warning(Lexer paramLexer, Node paramNode1, Node paramNode2, short paramShort)
   {
     TagTable localTagTable = paramLexer.configuration.tt;
@@ -451,61 +453,65 @@ public final class Report
       Lexer tmp24_23 = paramLexer;
       tmp24_23.warnings = ((short)(tmp24_23.warnings + 1));
     }
-    if (paramLexer.errors > paramLexer.configuration.showErrors)
+    if (paramLexer.errors > paramLexer.configuration.showErrors) {
       return;
-    if (paramLexer.configuration.showWarnings)
+    }
+    if (paramLexer.configuration.showWarnings) {
       switch (paramShort)
       {
-      case 6:
+      case 6: 
         printMessage(paramShort, paramLexer, "missing_endtag_for", new Object[] { paramNode1.element }, TidyMessage.Level.WARNING);
         break;
-      case 7:
+      case 7: 
         printMessage(paramShort, paramLexer, "missing_endtag_before", new Object[] { paramNode1.element, getTagName(paramNode2) }, TidyMessage.Level.WARNING);
         break;
-      case 8:
-        if (paramLexer.badForm == 0)
+      case 8: 
+        if (paramLexer.badForm == 0) {
           printMessage(paramShort, paramLexer, "discarding_unexpected", new Object[] { getTagName(paramNode2) }, TidyMessage.Level.WARNING);
+        }
         break;
-      case 9:
+      case 9: 
         printMessage(paramShort, paramLexer, "nested_emphasis", new Object[] { getTagName(paramNode2) }, TidyMessage.Level.INFO);
         break;
-      case 24:
+      case 24: 
         printMessage(paramShort, paramLexer, "coerce_to_endtag", new Object[] { paramNode1.element }, TidyMessage.Level.INFO);
         break;
-      case 10:
+      case 10: 
         printMessage(paramShort, paramLexer, "non_matching_endtag", new Object[] { getTagName(paramNode2), paramNode1.element }, TidyMessage.Level.WARNING);
         break;
-      case 11:
+      case 11: 
         printMessage(paramShort, paramLexer, "tag_not_allowed_in", new Object[] { getTagName(paramNode2), paramNode1.element }, TidyMessage.Level.WARNING);
         break;
-      case 34:
+      case 34: 
         printMessage(paramShort, paramLexer, "doctype_after_tags", null, TidyMessage.Level.WARNING);
         break;
-      case 12:
+      case 12: 
         printMessage(paramShort, paramLexer, "missing_starttag", new Object[] { paramNode2.element }, TidyMessage.Level.WARNING);
         break;
-      case 13:
-        if (paramNode1 != null)
+      case 13: 
+        if (paramNode1 != null) {
           printMessage(paramShort, paramLexer, "unexpected_endtag_in", new Object[] { paramNode2.element, paramNode1.element }, TidyMessage.Level.WARNING);
-        else
+        } else {
           printMessage(paramShort, paramLexer, "unexpected_endtag", new Object[] { paramNode2.element }, TidyMessage.Level.WARNING);
+        }
         break;
-      case 38:
-        if (paramNode1 != null)
+      case 38: 
+        if (paramNode1 != null) {
           printMessage(paramShort, paramLexer, "too_many_elements_in", new Object[] { paramNode2.element, paramNode1.element }, TidyMessage.Level.WARNING);
-        else
+        } else {
           printMessage(paramShort, paramLexer, "too_many_elements", new Object[] { paramNode2.element }, TidyMessage.Level.WARNING);
+        }
         break;
-      case 14:
+      case 14: 
         printMessage(paramShort, paramLexer, "using_br_inplace_of", new Object[] { getTagName(paramNode2) }, TidyMessage.Level.WARNING);
         break;
-      case 15:
+      case 15: 
         printMessage(paramShort, paramLexer, "inserting_tag", new Object[] { paramNode2.element }, TidyMessage.Level.WARNING);
         break;
-      case 19:
+      case 19: 
         printMessage(paramShort, paramLexer, "cant_be_nested", new Object[] { getTagName(paramNode2) }, TidyMessage.Level.WARNING);
         break;
-      case 21:
+      case 21: 
         printMessage(paramShort, paramLexer, "proprietary_element", new Object[] { getTagName(paramNode2) }, TidyMessage.Level.WARNING);
         if (paramNode2.tag == localTagTable.tagLayer)
         {
@@ -523,97 +529,98 @@ public final class Report
           tmp784_783.badLayout = ((short)(tmp784_783.badLayout | 0x4));
         }
         break;
-      case 20:
-        if ((paramNode1.tag != null) && ((paramNode1.tag.model & 0x80000) != 0))
+      case 20: 
+        if ((paramNode1.tag != null) && ((paramNode1.tag.model & 0x80000) != 0)) {
           printMessage(paramShort, paramLexer, "obsolete_element", new Object[] { getTagName(paramNode1), getTagName(paramNode2) }, TidyMessage.Level.WARNING);
-        else
+        } else {
           printMessage(paramShort, paramLexer, "replacing_element", new Object[] { getTagName(paramNode1), getTagName(paramNode2) }, TidyMessage.Level.WARNING);
+        }
         break;
-      case 39:
+      case 39: 
         printMessage(paramShort, paramLexer, "unescaped_element", new Object[] { getTagName(paramNode1) }, TidyMessage.Level.WARNING);
         break;
-      case 23:
+      case 23: 
         printMessage(paramShort, paramLexer, "trim_empty_element", new Object[] { getTagName(paramNode1) }, TidyMessage.Level.WARNING);
         break;
-      case 17:
+      case 17: 
         printMessage(paramShort, paramLexer, "missing_title_element", null, TidyMessage.Level.WARNING);
         break;
-      case 25:
+      case 25: 
         printMessage(paramShort, paramLexer, "illegal_nesting", new Object[] { getTagName(paramNode1) }, TidyMessage.Level.WARNING);
         break;
-      case 26:
+      case 26: 
         printMessage(paramShort, paramLexer, "noframes_content", new Object[] { getTagName(paramNode2) }, TidyMessage.Level.WARNING);
         break;
-      case 28:
+      case 28: 
         printMessage(paramShort, paramLexer, "inconsistent_version", null, TidyMessage.Level.WARNING);
         break;
-      case 35:
+      case 35: 
         printMessage(paramShort, paramLexer, "malformed_doctype", null, TidyMessage.Level.WARNING);
         break;
-      case 27:
+      case 27: 
         printMessage(paramShort, paramLexer, "content_after_body", null, TidyMessage.Level.WARNING);
         break;
-      case 29:
+      case 29: 
         printMessage(paramShort, paramLexer, "malformed_comment", null, TidyMessage.Level.WARNING);
         break;
-      case 30:
+      case 30: 
         printMessage(paramShort, paramLexer, "bad_comment_chars", null, TidyMessage.Level.WARNING);
         break;
-      case 31:
+      case 31: 
         printMessage(paramShort, paramLexer, "bad_xml_comment", null, TidyMessage.Level.WARNING);
         break;
-      case 32:
+      case 32: 
         printMessage(paramShort, paramLexer, "bad_cdata_content", null, TidyMessage.Level.WARNING);
         break;
-      case 33:
+      case 33: 
         printMessage(paramShort, paramLexer, "inconsistent_namespace", null, TidyMessage.Level.WARNING);
         break;
-      case 37:
+      case 37: 
         printMessage(paramShort, paramLexer, "dtype_not_upper_case", null, TidyMessage.Level.WARNING);
         break;
-      case 36:
+      case 36: 
         paramLexer.lines = paramLexer.in.getCurline();
         paramLexer.columns = paramLexer.in.getCurcol();
         printMessage(paramShort, paramLexer, "unexpected_end_of_file", new Object[] { getTagName(paramNode1) }, TidyMessage.Level.WARNING);
         break;
-      case 40:
+      case 40: 
         printMessage(paramShort, paramLexer, "nested_quotation", null, TidyMessage.Level.WARNING);
         break;
-      case 41:
+      case 41: 
         printMessage(paramShort, paramLexer, "element_not_empty", new Object[] { getTagName(paramNode1) }, TidyMessage.Level.WARNING);
         break;
-      case 44:
+      case 44: 
         printMessage(paramShort, paramLexer, "missing_doctype", null, TidyMessage.Level.WARNING);
         break;
-      case 16:
-      case 18:
-      case 22:
-      case 42:
-      case 43:
       }
-    if ((paramShort == 8) && (paramLexer.badForm != 0))
+    }
+    if ((paramShort == 8) && (paramLexer.badForm != 0)) {
       printMessage(paramShort, paramLexer, "discarding_unexpected", new Object[] { getTagName(paramNode2) }, TidyMessage.Level.ERROR);
+    }
   }
-
+  
   public void error(Lexer paramLexer, Node paramNode1, Node paramNode2, short paramShort)
   {
     Lexer tmp1_0 = paramLexer;
     tmp1_0.errors = ((short)(tmp1_0.errors + 1));
-    if (paramLexer.errors > paramLexer.configuration.showErrors)
+    if (paramLexer.errors > paramLexer.configuration.showErrors) {
       return;
-    if (paramShort == 16)
+    }
+    if (paramShort == 16) {
       printMessage(paramShort, paramLexer, "suspected_missing_quote", null, TidyMessage.Level.ERROR);
-    else if (paramShort == 18)
+    } else if (paramShort == 18) {
       printMessage(paramShort, paramLexer, "duplicate_frameset", null, TidyMessage.Level.ERROR);
-    else if (paramShort == 22)
+    } else if (paramShort == 22) {
       printMessage(paramShort, paramLexer, "unknown_element", new Object[] { getTagName(paramNode2) }, TidyMessage.Level.ERROR);
-    else if (paramShort == 13)
-      if (paramNode1 != null)
+    } else if (paramShort == 13) {
+      if (paramNode1 != null) {
         printMessage(paramShort, paramLexer, "unexpected_endtag_in", new Object[] { paramNode2.element, paramNode1.element }, TidyMessage.Level.ERROR);
-      else
+      } else {
         printMessage(paramShort, paramLexer, "unexpected_endtag", new Object[] { paramNode2.element }, TidyMessage.Level.ERROR);
+      }
+    }
   }
-
+  
   public void errorSummary(Lexer paramLexer)
   {
     if (((paramLexer.badAccess & 0x30) != 0) && (((paramLexer.badAccess & 0x10) == 0) || ((paramLexer.badAccess & 0x20) != 0)))
@@ -627,94 +634,110 @@ public final class Report
       if ((paramLexer.badChars & 0x4C) != 0)
       {
         i = 0;
-        if ("Cp1252".equals(paramLexer.configuration.getInCharEncodingName()))
+        if ("Cp1252".equals(paramLexer.configuration.getInCharEncodingName())) {
           i = 1;
-        else if ("MacRoman".equals(paramLexer.configuration.getInCharEncodingName()))
+        } else if ("MacRoman".equals(paramLexer.configuration.getInCharEncodingName())) {
           i = 2;
+        }
         printMessage(76, paramLexer, "vendor_specific_chars_summary", new Object[] { new Integer(i) }, TidyMessage.Level.SUMMARY);
       }
       if (((paramLexer.badChars & 0x4D) != 0) || ((paramLexer.badChars & 0x52) != 0))
       {
         i = 0;
-        if ("Cp1252".equals(paramLexer.configuration.getInCharEncodingName()))
+        if ("Cp1252".equals(paramLexer.configuration.getInCharEncodingName())) {
           i = 1;
-        else if ("MacRoman".equals(paramLexer.configuration.getInCharEncodingName()))
+        } else if ("MacRoman".equals(paramLexer.configuration.getInCharEncodingName())) {
           i = 2;
+        }
         printMessage(77, paramLexer, "invalid_sgml_chars_summary", new Object[] { new Integer(i) }, TidyMessage.Level.SUMMARY);
       }
-      if ((paramLexer.badChars & 0x4E) != 0)
+      if ((paramLexer.badChars & 0x4E) != 0) {
         printMessage(78, paramLexer, "invalid_utf8_summary", null, TidyMessage.Level.SUMMARY);
-      if ((paramLexer.badChars & 0x4F) != 0)
+      }
+      if ((paramLexer.badChars & 0x4F) != 0) {
         printMessage(79, paramLexer, "invalid_utf16_summary", null, TidyMessage.Level.SUMMARY);
-      if ((paramLexer.badChars & 0x51) != 0)
+      }
+      if ((paramLexer.badChars & 0x51) != 0) {
         printMessage(81, paramLexer, "invaliduri_summary", null, TidyMessage.Level.SUMMARY);
+      }
     }
-    if (paramLexer.badForm != 0)
+    if (paramLexer.badForm != 0) {
       printMessage(113, paramLexer, "badform_summary", null, TidyMessage.Level.SUMMARY);
+    }
     if (paramLexer.badAccess != 0)
     {
-      if ((paramLexer.badAccess & 0x4) != 0)
+      if ((paramLexer.badAccess & 0x4) != 0) {
         printMessage(4, paramLexer, "badaccess_missing_summary", null, TidyMessage.Level.SUMMARY);
-      if ((paramLexer.badAccess & 0x1) != 0)
+      }
+      if ((paramLexer.badAccess & 0x1) != 0) {
         printMessage(1, paramLexer, "badaccess_missing_image_alt", null, TidyMessage.Level.SUMMARY);
-      if ((paramLexer.badAccess & 0x8) != 0)
+      }
+      if ((paramLexer.badAccess & 0x8) != 0) {
         printMessage(8, paramLexer, "badaccess_missing_image_map", null, TidyMessage.Level.SUMMARY);
-      if ((paramLexer.badAccess & 0x2) != 0)
+      }
+      if ((paramLexer.badAccess & 0x2) != 0) {
         printMessage(2, paramLexer, "badaccess_missing_link_alt", null, TidyMessage.Level.SUMMARY);
-      if (((paramLexer.badAccess & 0x10) != 0) && ((paramLexer.badAccess & 0x20) == 0))
+      }
+      if (((paramLexer.badAccess & 0x10) != 0) && ((paramLexer.badAccess & 0x20) == 0)) {
         printMessage(16, paramLexer, "badaccess_frames", null, TidyMessage.Level.SUMMARY);
+      }
       printMessage(112, paramLexer, "badaccess_summary", new Object[] { "http://www.w3.org/WAI/GL" }, TidyMessage.Level.SUMMARY);
     }
     if (paramLexer.badLayout != 0)
     {
-      if ((paramLexer.badLayout & 0x2) != 0)
+      if ((paramLexer.badLayout & 0x2) != 0) {
         printMessage(2, paramLexer, "badlayout_using_layer", null, TidyMessage.Level.SUMMARY);
-      if ((paramLexer.badLayout & 0x1) != 0)
+      }
+      if ((paramLexer.badLayout & 0x1) != 0) {
         printMessage(1, paramLexer, "badlayout_using_spacer", null, TidyMessage.Level.SUMMARY);
-      if ((paramLexer.badLayout & 0x8) != 0)
+      }
+      if ((paramLexer.badLayout & 0x8) != 0) {
         printMessage(8, paramLexer, "badlayout_using_font", null, TidyMessage.Level.SUMMARY);
-      if ((paramLexer.badLayout & 0x4) != 0)
+      }
+      if ((paramLexer.badLayout & 0x4) != 0) {
         printMessage(4, paramLexer, "badlayout_using_nobr", null, TidyMessage.Level.SUMMARY);
-      if ((paramLexer.badLayout & 0x10) != 0)
+      }
+      if ((paramLexer.badLayout & 0x10) != 0) {
         printMessage(16, paramLexer, "badlayout_using_body", null, TidyMessage.Level.SUMMARY);
+      }
     }
   }
-
+  
   public void unknownOption(PrintWriter paramPrintWriter, char paramChar)
   {
     printMessage(paramPrintWriter, "unrecognized_option", new Object[] { new String(new char[] { paramChar }) }, TidyMessage.Level.ERROR);
   }
-
+  
   public void unknownFile(PrintWriter paramPrintWriter, String paramString)
   {
     printMessage(paramPrintWriter, "unknown_file", new Object[] { "Tidy", paramString }, TidyMessage.Level.ERROR);
   }
-
+  
   public void needsAuthorIntervention(PrintWriter paramPrintWriter)
   {
     printMessage(paramPrintWriter, "needs_author_intervention", null, TidyMessage.Level.SUMMARY);
   }
-
+  
   public void missingBody(PrintWriter paramPrintWriter)
   {
     printMessage(paramPrintWriter, "missing_body", null, TidyMessage.Level.ERROR);
   }
-
+  
   public void reportNumberOfSlides(PrintWriter paramPrintWriter, int paramInt)
   {
     printMessage(paramPrintWriter, "slides_found", new Object[] { new Integer(paramInt) }, TidyMessage.Level.SUMMARY);
   }
-
+  
   public void generalInfo(PrintWriter paramPrintWriter)
   {
     printMessage(paramPrintWriter, "general_info", null, TidyMessage.Level.SUMMARY);
   }
-
+  
   public void setFilename(String paramString)
   {
     this.currentFile = paramString;
   }
-
+  
   public void reportVersion(PrintWriter paramPrintWriter, Lexer paramLexer, String paramString, Node paramNode)
   {
     int k = 0;
@@ -733,39 +756,41 @@ public final class Report
           i += PPrint.getUTF8(paramNode.textarray, i, arrayOfInt);
           j = arrayOfInt[0];
         }
-        if (j == 34)
+        if (j == 34) {
           k++;
-        else if (k == 1)
+        } else if (k == 1) {
           localStringBuffer.append((char)j);
+        }
       }
       printMessage(110, paramLexer, "doctype_given", new Object[] { paramString, localStringBuffer }, TidyMessage.Level.SUMMARY);
     }
     printMessage(111, paramLexer, "report_version", new Object[] { paramString, str != null ? str : "HTML proprietary" }, TidyMessage.Level.SUMMARY);
   }
-
+  
   public void reportNumWarnings(PrintWriter paramPrintWriter, Lexer paramLexer)
   {
-    if ((paramLexer.warnings > 0) || (paramLexer.errors > 0))
+    if ((paramLexer.warnings > 0) || (paramLexer.errors > 0)) {
       printMessage(paramPrintWriter, "num_warnings", new Object[] { new Integer(paramLexer.warnings), new Integer(paramLexer.errors) }, TidyMessage.Level.SUMMARY);
-    else
+    } else {
       printMessage(paramPrintWriter, "no_warnings", null, TidyMessage.Level.SUMMARY);
+    }
   }
-
+  
   public void helpText(PrintWriter paramPrintWriter)
   {
     printMessage(paramPrintWriter, "help_text", new Object[] { "Tidy", RELEASE_DATE_STRING }, TidyMessage.Level.SUMMARY);
   }
-
+  
   public void badTree(PrintWriter paramPrintWriter)
   {
     printMessage(paramPrintWriter, "bad_tree", null, TidyMessage.Level.ERROR);
   }
-
+  
   public void addMessageListener(TidyMessageListener paramTidyMessageListener)
   {
     this.listener = paramTidyMessageListener;
   }
-
+  
   static
   {
     try
@@ -779,7 +804,8 @@ public final class Report
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.w3c.tidy.Report
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

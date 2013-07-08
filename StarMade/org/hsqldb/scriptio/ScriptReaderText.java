@@ -24,36 +24,38 @@ import org.hsqldb.rowio.RowInputTextLog;
 import org.hsqldb.store.ValuePool;
 import org.hsqldb.types.Type;
 
-public class ScriptReaderText extends ScriptReaderBase
+public class ScriptReaderText
+  extends ScriptReaderBase
 {
   LineReader dataStreamIn;
   RowInputTextLog rowIn;
   boolean isInsert;
-
+  
   public ScriptReaderText(Database paramDatabase)
   {
     super(paramDatabase);
   }
-
+  
   public ScriptReaderText(Database paramDatabase, String paramString, boolean paramBoolean)
     throws IOException
   {
     super(paramDatabase);
     Object localObject = this.database.logger.getFileAccess().openInputStreamElement(paramString);
     localObject = new BufferedInputStream((InputStream)localObject);
-    if (paramBoolean)
+    if (paramBoolean) {
       localObject = new GZIPInputStream((InputStream)localObject);
+    }
     this.dataStreamIn = new LineReader((InputStream)localObject, "ISO-8859-1");
     this.rowIn = new RowInputTextLog(paramDatabase.databaseProperties.isVersion18());
   }
-
+  
   public ScriptReaderText(Database paramDatabase, InputStream paramInputStream)
   {
     super(paramDatabase);
     this.dataStreamIn = new LineReader(paramInputStream, "ISO-8859-1");
     this.rowIn = new RowInputTextLog(paramDatabase.databaseProperties.isVersion18());
   }
-
+  
   protected void readDDL(Session paramSession)
   {
     while (readLoggedStatement(paramSession))
@@ -74,16 +76,18 @@ public class ScriptReaderText extends ScriptReaderBase
       {
         localResult = Result.newErrorResult(localHsqlException);
       }
-      if ((!localResult.isError()) || (localStatement == null) || ((localStatement.getType() != 48) && ((localStatement.getType() != 14) || (!localResult.getMainString().contains("org.hsqldb.Library")))))
+      if ((!localResult.isError()) || (localStatement == null) || ((localStatement.getType() != 48) && ((localStatement.getType() != 14) || (!localResult.getMainString().contains("org.hsqldb.Library"))))) {
         if (localResult.isError())
         {
           this.database.logger.logWarningEvent(localResult.getMainString(), localResult.getException());
-          if ((localStatement == null) || (localStatement.getType() != 14))
+          if ((localStatement == null) || (localStatement.getType() != 14)) {
             throw Error.error(localResult.getException(), 461, 25, new Object[] { new Integer(this.lineCount), localResult.getMainString() });
+          }
         }
+      }
     }
   }
-
+  
   protected void readExistingData(Session paramSession)
   {
     try
@@ -121,7 +125,7 @@ public class ScriptReaderText extends ScriptReaderBase
       throw Error.error(localThrowable, 461, 25, new Object[] { new Integer(this.lineCount), localThrowable.toString() });
     }
   }
-
+  
   public boolean readLoggedStatement(Session paramSession)
   {
     if (!this.sessionChanged)
@@ -141,13 +145,14 @@ public class ScriptReaderText extends ScriptReaderBase
       }
       this.lineCount += 1;
       this.statement = StringConverter.unicodeStringToString(str);
-      if (this.statement == null)
+      if (this.statement == null) {
         return false;
+      }
     }
     processStatement(paramSession);
     return true;
   }
-
+  
   void processStatement(Session paramSession)
   {
     if (this.statement.startsWith("/*C"))
@@ -186,12 +191,13 @@ public class ScriptReaderText extends ScriptReaderBase
     this.currentTable = this.database.schemaManager.getUserTable(paramSession, str1, str2);
     this.currentStore = this.database.persistentStoreCollection.getStore(this.currentTable);
     Type[] arrayOfType;
-    if (this.statementType == 3)
+    if (this.statementType == 3) {
       arrayOfType = this.currentTable.getColumnTypes();
-    else if (this.currentTable.hasPrimaryKey())
+    } else if (this.currentTable.hasPrimaryKey()) {
       arrayOfType = this.currentTable.getPrimaryKeyTypes();
-    else
+    } else {
       arrayOfType = this.currentTable.getColumnTypes();
+    }
     try
     {
       this.rowData = this.rowIn.readData(arrayOfType);
@@ -201,20 +207,19 @@ public class ScriptReaderText extends ScriptReaderBase
       throw Error.error(localIOException, 452, null);
     }
   }
-
+  
   public void close()
   {
     try
     {
       this.dataStreamIn.close();
     }
-    catch (Exception localException)
-    {
-    }
+    catch (Exception localException) {}
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.scriptio.ScriptReaderText
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

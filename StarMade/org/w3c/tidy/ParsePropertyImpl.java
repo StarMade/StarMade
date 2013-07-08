@@ -18,41 +18,43 @@ public final class ParsePropertyImpl
   static final ParseProperty INDENT = new ParseIndent();
   static final ParseProperty CSS1SELECTOR = new ParseCSS1Selector();
   static final ParseProperty NEWLINE = new ParseNewLine();
-
+  
   static class ParseNewLine
     implements ParseProperty
   {
     public Object parse(String paramString1, String paramString2, Configuration paramConfiguration)
     {
-      if ("lf".equalsIgnoreCase(paramString1))
+      if ("lf".equalsIgnoreCase(paramString1)) {
         paramConfiguration.newline = new char[] { '\n' };
-      else if ("cr".equalsIgnoreCase(paramString1))
+      } else if ("cr".equalsIgnoreCase(paramString1)) {
         paramConfiguration.newline = new char[] { '\r' };
-      else if ("crlf".equalsIgnoreCase(paramString1))
+      } else if ("crlf".equalsIgnoreCase(paramString1)) {
         paramConfiguration.newline = new char[] { '\r', '\n' };
-      else
+      } else {
         paramConfiguration.report.badArgument(paramString1, paramString2);
+      }
       return null;
     }
-
+    
     public String getType()
     {
       return "Enum";
     }
-
+    
     public String getOptionValues()
     {
       return "lf, crlf, cr";
     }
-
+    
     public String getFriendlyName(String paramString, Object paramObject, Configuration paramConfiguration)
     {
-      if (paramConfiguration.newline.length == 1)
+      if (paramConfiguration.newline.length == 1) {
         return paramConfiguration.newline[0] == '\n' ? "lf" : "cr";
+      }
       return "crlf";
     }
   }
-
+  
   static class ParseCSS1Selector
     implements ParseProperty
   {
@@ -60,31 +62,33 @@ public final class ParsePropertyImpl
     {
       StringTokenizer localStringTokenizer = new StringTokenizer(paramString1);
       String str = null;
-      if (localStringTokenizer.countTokens() >= 1)
+      if (localStringTokenizer.countTokens() >= 1) {
         str = localStringTokenizer.nextToken() + "-";
-      else
+      } else {
         paramConfiguration.report.badArgument(paramString1, paramString2);
-      if (!Lexer.isCSS1Selector(paramString1))
+      }
+      if (!Lexer.isCSS1Selector(paramString1)) {
         paramConfiguration.report.badArgument(paramString1, paramString2);
+      }
       return str;
     }
-
+    
     public String getType()
     {
       return "Name";
     }
-
+    
     public String getOptionValues()
     {
       return "CSS1 selector";
     }
-
+    
     public String getFriendlyName(String paramString, Object paramObject, Configuration paramConfiguration)
     {
       return paramObject == null ? "" : (String)paramObject;
     }
   }
-
+  
   static class ParseIndent
     implements ParseProperty
   {
@@ -122,23 +126,23 @@ public final class ParsePropertyImpl
       }
       return bool ? Boolean.TRUE : Boolean.FALSE;
     }
-
+    
     public String getType()
     {
       return "Indent";
     }
-
+    
     public String getOptionValues()
     {
       return "auto, y/n, yes/no, t/f, true/false, 1/0";
     }
-
+    
     public String getFriendlyName(String paramString, Object paramObject, Configuration paramConfiguration)
     {
       return paramObject == null ? "" : paramObject.toString();
     }
   }
-
+  
   static class ParseString
     implements ParseProperty
   {
@@ -146,23 +150,23 @@ public final class ParsePropertyImpl
     {
       return paramString1;
     }
-
+    
     public String getType()
     {
       return "String";
     }
-
+    
     public String getOptionValues()
     {
       return "-";
     }
-
+    
     public String getFriendlyName(String paramString, Object paramObject, Configuration paramConfiguration)
     {
       return paramObject == null ? "" : (String)paramObject;
     }
   }
-
+  
   static class ParseRepeatedAttribute
     implements ParseProperty
   {
@@ -184,38 +188,39 @@ public final class ParsePropertyImpl
       }
       return new Integer(i);
     }
-
+    
     public String getType()
     {
       return "Enum";
     }
-
+    
     public String getOptionValues()
     {
       return "keep-first, keep-last";
     }
-
+    
     public String getFriendlyName(String paramString, Object paramObject, Configuration paramConfiguration)
     {
-      if (paramObject == null)
+      if (paramObject == null) {
         return "";
+      }
       int i = ((Integer)paramObject).intValue();
       String str;
       switch (i)
       {
-      case 1:
+      case 1: 
         str = "keep-first";
         break;
-      case 0:
+      case 0: 
         str = "keep-last";
         break;
-      default:
+      default: 
         str = "unknown";
       }
       return str;
     }
   }
-
+  
   static class ParseDocType
     implements ParseProperty
   {
@@ -229,72 +234,75 @@ public final class ParsePropertyImpl
       }
       String str = "";
       StringTokenizer localStringTokenizer = new StringTokenizer(paramString1, " \t\n\r,");
-      if (localStringTokenizer.hasMoreTokens())
+      if (localStringTokenizer.hasMoreTokens()) {
         str = localStringTokenizer.nextToken();
-      if ("auto".equalsIgnoreCase(str))
+      }
+      if ("auto".equalsIgnoreCase(str)) {
         paramConfiguration.docTypeMode = 1;
-      else if ("omit".equalsIgnoreCase(str))
+      } else if ("omit".equalsIgnoreCase(str)) {
         paramConfiguration.docTypeMode = 0;
-      else if ("strict".equalsIgnoreCase(str))
+      } else if ("strict".equalsIgnoreCase(str)) {
         paramConfiguration.docTypeMode = 2;
-      else if (("loose".equalsIgnoreCase(str)) || ("transitional".equalsIgnoreCase(str)))
+      } else if (("loose".equalsIgnoreCase(str)) || ("transitional".equalsIgnoreCase(str))) {
         paramConfiguration.docTypeMode = 3;
-      else
+      } else {
         paramConfiguration.report.badArgument(paramString1, paramString2);
+      }
       return null;
     }
-
+    
     public String getType()
     {
       return "DocType";
     }
-
+    
     public String getOptionValues()
     {
       return "omit | auto | strict | loose | [fpi]";
     }
-
+    
     public String getFriendlyName(String paramString, Object paramObject, Configuration paramConfiguration)
     {
       String str;
       switch (paramConfiguration.docTypeMode)
       {
-      case 1:
+      case 1: 
         str = "auto";
         break;
-      case 0:
+      case 0: 
         str = "omit";
         break;
-      case 2:
+      case 2: 
         str = "strict";
         break;
-      case 3:
+      case 3: 
         str = "transitional";
         break;
-      case 4:
+      case 4: 
         str = paramConfiguration.docTypeStr;
         break;
-      default:
+      default: 
         str = "unknown";
       }
       return str;
     }
   }
-
+  
   static class ParseTagNames
     implements ParseProperty
   {
     public Object parse(String paramString1, String paramString2, Configuration paramConfiguration)
     {
       int i = 2;
-      if ("new-inline-tags".equals(paramString2))
+      if ("new-inline-tags".equals(paramString2)) {
         i = 2;
-      else if ("new-blocklevel-tags".equals(paramString2))
+      } else if ("new-blocklevel-tags".equals(paramString2)) {
         i = 4;
-      else if ("new-empty-tags".equals(paramString2))
+      } else if ("new-empty-tags".equals(paramString2)) {
         i = 1;
-      else if ("new-pre-tags".equals(paramString2))
+      } else if ("new-pre-tags".equals(paramString2)) {
         i = 8;
+      }
       StringTokenizer localStringTokenizer = new StringTokenizer(paramString1, " \t\n\r,");
       while (localStringTokenizer.hasMoreTokens())
       {
@@ -303,33 +311,35 @@ public final class ParsePropertyImpl
       }
       return null;
     }
-
+    
     public String getType()
     {
       return "Tag names";
     }
-
+    
     public String getOptionValues()
     {
       return "tagX, tagY, ...";
     }
-
+    
     public String getFriendlyName(String paramString, Object paramObject, Configuration paramConfiguration)
     {
       short s;
-      if ("new-inline-tags".equals(paramString))
+      if ("new-inline-tags".equals(paramString)) {
         s = 2;
-      else if ("new-blocklevel-tags".equals(paramString))
+      } else if ("new-blocklevel-tags".equals(paramString)) {
         s = 4;
-      else if ("new-empty-tags".equals(paramString))
+      } else if ("new-empty-tags".equals(paramString)) {
         s = 1;
-      else if ("new-pre-tags".equals(paramString))
+      } else if ("new-pre-tags".equals(paramString)) {
         s = 8;
-      else
+      } else {
         return "";
+      }
       List localList = paramConfiguration.tt.findAllDefinedTag(s);
-      if (localList.isEmpty())
+      if (localList.isEmpty()) {
         return "";
+      }
       StringBuffer localStringBuffer = new StringBuffer();
       Iterator localIterator = localList.iterator();
       while (localIterator.hasNext())
@@ -340,7 +350,7 @@ public final class ParsePropertyImpl
       return localStringBuffer.toString();
     }
   }
-
+  
   static class ParseName
     implements ParseProperty
   {
@@ -348,29 +358,30 @@ public final class ParsePropertyImpl
     {
       StringTokenizer localStringTokenizer = new StringTokenizer(paramString1);
       String str = null;
-      if (localStringTokenizer.countTokens() >= 1)
+      if (localStringTokenizer.countTokens() >= 1) {
         str = localStringTokenizer.nextToken();
-      else
+      } else {
         paramConfiguration.report.badArgument(paramString1, paramString2);
+      }
       return str;
     }
-
+    
     public String getType()
     {
       return "Name";
     }
-
+    
     public String getOptionValues()
     {
       return "-";
     }
-
+    
     public String getFriendlyName(String paramString, Object paramObject, Configuration paramConfiguration)
     {
       return paramObject == null ? "" : paramObject.toString();
     }
   }
-
+  
   static class ParseCharEncoding
     implements ParseProperty
   {
@@ -399,25 +410,26 @@ public final class ParsePropertyImpl
       }
       return null;
     }
-
+    
     public String getType()
     {
       return "Encoding";
     }
-
+    
     public String getOptionValues()
     {
       return "Any valid java char encoding name";
     }
-
+    
     public String getFriendlyName(String paramString, Object paramObject, Configuration paramConfiguration)
     {
-      if ("output-encoding".equalsIgnoreCase(paramString))
+      if ("output-encoding".equalsIgnoreCase(paramString)) {
         return paramConfiguration.getOutCharEncodingName();
+      }
       return paramConfiguration.getInCharEncodingName();
     }
   }
-
+  
   static class ParseInvBoolean
     implements ParseProperty
   {
@@ -425,25 +437,26 @@ public final class ParsePropertyImpl
     {
       return ((Boolean)ParsePropertyImpl.BOOL.parse(paramString1, paramString2, paramConfiguration)).booleanValue() ? Boolean.FALSE : Boolean.TRUE;
     }
-
+    
     public String getType()
     {
       return "Boolean";
     }
-
+    
     public String getOptionValues()
     {
       return "yes, no, true, false";
     }
-
+    
     public String getFriendlyName(String paramString, Object paramObject, Configuration paramConfiguration)
     {
-      if (paramObject == null)
+      if (paramObject == null) {
         return "";
+      }
       return ((Boolean)paramObject).booleanValue() ? "no" : "yes";
     }
   }
-
+  
   static class ParseBoolean
     implements ParseProperty
   {
@@ -453,34 +466,36 @@ public final class ParsePropertyImpl
       if ((paramString1 != null) && (paramString1.length() > 0))
       {
         int i = paramString1.charAt(0);
-        if ((i == 116) || (i == 84) || (i == 89) || (i == 121) || (i == 49))
+        if ((i == 116) || (i == 84) || (i == 89) || (i == 121) || (i == 49)) {
           localBoolean = Boolean.TRUE;
-        else if ((i == 102) || (i == 70) || (i == 78) || (i == 110) || (i == 48))
+        } else if ((i == 102) || (i == 70) || (i == 78) || (i == 110) || (i == 48)) {
           localBoolean = Boolean.FALSE;
-        else
+        } else {
           paramConfiguration.report.badArgument(paramString1, paramString2);
+        }
       }
       return localBoolean;
     }
-
+    
     public String getType()
     {
       return "Boolean";
     }
-
+    
     public String getOptionValues()
     {
       return "y/n, yes/no, t/f, true/false, 1/0";
     }
-
+    
     public String getFriendlyName(String paramString, Object paramObject, Configuration paramConfiguration)
     {
-      if (paramObject == null)
+      if (paramObject == null) {
         return "";
+      }
       return ((Boolean)paramObject).booleanValue() ? "yes" : "no";
     }
   }
-
+  
   static class ParseInt
     implements ParseProperty
   {
@@ -498,17 +513,17 @@ public final class ParsePropertyImpl
       }
       return new Integer(i);
     }
-
+    
     public String getType()
     {
       return "Integer";
     }
-
+    
     public String getOptionValues()
     {
       return "0, 1, 2, ...";
     }
-
+    
     public String getFriendlyName(String paramString, Object paramObject, Configuration paramConfiguration)
     {
       return paramObject == null ? "" : paramObject.toString();
@@ -516,7 +531,8 @@ public final class ParsePropertyImpl
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.w3c.tidy.ParsePropertyImpl
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

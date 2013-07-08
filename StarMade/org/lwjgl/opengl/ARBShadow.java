@@ -7,7 +7,8 @@ public final class ARBShadow
   public static final int GL_COMPARE_R_TO_TEXTURE_ARB = 34894;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.opengl.ARBShadow
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

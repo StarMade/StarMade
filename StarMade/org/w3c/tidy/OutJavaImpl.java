@@ -12,20 +12,20 @@ public class OutJavaImpl
 {
   private Writer writer;
   private char[] newline;
-
+  
   protected OutJavaImpl(Configuration paramConfiguration, String paramString, OutputStream paramOutputStream)
     throws UnsupportedEncodingException
   {
     this.writer = new OutputStreamWriter(paramOutputStream, paramString);
     this.newline = paramConfiguration.newline;
   }
-
+  
   protected OutJavaImpl(Configuration paramConfiguration, Writer paramWriter)
   {
     this.writer = paramWriter;
     this.newline = paramConfiguration.newline;
   }
-
+  
   public void outc(int paramInt)
   {
     try
@@ -37,7 +37,7 @@ public class OutJavaImpl
       System.err.println("OutJavaImpl.outc: " + localIOException.getMessage());
     }
   }
-
+  
   public void outc(byte paramByte)
   {
     try
@@ -49,7 +49,7 @@ public class OutJavaImpl
       System.err.println("OutJavaImpl.outc: " + localIOException.getMessage());
     }
   }
-
+  
   public void newline()
   {
     try
@@ -61,7 +61,7 @@ public class OutJavaImpl
       System.err.println("OutJavaImpl.newline: " + localIOException.getMessage());
     }
   }
-
+  
   public void flush()
   {
     try
@@ -75,7 +75,8 @@ public class OutJavaImpl
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.w3c.tidy.OutJavaImpl
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

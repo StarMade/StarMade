@@ -1,129 +1,123 @@
-/*     */ package it.unimi.dsi.fastutil.chars;
-/*     */ 
-/*     */ import java.io.Serializable;
-/*     */ import java.util.NoSuchElementException;
-/*     */ 
-/*     */ public class CharBigListIterators
-/*     */ {
-/*  78 */   public static final EmptyBigListIterator EMPTY_BIG_LIST_ITERATOR = new EmptyBigListIterator();
-/*     */ 
-/*     */   public static CharBigListIterator singleton(char element)
-/*     */   {
-/* 111 */     return new SingletonBigListIterator(element);
-/*     */   }
-/*     */ 
-/*     */   public static CharBigListIterator unmodifiable(CharBigListIterator i)
-/*     */   {
-/* 140 */     return new UnmodifiableBigListIterator(i);
-/*     */   }
-/*     */ 
-/*     */   public static CharBigListIterator asBigListIterator(CharListIterator i)
-/*     */   {
-/* 177 */     return new BigListIteratorListIterator(i);
-/*     */   }
-/*     */ 
-/*     */   public static class BigListIteratorListIterator extends AbstractCharBigListIterator
-/*     */   {
-/*     */     protected final CharListIterator i;
-/*     */ 
-/*     */     protected BigListIteratorListIterator(CharListIterator i)
-/*     */     {
-/* 149 */       this.i = i;
-/*     */     }
-/*     */ 
-/*     */     private int intDisplacement(long n) {
-/* 153 */       if ((n < -2147483648L) || (n > 2147483647L)) throw new IndexOutOfBoundsException("This big iterator is restricted to 32-bit displacements");
-/* 154 */       return (int)n;
-/*     */     }
-/*     */     public void set(char ok) {
-/* 157 */       this.i.set(ok); } 
-/* 158 */     public void add(char ok) { this.i.add(ok); } 
-/* 159 */     public int back(int n) { return this.i.back(n); } 
-/* 160 */     public long back(long n) { return this.i.back(intDisplacement(n)); } 
-/* 161 */     public void remove() { this.i.remove(); } 
-/* 162 */     public int skip(int n) { return this.i.skip(n); } 
-/* 163 */     public long skip(long n) { return this.i.skip(intDisplacement(n)); } 
-/* 164 */     public boolean hasNext() { return this.i.hasNext(); } 
-/* 165 */     public boolean hasPrevious() { return this.i.hasPrevious(); } 
-/* 166 */     public char nextChar() { return this.i.nextChar(); } 
-/* 167 */     public char previousChar() { return this.i.previousChar(); } 
-/* 168 */     public long nextIndex() { return this.i.nextIndex(); } 
-/* 169 */     public long previousIndex() { return this.i.previousIndex(); }
-/*     */ 
-/*     */   }
-/*     */ 
-/*     */   public static class UnmodifiableBigListIterator extends AbstractCharBigListIterator
-/*     */   {
-/*     */     protected final CharBigListIterator i;
-/*     */ 
-/*     */     public UnmodifiableBigListIterator(CharBigListIterator i)
-/*     */     {
-/* 120 */       this.i = i;
-/*     */     }
-/*     */     public boolean hasNext() {
-/* 123 */       return this.i.hasNext(); } 
-/* 124 */     public boolean hasPrevious() { return this.i.hasPrevious(); } 
-/* 125 */     public char nextChar() { return this.i.nextChar(); } 
-/* 126 */     public char previousChar() { return this.i.previousChar(); } 
-/* 127 */     public long nextIndex() { return this.i.nextIndex(); } 
-/* 128 */     public long previousIndex() { return this.i.previousIndex(); } 
-/*     */     public Character next() {
-/* 130 */       return (Character)this.i.next(); } 
-/* 131 */     public Character previous() { return (Character)this.i.previous(); }
-/*     */ 
-/*     */   }
-/*     */ 
-/*     */   private static class SingletonBigListIterator extends AbstractCharBigListIterator
-/*     */   {
-/*     */     private final char element;
-/*     */     private int curr;
-/*     */ 
-/*     */     public SingletonBigListIterator(char element)
-/*     */     {
-/*  84 */       this.element = element;
-/*     */     }
-/*  86 */     public boolean hasNext() { return this.curr == 0; } 
-/*  87 */     public boolean hasPrevious() { return this.curr == 1; } 
-/*     */     public char nextChar() {
-/*  89 */       if (!hasNext()) throw new NoSuchElementException();
-/*  90 */       this.curr = 1;
-/*  91 */       return this.element;
-/*     */     }
-/*     */     public char previousChar() {
-/*  94 */       if (!hasPrevious()) throw new NoSuchElementException();
-/*  95 */       this.curr = 0;
-/*  96 */       return this.element;
-/*     */     }
-/*     */     public long nextIndex() {
-/*  99 */       return this.curr;
-/*     */     }
-/*     */     public long previousIndex() {
-/* 102 */       return this.curr - 1;
-/*     */     }
-/*     */   }
-/*     */ 
-/*     */   public static class EmptyBigListIterator extends AbstractCharBigListIterator
-/*     */     implements Serializable, Cloneable
-/*     */   {
-/*     */     public static final long serialVersionUID = -7046029254386353129L;
-/*     */ 
-/*     */     public boolean hasNext()
-/*     */     {
-/*  61 */       return false; } 
-/*  62 */     public boolean hasPrevious() { return false; } 
-/*  63 */     public char nextChar() { throw new NoSuchElementException(); } 
-/*  64 */     public char previousChar() { throw new NoSuchElementException(); } 
-/*  65 */     public long nextIndex() { return 0L; } 
-/*  66 */     public long previousIndex() { return -1L; } 
-/*  67 */     public long skip(long n) { return 0L; } 
-/*  68 */     public long back(long n) { return 0L; } 
-/*  69 */     public Object clone() { return CharBigListIterators.EMPTY_BIG_LIST_ITERATOR; } 
-/*  70 */     private Object readResolve() { return CharBigListIterators.EMPTY_BIG_LIST_ITERATOR; }
-/*     */ 
-/*     */   }
-/*     */ }
+/*   1:    */package it.unimi.dsi.fastutil.chars;
+/*   2:    */
+/*   3:    */import java.io.Serializable;
+/*   4:    */import java.util.NoSuchElementException;
+/*   5:    */
+/*  53:    */public class CharBigListIterators
+/*  54:    */{
+/*  55:    */  public static class EmptyBigListIterator
+/*  56:    */    extends AbstractCharBigListIterator
+/*  57:    */    implements Serializable, Cloneable
+/*  58:    */  {
+/*  59:    */    public static final long serialVersionUID = -7046029254386353129L;
+/*  60:    */    
+/*  61: 61 */    public boolean hasNext() { return false; }
+/*  62: 62 */    public boolean hasPrevious() { return false; }
+/*  63: 63 */    public char nextChar() { throw new NoSuchElementException(); }
+/*  64: 64 */    public char previousChar() { throw new NoSuchElementException(); }
+/*  65: 65 */    public long nextIndex() { return 0L; }
+/*  66: 66 */    public long previousIndex() { return -1L; }
+/*  67: 67 */    public long skip(long n) { return 0L; }
+/*  68: 68 */    public long back(long n) { return 0L; }
+/*  69: 69 */    public Object clone() { return CharBigListIterators.EMPTY_BIG_LIST_ITERATOR; }
+/*  70: 70 */    private Object readResolve() { return CharBigListIterators.EMPTY_BIG_LIST_ITERATOR; }
+/*  71:    */  }
+/*  72:    */  
+/*  78: 78 */  public static final EmptyBigListIterator EMPTY_BIG_LIST_ITERATOR = new EmptyBigListIterator();
+/*  79:    */  
+/*  80:    */  private static class SingletonBigListIterator extends AbstractCharBigListIterator {
+/*  81:    */    private final char element;
+/*  82:    */    private int curr;
+/*  83:    */    
+/*  84: 84 */    public SingletonBigListIterator(char element) { this.element = element; }
+/*  85:    */    
+/*  86: 86 */    public boolean hasNext() { return this.curr == 0; }
+/*  87: 87 */    public boolean hasPrevious() { return this.curr == 1; }
+/*  88:    */    
+/*  89: 89 */    public char nextChar() { if (!hasNext()) throw new NoSuchElementException();
+/*  90: 90 */      this.curr = 1;
+/*  91: 91 */      return this.element;
+/*  92:    */    }
+/*  93:    */    
+/*  94: 94 */    public char previousChar() { if (!hasPrevious()) throw new NoSuchElementException();
+/*  95: 95 */      this.curr = 0;
+/*  96: 96 */      return this.element;
+/*  97:    */    }
+/*  98:    */    
+/*  99: 99 */    public long nextIndex() { return this.curr; }
+/* 100:    */    
+/* 101:    */    public long previousIndex() {
+/* 102:102 */      return this.curr - 1;
+/* 103:    */    }
+/* 104:    */  }
+/* 105:    */  
+/* 109:    */  public static CharBigListIterator singleton(char element)
+/* 110:    */  {
+/* 111:111 */    return new SingletonBigListIterator(element);
+/* 112:    */  }
+/* 113:    */  
+/* 114:    */  public static class UnmodifiableBigListIterator extends AbstractCharBigListIterator
+/* 115:    */  {
+/* 116:    */    protected final CharBigListIterator i;
+/* 117:    */    
+/* 118:    */    public UnmodifiableBigListIterator(CharBigListIterator i)
+/* 119:    */    {
+/* 120:120 */      this.i = i;
+/* 121:    */    }
+/* 122:    */    
+/* 123:123 */    public boolean hasNext() { return this.i.hasNext(); }
+/* 124:124 */    public boolean hasPrevious() { return this.i.hasPrevious(); }
+/* 125:125 */    public char nextChar() { return this.i.nextChar(); }
+/* 126:126 */    public char previousChar() { return this.i.previousChar(); }
+/* 127:127 */    public long nextIndex() { return this.i.nextIndex(); }
+/* 128:128 */    public long previousIndex() { return this.i.previousIndex(); }
+/* 129:    */    
+/* 130:130 */    public Character next() { return (Character)this.i.next(); }
+/* 131:131 */    public Character previous() { return (Character)this.i.previous(); }
+/* 132:    */  }
+/* 133:    */  
+/* 138:    */  public static CharBigListIterator unmodifiable(CharBigListIterator i)
+/* 139:    */  {
+/* 140:140 */    return new UnmodifiableBigListIterator(i);
+/* 141:    */  }
+/* 142:    */  
+/* 143:    */  public static class BigListIteratorListIterator extends AbstractCharBigListIterator
+/* 144:    */  {
+/* 145:    */    protected final CharListIterator i;
+/* 146:    */    
+/* 147:    */    protected BigListIteratorListIterator(CharListIterator i)
+/* 148:    */    {
+/* 149:149 */      this.i = i;
+/* 150:    */    }
+/* 151:    */    
+/* 152:    */    private int intDisplacement(long n) {
+/* 153:153 */      if ((n < -2147483648L) || (n > 2147483647L)) throw new IndexOutOfBoundsException("This big iterator is restricted to 32-bit displacements");
+/* 154:154 */      return (int)n;
+/* 155:    */    }
+/* 156:    */    
+/* 157:157 */    public void set(char ok) { this.i.set(ok); }
+/* 158:158 */    public void add(char ok) { this.i.add(ok); }
+/* 159:159 */    public int back(int n) { return this.i.back(n); }
+/* 160:160 */    public long back(long n) { return this.i.back(intDisplacement(n)); }
+/* 161:161 */    public void remove() { this.i.remove(); }
+/* 162:162 */    public int skip(int n) { return this.i.skip(n); }
+/* 163:163 */    public long skip(long n) { return this.i.skip(intDisplacement(n)); }
+/* 164:164 */    public boolean hasNext() { return this.i.hasNext(); }
+/* 165:165 */    public boolean hasPrevious() { return this.i.hasPrevious(); }
+/* 166:166 */    public char nextChar() { return this.i.nextChar(); }
+/* 167:167 */    public char previousChar() { return this.i.previousChar(); }
+/* 168:168 */    public long nextIndex() { return this.i.nextIndex(); }
+/* 169:169 */    public long previousIndex() { return this.i.previousIndex(); }
+/* 170:    */  }
+/* 171:    */  
+/* 175:    */  public static CharBigListIterator asBigListIterator(CharListIterator i)
+/* 176:    */  {
+/* 177:177 */    return new BigListIteratorListIterator(i);
+/* 178:    */  }
+/* 179:    */}
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     it.unimi.dsi.fastutil.chars.CharBigListIterators
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

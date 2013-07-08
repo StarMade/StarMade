@@ -2,14 +2,15 @@ package javax.vecmath;
 
 import java.io.Serializable;
 
-public class Quat4f extends Tuple4f
+public class Quat4f
+  extends Tuple4f
   implements Serializable
 {
   static final long serialVersionUID = 2675933778405442383L;
   static final double EPS = 1.0E-006D;
   static final double EPS2 = 1.E-030D;
   static final double PIO2 = 1.57079632679D;
-
+  
   public Quat4f(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4)
   {
     float f = (float)(1.0D / Math.sqrt(paramFloat1 * paramFloat1 + paramFloat2 * paramFloat2 + paramFloat3 * paramFloat3 + paramFloat4 * paramFloat4));
@@ -18,7 +19,7 @@ public class Quat4f extends Tuple4f
     this.z = (paramFloat3 * f);
     this.w = (paramFloat4 * f);
   }
-
+  
   public Quat4f(float[] paramArrayOfFloat)
   {
     float f = (float)(1.0D / Math.sqrt(paramArrayOfFloat[0] * paramArrayOfFloat[0] + paramArrayOfFloat[1] * paramArrayOfFloat[1] + paramArrayOfFloat[2] * paramArrayOfFloat[2] + paramArrayOfFloat[3] * paramArrayOfFloat[3]));
@@ -27,17 +28,17 @@ public class Quat4f extends Tuple4f
     this.z = (paramArrayOfFloat[2] * f);
     this.w = (paramArrayOfFloat[3] * f);
   }
-
+  
   public Quat4f(Quat4f paramQuat4f)
   {
     super(paramQuat4f);
   }
-
+  
   public Quat4f(Quat4d paramQuat4d)
   {
     super(paramQuat4d);
   }
-
+  
   public Quat4f(Tuple4f paramTuple4f)
   {
     float f = (float)(1.0D / Math.sqrt(paramTuple4f.x * paramTuple4f.x + paramTuple4f.y * paramTuple4f.y + paramTuple4f.z * paramTuple4f.z + paramTuple4f.w * paramTuple4f.w));
@@ -46,7 +47,7 @@ public class Quat4f extends Tuple4f
     this.z = (paramTuple4f.z * f);
     this.w = (paramTuple4f.w * f);
   }
-
+  
   public Quat4f(Tuple4d paramTuple4d)
   {
     double d = 1.0D / Math.sqrt(paramTuple4d.x * paramTuple4d.x + paramTuple4d.y * paramTuple4d.y + paramTuple4d.z * paramTuple4d.z + paramTuple4d.w * paramTuple4d.w);
@@ -55,11 +56,9 @@ public class Quat4f extends Tuple4f
     this.z = ((float)(paramTuple4d.z * d));
     this.w = ((float)(paramTuple4d.w * d));
   }
-
-  public Quat4f()
-  {
-  }
-
+  
+  public Quat4f() {}
+  
   public final void conjugate(Quat4f paramQuat4f)
   {
     this.x = (-paramQuat4f.x);
@@ -67,14 +66,14 @@ public class Quat4f extends Tuple4f
     this.z = (-paramQuat4f.z);
     this.w = paramQuat4f.w;
   }
-
+  
   public final void conjugate()
   {
     this.x = (-this.x);
     this.y = (-this.y);
     this.z = (-this.z);
   }
-
+  
   public final void mul(Quat4f paramQuat4f1, Quat4f paramQuat4f2)
   {
     if ((this != paramQuat4f1) && (this != paramQuat4f2))
@@ -95,7 +94,7 @@ public class Quat4f extends Tuple4f
       this.y = f2;
     }
   }
-
+  
   public final void mul(Quat4f paramQuat4f)
   {
     float f3 = this.w * paramQuat4f.w - this.x * paramQuat4f.x - this.y * paramQuat4f.y - this.z * paramQuat4f.z;
@@ -106,21 +105,21 @@ public class Quat4f extends Tuple4f
     this.x = f1;
     this.y = f2;
   }
-
+  
   public final void mulInverse(Quat4f paramQuat4f1, Quat4f paramQuat4f2)
   {
     Quat4f localQuat4f = new Quat4f(paramQuat4f2);
     localQuat4f.inverse();
     mul(paramQuat4f1, localQuat4f);
   }
-
+  
   public final void mulInverse(Quat4f paramQuat4f)
   {
     Quat4f localQuat4f = new Quat4f(paramQuat4f);
     localQuat4f.inverse();
     mul(localQuat4f);
   }
-
+  
   public final void inverse(Quat4f paramQuat4f)
   {
     float f = 1.0F / (paramQuat4f.w * paramQuat4f.w + paramQuat4f.x * paramQuat4f.x + paramQuat4f.y * paramQuat4f.y + paramQuat4f.z * paramQuat4f.z);
@@ -129,7 +128,7 @@ public class Quat4f extends Tuple4f
     this.y = (-f * paramQuat4f.y);
     this.z = (-f * paramQuat4f.z);
   }
-
+  
   public final void inverse()
   {
     float f = 1.0F / (this.w * this.w + this.x * this.x + this.y * this.y + this.z * this.z);
@@ -138,7 +137,7 @@ public class Quat4f extends Tuple4f
     this.y *= -f;
     this.z *= -f;
   }
-
+  
   public final void normalize(Quat4f paramQuat4f)
   {
     float f = paramQuat4f.x * paramQuat4f.x + paramQuat4f.y * paramQuat4f.y + paramQuat4f.z * paramQuat4f.z + paramQuat4f.w * paramQuat4f.w;
@@ -158,7 +157,7 @@ public class Quat4f extends Tuple4f
       this.w = 0.0F;
     }
   }
-
+  
   public final void normalize()
   {
     float f = this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w;
@@ -178,7 +177,7 @@ public class Quat4f extends Tuple4f
       this.w = 0.0F;
     }
   }
-
+  
   public final void set(Matrix4f paramMatrix4f)
   {
     float f = 0.25F * (paramMatrix4f.m00 + paramMatrix4f.m11 + paramMatrix4f.m22 + paramMatrix4f.m33);
@@ -231,7 +230,7 @@ public class Quat4f extends Tuple4f
     this.y = 0.0F;
     this.z = 1.0F;
   }
-
+  
   public final void set(Matrix4d paramMatrix4d)
   {
     double d = 0.25D * (paramMatrix4d.m00 + paramMatrix4d.m11 + paramMatrix4d.m22 + paramMatrix4d.m33);
@@ -284,7 +283,7 @@ public class Quat4f extends Tuple4f
     this.y = 0.0F;
     this.z = 1.0F;
   }
-
+  
   public final void set(Matrix3f paramMatrix3f)
   {
     float f = 0.25F * (paramMatrix3f.m00 + paramMatrix3f.m11 + paramMatrix3f.m22 + 1.0F);
@@ -337,7 +336,7 @@ public class Quat4f extends Tuple4f
     this.y = 0.0F;
     this.z = 1.0F;
   }
-
+  
   public final void set(Matrix3d paramMatrix3d)
   {
     double d = 0.25D * (paramMatrix3d.m00 + paramMatrix3d.m11 + paramMatrix3d.m22 + 1.0D);
@@ -390,7 +389,7 @@ public class Quat4f extends Tuple4f
     this.y = 0.0F;
     this.z = 1.0F;
   }
-
+  
   public final void set(AxisAngle4f paramAxisAngle4f)
   {
     float f2 = (float)Math.sqrt(paramAxisAngle4f.x * paramAxisAngle4f.x + paramAxisAngle4f.y * paramAxisAngle4f.y + paramAxisAngle4f.z * paramAxisAngle4f.z);
@@ -411,7 +410,7 @@ public class Quat4f extends Tuple4f
       this.z = (paramAxisAngle4f.z * f2 * f1);
     }
   }
-
+  
   public final void set(AxisAngle4d paramAxisAngle4d)
   {
     float f2 = (float)(1.0D / Math.sqrt(paramAxisAngle4d.x * paramAxisAngle4d.x + paramAxisAngle4d.y * paramAxisAngle4d.y + paramAxisAngle4d.z * paramAxisAngle4d.z));
@@ -432,7 +431,7 @@ public class Quat4f extends Tuple4f
       this.z = ((float)paramAxisAngle4d.z * f2 * f1);
     }
   }
-
+  
   public final void interpolate(Quat4f paramQuat4f, float paramFloat)
   {
     double d1 = this.x * paramQuat4f.x + this.y * paramQuat4f.y + this.z * paramQuat4f.z + this.w * paramQuat4f.w;
@@ -463,7 +462,7 @@ public class Quat4f extends Tuple4f
     this.y = ((float)(d2 * this.y + d3 * paramQuat4f.y));
     this.z = ((float)(d2 * this.z + d3 * paramQuat4f.z));
   }
-
+  
   public final void interpolate(Quat4f paramQuat4f1, Quat4f paramQuat4f2, float paramFloat)
   {
     double d1 = paramQuat4f2.x * paramQuat4f1.x + paramQuat4f2.y * paramQuat4f1.y + paramQuat4f2.z * paramQuat4f1.z + paramQuat4f2.w * paramQuat4f1.w;
@@ -496,7 +495,8 @@ public class Quat4f extends Tuple4f
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     javax.vecmath.Quat4f
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

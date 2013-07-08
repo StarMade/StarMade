@@ -29,26 +29,28 @@ public final class EncodingUtils
   private static final ValidUTF8Sequence[] VALID_UTF8 = { new ValidUTF8Sequence(0, 127, 1, new char[] { '\000', '', '\000', '\000', '\000', '\000', '\000', '\000' }), new ValidUTF8Sequence(128, 2047, 2, new char[] { 'Â', 'ß', '', '¿', '\000', '\000', '\000', '\000' }), new ValidUTF8Sequence(2048, 4095, 3, new char[] { 'à', 'à', ' ', '¿', '', '¿', '\000', '\000' }), new ValidUTF8Sequence(4096, 65535, 3, new char[] { 'á', 'ï', '', '¿', '', '¿', '\000', '\000' }), new ValidUTF8Sequence(65536, 262143, 4, new char[] { 'ð', 'ð', '', '¿', '', '¿', '', '¿' }), new ValidUTF8Sequence(262144, 1048575, 4, new char[] { 'ñ', 'ó', '', '¿', '', '¿', '', '¿' }), new ValidUTF8Sequence(1048576, 1114111, 4, new char[] { 'ô', 'ô', '', '', '', '¿', '', '¿' }) };
   private static final int NUM_UTF8_SEQUENCES = VALID_UTF8.length;
   private static final int[] OFFSET_UTF8_SEQUENCES = { 0, 1, 2, 4, NUM_UTF8_SEQUENCES };
-
+  
   protected static int decodeWin1252(int paramInt)
   {
     return WIN2UNICODE[(paramInt - 128)];
   }
-
+  
   protected static int decodeMacRoman(int paramInt)
   {
-    if (127 < paramInt)
+    if (127 < paramInt) {
       paramInt = MAC2UNICODE[(paramInt - 128)];
+    }
     return paramInt;
   }
-
+  
   static int decodeSymbolFont(int paramInt)
   {
-    if (paramInt > 255)
+    if (paramInt > 255) {
       return paramInt;
+    }
     return SYMBOL2UNICODE[paramInt];
   }
-
+  
   static boolean decodeUTF8BytesToChar(int[] paramArrayOfInt1, int paramInt1, byte[] paramArrayOfByte, GetBytes paramGetBytes, int[] paramArrayOfInt2, int paramInt2)
   {
     byte[] arrayOfByte = new byte[10];
@@ -56,8 +58,9 @@ public final class EncodingUtils
     int j = 0;
     int m = 0;
     boolean bool = false;
-    if (paramArrayOfByte.length != 0)
+    if (paramArrayOfByte.length != 0) {
       arrayOfByte = paramArrayOfByte;
+    }
     if (paramInt1 == -1)
     {
       paramArrayOfInt1[0] = paramInt1;
@@ -123,8 +126,9 @@ public final class EncodingUtils
       {
         bool = true;
         m = k;
-        if (paramGetBytes == null)
+        if (paramGetBytes == null) {
           break;
+        }
         arrayOfInt2 = new int[] { arrayOfByte[(paramInt2 + k - 1)] };
         arrayOfInt1[0] = 1;
         paramGetBytes.doGet(arrayOfInt2, arrayOfInt1, true);
@@ -132,12 +136,15 @@ public final class EncodingUtils
       }
       j = j << 6 | arrayOfByte[(paramInt2 + k - 1)] & 0x3F;
     }
-    if ((!bool) && ((j == 65534) || (j == 65535)))
+    if ((!bool) && ((j == 65534) || (j == 65535))) {
       bool = true;
-    if ((!bool) && (j > 1114111))
+    }
+    if ((!bool) && (j > 1114111)) {
       bool = true;
-    if ((!bool) && (j >= 55296) && (j <= 57343))
+    }
+    if ((!bool) && (j >= 55296) && (j <= 57343)) {
       bool = true;
+    }
     if (!bool)
     {
       int n = OFFSET_UTF8_SEQUENCES[(m - 1)];
@@ -149,32 +156,37 @@ public final class EncodingUtils
       else
       {
         bool = true;
-        for (k = n; k <= i1; k++)
+        for (k = n; k <= i1; k++) {
           for (int i2 = 0; i2 < m; i2++)
           {
             int i3;
-            if (!TidyUtils.toBoolean(i2))
+            if (!TidyUtils.toBoolean(i2)) {
               i3 = (char)paramInt1;
-            else
+            } else {
               i3 = (char)arrayOfByte[(paramInt2 + i2 - 1)];
-            if ((i3 >= VALID_UTF8[k].validBytes[(i2 * 2)]) && (i3 <= VALID_UTF8[k].validBytes[(i2 * 2 + 1)]))
+            }
+            if ((i3 >= VALID_UTF8[k].validBytes[(i2 * 2)]) && (i3 <= VALID_UTF8[k].validBytes[(i2 * 2 + 1)])) {
               bool = false;
-            if (bool)
+            }
+            if (bool) {
               break;
+            }
           }
+        }
       }
     }
     paramArrayOfInt2[0] = m;
     paramArrayOfInt1[0] = j;
     return bool;
   }
-
+  
   static boolean encodeCharToUTF8Bytes(int paramInt, byte[] paramArrayOfByte, PutBytes paramPutBytes, int[] paramArrayOfInt)
   {
     int i = 0;
     byte[] arrayOfByte = new byte[10];
-    if (paramArrayOfByte != null)
+    if (paramArrayOfByte != null) {
       arrayOfByte = paramArrayOfByte;
+    }
     boolean bool = false;
     if (paramInt <= 127)
     {
@@ -193,10 +205,11 @@ public final class EncodingUtils
       arrayOfByte[1] = ((byte)(0x80 | paramInt >> 6 & 0x3F));
       arrayOfByte[2] = ((byte)(0x80 | paramInt & 0x3F));
       i = 3;
-      if ((paramInt == 65534) || (paramInt == 65535))
+      if ((paramInt == 65534) || (paramInt == 65535)) {
         bool = true;
-      else if ((paramInt >= 55296) && (paramInt <= 57343))
+      } else if ((paramInt >= 55296) && (paramInt <= 57343)) {
         bool = true;
+      }
     }
     else if (paramInt <= 2097151)
     {
@@ -205,8 +218,9 @@ public final class EncodingUtils
       arrayOfByte[2] = ((byte)(0x80 | paramInt >> 6 & 0x3F));
       arrayOfByte[3] = ((byte)(0x80 | paramInt & 0x3F));
       i = 4;
-      if (paramInt > 1114111)
+      if (paramInt > 1114111) {
         bool = true;
+      }
     }
     else if (paramInt <= 67108863)
     {
@@ -237,25 +251,27 @@ public final class EncodingUtils
     {
       int[] arrayOfInt = { i };
       paramPutBytes.doPut(arrayOfByte, arrayOfInt);
-      if (arrayOfInt[0] < i)
+      if (arrayOfInt[0] < i) {
         bool = true;
+      }
     }
     paramArrayOfInt[0] = i;
     return bool;
   }
-
+  
   static abstract interface PutBytes
   {
     public abstract void doPut(byte[] paramArrayOfByte, int[] paramArrayOfInt);
   }
-
+  
   static abstract interface GetBytes
   {
     public abstract void doGet(int[] paramArrayOfInt1, int[] paramArrayOfInt2, boolean paramBoolean);
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.w3c.tidy.EncodingUtils
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -7,22 +7,23 @@ import org.hsqldb.types.TimeData;
 import org.hsqldb.types.TimestampData;
 import org.hsqldb.types.Type;
 
-public class RowOutputBinary180 extends RowOutputBinary
+public class RowOutputBinary180
+  extends RowOutputBinary
 {
   Calendar tempCalDefault = new GregorianCalendar();
-
+  
   public RowOutputBinary180(int paramInt1, int paramInt2)
   {
     super(paramInt1, paramInt2);
   }
-
+  
   protected void writeDate(TimestampData paramTimestampData, Type paramType)
   {
     long l = paramTimestampData.getSeconds() * 1000L;
     l = HsqlDateTime.convertMillisToCalendar(this.tempCalDefault, l);
     writeLong(l);
   }
-
+  
   protected void writeTime(TimeData paramTimeData, Type paramType)
   {
     if (paramType.typeCode == 92)
@@ -38,7 +39,7 @@ public class RowOutputBinary180 extends RowOutputBinary
       writeInt(paramTimeData.getZone());
     }
   }
-
+  
   protected void writeTimestamp(TimestampData paramTimestampData, Type paramType)
   {
     if (paramType.typeCode == 93)
@@ -57,7 +58,8 @@ public class RowOutputBinary180 extends RowOutputBinary
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.rowio.RowOutputBinary180
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

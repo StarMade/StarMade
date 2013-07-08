@@ -1,11 +1,13 @@
-/*   */ package org.schema.game.common.data.element.ship;
-/*   */ 
-/*   */ public class ShipExplosiveElement extends ShipElement
-/*   */ {
-/* 6 */   public static int range = 5;
-/*   */ }
+/* 1:  */package org.schema.game.common.data.element.ship;
+/* 2:  */
+/* 3:  */public class ShipExplosiveElement
+/* 4:  */  extends ShipElement
+/* 5:  */{
+/* 6:6 */  public static int range = 5;
+/* 7:  */}
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.schema.game.common.data.element.ship.ShipExplosiveElement
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

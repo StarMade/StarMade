@@ -5,15 +5,16 @@ import org.hsqldb.lib.FileUtil;
 import org.hsqldb.persist.HsqlProperties;
 import org.hsqldb.resources.BundleHandler;
 
-public class WebServer extends Server
+public class WebServer
+  extends Server
 {
   static int webBundleHandle = BundleHandler.getBundleHandle("webserver", null);
-
+  
   public WebServer()
   {
     super(0);
   }
-
+  
   public static void main(String[] paramArrayOfString)
   {
     HsqlProperties localHsqlProperties = null;
@@ -62,34 +63,35 @@ public class WebServer extends Server
     }
     localWebServer.start();
   }
-
+  
   public String getDefaultWebPage()
   {
     return this.serverProperties.getProperty("server.default_page");
   }
-
+  
   public String getHelpString()
   {
     return BundleHandler.getString(serverBundleHandle, "webserver.help");
   }
-
+  
   public String getProductName()
   {
     return "HSQLDB web server";
   }
-
+  
   public String getProtocol()
   {
     return isTls() ? "HTTPS" : "HTTP";
   }
-
+  
   public String getWebRoot()
   {
     return this.serverProperties.getProperty("server.root");
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.server.WebServer
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

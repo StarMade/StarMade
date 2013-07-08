@@ -31,12 +31,12 @@ public class JDBCClobClient
   private boolean isClosed;
   private boolean isWritable;
   JDBCResultSet resultSet;
-
+  
   public synchronized InputStream getAsciiStream()
     throws SQLException
   {
     checkClosed();
-    return new InputStream()
+    new InputStream()
     {
       private final byte[] oneChar = new byte[1];
       private boolean m_closed;
@@ -45,25 +45,27 @@ public class JDBCClobClient
       private Charset m_charset = JDBCClobClient.charsetForName("US-ASCII");
       private CharsetEncoder m_encoder = this.m_charset.newEncoder().onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE);
       private Reader m_reader = JDBCClobClient.this.clob.getCharacterStream(JDBCClobClient.this.session);
-
+      
       public int read()
         throws IOException
       {
-        if (isEOF())
+        if (isEOF()) {
           return -1;
+        }
         synchronized (this.oneChar)
         {
           int i = read(this.oneChar, 0, 1);
           return i == 1 ? this.oneChar[0] : -1;
         }
       }
-
+      
       public int read(byte[] paramAnonymousArrayOfByte, int paramAnonymousInt1, int paramAnonymousInt2)
         throws IOException
       {
         checkClosed();
-        if (isEOF())
+        if (isEOF()) {
           return -1;
+        }
         CharBuffer localCharBuffer = this.m_charBuffer;
         if (localCharBuffer.remaining() == 0)
         {
@@ -75,8 +77,9 @@ public class JDBCClobClient
             setEOF();
             return -1;
           }
-          if (i == 0)
+          if (i == 0) {
             return 0;
+          }
         }
         ByteBuffer localByteBuffer = this.m_byteBuffer.capacity() < paramAnonymousInt2 ? ByteBuffer.allocate(paramAnonymousInt2) : this.m_byteBuffer;
         int k = localCharBuffer.limit();
@@ -102,7 +105,7 @@ public class JDBCClobClient
         localByteBuffer.get(paramAnonymousArrayOfByte, paramAnonymousInt1, j);
         return j;
       }
-
+      
       public void close()
         throws IOException
       {
@@ -117,62 +120,60 @@ public class JDBCClobClient
           {
             this.m_reader.close();
           }
-          catch (Exception localException)
-          {
-          }
+          catch (Exception localException) {}
         }
       }
-
+      
       private boolean isEOF()
       {
         Reader localReader = this.m_reader;
         return localReader == null;
       }
-
+      
       private void setEOF()
       {
         Reader localReader = this.m_reader;
-        if (localReader != null)
+        if (localReader != null) {
           try
           {
             localReader.close();
           }
-          catch (IOException localIOException)
-          {
-          }
+          catch (IOException localIOException) {}
+        }
         this.m_reader = null;
       }
-
+      
       private void checkClosed()
         throws IOException
       {
-        if (JDBCClobClient.this.isClosed())
+        if (JDBCClobClient.this.isClosed()) {
           try
           {
             close();
           }
-          catch (Exception localException)
-          {
-          }
-        if (this.m_closed)
+          catch (Exception localException) {}
+        }
+        if (this.m_closed) {
           throw new IOException("The stream is closed.");
+        }
       }
     };
   }
-
+  
   public synchronized Reader getCharacterStream()
     throws SQLException
   {
     checkClosed();
     return new ClobInputStream(this.session, this.clob, 0L, length());
   }
-
+  
   public synchronized String getSubString(long paramLong, int paramInt)
     throws SQLException
   {
     checkClosed();
-    if (!isInLimits(9223372036854775807L, paramLong - 1L, paramInt))
+    if (!isInLimits(9223372036854775807L, paramLong - 1L, paramInt)) {
       throw Util.outOfRangeArgument();
+    }
     try
     {
       return this.clob.getSubString(this.session, paramLong - 1L, paramInt);
@@ -182,7 +183,7 @@ public class JDBCClobClient
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public synchronized long length()
     throws SQLException
   {
@@ -196,12 +197,13 @@ public class JDBCClobClient
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public synchronized long position(String paramString, long paramLong)
     throws SQLException
   {
-    if (!isInLimits(9223372036854775807L, paramLong - 1L, 0L))
+    if (!isInLimits(9223372036854775807L, paramLong - 1L, 0L)) {
       throw Util.outOfRangeArgument();
+    }
     checkClosed();
     try
     {
@@ -212,12 +214,13 @@ public class JDBCClobClient
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public synchronized long position(Clob paramClob, long paramLong)
     throws SQLException
   {
-    if (!isInLimits(9223372036854775807L, paramLong - 1L, 0L))
+    if (!isInLimits(9223372036854775807L, paramLong - 1L, 0L)) {
       throw Util.outOfRangeArgument();
+    }
     if ((paramClob instanceof JDBCClobClient))
     {
       ClobDataID localClobDataID = ((JDBCClobClient)paramClob).clob;
@@ -232,17 +235,19 @@ public class JDBCClobClient
     }
     return position(paramClob.getSubString(1L, (int)paramClob.length()), paramLong);
   }
-
+  
   public synchronized OutputStream setAsciiStream(final long paramLong)
     throws SQLException
   {
     checkClosed();
-    if (paramLong < 1L)
+    if (paramLong < 1L) {
       throw Util.outOfRangeArgument("pos: " + paramLong);
-    if (!this.isWritable)
+    }
+    if (!this.isWritable) {
       throw Util.notUpdatableColumn();
+    }
     startUpdate();
-    return new OutputStream()
+    new OutputStream()
     {
       private long m_position = paramLong - 1L;
       private Charset m_charset = JDBCClobClient.charsetForName("US-ASCII");
@@ -251,7 +256,7 @@ public class JDBCClobClient
       private ByteBuffer m_byteBuffer = ByteBuffer.allocate(1024);
       private final byte[] oneByte = new byte[1];
       private boolean m_closed;
-
+      
       public void write(int paramAnonymousInt)
         throws IOException
       {
@@ -261,34 +266,36 @@ public class JDBCClobClient
           write(this.oneByte, 0, 1);
         }
       }
-
+      
       public void write(byte[] paramAnonymousArrayOfByte, int paramAnonymousInt1, int paramAnonymousInt2)
         throws IOException
       {
         checkClosed();
         ByteBuffer localByteBuffer = this.m_byteBuffer.capacity() < paramAnonymousInt2 ? ByteBuffer.allocate(paramAnonymousInt2) : this.m_byteBuffer;
-        if (this.m_charBuffer.remaining() < paramAnonymousInt2)
+        if (this.m_charBuffer.remaining() < paramAnonymousInt2) {
           flush0();
+        }
         CharBuffer localCharBuffer = this.m_charBuffer.capacity() < paramAnonymousInt2 ? CharBuffer.allocate(paramAnonymousInt2) : this.m_charBuffer;
         localByteBuffer.clear();
         localByteBuffer.put(paramAnonymousArrayOfByte, paramAnonymousInt1, paramAnonymousInt2);
         localByteBuffer.flip();
         this.m_decoder.decode(localByteBuffer, localCharBuffer, false);
-        if (localCharBuffer.remaining() == 0)
+        if (localCharBuffer.remaining() == 0) {
           flush();
+        }
       }
-
+      
       public void flush()
         throws IOException
       {
         checkClosed();
         flush0();
       }
-
+      
       public void close()
         throws IOException
       {
-        if (!this.m_closed)
+        if (!this.m_closed) {
           try
           {
             flush0();
@@ -301,23 +308,24 @@ public class JDBCClobClient
             this.m_charset = null;
             this.m_decoder = null;
           }
+        }
       }
-
+      
       private void checkClosed()
         throws IOException
       {
-        if (JDBCClobClient.this.isClosed())
+        if (JDBCClobClient.this.isClosed()) {
           try
           {
             close();
           }
-          catch (Exception localException)
-          {
-          }
-        if (this.m_closed)
+          catch (Exception localException) {}
+        }
+        if (this.m_closed) {
           throw new IOException("The stream is closed.");
+        }
       }
-
+      
       private void flush0()
         throws IOException
       {
@@ -338,21 +346,23 @@ public class JDBCClobClient
       }
     };
   }
-
+  
   public synchronized Writer setCharacterStream(final long paramLong)
     throws SQLException
   {
     checkClosed();
-    if (paramLong < 1L)
+    if (paramLong < 1L) {
       throw Util.outOfRangeArgument("pos: " + paramLong);
-    if (!this.isWritable)
+    }
+    if (!this.isWritable) {
       throw Util.notUpdatableColumn();
+    }
     startUpdate();
-    return new Writer()
+    new Writer()
     {
       private long m_clobPosition = paramLong - 1L;
       private boolean m_closed;
-
+      
       public void write(char[] paramAnonymousArrayOfChar, int paramAnonymousInt1, int paramAnonymousInt2)
         throws IOException
       {
@@ -360,43 +370,46 @@ public class JDBCClobClient
         JDBCClobClient.this.clob.setChars(JDBCClobClient.this.session, this.m_clobPosition, paramAnonymousArrayOfChar, paramAnonymousInt1, paramAnonymousInt2);
         this.m_clobPosition += paramAnonymousInt2;
       }
-
+      
       public void flush()
         throws IOException
-      {
-      }
-
+      {}
+      
       public void close()
         throws IOException
       {
         this.m_closed = true;
       }
-
+      
       private void checkClosed()
         throws IOException
       {
-        if ((this.m_closed) || (JDBCClobClient.this.isClosed()))
+        if ((this.m_closed) || (JDBCClobClient.this.isClosed())) {
           throw new IOException("The stream is closed");
+        }
       }
     };
   }
-
+  
   public synchronized int setString(long paramLong, String paramString)
     throws SQLException
   {
     return setString(paramLong, paramString, 0, paramString.length());
   }
-
+  
   public synchronized int setString(long paramLong, String paramString, int paramInt1, int paramInt2)
     throws SQLException
   {
-    if (!isInLimits(paramString.length(), paramInt1, paramInt2))
+    if (!isInLimits(paramString.length(), paramInt1, paramInt2)) {
       throw Util.outOfRangeArgument();
+    }
     checkClosed();
-    if (paramLong < 1L)
+    if (paramLong < 1L) {
       throw Util.outOfRangeArgument("pos: " + paramLong);
-    if (!this.isWritable)
+    }
+    if (!this.isWritable) {
       throw Util.notUpdatableColumn();
+    }
     startUpdate();
     paramString = paramString.substring(paramInt1, paramInt1 + paramInt2);
     try
@@ -409,12 +422,13 @@ public class JDBCClobClient
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public synchronized void truncate(long paramLong)
     throws SQLException
   {
-    if (paramLong < 0L)
+    if (paramLong < 0L) {
       throw Util.outOfRangeArgument("len: " + paramLong);
+    }
     checkClosed();
     try
     {
@@ -425,7 +439,7 @@ public class JDBCClobClient
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public synchronized void free()
     throws SQLException
   {
@@ -433,16 +447,17 @@ public class JDBCClobClient
     this.clob = null;
     this.session = null;
   }
-
+  
   public synchronized Reader getCharacterStream(long paramLong1, long paramLong2)
     throws SQLException
   {
-    if (!isInLimits(9223372036854775807L, paramLong1 - 1L, paramLong2))
+    if (!isInLimits(9223372036854775807L, paramLong1 - 1L, paramLong2)) {
       throw Util.outOfRangeArgument();
+    }
     checkClosed();
     return new ClobInputStream(this.session, this.clob, paramLong1 - 1L, paramLong2);
   }
-
+  
   char[] getChars(long paramLong, int paramInt)
     throws SQLException
   {
@@ -455,30 +470,30 @@ public class JDBCClobClient
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public JDBCClobClient(SessionInterface paramSessionInterface, ClobDataID paramClobDataID)
   {
     this.session = paramSessionInterface;
     this.clob = paramClobDataID;
   }
-
+  
   public ClobDataID getClob()
   {
     return this.clob;
   }
-
+  
   public synchronized boolean isClosed()
   {
     return this.isClosed;
   }
-
+  
   public synchronized void setWritable(JDBCResultSet paramJDBCResultSet, int paramInt)
   {
     this.isWritable = true;
     this.resultSet = paramJDBCResultSet;
     this.colIndex = paramInt;
   }
-
+  
   public synchronized void clearUpdates()
   {
     if (this.originalClob != null)
@@ -487,50 +502,53 @@ public class JDBCClobClient
       this.originalClob = null;
     }
   }
-
+  
   private void startUpdate()
     throws SQLException
   {
-    if (this.originalClob != null)
+    if (this.originalClob != null) {
       return;
+    }
     this.originalClob = this.clob;
     this.clob = ((ClobDataID)this.clob.duplicate(this.session));
     this.resultSet.startUpdate(this.colIndex + 1);
     this.resultSet.preparedStatement.parameterValues[this.colIndex] = this.clob;
     this.resultSet.preparedStatement.parameterSet[this.colIndex] = Boolean.TRUE;
   }
-
+  
   private void checkClosed()
     throws SQLException
   {
-    if (this.isClosed)
+    if (this.isClosed) {
       throw Util.sqlException(1251);
+    }
   }
-
+  
   static boolean isInLimits(long paramLong1, long paramLong2, long paramLong3)
   {
     return (paramLong1 >= 0L) && (paramLong2 >= 0L) && (paramLong3 >= 0L) && (paramLong2 <= paramLong1 - paramLong3);
   }
-
+  
   protected static Charset charsetForName(String paramString)
     throws SQLException
   {
     String str = paramString;
-    if (str == null)
+    if (str == null) {
       str = Charset.defaultCharset().name();
+    }
     try
     {
-      if (Charset.isSupported(str))
+      if (Charset.isSupported(str)) {
         return Charset.forName(str);
+      }
     }
-    catch (IllegalCharsetNameException localIllegalCharsetNameException)
-    {
-    }
+    catch (IllegalCharsetNameException localIllegalCharsetNameException) {}
     throw Util.sqlException(new UnsupportedEncodingException(str));
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.jdbc.JDBCClobClient
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

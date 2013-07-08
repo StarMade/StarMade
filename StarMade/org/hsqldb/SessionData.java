@@ -44,36 +44,37 @@ public class SessionData
   boolean hasLobOps;
   long firstNewLobID;
   LongKeyLongValueHashMap resultLobs = new LongKeyLongValueHashMap();
-
+  
   public SessionData(Database paramDatabase, Session paramSession)
   {
     this.database = paramDatabase;
     this.session = paramSession;
     this.persistentStoreCollection = new PersistentStoreCollectionSession(paramSession);
   }
-
+  
   public PersistentStore getSubqueryRowStore(TableBase paramTableBase)
   {
     PersistentStore localPersistentStore = this.persistentStoreCollection.getStore(paramTableBase);
     localPersistentStore.removeAll();
     return localPersistentStore;
   }
-
+  
   public PersistentStore getNewResultRowStore(TableBase paramTableBase, boolean paramBoolean)
   {
     try
     {
       PersistentStore localPersistentStore = this.session.database.logger.newStore(this.session, this.persistentStoreCollection, paramTableBase);
-      if (!paramBoolean)
+      if (!paramBoolean) {
         localPersistentStore.setMemory(true);
+      }
       return localPersistentStore;
     }
     catch (HsqlException localHsqlException)
     {
+      throw Error.runtimeError(201, "SessionData");
     }
-    throw Error.runtimeError(201, "SessionData");
   }
-
+  
   void setResultSetProperties(Result paramResult1, Result paramResult2)
   {
     int i = paramResult1.rsProperties;
@@ -86,21 +87,23 @@ public class SessionData
       }
       else if (ResultProperties.isUpdatable(j))
       {
-        if (ResultProperties.isHoldable(i))
+        if (ResultProperties.isHoldable(i)) {
           this.session.addWarning(Error.error(4713));
+        }
       }
       else
       {
         j = ResultProperties.addHoldable(j, ResultProperties.isHoldable(i));
         this.session.addWarning(Error.error(4712));
       }
-      if (ResultProperties.isSensitive(i))
+      if (ResultProperties.isSensitive(i)) {
         this.session.addWarning(Error.error(4711));
+      }
       j = ResultProperties.addScrollable(j, ResultProperties.isScrollable(i));
       paramResult2.rsProperties = j;
     }
   }
-
+  
   Result getDataResultHead(Result paramResult1, Result paramResult2, boolean paramBoolean)
   {
     int i = paramResult1.getFetchSize();
@@ -109,21 +112,23 @@ public class SessionData
     int k = paramResult2.rsProperties;
     if (j != k)
     {
-      if (ResultProperties.isReadOnly(j))
+      if (ResultProperties.isReadOnly(j)) {
         k = ResultProperties.addHoldable(k, ResultProperties.isHoldable(j));
-      else if (ResultProperties.isReadOnly(k))
+      } else if (ResultProperties.isReadOnly(k)) {
         k = ResultProperties.addHoldable(k, ResultProperties.isHoldable(j));
-      else if (this.session.isAutoCommit())
+      } else if (this.session.isAutoCommit()) {
         k = ResultProperties.addHoldable(k, ResultProperties.isHoldable(j));
-      else
+      } else {
         k = ResultProperties.addHoldable(k, false);
+      }
       k = ResultProperties.addScrollable(k, ResultProperties.isScrollable(j));
       paramResult2.rsProperties = k;
     }
     int m = 0;
     int n = 0;
-    if (ResultProperties.isUpdatable(paramResult2.rsProperties))
+    if (ResultProperties.isUpdatable(paramResult2.rsProperties)) {
       m = 1;
+    }
     if (paramBoolean)
     {
       if ((i != 0) && (paramResult2.getNavigator().getSize() > i))
@@ -132,55 +137,62 @@ public class SessionData
         m = 1;
       }
     }
-    else if (!paramResult2.getNavigator().isMemory())
+    else if (!paramResult2.getNavigator().isMemory()) {
       m = 1;
+    }
     if (m != 0)
     {
-      if (this.resultMap == null)
+      if (this.resultMap == null) {
         this.resultMap = new LongKeyHashMap();
+      }
       this.resultMap.put(paramResult2.getResultId(), paramResult2);
       paramResult2.rsProperties = ResultProperties.addIsHeld(paramResult2.rsProperties, true);
     }
-    if (n != 0)
+    if (n != 0) {
       paramResult2 = Result.newDataHeadResult(this.session, paramResult2, 0, i);
+    }
     return paramResult2;
   }
-
+  
   Result getDataResultSlice(long paramLong, int paramInt1, int paramInt2)
   {
     Result localResult = (Result)this.resultMap.get(paramLong);
     RowSetNavigator localRowSetNavigator = localResult.getNavigator();
-    if (paramInt1 + paramInt2 > localRowSetNavigator.getSize())
+    if (paramInt1 + paramInt2 > localRowSetNavigator.getSize()) {
       paramInt2 = localRowSetNavigator.getSize() - paramInt1;
+    }
     return Result.newDataRowsResult(localResult, paramInt1, paramInt2);
   }
-
+  
   Result getDataResult(long paramLong)
   {
     Result localResult = (Result)this.resultMap.get(paramLong);
     return localResult;
   }
-
+  
   RowSetNavigatorClient getRowSetSlice(long paramLong, int paramInt1, int paramInt2)
   {
     Result localResult = (Result)this.resultMap.get(paramLong);
     RowSetNavigator localRowSetNavigator = localResult.getNavigator();
-    if (paramInt1 + paramInt2 > localRowSetNavigator.getSize())
+    if (paramInt1 + paramInt2 > localRowSetNavigator.getSize()) {
       paramInt2 = localRowSetNavigator.getSize() - paramInt1;
+    }
     return new RowSetNavigatorClient(localRowSetNavigator, paramInt1, paramInt2);
   }
-
+  
   public void closeNavigator(long paramLong)
   {
     Result localResult = (Result)this.resultMap.remove(paramLong);
-    if (localResult != null)
+    if (localResult != null) {
       localResult.getNavigator().release();
+    }
   }
-
+  
   public void closeAllNavigators()
   {
-    if (this.resultMap == null)
+    if (this.resultMap == null) {
       return;
+    }
     Iterator localIterator = this.resultMap.values().iterator();
     while (localIterator.hasNext())
     {
@@ -189,11 +201,12 @@ public class SessionData
     }
     this.resultMap.clear();
   }
-
+  
   public void closeAllTransactionNavigators()
   {
-    if (this.resultMap == null)
+    if (this.resultMap == null) {
       return;
+    }
     Iterator localIterator = this.resultMap.values().iterator();
     while (localIterator.hasNext())
     {
@@ -205,43 +218,48 @@ public class SessionData
       }
     }
   }
-
+  
   public void registerNewLob(long paramLong)
   {
     this.firstNewLobID = paramLong;
     this.hasLobOps = true;
   }
-
+  
   public void clearLobOps()
   {
     this.firstNewLobID = 0L;
     this.hasLobOps = false;
   }
-
+  
   public long getFirstLobID()
   {
     return this.firstNewLobID;
   }
-
+  
   public void adjustLobUsageCount(Object paramObject, int paramInt)
   {
-    if ((this.session.isProcessingLog) || (this.session.isProcessingScript))
+    if ((this.session.isProcessingLog) || (this.session.isProcessingScript)) {
       return;
-    if (paramObject == null)
+    }
+    if (paramObject == null) {
       return;
+    }
     this.database.lobManager.adjustUsageCount(this.session, ((LobData)paramObject).getId(), paramInt);
     this.hasLobOps = true;
   }
-
+  
   public void adjustLobUsageCount(TableBase paramTableBase, Object[] paramArrayOfObject, int paramInt)
   {
-    if (!paramTableBase.hasLobColumn)
+    if (!paramTableBase.hasLobColumn) {
       return;
-    if (paramTableBase.isTemp)
+    }
+    if (paramTableBase.isTemp) {
       return;
-    if ((this.session.isProcessingLog) || (this.session.isProcessingScript))
+    }
+    if ((this.session.isProcessingLog) || (this.session.isProcessingScript)) {
       return;
-    for (int i = 0; i < paramTableBase.columnCount; i++)
+    }
+    for (int i = 0; i < paramTableBase.columnCount; i++) {
       if (paramTableBase.colTypes[i].isLobType())
       {
         Object localObject = paramArrayOfObject[i];
@@ -251,8 +269,9 @@ public class SessionData
           this.hasLobOps = true;
         }
       }
+    }
   }
-
+  
   public void allocateLobForResult(ResultLob paramResultLob, InputStream paramInputStream)
   {
     try
@@ -264,7 +283,7 @@ public class SessionData
       Result localResult;
       switch (paramResultLob.getSubType())
       {
-      case 7:
+      case 7: 
         l2 = paramResultLob.getBlockLength();
         if (l2 < 0L)
         {
@@ -288,7 +307,7 @@ public class SessionData
           this.database.lobManager.setBytesForNewBlob(l1, localCountdownInputStream, paramResultLob.getBlockLength());
         }
         break;
-      case 8:
+      case 8: 
         l2 = paramResultLob.getBlockLength();
         if (l2 < 0L)
         {
@@ -299,10 +318,11 @@ public class SessionData
           if (paramInputStream == null)
           {
             l1 = paramResultLob.getLobID();
-            if (paramResultLob.getReader() != null)
+            if (paramResultLob.getReader() != null) {
               paramInputStream = new ReaderInputStream(paramResultLob.getReader());
-            else
+            } else {
               paramInputStream = paramResultLob.getInputStream();
+            }
           }
           else
           {
@@ -315,20 +335,17 @@ public class SessionData
           this.database.lobManager.setCharsForNewClob(l1, localCountdownInputStream, paramResultLob.getBlockLength(), false);
         }
         break;
-      case 2:
+      case 2: 
         l1 = this.resultLobs.get(paramResultLob.getLobID());
         l2 = paramResultLob.getBlockLength();
         localObject = paramResultLob.getByteArray();
         localResult = this.database.lobManager.setBytes(l1, paramResultLob.getOffset(), (byte[])localObject, (int)l2);
         break;
-      case 4:
+      case 4: 
         l1 = this.resultLobs.get(paramResultLob.getLobID());
         l2 = paramResultLob.getBlockLength();
         localObject = paramResultLob.getCharArray();
         localResult = this.database.lobManager.setChars(l1, paramResultLob.getOffset(), (char[])localObject);
-      case 3:
-      case 5:
-      case 6:
       }
     }
     catch (Throwable localThrowable)
@@ -337,45 +354,48 @@ public class SessionData
       throw Error.error(458, localThrowable);
     }
   }
-
+  
   private void allocateBlobSegments(ResultLob paramResultLob, InputStream paramInputStream)
     throws IOException
   {
     long l = paramResultLob.getOffset();
     int i = this.session.getStreamBlockSize();
     HsqlByteArrayOutputStream localHsqlByteArrayOutputStream = new HsqlByteArrayOutputStream(i);
-    while (true)
+    for (;;)
     {
       localHsqlByteArrayOutputStream.reset();
       localHsqlByteArrayOutputStream.write(paramInputStream, i);
       byte[] arrayOfByte = localHsqlByteArrayOutputStream.getBuffer();
       Result localResult = this.database.lobManager.setBytes(paramResultLob.getLobID(), l, arrayOfByte, localHsqlByteArrayOutputStream.size());
       l += localHsqlByteArrayOutputStream.size();
-      if (localHsqlByteArrayOutputStream.size() < i)
+      if (localHsqlByteArrayOutputStream.size() < i) {
         return;
+      }
     }
   }
-
+  
   private void allocateClobSegments(ResultLob paramResultLob, Reader paramReader)
     throws IOException
   {
     long l = paramResultLob.getOffset();
     int i = this.session.getStreamBlockSize();
     CharArrayWriter localCharArrayWriter = new CharArrayWriter(i);
-    while (true)
+    for (;;)
     {
       localCharArrayWriter.reset();
       localCharArrayWriter.write(paramReader, i);
       char[] arrayOfChar = localCharArrayWriter.getBuffer();
-      if (localCharArrayWriter.size() < i)
+      if (localCharArrayWriter.size() < i) {
         arrayOfChar = localCharArrayWriter.toCharArray();
+      }
       Result localResult = this.database.lobManager.setChars(paramResultLob.getLobID(), l, arrayOfChar);
       l += localCharArrayWriter.size();
-      if (localCharArrayWriter.size() < i)
+      if (localCharArrayWriter.size() < i) {
         return;
+      }
     }
   }
-
+  
   public void registerLobForResult(Result paramResult)
   {
     RowSetNavigator localRowSetNavigator = paramResult.getNavigator();
@@ -394,7 +414,7 @@ public class SessionData
     }
     this.resultLobs.clear();
   }
-
+  
   private void registerLobsForRow(Object[] paramArrayOfObject)
   {
     for (int i = 0; i < paramArrayOfObject.length; i++)
@@ -405,31 +425,35 @@ public class SessionData
       {
         localObject = (BlobDataID)paramArrayOfObject[i];
         l = ((BlobData)localObject).getId();
-        if (l < 0L)
+        if (l < 0L) {
           l = this.resultLobs.get(l);
+        }
         paramArrayOfObject[i] = this.database.lobManager.getBlob(l);
       }
       else if ((paramArrayOfObject[i] instanceof ClobDataID))
       {
         localObject = (ClobDataID)paramArrayOfObject[i];
         l = ((ClobData)localObject).getId();
-        if (l < 0L)
+        if (l < 0L) {
           l = this.resultLobs.get(l);
+        }
         paramArrayOfObject[i] = this.database.lobManager.getClob(l);
       }
     }
   }
-
+  
   ClobData createClobFromFile(String paramString1, String paramString2)
   {
     this.session.checkAdmin();
     paramString1 = this.database.logger.getSecurePath(paramString1);
-    if (paramString1 == null)
+    if (paramString1 == null) {
       throw Error.error(457, paramString1);
+    }
     File localFile = new File(paramString1);
     boolean bool = localFile.exists();
-    if (!bool)
+    if (!bool) {
       throw Error.error(452);
+    }
     long l = localFile.length();
     Object localObject1 = null;
     try
@@ -452,22 +476,22 @@ public class SessionData
       {
         ((InputStream)localObject1).close();
       }
-      catch (Exception localException2)
-      {
-      }
+      catch (Exception localException2) {}
     }
   }
-
+  
   BlobData createBlobFromFile(String paramString)
   {
     this.session.checkAdmin();
     paramString = this.database.logger.getSecurePath(paramString);
-    if (paramString == null)
+    if (paramString == null) {
       throw Error.error(457, paramString);
+    }
     File localFile = new File(paramString);
     boolean bool = localFile.exists();
-    if (!bool)
+    if (!bool) {
       throw Error.error(452);
+    }
     long l = localFile.length();
     FileInputStream localFileInputStream = null;
     try
@@ -488,18 +512,17 @@ public class SessionData
       {
         localFileInputStream.close();
       }
-      catch (Exception localException2)
-      {
-      }
+      catch (Exception localException2) {}
     }
   }
-
+  
   public void startRowProcessing()
   {
-    if (this.sequenceMap != null)
+    if (this.sequenceMap != null) {
       this.sequenceMap.clear();
+    }
   }
-
+  
   public Object getSequenceValue(NumberSequence paramNumberSequence)
   {
     if (this.sequenceMap == null)
@@ -517,14 +540,15 @@ public class SessionData
     }
     return localObject;
   }
-
+  
   public Object getSequenceCurrent(NumberSequence paramNumberSequence)
   {
     return this.sequenceUpdateMap == null ? null : this.sequenceUpdateMap.get(paramNumberSequence);
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.SessionData
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

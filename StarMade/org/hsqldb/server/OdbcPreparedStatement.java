@@ -14,13 +14,13 @@ class OdbcPreparedStatement
   public Session session;
   private Map containingMap;
   private List portals = new ArrayList();
-
+  
   protected OdbcPreparedStatement(OdbcPreparedStatement paramOdbcPreparedStatement)
   {
     this.handle = paramOdbcPreparedStatement.handle;
     this.ackResult = paramOdbcPreparedStatement.ackResult;
   }
-
+  
   public OdbcPreparedStatement(String paramString1, String paramString2, Map paramMap, Session paramSession)
     throws RecoverableOdbcFailure
   {
@@ -33,30 +33,32 @@ class OdbcPreparedStatement
     this.ackResult = paramSession.execute(localResult);
     switch (this.ackResult.getType())
     {
-    case 4:
+    case 4: 
       break;
-    case 2:
+    case 2: 
       throw new RecoverableOdbcFailure(this.ackResult);
-    default:
+    default: 
       throw new RecoverableOdbcFailure("Output Result from Statement prep is of unexpected type: " + this.ackResult.getType());
     }
     paramMap.put(paramString1, this);
   }
-
+  
   public void close()
   {
     this.containingMap.remove(this.handle);
-    while (this.portals.size() > 0)
+    while (this.portals.size() > 0) {
       ((StatementPortal)this.portals.remove(1)).close();
+    }
   }
-
+  
   public void addPortal(StatementPortal paramStatementPortal)
   {
     this.portals.add(paramStatementPortal);
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.server.OdbcPreparedStatement
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

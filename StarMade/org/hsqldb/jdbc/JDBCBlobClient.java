@@ -20,7 +20,7 @@ public class JDBCBlobClient
   private boolean isClosed;
   private boolean isWritable;
   JDBCResultSet resultSet;
-
+  
   public synchronized long length()
     throws SQLException
   {
@@ -33,12 +33,13 @@ public class JDBCBlobClient
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public synchronized byte[] getBytes(long paramLong, int paramInt)
     throws SQLException
   {
-    if (!isInLimits(9223372036854775807L, paramLong - 1L, paramInt))
+    if (!isInLimits(9223372036854775807L, paramLong - 1L, paramInt)) {
       throw Util.outOfRangeArgument();
+    }
     try
     {
       return this.blob.getBytes(this.session, paramLong - 1L, paramInt);
@@ -48,23 +49,25 @@ public class JDBCBlobClient
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public synchronized InputStream getBinaryStream()
     throws SQLException
   {
     return new BlobInputStream(this.session, this.blob, 0L, length());
   }
-
+  
   public synchronized long position(byte[] paramArrayOfByte, long paramLong)
     throws SQLException
   {
-    if (!isInLimits(9223372036854775807L, paramLong - 1L, 0L))
+    if (!isInLimits(9223372036854775807L, paramLong - 1L, 0L)) {
       throw Util.outOfRangeArgument();
+    }
     try
     {
       long l = this.blob.position(this.session, paramArrayOfByte, paramLong - 1L);
-      if (l >= 0L)
+      if (l >= 0L) {
         l += 1L;
+      }
       return l;
     }
     catch (HsqlException localHsqlException)
@@ -72,20 +75,22 @@ public class JDBCBlobClient
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public synchronized long position(Blob paramBlob, long paramLong)
     throws SQLException
   {
-    if (!isInLimits(9223372036854775807L, paramLong - 1L, 0L))
+    if (!isInLimits(9223372036854775807L, paramLong - 1L, 0L)) {
       throw Util.outOfRangeArgument();
+    }
     if ((paramBlob instanceof JDBCBlobClient))
     {
       localObject = ((JDBCBlobClient)paramBlob).blob;
       try
       {
         long l = this.blob.position(this.session, (BlobData)localObject, paramLong - 1L);
-        if (l >= 0L)
+        if (l >= 0L) {
           l += 1L;
+        }
         return l;
       }
       catch (HsqlException localHsqlException)
@@ -93,27 +98,31 @@ public class JDBCBlobClient
         throw Util.sqlException(localHsqlException);
       }
     }
-    if (!isInLimits(2147483647L, 0L, paramBlob.length()))
+    if (!isInLimits(2147483647L, 0L, paramBlob.length())) {
       throw Util.outOfRangeArgument();
+    }
     Object localObject = paramBlob.getBytes(1L, (int)paramBlob.length());
     return position((byte[])localObject, paramLong);
   }
-
+  
   public synchronized int setBytes(long paramLong, byte[] paramArrayOfByte)
     throws SQLException
   {
     return setBytes(paramLong, paramArrayOfByte, 0, paramArrayOfByte.length);
   }
-
+  
   public synchronized int setBytes(long paramLong, byte[] paramArrayOfByte, int paramInt1, int paramInt2)
     throws SQLException
   {
-    if (!isInLimits(paramArrayOfByte.length, paramInt1, paramInt2))
+    if (!isInLimits(paramArrayOfByte.length, paramInt1, paramInt2)) {
       throw Util.outOfRangeArgument();
-    if (!isInLimits(9223372036854775807L, paramLong - 1L, paramInt2))
+    }
+    if (!isInLimits(9223372036854775807L, paramLong - 1L, paramInt2)) {
       throw Util.outOfRangeArgument();
-    if (!this.isWritable)
+    }
+    if (!this.isWritable) {
       throw Util.notUpdatableColumn();
+    }
     startUpdate();
     try
     {
@@ -125,13 +134,13 @@ public class JDBCBlobClient
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public synchronized OutputStream setBinaryStream(long paramLong)
     throws SQLException
   {
     throw Util.notSupported();
   }
-
+  
   public synchronized void truncate(long paramLong)
     throws SQLException
   {
@@ -144,44 +153,45 @@ public class JDBCBlobClient
       throw Util.sqlException(localHsqlException);
     }
   }
-
+  
   public synchronized void free()
     throws SQLException
   {
     this.isClosed = true;
   }
-
+  
   public synchronized InputStream getBinaryStream(long paramLong1, long paramLong2)
     throws SQLException
   {
-    if (!isInLimits(9223372036854775807L, paramLong1 - 1L, paramLong2))
+    if (!isInLimits(9223372036854775807L, paramLong1 - 1L, paramLong2)) {
       throw Util.outOfRangeArgument();
+    }
     return new BlobInputStream(this.session, this.blob, paramLong1 - 1L, paramLong2);
   }
-
+  
   public JDBCBlobClient(SessionInterface paramSessionInterface, BlobDataID paramBlobDataID)
   {
     this.session = paramSessionInterface;
     this.blob = paramBlobDataID;
   }
-
+  
   public boolean isClosed()
   {
     return this.isClosed;
   }
-
+  
   public BlobDataID getBlob()
   {
     return this.blob;
   }
-
+  
   public synchronized void setWritable(JDBCResultSet paramJDBCResultSet, int paramInt)
   {
     this.isWritable = true;
     this.resultSet = paramJDBCResultSet;
     this.colIndex = paramInt;
   }
-
+  
   public synchronized void clearUpdates()
   {
     if (this.originalBlob != null)
@@ -190,33 +200,36 @@ public class JDBCBlobClient
       this.originalBlob = null;
     }
   }
-
+  
   private void startUpdate()
     throws SQLException
   {
-    if (this.originalBlob != null)
+    if (this.originalBlob != null) {
       return;
+    }
     this.originalBlob = this.blob;
     this.blob = ((BlobDataID)this.blob.duplicate(this.session));
     this.resultSet.startUpdate(this.colIndex + 1);
     this.resultSet.preparedStatement.parameterValues[this.colIndex] = this.blob;
     this.resultSet.preparedStatement.parameterSet[this.colIndex] = Boolean.TRUE;
   }
-
+  
   private void checkClosed()
     throws SQLException
   {
-    if (this.isClosed)
+    if (this.isClosed) {
       throw Util.sqlException(1251);
+    }
   }
-
+  
   static boolean isInLimits(long paramLong1, long paramLong2, long paramLong3)
   {
     return (paramLong2 >= 0L) && (paramLong3 >= 0L) && (paramLong2 + paramLong3 <= paramLong1);
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.jdbc.JDBCBlobClient
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

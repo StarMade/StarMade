@@ -12,39 +12,34 @@ public class ReadWriteLockDummy
   {
     return new LockDummy();
   }
-
+  
   public Lock writeLock()
   {
     return new LockDummy();
   }
-
+  
   public static class LockDummy
     implements Lock
   {
-    public void lock()
-    {
-    }
-
+    public void lock() {}
+    
     public void lockInterruptibly()
       throws InterruptedException
-    {
-    }
-
+    {}
+    
     public boolean tryLock()
     {
       return false;
     }
-
+    
     public boolean tryLock(long paramLong, TimeUnit paramTimeUnit)
       throws InterruptedException
     {
       return false;
     }
-
-    public void unlock()
-    {
-    }
-
+    
+    public void unlock() {}
+    
     public Condition newCondition()
     {
       return null;
@@ -52,7 +47,8 @@ public class ReadWriteLockDummy
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.lib.ReadWriteLockDummy
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

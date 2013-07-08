@@ -1,20 +1,19 @@
-/*     */ import java.io.File;
-/*     */ import java.io.FilenameFilter;
-/*     */ 
-/*     */ public final class kx
-/*     */   implements FilenameFilter
-/*     */ {
-/*     */   public kx(String paramString)
-/*     */   {
-/*     */   }
-/*     */ 
-/*     */   public final boolean accept(File paramFile, String paramString)
-/*     */   {
-/* 179 */     return paramString.startsWith(this.a);
-/*     */   }
-/*     */ }
+/*   1:    */import java.io.File;
+/*   2:    */import java.io.FilenameFilter;
+/*   3:    */
+/* 172:    */public final class kx
+/* 173:    */  implements FilenameFilter
+/* 174:    */{
+/* 175:    */  public kx(String paramString) {}
+/* 176:    */  
+/* 177:    */  public final boolean accept(File paramFile, String paramString)
+/* 178:    */  {
+/* 179:179 */    return paramString.startsWith(this.a);
+/* 180:    */  }
+/* 181:    */}
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     kx
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

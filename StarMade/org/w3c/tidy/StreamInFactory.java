@@ -17,14 +17,15 @@ public final class StreamInFactory
       throw new RuntimeException("Unsupported encoding: " + localUnsupportedEncodingException.getMessage());
     }
   }
-
+  
   public static StreamIn getStreamIn(Configuration paramConfiguration, Reader paramReader)
   {
     return new StreamInJavaImpl(paramReader, paramConfiguration.tabsize);
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.w3c.tidy.StreamInFactory
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

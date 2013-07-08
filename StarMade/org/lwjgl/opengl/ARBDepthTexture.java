@@ -9,7 +9,8 @@ public final class ARBDepthTexture
   public static final int GL_DEPTH_TEXTURE_MODE_ARB = 34891;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.opengl.ARBDepthTexture
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

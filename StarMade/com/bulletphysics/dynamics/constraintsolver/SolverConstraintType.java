@@ -1,12 +1,14 @@
-/*    */ package com.bulletphysics.dynamics.constraintsolver;
-/*    */ 
-/*    */ public enum SolverConstraintType
-/*    */ {
-/* 32 */   SOLVER_CONTACT_1D, 
-/* 33 */   SOLVER_FRICTION_1D;
-/*    */ }
+package com.bulletphysics.dynamics.constraintsolver;
+
+public enum SolverConstraintType
+{
+  SOLVER_CONTACT_1D,  SOLVER_FRICTION_1D;
+  
+  private SolverConstraintType() {}
+}
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     com.bulletphysics.dynamics.constraintsolver.SolverConstraintType
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

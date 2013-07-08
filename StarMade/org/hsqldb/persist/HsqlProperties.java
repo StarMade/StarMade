@@ -35,18 +35,18 @@ public class HsqlProperties
   public static final int indexRangeHigh = 6;
   public static final int indexValues = 7;
   public static final int indexLimit = 9;
-
+  
   public HsqlProperties()
   {
     this.stringProps = new Properties();
     this.fileName = null;
   }
-
+  
   public HsqlProperties(String paramString)
   {
     this(paramString, ".properties");
   }
-
+  
   public HsqlProperties(String paramString1, String paramString2)
   {
     this.stringProps = new Properties();
@@ -54,7 +54,7 @@ public class HsqlProperties
     this.fileExtension = paramString2;
     this.fa = FileUtil.getFileUtil();
   }
-
+  
   public HsqlProperties(HashMap paramHashMap, String paramString, FileAccess paramFileAccess, boolean paramBoolean)
   {
     this.stringProps = new Properties();
@@ -63,58 +63,58 @@ public class HsqlProperties
     this.fa = paramFileAccess;
     this.metaData = paramHashMap;
   }
-
+  
   public HsqlProperties(Properties paramProperties)
   {
     this.stringProps = paramProperties;
   }
-
+  
   public void setFileName(String paramString)
   {
     this.fileName = paramString;
   }
-
+  
   public String setProperty(String paramString, int paramInt)
   {
     return setProperty(paramString, Integer.toString(paramInt));
   }
-
+  
   public String setProperty(String paramString, boolean paramBoolean)
   {
     return setProperty(paramString, String.valueOf(paramBoolean));
   }
-
+  
   public String setProperty(String paramString1, String paramString2)
   {
     return (String)this.stringProps.put(paramString1, paramString2);
   }
-
+  
   public String setPropertyIfNotExists(String paramString1, String paramString2)
   {
     paramString2 = getProperty(paramString1, paramString2);
     return setProperty(paramString1, paramString2);
   }
-
+  
   public Properties getProperties()
   {
     return this.stringProps;
   }
-
+  
   public String getProperty(String paramString)
   {
     return this.stringProps.getProperty(paramString);
   }
-
+  
   public String getProperty(String paramString1, String paramString2)
   {
     return this.stringProps.getProperty(paramString1, paramString2);
   }
-
+  
   public int getIntegerProperty(String paramString, int paramInt)
   {
     return getIntegerProperty(this.stringProps, paramString, paramInt);
   }
-
+  
   public static int getIntegerProperty(Properties paramProperties, String paramString, int paramInt)
   {
     String str = paramProperties.getProperty(paramString);
@@ -126,35 +126,35 @@ public class HsqlProperties
         paramInt = Integer.parseInt(str);
       }
     }
-    catch (NumberFormatException localNumberFormatException)
-    {
-    }
+    catch (NumberFormatException localNumberFormatException) {}
     return paramInt;
   }
-
+  
   public boolean isPropertyTrue(String paramString)
   {
     return isPropertyTrue(paramString, false);
   }
-
+  
   public boolean isPropertyTrue(String paramString, boolean paramBoolean)
   {
     String str = this.stringProps.getProperty(paramString);
-    if (str == null)
+    if (str == null) {
       return paramBoolean;
+    }
     str = str.trim();
     return str.toLowerCase().equals("true");
   }
-
+  
   public void removeProperty(String paramString)
   {
     this.stringProps.remove(paramString);
   }
-
+  
   public void addProperties(Properties paramProperties)
   {
-    if (paramProperties == null)
+    if (paramProperties == null) {
       return;
+    }
     Enumeration localEnumeration = paramProperties.propertyNames();
     while (localEnumeration.hasMoreElements())
     {
@@ -163,29 +163,33 @@ public class HsqlProperties
       this.stringProps.put(str1, str2);
     }
   }
-
+  
   public void addProperties(HsqlProperties paramHsqlProperties)
   {
-    if (paramHsqlProperties == null)
+    if (paramHsqlProperties == null) {
       return;
+    }
     addProperties(paramHsqlProperties.stringProps);
   }
-
+  
   public boolean propertiesFileExists()
   {
-    if (this.fileName == null)
+    if (this.fileName == null) {
       return false;
+    }
     String str = this.fileName + this.fileExtension;
     return this.fa.isStreamElement(str);
   }
-
+  
   public boolean load()
     throws Exception
   {
-    if ((this.fileName == null) || (this.fileName.length() == 0))
+    if ((this.fileName == null) || (this.fileName.length() == 0)) {
       throw new FileNotFoundException(Error.getMessage(28));
-    if (!propertiesFileExists())
+    }
+    if (!propertiesFileExists()) {
       return false;
+    }
     InputStream localInputStream = null;
     String str = this.fileName + this.fileExtension;
     try
@@ -195,21 +199,23 @@ public class HsqlProperties
     }
     finally
     {
-      if (localInputStream != null)
+      if (localInputStream != null) {
         localInputStream.close();
+      }
     }
     return true;
   }
-
+  
   public void save()
     throws Exception
   {
-    if ((this.fileName == null) || (this.fileName.length() == 0))
+    if ((this.fileName == null) || (this.fileName.length() == 0)) {
       throw new FileNotFoundException(Error.getMessage(28));
+    }
     String str = this.fileName + this.fileExtension;
     save(str);
   }
-
+  
   public void save(String paramString)
     throws Exception
   {
@@ -223,7 +229,7 @@ public class HsqlProperties
     localFileSync = null;
     localOutputStream = null;
   }
-
+  
   protected void addError(int paramInt, String paramString)
   {
     this.errorCodes = ((int[])ArrayUtil.resizeArray(this.errorCodes, this.errorCodes.length + 1));
@@ -231,7 +237,7 @@ public class HsqlProperties
     this.errorCodes[(this.errorCodes.length - 1)] = paramInt;
     this.errorKeys[(this.errorKeys.length - 1)] = paramString;
   }
-
+  
   public static HsqlProperties argArrayToProps(String[] paramArrayOfString, String paramString)
   {
     HsqlProperties localHsqlProperties = new HsqlProperties();
@@ -261,16 +267,17 @@ public class HsqlProperties
     }
     return localHsqlProperties;
   }
-
+  
   public static HsqlProperties delimitedArgPairsToProps(String paramString1, String paramString2, String paramString3, String paramString4)
   {
     HsqlProperties localHsqlProperties = new HsqlProperties();
     int j;
-    for (int i = 0; ; i = j + paramString3.length())
+    for (int i = 0;; i = j + paramString3.length())
     {
       j = paramString1.indexOf(paramString3, i);
-      if (j == -1)
+      if (j == -1) {
         j = paramString1.length();
+      }
       int k = paramString1.substring(0, j).indexOf(paramString2, i);
       if (k == -1)
       {
@@ -280,35 +287,35 @@ public class HsqlProperties
       {
         String str1 = paramString1.substring(i, k).trim();
         String str2 = paramString1.substring(k + paramString2.length(), j).trim();
-        if (paramString4 != null)
+        if (paramString4 != null) {
           str1 = paramString4 + "." + str1;
+        }
         localHsqlProperties.setProperty(str1, str2);
       }
-      if (j == paramString1.length())
+      if (j == paramString1.length()) {
         break;
+      }
     }
     return localHsqlProperties;
   }
-
+  
   public Enumeration propertyNames()
   {
     return this.stringProps.propertyNames();
   }
-
+  
   public boolean isEmpty()
   {
     return this.stringProps.isEmpty();
   }
-
+  
   public String[] getErrorKeys()
   {
     return this.errorKeys;
   }
-
-  public void validate()
-  {
-  }
-
+  
+  public void validate() {}
+  
   public static Object[] getMeta(String paramString1, int paramInt, String paramString2)
   {
     Object[] arrayOfObject = new Object[9];
@@ -318,7 +325,7 @@ public class HsqlProperties
     arrayOfObject[4] = paramString2;
     return arrayOfObject;
   }
-
+  
   public static Object[] getMeta(String paramString, int paramInt, boolean paramBoolean)
   {
     Object[] arrayOfObject = new Object[9];
@@ -328,7 +335,7 @@ public class HsqlProperties
     arrayOfObject[4] = (paramBoolean ? Boolean.TRUE : Boolean.FALSE);
     return arrayOfObject;
   }
-
+  
   public static Object[] getMeta(String paramString, int paramInt1, int paramInt2, int[] paramArrayOfInt)
   {
     Object[] arrayOfObject = new Object[9];
@@ -339,7 +346,7 @@ public class HsqlProperties
     arrayOfObject[7] = paramArrayOfInt;
     return arrayOfObject;
   }
-
+  
   public static Object[] getMeta(String paramString, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
   {
     Object[] arrayOfObject = new Object[9];
@@ -352,18 +359,20 @@ public class HsqlProperties
     arrayOfObject[6] = ValuePool.getInt(paramInt4);
     return arrayOfObject;
   }
-
+  
   public static String validateProperty(String paramString1, String paramString2, Object[] paramArrayOfObject)
   {
     if (paramArrayOfObject[2].equals("Boolean"))
     {
       paramString2 = paramString2.toLowerCase();
-      if ((paramString2.equals("true")) || (paramString2.equals("false")))
+      if ((paramString2.equals("true")) || (paramString2.equals("false"))) {
         return null;
+      }
       return "invalid boolean value for property: " + paramString1;
     }
-    if (paramArrayOfObject[2].equals("String"))
+    if (paramArrayOfObject[2].equals("String")) {
       return null;
+    }
     if (paramArrayOfObject[2].equals("Integer"))
     {
       int i = Integer.parseInt(paramString2);
@@ -371,45 +380,50 @@ public class HsqlProperties
       {
         int j = ((Integer)paramArrayOfObject[5]).intValue();
         int k = ((Integer)paramArrayOfObject[6]).intValue();
-        if ((i < j) || (k < i))
+        if ((i < j) || (k < i)) {
           return "value outside range for property: " + paramString1;
+        }
       }
       if (paramArrayOfObject[7] != null)
       {
         int[] arrayOfInt = (int[])paramArrayOfObject[7];
-        if (ArrayUtil.find(arrayOfInt, i) == -1)
+        if (ArrayUtil.find(arrayOfInt, i) == -1) {
           return "value not supported for property: " + paramString1;
+        }
       }
       return null;
     }
     return null;
   }
-
+  
   public boolean validateProperty(String paramString, int paramInt)
   {
     Object[] arrayOfObject = (Object[])this.metaData.get(paramString);
-    if (arrayOfObject == null)
+    if (arrayOfObject == null) {
       return false;
+    }
     if (arrayOfObject[2].equals("Integer"))
     {
       if (Boolean.TRUE.equals(arrayOfObject[3]))
       {
         int i = ((Integer)arrayOfObject[5]).intValue();
         int j = ((Integer)arrayOfObject[6]).intValue();
-        if ((paramInt < i) || (j < paramInt))
+        if ((paramInt < i) || (j < paramInt)) {
           return false;
+        }
       }
       if (arrayOfObject[7] != null)
       {
         int[] arrayOfInt = (int[])arrayOfObject[7];
-        if (ArrayUtil.find(arrayOfInt, paramInt) == -1)
+        if (ArrayUtil.find(arrayOfInt, paramInt) == -1) {
           return false;
+        }
       }
       return true;
     }
     return false;
   }
-
+  
   public String toString()
   {
     StringBuffer localStringBuffer = new StringBuffer();
@@ -433,7 +447,8 @@ public class HsqlProperties
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.persist.HsqlProperties
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

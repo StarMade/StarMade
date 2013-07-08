@@ -4,16 +4,17 @@ import java.io.IOException;
 import org.hsqldb.persist.Crypto;
 import org.hsqldb.types.Type;
 
-public class RowInputBinaryDecode extends RowInputBinary
+public class RowInputBinaryDecode
+  extends RowInputBinary
 {
   final Crypto crypto;
-
+  
   public RowInputBinaryDecode(Crypto paramCrypto, byte[] paramArrayOfByte)
   {
     super(paramArrayOfByte);
     this.crypto = paramCrypto;
   }
-
+  
   public Object[] readData(Type[] paramArrayOfType)
     throws IOException
   {
@@ -28,7 +29,8 @@ public class RowInputBinaryDecode extends RowInputBinary
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.rowio.RowInputBinaryDecode
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

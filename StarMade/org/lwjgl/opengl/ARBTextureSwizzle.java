@@ -9,7 +9,8 @@ public final class ARBTextureSwizzle
   public static final int GL_TEXTURE_SWIZZLE_RGBA = 36422;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.opengl.ARBTextureSwizzle
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

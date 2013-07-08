@@ -25,31 +25,30 @@ class DatabaseManagerCommon
   static String[] setHelp = { "SET ", "SET AUTOCOMMIT { TRUE | FALSE }\nSET DATABASE COLLATION \"<collationname>\"\nSET FILES CHECKPOINT DEFRAG <size>\nSET DATABASE INITIAL SCHEMA <schemaname>\nSET FILES LOG SIZE <size>\nSET MAXROWS maxrows\nSET PASSWORD <password>\nSET FILES READ { ONLY | WRITE }\nSET SCHEMA <schemaname>\nSET TABLE <tablename> READ { ONLY | WRITE }\nSET TABLE <tablename> SOURCE { ON | OFF }\nSET TABLE <tablename> SOURCE \"<file>\" [DESC]\n\n\n(HSQLDB SQL only)" };
   static String[] testHelp = { "-->>>TEST<<<-- ;\n--#1000;\nDROP TABLE Test IF EXISTS;\nCREATE TABLE Test(\n  Id INTEGER PRIMARY KEY,\n  FirstName VARCHAR(20),\n  Name VARCHAR(50),\n  ZIP INTEGER) ;\nINSERT INTO Test \n  VALUES(#,'Julia','Peterson-Clancy',#) ;\nUPDATE Test SET Name='Hans' WHERE Id=# ;\nSELECT * FROM Test WHERE Id=# ;\nDELETE FROM Test WHERE Id=# ;\nDROP TABLE Test IF EXISTS;", "This test script is parsed by the DatabaseManager\nIt may be changed manually. Rules:\n- it must start with -->>>TEST<<<--.\n- each line must end with ';' (no spaces after)\n- lines starting with -- are comments\n- lines starting with --#<count> means set new count\n" };
   static String[] testDataSql = { "SELECT * FROM Product", "SELECT * FROM Invoice", "SELECT * FROM Item", "SELECT * FROM Customer a INNER JOIN Invoice i ON a.ID=i.CustomerID", "SELECT * FROM Customer a LEFT OUTER JOIN Invoice i ON a.ID=i.CustomerID", "SELECT * FROM Invoice d INNER JOIN Item i ON d.ID=i.InvoiceID", "SELECT * FROM Customer WHERE Street LIKE '1%' ORDER BY Lastname", "SELECT a.id, a.firstname, a.lastname, count(i.Total) \"COUNT\", COALESCE(sum(i.Total), 0) \"TOTAL\", COALESCE(AVG(i.Total),0) \"AVG\" FROM Customer a LEFT OUTER JOIN Invoice i ON a.ID=i.CustomerID GROUP BY a.id, a.firstname, a.lastname" };
-
+  
   static String random(String[] paramArrayOfString)
   {
     return paramArrayOfString[random(paramArrayOfString.length)];
   }
-
+  
   static int random(int paramInt)
   {
     paramInt = rRandom.nextInt() % paramInt;
     return paramInt < 0 ? -paramInt : paramInt;
   }
-
+  
   static void createTestTables(Statement paramStatement)
   {
     String[] arrayOfString = { "DROP TABLE Item IF EXISTS;", "DROP TABLE Invoice IF EXISTS;", "DROP TABLE Product IF EXISTS;", "DROP TABLE Customer IF EXISTS;", "CREATE TABLE Customer(ID INTEGER PRIMARY KEY,FirstName VARCHAR(20),LastName VARCHAR(20),Street VARCHAR(20),City VARCHAR(20));", "CREATE TABLE Product(ID INTEGER PRIMARY KEY,Name VARCHAR(20),Price DECIMAL(10,2));", "CREATE TABLE Invoice(ID INTEGER PRIMARY KEY,CustomerID INTEGER,Total DECIMAL(10,2), FOREIGN KEY (CustomerId) REFERENCES Customer(ID) ON DELETE CASCADE);", "CREATE TABLE Item(InvoiceID INTEGER,Item INTEGER,ProductID INTEGER,Quantity INTEGER,Cost DECIMAL(10,2),PRIMARY KEY(InvoiceID,Item), FOREIGN KEY (InvoiceId) REFERENCES Invoice (ID) ON DELETE CASCADE, FOREIGN KEY (ProductId) REFERENCES Product(ID) ON DELETE CASCADE);" };
-    for (int i = 0; i < arrayOfString.length; i++)
+    for (int i = 0; i < arrayOfString.length; i++) {
       try
       {
         paramStatement.execute(arrayOfString[i]);
       }
-      catch (SQLException localSQLException)
-      {
-      }
+      catch (SQLException localSQLException) {}
+    }
   }
-
+  
   static String createTestData(Statement paramStatement)
     throws SQLException
   {
@@ -67,15 +66,16 @@ class DatabaseManagerCommon
     for (j = 0; j < i; j++)
     {
       paramStatement.execute("INSERT INTO Invoice VALUES(" + j + "," + random(i) + ",0.0)");
-      for (int k = random(20) + 2; k >= 0; k--)
+      for (int k = random(20) + 2; k >= 0; k--) {
         paramStatement.execute("INSERT INTO Item VALUES(" + j + "," + k + "," + random(i) + "," + (1 + random(24)) + ",1.5)");
+      }
     }
     paramStatement.execute("UPDATE Product SET Price=ROUND(Price*.1,2)");
     paramStatement.execute("UPDATE Item SET Cost=Cost*(SELECT Price FROM Product prod WHERE ProductID=prod.ID)");
     paramStatement.execute("UPDATE Invoice SET Total=(SELECT SUM(Cost*Quantity) FROM Item WHERE InvoiceID=Invoice.ID)");
     return "SELECT * FROM Customer";
   }
-
+  
   static String readFile(String paramString)
   {
     try
@@ -100,7 +100,7 @@ class DatabaseManagerCommon
       return localIOException.toString();
     }
   }
-
+  
   static void writeFile(String paramString1, String paramString2)
   {
     try
@@ -114,27 +114,30 @@ class DatabaseManagerCommon
       localIOException.printStackTrace();
     }
   }
-
+  
   static long testStatement(Statement paramStatement, String paramString, int paramInt)
     throws SQLException
   {
     long l = System.currentTimeMillis();
-    if (paramString.indexOf(35) == -1)
+    if (paramString.indexOf(35) == -1) {
       paramInt = 1;
+    }
     for (int i = 0; i < paramInt; i++)
     {
       int j;
-      for (String str = paramString; ; str = str.substring(0, j) + (int)(Math.random() * i) + str.substring(j + 3))
+      for (String str = paramString;; str = str.substring(0, j) + (int)(Math.random() * i) + str.substring(j + 3))
       {
         j = str.indexOf("#r#");
-        if (j == -1)
+        if (j == -1) {
           break;
+        }
       }
-      while (true)
+      for (;;)
       {
         j = str.indexOf(35);
-        if (j == -1)
+        if (j == -1) {
           break;
+        }
         str = str.substring(0, j) + i + str.substring(j + 1);
       }
       paramStatement.execute(str);
@@ -143,7 +146,8 @@ class DatabaseManagerCommon
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.util.DatabaseManagerCommon
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

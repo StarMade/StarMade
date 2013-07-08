@@ -21,7 +21,8 @@ public final class NVTextureShader3
   public static final int GL_FORCE_BLUE_TO_ONE_NV = 34912;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.opengl.NVTextureShader3
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

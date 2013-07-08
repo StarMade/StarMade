@@ -6,13 +6,14 @@ import org.hsqldb.index.NodeAVLDiskLarge;
 import org.hsqldb.persist.PersistentStore;
 import org.hsqldb.rowio.RowInputInterface;
 
-public class RowAVLDiskLarge extends RowAVLDisk
+public class RowAVLDiskLarge
+  extends RowAVLDisk
 {
   public RowAVLDiskLarge(TableBase paramTableBase, Object[] paramArrayOfObject, PersistentStore paramPersistentStore)
   {
     super(paramTableBase, paramArrayOfObject, paramPersistentStore);
   }
-
+  
   public RowAVLDiskLarge(TableBase paramTableBase, RowInputInterface paramRowInputInterface)
     throws IOException
   {
@@ -29,7 +30,7 @@ public class RowAVLDiskLarge extends RowAVLDisk
     }
     this.rowData = paramRowInputInterface.readData(this.table.getColumnTypes());
   }
-
+  
   public void setNewNodes(PersistentStore paramPersistentStore)
   {
     int i = paramPersistentStore.getAccessorKeys().length;
@@ -43,7 +44,8 @@ public class RowAVLDiskLarge extends RowAVLDisk
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.RowAVLDiskLarge
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

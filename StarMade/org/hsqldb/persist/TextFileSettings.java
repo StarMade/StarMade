@@ -22,7 +22,7 @@ public class TextFileSettings
   static final char BACKSLASH_CHAR = '\\';
   static final char LF_CHAR = '\n';
   static final char CR_CHAR = '\r';
-
+  
   TextFileSettings(Database paramDatabase, String paramString)
   {
     this.database = paramDatabase;
@@ -30,12 +30,12 @@ public class TextFileSettings
     HsqlDatabaseProperties localHsqlDatabaseProperties = paramDatabase.getProperties();
     switch (localHsqlProperties.errorCodes.length)
     {
-    case 0:
+    case 0: 
       this.dataFileName = null;
-    case 1:
+    case 1: 
       this.dataFileName = localHsqlProperties.errorKeys[0].trim();
       break;
-    default:
+    default: 
       throw Error.error(302);
     }
     this.fs = localHsqlDatabaseProperties.getStringProperty("textdb.fs");
@@ -44,15 +44,18 @@ public class TextFileSettings
     this.vs = localHsqlProperties.getProperty("textdb.vs", this.vs);
     this.lvs = localHsqlDatabaseProperties.getStringProperty("textdb.lvs");
     this.lvs = localHsqlProperties.getProperty("textdb.lvs", this.lvs);
-    if (this.vs == null)
+    if (this.vs == null) {
       this.vs = this.fs;
-    if (this.lvs == null)
+    }
+    if (this.lvs == null) {
       this.lvs = this.fs;
+    }
     this.fs = translateSep(this.fs);
     this.vs = translateSep(this.vs);
     this.lvs = translateSep(this.lvs);
-    if ((this.fs.length() == 0) || (this.vs.length() == 0) || (this.lvs.length() == 0))
+    if ((this.fs.length() == 0) || (this.vs.length() == 0) || (this.lvs.length() == 0)) {
       throw Error.error(303);
+    }
     this.ignoreFirst = localHsqlDatabaseProperties.isPropertyTrue("textdb.ignore_first");
     this.ignoreFirst = localHsqlProperties.isPropertyTrue("textdb.ignore_first", this.ignoreFirst);
     this.isQuoted = localHsqlDatabaseProperties.isPropertyTrue("textdb.quoted");
@@ -69,37 +72,39 @@ public class TextFileSettings
     this.maxCacheRows = localHsqlDatabaseProperties.getIntegerProperty("textdb.cache_rows", this.maxCacheRows);
     this.maxCacheRows = localHsqlProperties.getIntegerProperty("textdb.cache_rows", this.maxCacheRows);
     this.maxCacheBytes = ((1 << j) * this.maxCacheRows / 1024);
-    if (this.maxCacheBytes < 4)
+    if (this.maxCacheBytes < 4) {
       this.maxCacheBytes = 4;
+    }
     this.maxCacheBytes = localHsqlDatabaseProperties.getIntegerProperty("textdb.cache_size", this.maxCacheBytes);
     this.maxCacheBytes = localHsqlProperties.getIntegerProperty("textdb.cache_size", this.maxCacheBytes);
     this.maxCacheBytes *= 1024;
   }
-
+  
   String getFileName()
   {
     return this.dataFileName;
   }
-
+  
   int getMaxCacheRows()
   {
     return this.maxCacheRows;
   }
-
+  
   int getMaxCacheBytes()
   {
     return this.maxCacheBytes;
   }
-
+  
   private static String translateSep(String paramString)
   {
     return translateSep(paramString, false);
   }
-
+  
   private static String translateSep(String paramString, boolean paramBoolean)
   {
-    if (paramString == null)
+    if (paramString == null) {
       return null;
+    }
     int i = paramString.indexOf('\\');
     if (i != -1)
     {
@@ -118,8 +123,9 @@ public class TextFileSettings
           localStringBuffer.append('\\');
           break;
         }
-        if (!paramBoolean)
+        if (!paramBoolean) {
           k = arrayOfChar[i];
+        }
         if (k == 110)
         {
           localStringBuffer.append('\n');
@@ -172,8 +178,7 @@ public class TextFileSettings
           localStringBuffer.append(arrayOfChar[i]);
           j++;
         }
-      }
-      while ((i = paramString.indexOf('\\', j)) != -1);
+      } while ((i = paramString.indexOf('\\', j)) != -1);
       localStringBuffer.append(arrayOfChar, j, m - j);
       paramString = localStringBuffer.toString();
     }
@@ -181,7 +186,8 @@ public class TextFileSettings
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.persist.TextFileSettings
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

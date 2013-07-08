@@ -45,11 +45,9 @@ public class TriggerDef
   protected int rowsQueued;
   protected boolean valid = true;
   protected volatile boolean keepGoing = true;
-
-  TriggerDef()
-  {
-  }
-
+  
+  TriggerDef() {}
+  
   public TriggerDef(HsqlNameManager.HsqlName paramHsqlName, int paramInt1, int paramInt2, boolean paramBoolean1, Table paramTable, Table[] paramArrayOfTable, RangeVariable[] paramArrayOfRangeVariable, Expression paramExpression, String paramString1, int[] paramArrayOfInt, String paramString2, boolean paramBoolean2, int paramInt3)
   {
     this(paramHsqlName, paramInt1, paramInt2, paramBoolean1, paramTable, paramArrayOfTable, paramArrayOfRangeVariable, paramExpression, paramString1, paramArrayOfInt);
@@ -69,9 +67,7 @@ public class TriggerDef
       {
         localClass = Class.forName(paramString2);
       }
-      catch (Throwable localThrowable3)
-      {
-      }
+      catch (Throwable localThrowable3) {}
     }
     if (localClass == null)
     {
@@ -91,7 +87,7 @@ public class TriggerDef
       }
     }
   }
-
+  
   public TriggerDef(HsqlNameManager.HsqlName paramHsqlName, int paramInt1, int paramInt2, boolean paramBoolean, Table paramTable, Table[] paramArrayOfTable, RangeVariable[] paramArrayOfRangeVariable, Expression paramExpression, String paramString, int[] paramArrayOfInt)
   {
     this.name = paramHsqlName;
@@ -108,51 +104,49 @@ public class TriggerDef
     this.hasTransitionTables = ((paramArrayOfTable[2] != null) || (paramArrayOfTable[3] != null));
     setUpIndexesAndTypes();
   }
-
+  
   public boolean isValid()
   {
     return this.valid;
   }
-
+  
   public int getType()
   {
     return 8;
   }
-
+  
   public HsqlNameManager.HsqlName getName()
   {
     return this.name;
   }
-
+  
   public HsqlNameManager.HsqlName getCatalogName()
   {
     return this.name.schema.schema;
   }
-
+  
   public HsqlNameManager.HsqlName getSchemaName()
   {
     return this.name.schema;
   }
-
+  
   public Grantee getOwner()
   {
     return this.name.schema.owner;
   }
-
+  
   public OrderedHashSet getReferences()
   {
     return new OrderedHashSet();
   }
-
+  
   public OrderedHashSet getComponents()
   {
     return null;
   }
-
-  public void compile(Session paramSession, SchemaObject paramSchemaObject)
-  {
-  }
-
+  
+  public void compile(Session paramSession, SchemaObject paramSchemaObject) {}
+  
   public String getSQL()
   {
     StringBuffer localStringBuffer = getSQLMain();
@@ -160,19 +154,20 @@ public class TriggerDef
     {
       localStringBuffer.append("QUEUE").append(' ');
       localStringBuffer.append(this.maxRowsQueued).append(' ');
-      if (this.nowait)
+      if (this.nowait) {
         localStringBuffer.append("NOWAIT").append(' ');
+      }
     }
     localStringBuffer.append("CALL").append(' ');
     localStringBuffer.append(StringConverter.toQuotedString(this.triggerClassName, '"', false));
     return localStringBuffer.toString();
   }
-
+  
   public long getChangeTimestamp()
   {
     return this.changeTimestamp;
   }
-
+  
   public StringBuffer getSQLMain()
   {
     StringBuffer localStringBuffer = new StringBuffer(256);
@@ -186,8 +181,9 @@ public class TriggerDef
       localStringBuffer.append("OF").append(' ');
       for (int i = 0; i < this.updateColumns.length; i++)
       {
-        if (i != 0)
+        if (i != 0) {
           localStringBuffer.append(',');
+        }
         HsqlNameManager.HsqlName localHsqlName = this.table.getColumn(this.updateColumns[i]).getName();
         localStringBuffer.append(localHsqlName.statementName);
       }
@@ -242,168 +238,169 @@ public class TriggerDef
     }
     return localStringBuffer;
   }
-
+  
   public String getClassName()
   {
     return this.trigger.getClass().getName();
   }
-
+  
   public String getActionTimingString()
   {
     switch (this.actionTiming)
     {
-    case 4:
+    case 4: 
       return "BEFORE";
-    case 5:
+    case 5: 
       return "AFTER";
-    case 6:
+    case 6: 
       return "INSTEAD OF";
     }
     throw Error.runtimeError(201, "TriggerDef");
   }
-
+  
   public String getEventTypeString()
   {
     switch (this.operationType)
     {
-    case 50:
+    case 50: 
       return "INSERT";
-    case 19:
+    case 19: 
       return "DELETE";
-    case 82:
+    case 82: 
       return "UPDATE";
     }
     throw Error.runtimeError(201, "TriggerDef");
   }
-
+  
   public boolean isSystem()
   {
     return this.isSystem;
   }
-
+  
   public boolean isForEachRow()
   {
     return this.forEachRow;
   }
-
+  
   public String getConditionSQL()
   {
     return this.conditionSQL;
   }
-
+  
   public String getProcedureSQL()
   {
     return this.routine == null ? null : this.routine.getSQLBodyDefinition();
   }
-
+  
   public int[] getUpdateColumnIndexes()
   {
     return this.updateColumns;
   }
-
+  
   public boolean hasOldTable()
   {
     return false;
   }
-
+  
   public boolean hasNewTable()
   {
     return false;
   }
-
+  
   public String getOldTransitionRowName()
   {
     return this.rangeVars[0] == null ? null : this.rangeVars[0].getTableAlias().name;
   }
-
+  
   public String getNewTransitionRowName()
   {
     return this.rangeVars[1] == null ? null : this.rangeVars[1].getTableAlias().name;
   }
-
+  
   public String getOldTransitionTableName()
   {
     return this.transitions[2] == null ? null : this.transitions[2].getName().name;
   }
-
+  
   public String getNewTransitionTableName()
   {
     return this.transitions[3] == null ? null : this.transitions[3].getName().name;
   }
-
+  
   void setUpIndexesAndTypes()
   {
     this.triggerType = 0;
     switch (this.operationType)
     {
-    case 50:
+    case 50: 
       this.triggerType = 0;
       break;
-    case 19:
+    case 19: 
       this.triggerType = 1;
       break;
-    case 82:
+    case 82: 
       this.triggerType = 2;
       break;
-    default:
+    default: 
       throw Error.runtimeError(201, "TriggerDef");
     }
-    if (this.forEachRow)
+    if (this.forEachRow) {
       this.triggerType += 3;
-    if ((this.actionTiming == 4) || (this.actionTiming == 6))
+    }
+    if ((this.actionTiming == 4) || (this.actionTiming == 6)) {
       this.triggerType += 3;
+    }
   }
-
+  
   static int getOperationType(int paramInt)
   {
     switch (paramInt)
     {
-    case 135:
+    case 135: 
       return 50;
-    case 79:
+    case 79: 
       return 19;
-    case 303:
+    case 303: 
       return 82;
     }
     throw Error.runtimeError(201, "TriggerDef");
   }
-
+  
   static int getTiming(int paramInt)
   {
     switch (paramInt)
     {
-    case 343:
+    case 343: 
       return 4;
-    case 336:
+    case 336: 
       return 5;
-    case 422:
+    case 422: 
       return 6;
     }
     throw Error.runtimeError(201, "TriggerDef");
   }
-
+  
   public int getStatementType()
   {
     return this.operationType;
   }
-
+  
   public void run()
   {
     while (this.keepGoing)
     {
       TriggerData localTriggerData = popPair();
-      if ((localTriggerData != null) && (localTriggerData.username != null))
+      if ((localTriggerData != null) && (localTriggerData.username != null)) {
         this.trigger.fire(this.triggerType, this.name.name, this.table.getName().name, localTriggerData.oldRow, localTriggerData.newRow);
+      }
     }
     try
     {
       this.thread.setContextClassLoader(null);
     }
-    catch (Throwable localThrowable)
-    {
-    }
+    catch (Throwable localThrowable) {}
   }
-
+  
   public synchronized void start()
   {
     if (this.maxRowsQueued != 0)
@@ -412,30 +409,30 @@ public class TriggerDef
       this.thread.start();
     }
   }
-
+  
   public synchronized void terminate()
   {
     this.keepGoing = false;
     notify();
   }
-
+  
   synchronized TriggerData popPair()
   {
-    if (this.rowsQueued == 0)
+    if (this.rowsQueued == 0) {
       try
       {
         wait();
       }
-      catch (InterruptedException localInterruptedException)
-      {
-      }
+      catch (InterruptedException localInterruptedException) {}
+    }
     this.rowsQueued -= 1;
     notify();
-    if (this.pendingQueue.size() == 0)
+    if (this.pendingQueue.size() == 0) {
       return null;
+    }
     return (TriggerData)this.pendingQueue.removeFirst();
   }
-
+  
   synchronized void pushPair(Session paramSession, Object[] paramArrayOfObject1, Object[] paramArrayOfObject2)
   {
     if (this.maxRowsQueued == 0)
@@ -463,47 +460,44 @@ public class TriggerDef
         {
           wait();
         }
-        catch (InterruptedException localInterruptedException)
-        {
-        }
+        catch (InterruptedException localInterruptedException) {}
         this.rowsQueued += 1;
       }
     }
-    else
+    else {
       this.rowsQueued += 1;
+    }
     this.pendingQueue.add(new TriggerData(paramSession, paramArrayOfObject1, paramArrayOfObject2));
     notify();
   }
-
+  
   public boolean isBusy()
   {
     return this.rowsQueued != 0;
   }
-
+  
   public Table getTable()
   {
     return this.table;
   }
-
+  
   public String getActionOrientationString()
   {
     return this.forEachRow ? "ROW" : "STATEMENT";
   }
-
+  
   static class DefaultTrigger
     implements Trigger
   {
-    public void fire(int paramInt, String paramString1, String paramString2, Object[] paramArrayOfObject1, Object[] paramArrayOfObject2)
-    {
-    }
+    public void fire(int paramInt, String paramString1, String paramString2, Object[] paramArrayOfObject1, Object[] paramArrayOfObject2) {}
   }
-
+  
   static class TriggerData
   {
     public Object[] oldRow;
     public Object[] newRow;
     public String username;
-
+    
     public TriggerData(Session paramSession, Object[] paramArrayOfObject1, Object[] paramArrayOfObject2)
     {
       this.oldRow = paramArrayOfObject1;
@@ -513,7 +507,8 @@ public class TriggerDef
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.TriggerDef
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

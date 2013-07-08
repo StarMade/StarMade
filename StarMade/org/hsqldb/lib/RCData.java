@@ -25,24 +25,26 @@ public class RCData
   public String charset;
   public String truststore;
   public String libpath;
-
+  
   public void setDefaultJdbcDriver(String paramString)
   {
     this.defaultJdbcDriverName = paramString;
   }
-
+  
   public String getDefaultJdbcDriverName()
   {
     return this.defaultJdbcDriverName;
   }
-
+  
   public RCData(File paramFile, String paramString)
     throws Exception
   {
-    if (paramFile == null)
+    if (paramFile == null) {
       throw new IllegalArgumentException("RC file name not specified");
-    if (!paramFile.canRead())
+    }
+    if (!paramFile.canRead()) {
       throw new IOException("Please set up authentication file '" + paramFile + "'");
+    }
     StringTokenizer localStringTokenizer = null;
     int i = 0;
     int j = 0;
@@ -75,15 +77,14 @@ public class RCData
             {
               localBufferedReader.close();
             }
-            catch (IOException localIOException1)
-            {
-            }
+            catch (IOException localIOException1) {}
             throw new Exception("Corrupt line " + j + " in '" + paramFile + "':  " + str1);
           }
           if (paramString == null)
           {
-            if (str2.equals("urlid"))
+            if (str2.equals("urlid")) {
               System.out.println(str3);
+            }
           }
           else if (str2.equals("urlid"))
           {
@@ -100,16 +101,15 @@ public class RCData
                 {
                   localBufferedReader.close();
                 }
-                catch (IOException localIOException2)
-                {
-                }
+                catch (IOException localIOException2) {}
                 throw new Exception("Key '" + paramString + " redefined at" + " line " + j + " in '" + paramFile);
               }
             }
-            else
+            else {
               i = 0;
+            }
           }
-          else if (i != 0)
+          else if (i != 0) {
             if (str2.equals("url"))
             {
               this.url = str3;
@@ -148,11 +148,10 @@ public class RCData
               {
                 localBufferedReader.close();
               }
-              catch (IOException localIOException3)
-              {
-              }
+              catch (IOException localIOException3) {}
               throw new Exception("Bad line " + j + " in '" + paramFile + "':  " + str1);
             }
+          }
         }
       }
     }
@@ -162,31 +161,32 @@ public class RCData
       {
         localBufferedReader.close();
       }
-      catch (IOException localIOException5)
-      {
-      }
+      catch (IOException localIOException5) {}
       localBufferedReader = null;
     }
-    if (paramString == null)
+    if (paramString == null) {
       return;
-    if (this.url == null)
+    }
+    if (this.url == null) {
       throw new Exception("url not set for '" + paramString + "' in file '" + paramFile + "'");
-    if (this.libpath != null)
+    }
+    if (this.libpath != null) {
       throw new IllegalArgumentException("Sorry, 'libpath' not supported yet");
+    }
   }
-
+  
   public RCData(String paramString1, String paramString2, String paramString3, String paramString4, String paramString5, String paramString6, String paramString7)
     throws Exception
   {
     this(paramString1, paramString2, paramString3, paramString4, paramString5, paramString6, paramString7, null);
   }
-
+  
   public RCData(String paramString1, String paramString2, String paramString3, String paramString4, String paramString5, String paramString6, String paramString7, String paramString8)
     throws Exception
   {
     this(paramString1, paramString2, paramString3, paramString4, paramString5, paramString6, paramString7, paramString8, null);
   }
-
+  
   public RCData(String paramString1, String paramString2, String paramString3, String paramString4, String paramString5, String paramString6, String paramString7, String paramString8, String paramString9)
     throws Exception
   {
@@ -199,39 +199,45 @@ public class RCData
     this.charset = paramString6;
     this.truststore = paramString7;
     this.libpath = paramString8;
-    if (paramString8 != null)
+    if (paramString8 != null) {
       throw new IllegalArgumentException("Sorry, 'libpath' not supported yet");
-    if ((paramString1 == null) || (paramString2 == null))
+    }
+    if ((paramString1 == null) || (paramString2 == null)) {
       throw new Exception("id or url was not set");
+    }
   }
-
+  
   public Connection getConnection()
     throws ClassNotFoundException, SQLException, MalformedURLException
   {
     return getConnection(null, null);
   }
-
+  
   public Connection getConnection(String paramString1, String paramString2)
     throws ClassNotFoundException, MalformedURLException, SQLException
   {
     String str1 = null;
     String str2 = null;
     Properties localProperties = System.getProperties();
-    if (paramString1 == null)
+    if (paramString1 == null) {
       str1 = this.driver == null ? "org.hsqldb.jdbc.JDBCDriver" : this.driver;
-    else
+    } else {
       str1 = expandSysPropVars(paramString1);
+    }
     if (paramString2 == null)
     {
-      if (this.truststore != null)
+      if (this.truststore != null) {
         str2 = expandSysPropVars(this.truststore);
+      }
     }
-    else
+    else {
       str2 = expandSysPropVars(paramString2);
-    if (str2 == null)
+    }
+    if (str2 == null) {
       localProperties.remove("javax.net.ssl.trustStore");
-    else
+    } else {
       localProperties.put("javax.net.ssl.trustStore", str2);
+    }
     String str3 = null;
     try
     {
@@ -242,7 +248,7 @@ public class RCData
       throw new MalformedURLException(localIllegalArgumentException1.toString() + " for URL '" + this.url + "'");
     }
     String str4 = null;
-    if (this.username != null)
+    if (this.username != null) {
       try
       {
         str4 = expandSysPropVars(this.username);
@@ -251,8 +257,9 @@ public class RCData
       {
         throw new MalformedURLException(localIllegalArgumentException2.toString() + " for user name '" + this.username + "'");
       }
+    }
     String str5 = null;
-    if (this.password != null)
+    if (this.password != null) {
       try
       {
         str5 = expandSysPropVars(this.password);
@@ -261,79 +268,88 @@ public class RCData
       {
         throw new MalformedURLException(localIllegalArgumentException3.toString() + " for password");
       }
+    }
     Class.forName(str1);
     Connection localConnection = str4 == null ? DriverManager.getConnection(str3) : DriverManager.getConnection(str3, str4, str5);
-    if (this.ti != null)
+    if (this.ti != null) {
       setTI(localConnection, this.ti);
+    }
     return localConnection;
   }
-
+  
   public static String expandSysPropVars(String paramString)
   {
     int i;
     int j;
     String str2;
-    for (String str1 = new String(paramString); ; str1 = str1.substring(0, i) + str2 + str1.substring(j + 1))
+    for (String str1 = new String(paramString);; str1 = str1.substring(0, i) + str2 + str1.substring(j + 1))
     {
       i = str1.indexOf("${");
-      if (i < 0)
+      if (i < 0) {
         break;
+      }
       j = str1.indexOf(125, i + 2);
-      if (j < 0)
+      if (j < 0) {
         break;
+      }
       String str3 = str1.substring(i + 2, j);
-      if (str3.length() < 1)
+      if (str3.length() < 1) {
         throw new IllegalArgumentException("Bad variable setting");
+      }
       str2 = System.getProperty(str3);
-      if (str2 == null)
+      if (str2 == null) {
         throw new IllegalArgumentException("No Java system property with name '" + str3 + "'");
+      }
     }
     return str1;
   }
-
+  
   public static void setTI(Connection paramConnection, String paramString)
     throws SQLException
   {
     int i = -1;
-    if (paramString.equals("TRANSACTION_READ_UNCOMMITTED"))
+    if (paramString.equals("TRANSACTION_READ_UNCOMMITTED")) {
       i = 1;
-    if (paramString.equals("TRANSACTION_READ_COMMITTED"))
+    }
+    if (paramString.equals("TRANSACTION_READ_COMMITTED")) {
       i = 2;
-    if (paramString.equals("TRANSACTION_REPEATABLE_READ"))
+    }
+    if (paramString.equals("TRANSACTION_REPEATABLE_READ")) {
       i = 4;
-    if (paramString.equals("TRANSACTION_SERIALIZABLE"))
+    }
+    if (paramString.equals("TRANSACTION_SERIALIZABLE")) {
       i = 8;
-    if (paramString.equals("TRANSACTION_NONE"))
+    }
+    if (paramString.equals("TRANSACTION_NONE")) {
       i = 0;
-    if (i < 0)
+    }
+    if (i < 0) {
       throw new SQLException("Trans. isol. value not supported by " + RCData.class.getName() + ": " + paramString);
+    }
     paramConnection.setTransactionIsolation(i);
   }
-
+  
   public static String tiToString(int paramInt)
   {
     switch (paramInt)
     {
-    case 1:
+    case 1: 
       return "TRANSACTION_READ_UNCOMMITTED";
-    case 2:
+    case 2: 
       return "TRANSACTION_READ_COMMITTED";
-    case 4:
+    case 4: 
       return "TRANSACTION_REPEATABLE_READ";
-    case 8:
+    case 8: 
       return "TRANSACTION_SERIALIZABLE";
-    case 0:
+    case 0: 
       return "TRANSACTION_NONE";
-    case 3:
-    case 5:
-    case 6:
-    case 7:
     }
     return "Custom Transaction Isolation numerical value: " + paramInt;
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.lib.RCData
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

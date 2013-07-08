@@ -8,7 +8,8 @@ public final class EXTTextureCompressionRGTC
   public static final int GL_COMPRESSED_SIGNED_RED_GREEN_RGTC2_EXT = 36286;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.opengl.EXTTextureCompressionRGTC
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

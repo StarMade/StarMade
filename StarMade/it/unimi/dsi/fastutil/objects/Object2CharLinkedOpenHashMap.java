@@ -1,1080 +1,1043 @@
-/*      */ package it.unimi.dsi.fastutil.objects;
-/*      */ 
-/*      */ import it.unimi.dsi.fastutil.Hash;
-/*      */ import it.unimi.dsi.fastutil.HashCommon;
-/*      */ import it.unimi.dsi.fastutil.booleans.BooleanArrays;
-/*      */ import it.unimi.dsi.fastutil.chars.AbstractCharCollection;
-/*      */ import it.unimi.dsi.fastutil.chars.CharCollection;
-/*      */ import it.unimi.dsi.fastutil.chars.CharIterator;
-/*      */ import it.unimi.dsi.fastutil.chars.CharListIterator;
-/*      */ import java.io.IOException;
-/*      */ import java.io.ObjectInputStream;
-/*      */ import java.io.ObjectOutputStream;
-/*      */ import java.io.Serializable;
-/*      */ import java.util.Comparator;
-/*      */ import java.util.Map;
-/*      */ import java.util.Map.Entry;
-/*      */ import java.util.NoSuchElementException;
-/*      */ 
-/*      */ public class Object2CharLinkedOpenHashMap<K> extends AbstractObject2CharSortedMap<K>
-/*      */   implements Serializable, Cloneable, Hash
-/*      */ {
-/*      */   public static final long serialVersionUID = 0L;
-/*      */   private static final boolean ASSERTS = false;
-/*      */   protected transient K[] key;
-/*      */   protected transient char[] value;
-/*      */   protected transient boolean[] used;
-/*      */   protected final float f;
-/*      */   protected transient int n;
-/*      */   protected transient int maxFill;
-/*      */   protected transient int mask;
-/*      */   protected int size;
-/*      */   protected volatile transient Object2CharSortedMap.FastSortedEntrySet<K> entries;
-/*      */   protected volatile transient ObjectSortedSet<K> keys;
-/*      */   protected volatile transient CharCollection values;
-/*  130 */   protected transient int first = -1;
-/*      */ 
-/*  132 */   protected transient int last = -1;
-/*      */   protected transient long[] link;
-/*      */ 
-/*      */   public Object2CharLinkedOpenHashMap(int expected, float f)
-/*      */   {
-/*  151 */     if ((f <= 0.0F) || (f > 1.0F)) throw new IllegalArgumentException("Load factor must be greater than 0 and smaller than or equal to 1");
-/*  152 */     if (expected < 0) throw new IllegalArgumentException("The expected number of elements must be nonnegative");
-/*  153 */     this.f = f;
-/*  154 */     this.n = HashCommon.arraySize(expected, f);
-/*  155 */     this.mask = (this.n - 1);
-/*  156 */     this.maxFill = HashCommon.maxFill(this.n, f);
-/*  157 */     this.key = ((Object[])new Object[this.n]);
-/*  158 */     this.value = new char[this.n];
-/*  159 */     this.used = new boolean[this.n];
-/*  160 */     this.link = new long[this.n];
-/*      */   }
-/*      */ 
-/*      */   public Object2CharLinkedOpenHashMap(int expected)
-/*      */   {
-/*  167 */     this(expected, 0.75F);
-/*      */   }
-/*      */ 
-/*      */   public Object2CharLinkedOpenHashMap()
-/*      */   {
-/*  173 */     this(16, 0.75F);
-/*      */   }
-/*      */ 
-/*      */   public Object2CharLinkedOpenHashMap(Map<? extends K, ? extends Character> m, float f)
-/*      */   {
-/*  181 */     this(m.size(), f);
-/*  182 */     putAll(m);
-/*      */   }
-/*      */ 
-/*      */   public Object2CharLinkedOpenHashMap(Map<? extends K, ? extends Character> m)
-/*      */   {
-/*  189 */     this(m, 0.75F);
-/*      */   }
-/*      */ 
-/*      */   public Object2CharLinkedOpenHashMap(Object2CharMap<K> m, float f)
-/*      */   {
-/*  197 */     this(m.size(), f);
-/*  198 */     putAll(m);
-/*      */   }
-/*      */ 
-/*      */   public Object2CharLinkedOpenHashMap(Object2CharMap<K> m)
-/*      */   {
-/*  205 */     this(m, 0.75F);
-/*      */   }
-/*      */ 
-/*      */   public Object2CharLinkedOpenHashMap(K[] k, char[] v, float f)
-/*      */   {
-/*  215 */     this(k.length, f);
-/*  216 */     if (k.length != v.length) throw new IllegalArgumentException("The key array and the value array have different lengths (" + k.length + " and " + v.length + ")");
-/*  217 */     for (int i = 0; i < k.length; i++) put(k[i], v[i]);
-/*      */   }
-/*      */ 
-/*      */   public Object2CharLinkedOpenHashMap(K[] k, char[] v)
-/*      */   {
-/*  226 */     this(k, v, 0.75F);
-/*      */   }
-/*      */ 
-/*      */   public char put(K k, char v)
-/*      */   {
-/*  234 */     int pos = (k == null ? 142593372 : HashCommon.murmurHash3(k.hashCode())) & this.mask;
-/*      */ 
-/*  236 */     while (this.used[pos] != 0) {
-/*  237 */       if (this.key[pos] == null ? k == null : this.key[pos].equals(k)) {
-/*  238 */         char oldValue = this.value[pos];
-/*  239 */         this.value[pos] = v;
-/*  240 */         return oldValue;
-/*      */       }
-/*  242 */       pos = pos + 1 & this.mask;
-/*      */     }
-/*  244 */     this.used[pos] = true;
-/*  245 */     this.key[pos] = k;
-/*  246 */     this.value[pos] = v;
-/*  247 */     if (this.size == 0) {
-/*  248 */       this.first = (this.last = pos);
-/*      */ 
-/*  250 */       this.link[pos] = -1L;
-/*      */     }
-/*      */     else {
-/*  253 */       this.link[this.last] ^= (this.link[this.last] ^ pos & 0xFFFFFFFF) & 0xFFFFFFFF;
-/*  254 */       this.link[pos] = ((this.last & 0xFFFFFFFF) << 32 | 0xFFFFFFFF);
-/*  255 */       this.last = pos;
-/*      */     }
-/*  257 */     if (++this.size >= this.maxFill) rehash(HashCommon.arraySize(this.size + 1, this.f));
-/*      */ 
-/*  259 */     return this.defRetValue;
-/*      */   }
-/*      */   public Character put(K ok, Character ov) {
-/*  262 */     char v = ov.charValue();
-/*  263 */     Object k = ok;
-/*      */ 
-/*  265 */     int pos = (k == null ? 142593372 : HashCommon.murmurHash3(k.hashCode())) & this.mask;
-/*      */ 
-/*  267 */     while (this.used[pos] != 0) {
-/*  268 */       if (this.key[pos] == null ? k == null : this.key[pos].equals(k)) {
-/*  269 */         Character oldValue = Character.valueOf(this.value[pos]);
-/*  270 */         this.value[pos] = v;
-/*  271 */         return oldValue;
-/*      */       }
-/*  273 */       pos = pos + 1 & this.mask;
-/*      */     }
-/*  275 */     this.used[pos] = true;
-/*  276 */     this.key[pos] = k;
-/*  277 */     this.value[pos] = v;
-/*  278 */     if (this.size == 0) {
-/*  279 */       this.first = (this.last = pos);
-/*      */ 
-/*  281 */       this.link[pos] = -1L;
-/*      */     }
-/*      */     else {
-/*  284 */       this.link[this.last] ^= (this.link[this.last] ^ pos & 0xFFFFFFFF) & 0xFFFFFFFF;
-/*  285 */       this.link[pos] = ((this.last & 0xFFFFFFFF) << 32 | 0xFFFFFFFF);
-/*  286 */       this.last = pos;
-/*      */     }
-/*  288 */     if (++this.size >= this.maxFill) rehash(HashCommon.arraySize(this.size + 1, this.f));
-/*      */ 
-/*  290 */     return null;
-/*      */   }
-/*      */ 
-/*      */   protected final int shiftKeys(int pos)
-/*      */   {
-/*      */     int last;
-/*      */     while (true)
-/*      */     {
-/*  302 */       pos = (last = pos) + 1 & this.mask;
-/*  303 */       while (this.used[pos] != 0) {
-/*  304 */         int slot = (this.key[pos] == null ? 142593372 : HashCommon.murmurHash3(this.key[pos].hashCode())) & this.mask;
-/*  305 */         if (last <= pos ? (last < slot) && (slot <= pos) : (last >= slot) && (slot > pos)) break;
-/*  306 */         pos = pos + 1 & this.mask;
-/*      */       }
-/*  308 */       if (this.used[pos] == 0) break;
-/*  309 */       this.key[last] = this.key[pos];
-/*  310 */       this.value[last] = this.value[pos];
-/*  311 */       fixPointers(pos, last);
-/*      */     }
-/*  313 */     this.used[last] = false;
-/*  314 */     this.key[last] = null;
-/*  315 */     return last;
-/*      */   }
-/*      */ 
-/*      */   public char removeChar(Object k)
-/*      */   {
-/*  320 */     int pos = (k == null ? 142593372 : HashCommon.murmurHash3(k.hashCode())) & this.mask;
-/*      */ 
-/*  322 */     while (this.used[pos] != 0) {
-/*  323 */       if (this.key[pos] == null ? k == null : this.key[pos].equals(k)) {
-/*  324 */         this.size -= 1;
-/*  325 */         fixPointers(pos);
-/*  326 */         char v = this.value[pos];
-/*  327 */         shiftKeys(pos);
-/*  328 */         return v;
-/*      */       }
-/*  330 */       pos = pos + 1 & this.mask;
-/*      */     }
-/*  332 */     return this.defRetValue;
-/*      */   }
-/*      */ 
-/*      */   public Character remove(Object ok) {
-/*  336 */     Object k = ok;
-/*      */ 
-/*  338 */     int pos = (k == null ? 142593372 : HashCommon.murmurHash3(k.hashCode())) & this.mask;
-/*      */ 
-/*  340 */     while (this.used[pos] != 0) {
-/*  341 */       if (this.key[pos] == null ? k == null : this.key[pos].equals(k)) {
-/*  342 */         this.size -= 1;
-/*  343 */         fixPointers(pos);
-/*  344 */         char v = this.value[pos];
-/*  345 */         shiftKeys(pos);
-/*  346 */         return Character.valueOf(v);
-/*      */       }
-/*  348 */       pos = pos + 1 & this.mask;
-/*      */     }
-/*  350 */     return null;
-/*      */   }
-/*      */ 
-/*      */   public char removeFirstChar()
-/*      */   {
-/*  357 */     if (this.size == 0) throw new NoSuchElementException();
-/*  358 */     this.size -= 1;
-/*  359 */     int pos = this.first;
-/*      */ 
-/*  361 */     this.first = ((int)this.link[pos]);
-/*  362 */     if (0 <= this.first)
-/*      */     {
-/*  364 */       this.link[this.first] |= -4294967296L;
-/*      */     }
-/*  366 */     char v = this.value[pos];
-/*  367 */     shiftKeys(pos);
-/*  368 */     return v;
-/*      */   }
-/*      */ 
-/*      */   public char removeLastChar()
-/*      */   {
-/*  375 */     if (this.size == 0) throw new NoSuchElementException();
-/*  376 */     this.size -= 1;
-/*  377 */     int pos = this.last;
-/*      */ 
-/*  379 */     this.last = ((int)(this.link[pos] >>> 32));
-/*  380 */     if (0 <= this.last)
-/*      */     {
-/*  382 */       this.link[this.last] |= 4294967295L;
-/*      */     }
-/*  384 */     char v = this.value[pos];
-/*  385 */     shiftKeys(pos);
-/*  386 */     return v;
-/*      */   }
-/*      */   private void moveIndexToFirst(int i) {
-/*  389 */     if ((this.size == 1) || (this.first == i)) return;
-/*  390 */     if (this.last == i) {
-/*  391 */       this.last = ((int)(this.link[i] >>> 32));
-/*      */ 
-/*  393 */       this.link[this.last] |= 4294967295L;
-/*      */     }
-/*      */     else {
-/*  396 */       long linki = this.link[i];
-/*  397 */       int prev = (int)(linki >>> 32);
-/*  398 */       int next = (int)linki;
-/*  399 */       this.link[prev] ^= (this.link[prev] ^ linki & 0xFFFFFFFF) & 0xFFFFFFFF;
-/*  400 */       this.link[next] ^= (this.link[next] ^ linki & 0x0) & 0x0;
-/*      */     }
-/*  402 */     this.link[this.first] ^= (this.link[this.first] ^ (i & 0xFFFFFFFF) << 32) & 0x0;
-/*  403 */     this.link[i] = (0x0 | this.first & 0xFFFFFFFF);
-/*  404 */     this.first = i;
-/*      */   }
-/*      */   private void moveIndexToLast(int i) {
-/*  407 */     if ((this.size == 1) || (this.last == i)) return;
-/*  408 */     if (this.first == i) {
-/*  409 */       this.first = ((int)this.link[i]);
-/*      */ 
-/*  411 */       this.link[this.first] |= -4294967296L;
-/*      */     }
-/*      */     else {
-/*  414 */       long linki = this.link[i];
-/*  415 */       int prev = (int)(linki >>> 32);
-/*  416 */       int next = (int)linki;
-/*  417 */       this.link[prev] ^= (this.link[prev] ^ linki & 0xFFFFFFFF) & 0xFFFFFFFF;
-/*  418 */       this.link[next] ^= (this.link[next] ^ linki & 0x0) & 0x0;
-/*      */     }
-/*  420 */     this.link[this.last] ^= (this.link[this.last] ^ i & 0xFFFFFFFF) & 0xFFFFFFFF;
-/*  421 */     this.link[i] = ((this.last & 0xFFFFFFFF) << 32 | 0xFFFFFFFF);
-/*  422 */     this.last = i;
-/*      */   }
-/*      */ 
-/*      */   public char getAndMoveToFirst(K k)
-/*      */   {
-/*  430 */     Object[] key = this.key;
-/*  431 */     boolean[] used = this.used;
-/*  432 */     int mask = this.mask;
-/*      */ 
-/*  434 */     int pos = (k == null ? 142593372 : HashCommon.murmurHash3(k.hashCode())) & mask;
-/*      */ 
-/*  436 */     while (used[pos] != 0) {
-/*  437 */       if (k == null ? key[pos] == null : k.equals(key[pos])) {
-/*  438 */         moveIndexToFirst(pos);
-/*  439 */         return this.value[pos];
-/*      */       }
-/*  441 */       pos = pos + 1 & mask;
-/*      */     }
-/*  443 */     return this.defRetValue;
-/*      */   }
-/*      */ 
-/*      */   public char getAndMoveToLast(K k)
-/*      */   {
-/*  451 */     Object[] key = this.key;
-/*  452 */     boolean[] used = this.used;
-/*  453 */     int mask = this.mask;
-/*      */ 
-/*  455 */     int pos = (k == null ? 142593372 : HashCommon.murmurHash3(k.hashCode())) & mask;
-/*      */ 
-/*  457 */     while (used[pos] != 0) {
-/*  458 */       if (k == null ? key[pos] == null : k.equals(key[pos])) {
-/*  459 */         moveIndexToLast(pos);
-/*  460 */         return this.value[pos];
-/*      */       }
-/*  462 */       pos = pos + 1 & mask;
-/*      */     }
-/*  464 */     return this.defRetValue;
-/*      */   }
-/*      */ 
-/*      */   public char putAndMoveToFirst(K k, char v)
-/*      */   {
-/*  473 */     Object[] key = this.key;
-/*  474 */     boolean[] used = this.used;
-/*  475 */     int mask = this.mask;
-/*      */ 
-/*  477 */     int pos = (k == null ? 142593372 : HashCommon.murmurHash3(k.hashCode())) & mask;
-/*      */ 
-/*  479 */     while (used[pos] != 0) {
-/*  480 */       if (k == null ? key[pos] == null : k.equals(key[pos])) {
-/*  481 */         char oldValue = this.value[pos];
-/*  482 */         this.value[pos] = v;
-/*  483 */         moveIndexToFirst(pos);
-/*  484 */         return oldValue;
-/*      */       }
-/*  486 */       pos = pos + 1 & mask;
-/*      */     }
-/*  488 */     used[pos] = true;
-/*  489 */     key[pos] = k;
-/*  490 */     this.value[pos] = v;
-/*  491 */     if (this.size == 0) {
-/*  492 */       this.first = (this.last = pos);
-/*      */ 
-/*  494 */       this.link[pos] = -1L;
-/*      */     }
-/*      */     else {
-/*  497 */       this.link[this.first] ^= (this.link[this.first] ^ (pos & 0xFFFFFFFF) << 32) & 0x0;
-/*  498 */       this.link[pos] = (0x0 | this.first & 0xFFFFFFFF);
-/*  499 */       this.first = pos;
-/*      */     }
-/*  501 */     if (++this.size >= this.maxFill) rehash(HashCommon.arraySize(this.size, this.f));
-/*      */ 
-/*  503 */     return this.defRetValue;
-/*      */   }
-/*      */ 
-/*      */   public char putAndMoveToLast(K k, char v)
-/*      */   {
-/*  512 */     Object[] key = this.key;
-/*  513 */     boolean[] used = this.used;
-/*  514 */     int mask = this.mask;
-/*      */ 
-/*  516 */     int pos = (k == null ? 142593372 : HashCommon.murmurHash3(k.hashCode())) & mask;
-/*      */ 
-/*  518 */     while (used[pos] != 0) {
-/*  519 */       if (k == null ? key[pos] == null : k.equals(key[pos])) {
-/*  520 */         char oldValue = this.value[pos];
-/*  521 */         this.value[pos] = v;
-/*  522 */         moveIndexToLast(pos);
-/*  523 */         return oldValue;
-/*      */       }
-/*  525 */       pos = pos + 1 & mask;
-/*      */     }
-/*  527 */     used[pos] = true;
-/*  528 */     key[pos] = k;
-/*  529 */     this.value[pos] = v;
-/*  530 */     if (this.size == 0) {
-/*  531 */       this.first = (this.last = pos);
-/*      */ 
-/*  533 */       this.link[pos] = -1L;
-/*      */     }
-/*      */     else {
-/*  536 */       this.link[this.last] ^= (this.link[this.last] ^ pos & 0xFFFFFFFF) & 0xFFFFFFFF;
-/*  537 */       this.link[pos] = ((this.last & 0xFFFFFFFF) << 32 | 0xFFFFFFFF);
-/*  538 */       this.last = pos;
-/*      */     }
-/*  540 */     if (++this.size >= this.maxFill) rehash(HashCommon.arraySize(this.size, this.f));
-/*      */ 
-/*  542 */     return this.defRetValue;
-/*      */   }
-/*      */ 
-/*      */   public char getChar(Object k)
-/*      */   {
-/*  547 */     int pos = (k == null ? 142593372 : HashCommon.murmurHash3(k.hashCode())) & this.mask;
-/*      */ 
-/*  549 */     while (this.used[pos] != 0) {
-/*  550 */       if (this.key[pos] == null ? k == null : this.key[pos].equals(k)) return this.value[pos];
-/*  551 */       pos = pos + 1 & this.mask;
-/*      */     }
-/*  553 */     return this.defRetValue;
-/*      */   }
-/*      */ 
-/*      */   public boolean containsKey(Object k)
-/*      */   {
-/*  558 */     int pos = (k == null ? 142593372 : HashCommon.murmurHash3(k.hashCode())) & this.mask;
-/*      */ 
-/*  560 */     while (this.used[pos] != 0) {
-/*  561 */       if (this.key[pos] == null ? k == null : this.key[pos].equals(k)) return true;
-/*  562 */       pos = pos + 1 & this.mask;
-/*      */     }
-/*  564 */     return false;
-/*      */   }
-/*      */   public boolean containsValue(char v) {
-/*  567 */     char[] value = this.value;
-/*  568 */     boolean[] used = this.used;
-/*  569 */     for (int i = this.n; i-- != 0; return true) label16: if ((used[i] == 0) || (value[i] != v))
-/*      */         break label16; return false;
-/*      */   }
-/*      */ 
-/*      */   public void clear()
-/*      */   {
-/*  579 */     if (this.size == 0) return;
-/*  580 */     this.size = 0;
-/*  581 */     BooleanArrays.fill(this.used, false);
-/*      */ 
-/*  583 */     ObjectArrays.fill(this.key, null);
-/*  584 */     this.first = (this.last = -1);
-/*      */   }
-/*      */   public int size() {
-/*  587 */     return this.size;
-/*      */   }
-/*      */   public boolean isEmpty() {
-/*  590 */     return this.size == 0;
-/*      */   }
-/*      */ 
-/*      */   @Deprecated
-/*      */   public void growthFactor(int growthFactor)
-/*      */   {
-/*      */   }
-/*      */ 
-/*      */   @Deprecated
-/*      */   public int growthFactor()
-/*      */   {
-/*  607 */     return 16;
-/*      */   }
-/*      */ 
-/*      */   protected void fixPointers(int i)
-/*      */   {
-/*  657 */     if (this.size == 0) {
-/*  658 */       this.first = (this.last = -1);
-/*  659 */       return;
-/*      */     }
-/*  661 */     if (this.first == i) {
-/*  662 */       this.first = ((int)this.link[i]);
-/*  663 */       if (0 <= this.first)
-/*      */       {
-/*  665 */         this.link[this.first] |= -4294967296L;
-/*      */       }
-/*  667 */       return;
-/*      */     }
-/*  669 */     if (this.last == i) {
-/*  670 */       this.last = ((int)(this.link[i] >>> 32));
-/*  671 */       if (0 <= this.last)
-/*      */       {
-/*  673 */         this.link[this.last] |= 4294967295L;
-/*      */       }
-/*  675 */       return;
-/*      */     }
-/*  677 */     long linki = this.link[i];
-/*  678 */     int prev = (int)(linki >>> 32);
-/*  679 */     int next = (int)linki;
-/*  680 */     this.link[prev] ^= (this.link[prev] ^ linki & 0xFFFFFFFF) & 0xFFFFFFFF;
-/*  681 */     this.link[next] ^= (this.link[next] ^ linki & 0x0) & 0x0;
-/*      */   }
-/*      */ 
-/*      */   protected void fixPointers(int s, int d)
-/*      */   {
-/*  692 */     if (this.size == 1) {
-/*  693 */       this.first = (this.last = d);
-/*      */ 
-/*  695 */       this.link[d] = -1L;
-/*  696 */       return;
-/*      */     }
-/*  698 */     if (this.first == s) {
-/*  699 */       this.first = d;
-/*  700 */       this.link[((int)this.link[s])] ^= (this.link[((int)this.link[s])] ^ (d & 0xFFFFFFFF) << 32) & 0x0;
-/*  701 */       this.link[d] = this.link[s];
-/*  702 */       return;
-/*      */     }
-/*  704 */     if (this.last == s) {
-/*  705 */       this.last = d;
-/*  706 */       this.link[((int)(this.link[s] >>> 32))] ^= (this.link[((int)(this.link[s] >>> 32))] ^ d & 0xFFFFFFFF) & 0xFFFFFFFF;
-/*  707 */       this.link[d] = this.link[s];
-/*  708 */       return;
-/*      */     }
-/*  710 */     long links = this.link[s];
-/*  711 */     int prev = (int)(links >>> 32);
-/*  712 */     int next = (int)links;
-/*  713 */     this.link[prev] ^= (this.link[prev] ^ d & 0xFFFFFFFF) & 0xFFFFFFFF;
-/*  714 */     this.link[next] ^= (this.link[next] ^ (d & 0xFFFFFFFF) << 32) & 0x0;
-/*  715 */     this.link[d] = links;
-/*      */   }
-/*      */ 
-/*      */   public K firstKey()
-/*      */   {
-/*  722 */     if (this.size == 0) throw new NoSuchElementException();
-/*  723 */     return this.key[this.first];
-/*      */   }
-/*      */ 
-/*      */   public K lastKey()
-/*      */   {
-/*  730 */     if (this.size == 0) throw new NoSuchElementException();
-/*  731 */     return this.key[this.last];
-/*      */   }
-/*  733 */   public Comparator<? super K> comparator() { return null; } 
-/*  734 */   public Object2CharSortedMap<K> tailMap(K from) { throw new UnsupportedOperationException(); } 
-/*  735 */   public Object2CharSortedMap<K> headMap(K to) { throw new UnsupportedOperationException(); } 
-/*  736 */   public Object2CharSortedMap<K> subMap(K from, K to) { throw new UnsupportedOperationException(); }
-/*      */ 
-/*      */ 
-/*      */   public Object2CharSortedMap.FastSortedEntrySet<K> object2CharEntrySet()
-/*      */   {
-/*  977 */     if (this.entries == null) this.entries = new MapEntrySet(null);
-/*  978 */     return this.entries;
-/*      */   }
-/*      */ 
-/*      */   public ObjectSortedSet<K> keySet()
-/*      */   {
-/* 1029 */     if (this.keys == null) this.keys = new KeySet(null);
-/* 1030 */     return this.keys;
-/*      */   }
-/*      */ 
-/*      */   public CharCollection values()
-/*      */   {
-/* 1050 */     if (this.values == null) this.values = new AbstractCharCollection() {
-/*      */         public CharIterator iterator() {
-/* 1052 */           return new Object2CharLinkedOpenHashMap.ValueIterator(Object2CharLinkedOpenHashMap.this);
-/*      */         }
-/*      */         public int size() {
-/* 1055 */           return Object2CharLinkedOpenHashMap.this.size;
-/*      */         }
-/*      */         public boolean contains(char v) {
-/* 1058 */           return Object2CharLinkedOpenHashMap.this.containsValue(v);
-/*      */         }
-/*      */         public void clear() {
-/* 1061 */           Object2CharLinkedOpenHashMap.this.clear();
-/*      */         }
-/*      */       };
-/* 1064 */     return this.values;
-/*      */   }
-/*      */ 
-/*      */   @Deprecated
-/*      */   public boolean rehash()
-/*      */   {
-/* 1078 */     return true;
-/*      */   }
-/*      */ 
-/*      */   public boolean trim()
-/*      */   {
-/* 1093 */     int l = HashCommon.arraySize(this.size, this.f);
-/* 1094 */     if (l >= this.n) return true; try
-/*      */     {
-/* 1096 */       rehash(l);
-/*      */     } catch (OutOfMemoryError cantDoIt) {
-/* 1098 */       return false;
-/* 1099 */     }return true;
-/*      */   }
-/*      */ 
-/*      */   public boolean trim(int n)
-/*      */   {
-/* 1120 */     int l = HashCommon.nextPowerOfTwo((int)Math.ceil(n / this.f));
-/* 1121 */     if (this.n <= l) return true; try
-/*      */     {
-/* 1123 */       rehash(l);
-/*      */     } catch (OutOfMemoryError cantDoIt) {
-/* 1125 */       return false;
-/* 1126 */     }return true;
-/*      */   }
-/*      */ 
-/*      */   protected void rehash(int newN)
-/*      */   {
-/* 1139 */     int i = this.first; int prev = -1; int newPrev = -1;
-/*      */ 
-/* 1141 */     Object[] key = this.key;
-/* 1142 */     char[] value = this.value;
-/* 1143 */     int newMask = newN - 1;
-/* 1144 */     Object[] newKey = (Object[])new Object[newN];
-/* 1145 */     char[] newValue = new char[newN];
-/* 1146 */     boolean[] newUsed = new boolean[newN];
-/* 1147 */     long[] link = this.link;
-/* 1148 */     long[] newLink = new long[newN];
-/* 1149 */     this.first = -1;
-/* 1150 */     for (int j = this.size; j-- != 0; ) {
-/* 1151 */       Object k = key[i];
-/* 1152 */       int pos = (k == null ? 142593372 : HashCommon.murmurHash3(k.hashCode())) & newMask;
-/* 1153 */       while (newUsed[pos] != 0) pos = pos + 1 & newMask;
-/* 1154 */       newUsed[pos] = true;
-/* 1155 */       newKey[pos] = k;
-/* 1156 */       newValue[pos] = value[i];
-/* 1157 */       if (prev != -1) {
-/* 1158 */         newLink[newPrev] ^= (newLink[newPrev] ^ pos & 0xFFFFFFFF) & 0xFFFFFFFF;
-/* 1159 */         newLink[pos] ^= (newLink[pos] ^ (newPrev & 0xFFFFFFFF) << 32) & 0x0;
-/* 1160 */         newPrev = pos;
-/*      */       }
-/*      */       else {
-/* 1163 */         newPrev = this.first = pos;
-/*      */ 
-/* 1165 */         newLink[pos] = -1L;
-/*      */       }
-/* 1167 */       int t = i;
-/* 1168 */       i = (int)link[i];
-/* 1169 */       prev = t;
-/*      */     }
-/* 1171 */     this.n = newN;
-/* 1172 */     this.mask = newMask;
-/* 1173 */     this.maxFill = HashCommon.maxFill(this.n, this.f);
-/* 1174 */     this.key = newKey;
-/* 1175 */     this.value = newValue;
-/* 1176 */     this.used = newUsed;
-/* 1177 */     this.link = newLink;
-/* 1178 */     this.last = newPrev;
-/* 1179 */     if (newPrev != -1)
-/*      */     {
-/* 1181 */       newLink[newPrev] |= 4294967295L;
-/*      */     }
-/*      */   }
-/*      */ 
-/*      */   public Object2CharLinkedOpenHashMap<K> clone()
-/*      */   {
-/*      */     Object2CharLinkedOpenHashMap c;
-/*      */     try
-/*      */     {
-/* 1194 */       c = (Object2CharLinkedOpenHashMap)super.clone();
-/*      */     }
-/*      */     catch (CloneNotSupportedException cantHappen) {
-/* 1197 */       throw new InternalError();
-/*      */     }
-/* 1199 */     c.keys = null;
-/* 1200 */     c.values = null;
-/* 1201 */     c.entries = null;
-/* 1202 */     c.key = ((Object[])this.key.clone());
-/* 1203 */     c.value = ((char[])this.value.clone());
-/* 1204 */     c.used = ((boolean[])this.used.clone());
-/* 1205 */     c.link = ((long[])this.link.clone());
-/* 1206 */     return c;
-/*      */   }
-/*      */ 
-/*      */   public int hashCode()
-/*      */   {
-/* 1218 */     int h = 0;
-/* 1219 */     int j = this.size; int i = 0; for (int t = 0; j-- != 0; ) {
-/* 1220 */       while (this.used[i] == 0) i++;
-/* 1221 */       if (this != this.key[i])
-/* 1222 */         t = this.key[i] == null ? 0 : this.key[i].hashCode();
-/* 1223 */       t ^= this.value[i];
-/* 1224 */       h += t;
-/* 1225 */       i++;
-/*      */     }
-/* 1227 */     return h;
-/*      */   }
-/*      */   private void writeObject(ObjectOutputStream s) throws IOException {
-/* 1230 */     Object[] key = this.key;
-/* 1231 */     char[] value = this.value;
-/* 1232 */     MapIterator i = new MapIterator(null);
-/* 1233 */     s.defaultWriteObject();
-/* 1234 */     for (int j = this.size; j-- != 0; ) {
-/* 1235 */       int e = i.nextEntry();
-/* 1236 */       s.writeObject(key[e]);
-/* 1237 */       s.writeChar(value[e]);
-/*      */     }
-/*      */   }
-/*      */ 
-/*      */   private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
-/* 1242 */     s.defaultReadObject();
-/* 1243 */     this.n = HashCommon.arraySize(this.size, this.f);
-/* 1244 */     this.maxFill = HashCommon.maxFill(this.n, this.f);
-/* 1245 */     this.mask = (this.n - 1);
-/* 1246 */     Object[] key = this.key = (Object[])new Object[this.n];
-/* 1247 */     char[] value = this.value = new char[this.n];
-/* 1248 */     boolean[] used = this.used = new boolean[this.n];
-/* 1249 */     long[] link = this.link = new long[this.n];
-/* 1250 */     int prev = -1;
-/* 1251 */     this.first = (this.last = -1);
-/*      */ 
-/* 1254 */     int i = this.size; for (int pos = 0; i-- != 0; ) {
-/* 1255 */       Object k = s.readObject();
-/* 1256 */       char v = s.readChar();
-/* 1257 */       pos = (k == null ? 142593372 : HashCommon.murmurHash3(k.hashCode())) & this.mask;
-/* 1258 */       while (used[pos] != 0) pos = pos + 1 & this.mask;
-/* 1259 */       used[pos] = true;
-/* 1260 */       key[pos] = k;
-/* 1261 */       value[pos] = v;
-/* 1262 */       if (this.first != -1) {
-/* 1263 */         link[prev] ^= (link[prev] ^ pos & 0xFFFFFFFF) & 0xFFFFFFFF;
-/* 1264 */         link[pos] ^= (link[pos] ^ (prev & 0xFFFFFFFF) << 32) & 0x0;
-/* 1265 */         prev = pos;
-/*      */       }
-/*      */       else {
-/* 1268 */         prev = this.first = pos;
-/*      */ 
-/* 1270 */         link[pos] |= -4294967296L;
-/*      */       }
-/*      */     }
-/* 1273 */     this.last = prev;
-/* 1274 */     if (prev != -1)
-/*      */     {
-/* 1276 */       link[prev] |= 4294967295L;
-/*      */     }
-/*      */   }
-/*      */ 
-/*      */   private void checkTable()
-/*      */   {
-/*      */   }
-/*      */ 
-/*      */   private final class ValueIterator extends Object2CharLinkedOpenHashMap.MapIterator
-/*      */     implements CharListIterator
-/*      */   {
-/*      */     public char previousChar()
-/*      */     {
-/* 1039 */       return Object2CharLinkedOpenHashMap.this.value[previousEntry()]; } 
-/* 1040 */     public Character previous() { return Character.valueOf(Object2CharLinkedOpenHashMap.this.value[previousEntry()]); } 
-/* 1041 */     public void set(Character ok) { throw new UnsupportedOperationException(); } 
-/* 1042 */     public void add(Character ok) { throw new UnsupportedOperationException(); } 
-/* 1043 */     public void set(char v) { throw new UnsupportedOperationException(); } 
-/* 1044 */     public void add(char v) { throw new UnsupportedOperationException(); } 
-/* 1045 */     public ValueIterator() { super(null); } 
-/* 1046 */     public char nextChar() { return Object2CharLinkedOpenHashMap.this.value[nextEntry()]; } 
-/* 1047 */     public Character next() { return Character.valueOf(Object2CharLinkedOpenHashMap.this.value[nextEntry()]); }
-/*      */ 
-/*      */   }
-/*      */ 
-/*      */   private final class KeySet extends AbstractObjectSortedSet<K>
-/*      */   {
-/*      */     private KeySet()
-/*      */     {
-/*      */     }
-/*      */ 
-/*      */     public ObjectListIterator<K> iterator(K from)
-/*      */     {
-/*  996 */       return new Object2CharLinkedOpenHashMap.KeyIterator(Object2CharLinkedOpenHashMap.this, from);
-/*      */     }
-/*      */     public ObjectListIterator<K> iterator() {
-/*  999 */       return new Object2CharLinkedOpenHashMap.KeyIterator(Object2CharLinkedOpenHashMap.this);
-/*      */     }
-/*      */     public int size() {
-/* 1002 */       return Object2CharLinkedOpenHashMap.this.size;
-/*      */     }
-/*      */     public boolean contains(Object k) {
-/* 1005 */       return Object2CharLinkedOpenHashMap.this.containsKey(k);
-/*      */     }
-/*      */     public boolean remove(Object k) {
-/* 1008 */       int oldSize = Object2CharLinkedOpenHashMap.this.size;
-/* 1009 */       Object2CharLinkedOpenHashMap.this.remove(k);
-/* 1010 */       return Object2CharLinkedOpenHashMap.this.size != oldSize;
-/*      */     }
-/*      */     public void clear() {
-/* 1013 */       Object2CharLinkedOpenHashMap.this.clear();
-/*      */     }
-/*      */     public K first() {
-/* 1016 */       if (Object2CharLinkedOpenHashMap.this.size == 0) throw new NoSuchElementException();
-/* 1017 */       return Object2CharLinkedOpenHashMap.this.key[Object2CharLinkedOpenHashMap.this.first];
-/*      */     }
-/*      */     public K last() {
-/* 1020 */       if (Object2CharLinkedOpenHashMap.this.size == 0) throw new NoSuchElementException();
-/* 1021 */       return Object2CharLinkedOpenHashMap.this.key[Object2CharLinkedOpenHashMap.this.last];
-/*      */     }
-/* 1023 */     public Comparator<? super K> comparator() { return null; } 
-/* 1024 */     public final ObjectSortedSet<K> tailSet(K from) { throw new UnsupportedOperationException(); } 
-/* 1025 */     public final ObjectSortedSet<K> headSet(K to) { throw new UnsupportedOperationException(); } 
-/* 1026 */     public final ObjectSortedSet<K> subSet(K from, K to) { throw new UnsupportedOperationException(); }
-/*      */ 
-/*      */   }
-/*      */ 
-/*      */   private final class KeyIterator extends Object2CharLinkedOpenHashMap<K>.MapIterator
-/*      */     implements ObjectListIterator<K>
-/*      */   {
-/*      */     public KeyIterator()
-/*      */     {
-/*  987 */       super(k, null); } 
-/*  988 */     public K previous() { return Object2CharLinkedOpenHashMap.this.key[previousEntry()]; } 
-/*  989 */     public void set(K k) { throw new UnsupportedOperationException(); } 
-/*  990 */     public void add(K k) { throw new UnsupportedOperationException(); } 
-/*  991 */     public KeyIterator() { super(null); } 
-/*  992 */     public K next() { return Object2CharLinkedOpenHashMap.this.key[nextEntry()]; }
-/*      */ 
-/*      */   }
-/*      */ 
-/*      */   private final class MapEntrySet extends AbstractObjectSortedSet<Object2CharMap.Entry<K>>
-/*      */     implements Object2CharSortedMap.FastSortedEntrySet<K>
-/*      */   {
-/*      */     private MapEntrySet()
-/*      */     {
-/*      */     }
-/*      */ 
-/*      */     public ObjectBidirectionalIterator<Object2CharMap.Entry<K>> iterator()
-/*      */     {
-/*  915 */       return new Object2CharLinkedOpenHashMap.EntryIterator(Object2CharLinkedOpenHashMap.this);
-/*      */     }
-/*  917 */     public Comparator<? super Object2CharMap.Entry<K>> comparator() { return null; } 
-/*  918 */     public ObjectSortedSet<Object2CharMap.Entry<K>> subSet(Object2CharMap.Entry<K> fromElement, Object2CharMap.Entry<K> toElement) { throw new UnsupportedOperationException(); } 
-/*  919 */     public ObjectSortedSet<Object2CharMap.Entry<K>> headSet(Object2CharMap.Entry<K> toElement) { throw new UnsupportedOperationException(); } 
-/*  920 */     public ObjectSortedSet<Object2CharMap.Entry<K>> tailSet(Object2CharMap.Entry<K> fromElement) { throw new UnsupportedOperationException(); } 
-/*      */     public Object2CharMap.Entry<K> first() {
-/*  922 */       if (Object2CharLinkedOpenHashMap.this.size == 0) throw new NoSuchElementException();
-/*  923 */       return new Object2CharLinkedOpenHashMap.MapEntry(Object2CharLinkedOpenHashMap.this, Object2CharLinkedOpenHashMap.this.first);
-/*      */     }
-/*      */     public Object2CharMap.Entry<K> last() {
-/*  926 */       if (Object2CharLinkedOpenHashMap.this.size == 0) throw new NoSuchElementException();
-/*  927 */       return new Object2CharLinkedOpenHashMap.MapEntry(Object2CharLinkedOpenHashMap.this, Object2CharLinkedOpenHashMap.this.last);
-/*      */     }
-/*      */ 
-/*      */     public boolean contains(Object o) {
-/*  931 */       if (!(o instanceof Map.Entry)) return false;
-/*  932 */       Map.Entry e = (Map.Entry)o;
-/*  933 */       Object k = e.getKey();
-/*      */ 
-/*  935 */       int pos = (k == null ? 142593372 : HashCommon.murmurHash3(k.hashCode())) & Object2CharLinkedOpenHashMap.this.mask;
-/*      */ 
-/*  937 */       while (Object2CharLinkedOpenHashMap.this.used[pos] != 0) {
-/*  938 */         if (Object2CharLinkedOpenHashMap.this.key[pos] == null ? k == null : Object2CharLinkedOpenHashMap.this.key[pos].equals(k)) return Object2CharLinkedOpenHashMap.this.value[pos] == ((Character)e.getValue()).charValue();
-/*  939 */         pos = pos + 1 & Object2CharLinkedOpenHashMap.this.mask;
-/*      */       }
-/*  941 */       return false;
-/*      */     }
-/*      */ 
-/*      */     public boolean remove(Object o) {
-/*  945 */       if (!(o instanceof Map.Entry)) return false;
-/*  946 */       Map.Entry e = (Map.Entry)o;
-/*  947 */       Object k = e.getKey();
-/*      */ 
-/*  949 */       int pos = (k == null ? 142593372 : HashCommon.murmurHash3(k.hashCode())) & Object2CharLinkedOpenHashMap.this.mask;
-/*      */ 
-/*  951 */       while (Object2CharLinkedOpenHashMap.this.used[pos] != 0) {
-/*  952 */         if (Object2CharLinkedOpenHashMap.this.key[pos] == null ? k == null : Object2CharLinkedOpenHashMap.this.key[pos].equals(k)) {
-/*  953 */           Object2CharLinkedOpenHashMap.this.remove(e.getKey());
-/*  954 */           return true;
-/*      */         }
-/*  956 */         pos = pos + 1 & Object2CharLinkedOpenHashMap.this.mask;
-/*      */       }
-/*  958 */       return false;
-/*      */     }
-/*      */     public int size() {
-/*  961 */       return Object2CharLinkedOpenHashMap.this.size;
-/*      */     }
-/*      */     public void clear() {
-/*  964 */       Object2CharLinkedOpenHashMap.this.clear();
-/*      */     }
-/*      */     public ObjectBidirectionalIterator<Object2CharMap.Entry<K>> iterator(Object2CharMap.Entry<K> from) {
-/*  967 */       return new Object2CharLinkedOpenHashMap.EntryIterator(Object2CharLinkedOpenHashMap.this, from.getKey());
-/*      */     }
-/*      */     public ObjectBidirectionalIterator<Object2CharMap.Entry<K>> fastIterator() {
-/*  970 */       return new Object2CharLinkedOpenHashMap.FastEntryIterator(Object2CharLinkedOpenHashMap.this);
-/*      */     }
-/*      */     public ObjectBidirectionalIterator<Object2CharMap.Entry<K>> fastIterator(Object2CharMap.Entry<K> from) {
-/*  973 */       return new Object2CharLinkedOpenHashMap.FastEntryIterator(Object2CharLinkedOpenHashMap.this, from.getKey());
-/*      */     }
-/*      */   }
-/*      */ 
-/*      */   private class FastEntryIterator extends Object2CharLinkedOpenHashMap<K>.MapIterator
-/*      */     implements ObjectListIterator<Object2CharMap.Entry<K>>
-/*      */   {
-/*  893 */     final AbstractObject2CharMap.BasicEntry<K> entry = new AbstractObject2CharMap.BasicEntry(null, '\000');
-/*      */ 
-/*  894 */     public FastEntryIterator() { super(null); } 
-/*      */     public FastEntryIterator() {
-/*  896 */       super(from, null);
-/*      */     }
-/*      */     public AbstractObject2CharMap.BasicEntry<K> next() {
-/*  899 */       int e = nextEntry();
-/*  900 */       this.entry.key = Object2CharLinkedOpenHashMap.this.key[e];
-/*  901 */       this.entry.value = Object2CharLinkedOpenHashMap.this.value[e];
-/*  902 */       return this.entry;
-/*      */     }
-/*      */     public AbstractObject2CharMap.BasicEntry<K> previous() {
-/*  905 */       int e = previousEntry();
-/*  906 */       this.entry.key = Object2CharLinkedOpenHashMap.this.key[e];
-/*  907 */       this.entry.value = Object2CharLinkedOpenHashMap.this.value[e];
-/*  908 */       return this.entry;
-/*      */     }
-/*  910 */     public void set(Object2CharMap.Entry<K> ok) { throw new UnsupportedOperationException(); } 
-/*  911 */     public void add(Object2CharMap.Entry<K> ok) { throw new UnsupportedOperationException(); }
-/*      */ 
-/*      */   }
-/*      */ 
-/*      */   private class EntryIterator extends Object2CharLinkedOpenHashMap<K>.MapIterator
-/*      */     implements ObjectListIterator<Object2CharMap.Entry<K>>
-/*      */   {
-/*      */     private Object2CharLinkedOpenHashMap<K>.MapEntry entry;
-/*      */ 
-/*      */     public EntryIterator()
-/*      */     {
-/*  874 */       super(null);
-/*      */     }
-/*  876 */     public EntryIterator() { super(from, null); }
-/*      */ 
-/*      */     public Object2CharLinkedOpenHashMap<K>.MapEntry next() {
-/*  879 */       return this.entry = new Object2CharLinkedOpenHashMap.MapEntry(Object2CharLinkedOpenHashMap.this, nextEntry());
-/*      */     }
-/*      */     public Object2CharLinkedOpenHashMap<K>.MapEntry previous() {
-/*  882 */       return this.entry = new Object2CharLinkedOpenHashMap.MapEntry(Object2CharLinkedOpenHashMap.this, previousEntry());
-/*      */     }
-/*      */ 
-/*      */     public void remove() {
-/*  886 */       super.remove();
-/*  887 */       Object2CharLinkedOpenHashMap.MapEntry.access$202(this.entry, -1);
-/*      */     }
-/*  889 */     public void set(Object2CharMap.Entry<K> ok) { throw new UnsupportedOperationException(); } 
-/*  890 */     public void add(Object2CharMap.Entry<K> ok) { throw new UnsupportedOperationException(); }
-/*      */ 
-/*      */   }
-/*      */ 
-/*      */   private class MapIterator
-/*      */   {
-/*  745 */     int prev = -1;
-/*      */ 
-/*  747 */     int next = -1;
-/*      */ 
-/*  749 */     int curr = -1;
-/*      */ 
-/*  751 */     int index = -1;
-/*      */ 
-/*  753 */     private MapIterator() { this.next = Object2CharLinkedOpenHashMap.this.first;
-/*  754 */       this.index = 0; }
-/*      */ 
-/*      */     private MapIterator() {
-/*  757 */       if (Object2CharLinkedOpenHashMap.this.key[Object2CharLinkedOpenHashMap.this.last] == null ? from == null : Object2CharLinkedOpenHashMap.this.key[Object2CharLinkedOpenHashMap.this.last].equals(from)) {
-/*  758 */         this.prev = Object2CharLinkedOpenHashMap.this.last;
-/*  759 */         this.index = Object2CharLinkedOpenHashMap.this.size;
-/*      */       }
-/*      */       else
-/*      */       {
-/*  763 */         int pos = (from == null ? 142593372 : HashCommon.murmurHash3(from.hashCode())) & Object2CharLinkedOpenHashMap.this.mask;
-/*      */ 
-/*  765 */         while (Object2CharLinkedOpenHashMap.this.used[pos] != 0) {
-/*  766 */           if (Object2CharLinkedOpenHashMap.this.key[pos] == null ? from == null : Object2CharLinkedOpenHashMap.this.key[pos].equals(from))
-/*      */           {
-/*  768 */             this.next = ((int)Object2CharLinkedOpenHashMap.this.link[pos]);
-/*  769 */             this.prev = pos;
-/*  770 */             return;
-/*      */           }
-/*  772 */           pos = pos + 1 & Object2CharLinkedOpenHashMap.this.mask;
-/*      */         }
-/*  774 */         throw new NoSuchElementException("The key " + from + " does not belong to this map.");
-/*      */       }
-/*      */     }
-/*  777 */     public boolean hasNext() { return this.next != -1; } 
-/*  778 */     public boolean hasPrevious() { return this.prev != -1; } 
-/*      */     private final void ensureIndexKnown() {
-/*  780 */       if (this.index >= 0) return;
-/*  781 */       if (this.prev == -1) {
-/*  782 */         this.index = 0;
-/*  783 */         return;
-/*      */       }
-/*  785 */       if (this.next == -1) {
-/*  786 */         this.index = Object2CharLinkedOpenHashMap.this.size;
-/*  787 */         return;
-/*      */       }
-/*  789 */       int pos = Object2CharLinkedOpenHashMap.this.first;
-/*  790 */       this.index = 1;
-/*  791 */       while (pos != this.prev) {
-/*  792 */         pos = (int)Object2CharLinkedOpenHashMap.this.link[pos];
-/*  793 */         this.index += 1;
-/*      */       }
-/*      */     }
-/*      */ 
-/*  797 */     public int nextIndex() { ensureIndexKnown();
-/*  798 */       return this.index; }
-/*      */ 
-/*      */     public int previousIndex() {
-/*  801 */       ensureIndexKnown();
-/*  802 */       return this.index - 1;
-/*      */     }
-/*      */     public int nextEntry() {
-/*  805 */       if (!hasNext()) return Object2CharLinkedOpenHashMap.this.size();
-/*  806 */       this.curr = this.next;
-/*  807 */       this.next = ((int)Object2CharLinkedOpenHashMap.this.link[this.curr]);
-/*  808 */       this.prev = this.curr;
-/*  809 */       if (this.index >= 0) this.index += 1;
-/*  810 */       return this.curr;
-/*      */     }
-/*      */     public int previousEntry() {
-/*  813 */       if (!hasPrevious()) return -1;
-/*  814 */       this.curr = this.prev;
-/*  815 */       this.prev = ((int)(Object2CharLinkedOpenHashMap.this.link[this.curr] >>> 32));
-/*  816 */       this.next = this.curr;
-/*  817 */       if (this.index >= 0) this.index -= 1;
-/*  818 */       return this.curr;
-/*      */     }
-/*      */ 
-/*      */     public void remove() {
-/*  822 */       ensureIndexKnown();
-/*  823 */       if (this.curr == -1) throw new IllegalStateException();
-/*  824 */       if (this.curr == this.prev)
-/*      */       {
-/*  827 */         this.index -= 1;
-/*  828 */         this.prev = ((int)(Object2CharLinkedOpenHashMap.this.link[this.curr] >>> 32));
-/*      */       }
-/*      */       else {
-/*  831 */         this.next = ((int)Object2CharLinkedOpenHashMap.this.link[this.curr]);
-/*  832 */       }Object2CharLinkedOpenHashMap.this.size -= 1;
-/*      */ 
-/*  835 */       if (this.prev == -1) Object2CharLinkedOpenHashMap.this.first = this.next;
-/*      */       else
-/*  837 */         Object2CharLinkedOpenHashMap.this.link[this.prev] ^= (Object2CharLinkedOpenHashMap.this.link[this.prev] ^ this.next & 0xFFFFFFFF) & 0xFFFFFFFF;
-/*  838 */       if (this.next == -1) Object2CharLinkedOpenHashMap.this.last = this.prev;
-/*      */       else
-/*  840 */         Object2CharLinkedOpenHashMap.this.link[this.next] ^= (Object2CharLinkedOpenHashMap.this.link[this.next] ^ (this.prev & 0xFFFFFFFF) << 32) & 0x0; int pos = this.curr;
-/*      */       int last;
-/*      */       while (true) {
-/*  844 */         pos = (last = pos) + 1 & Object2CharLinkedOpenHashMap.this.mask;
-/*  845 */         while (Object2CharLinkedOpenHashMap.this.used[pos] != 0) {
-/*  846 */           int slot = (Object2CharLinkedOpenHashMap.this.key[pos] == null ? 142593372 : HashCommon.murmurHash3(Object2CharLinkedOpenHashMap.this.key[pos].hashCode())) & Object2CharLinkedOpenHashMap.this.mask;
-/*  847 */           if (last <= pos ? (last < slot) && (slot <= pos) : (last >= slot) && (slot > pos)) break;
-/*  848 */           pos = pos + 1 & Object2CharLinkedOpenHashMap.this.mask;
-/*      */         }
-/*  850 */         if (Object2CharLinkedOpenHashMap.this.used[pos] == 0) break;
-/*  851 */         Object2CharLinkedOpenHashMap.this.key[last] = Object2CharLinkedOpenHashMap.this.key[pos];
-/*  852 */         Object2CharLinkedOpenHashMap.this.value[last] = Object2CharLinkedOpenHashMap.this.value[pos];
-/*  853 */         if (this.next == pos) this.next = last;
-/*  854 */         if (this.prev == pos) this.prev = last;
-/*  855 */         Object2CharLinkedOpenHashMap.this.fixPointers(pos, last);
-/*      */       }
-/*  857 */       Object2CharLinkedOpenHashMap.this.used[last] = false;
-/*  858 */       Object2CharLinkedOpenHashMap.this.key[last] = null;
-/*  859 */       this.curr = -1;
-/*      */     }
-/*      */     public int skip(int n) {
-/*  862 */       int i = n;
-/*  863 */       while ((i-- != 0) && (hasNext())) nextEntry();
-/*  864 */       return n - i - 1;
-/*      */     }
-/*      */     public int back(int n) {
-/*  867 */       int i = n;
-/*  868 */       while ((i-- != 0) && (hasPrevious())) previousEntry();
-/*  869 */       return n - i - 1;
-/*      */     }
-/*      */   }
-/*      */ 
-/*      */   private final class MapEntry
-/*      */     implements Object2CharMap.Entry<K>, Map.Entry<K, Character>
-/*      */   {
-/*      */     private int index;
-/*      */ 
-/*      */     MapEntry(int index)
-/*      */     {
-/*  617 */       this.index = index;
-/*      */     }
-/*      */     public K getKey() {
-/*  620 */       return Object2CharLinkedOpenHashMap.this.key[this.index];
-/*      */     }
-/*      */     public Character getValue() {
-/*  623 */       return Character.valueOf(Object2CharLinkedOpenHashMap.this.value[this.index]);
-/*      */     }
-/*      */     public char getCharValue() {
-/*  626 */       return Object2CharLinkedOpenHashMap.this.value[this.index];
-/*      */     }
-/*      */     public char setValue(char v) {
-/*  629 */       char oldValue = Object2CharLinkedOpenHashMap.this.value[this.index];
-/*  630 */       Object2CharLinkedOpenHashMap.this.value[this.index] = v;
-/*  631 */       return oldValue;
-/*      */     }
-/*      */     public Character setValue(Character v) {
-/*  634 */       return Character.valueOf(setValue(v.charValue()));
-/*      */     }
-/*      */ 
-/*      */     public boolean equals(Object o) {
-/*  638 */       if (!(o instanceof Map.Entry)) return false;
-/*  639 */       Map.Entry e = (Map.Entry)o;
-/*  640 */       return (Object2CharLinkedOpenHashMap.this.key[this.index] == null ? e.getKey() == null : Object2CharLinkedOpenHashMap.this.key[this.index].equals(e.getKey())) && (Object2CharLinkedOpenHashMap.this.value[this.index] == ((Character)e.getValue()).charValue());
-/*      */     }
-/*      */     public int hashCode() {
-/*  643 */       return (Object2CharLinkedOpenHashMap.this.key[this.index] == null ? 0 : Object2CharLinkedOpenHashMap.this.key[this.index].hashCode()) ^ Object2CharLinkedOpenHashMap.this.value[this.index];
-/*      */     }
-/*      */     public String toString() {
-/*  646 */       return Object2CharLinkedOpenHashMap.this.key[this.index] + "=>" + Object2CharLinkedOpenHashMap.this.value[this.index];
-/*      */     }
-/*      */   }
-/*      */ }
+/*    1:     */package it.unimi.dsi.fastutil.objects;
+/*    2:     */
+/*    3:     */import it.unimi.dsi.fastutil.Hash;
+/*    4:     */import it.unimi.dsi.fastutil.HashCommon;
+/*    5:     */import it.unimi.dsi.fastutil.booleans.BooleanArrays;
+/*    6:     */import it.unimi.dsi.fastutil.chars.AbstractCharCollection;
+/*    7:     */import it.unimi.dsi.fastutil.chars.CharCollection;
+/*    8:     */import it.unimi.dsi.fastutil.chars.CharIterator;
+/*    9:     */import it.unimi.dsi.fastutil.chars.CharListIterator;
+/*   10:     */import java.io.IOException;
+/*   11:     */import java.io.ObjectInputStream;
+/*   12:     */import java.io.ObjectOutputStream;
+/*   13:     */import java.io.Serializable;
+/*   14:     */import java.util.Comparator;
+/*   15:     */import java.util.Map;
+/*   16:     */import java.util.Map.Entry;
+/*   17:     */import java.util.NoSuchElementException;
+/*   18:     */
+/*  113:     */public class Object2CharLinkedOpenHashMap<K>
+/*  114:     */  extends AbstractObject2CharSortedMap<K>
+/*  115:     */  implements Serializable, Cloneable, Hash
+/*  116:     */{
+/*  117:     */  public static final long serialVersionUID = 0L;
+/*  118:     */  private static final boolean ASSERTS = false;
+/*  119:     */  protected transient K[] key;
+/*  120:     */  protected transient char[] value;
+/*  121:     */  protected transient boolean[] used;
+/*  122:     */  protected final float f;
+/*  123:     */  protected transient int n;
+/*  124:     */  protected transient int maxFill;
+/*  125:     */  protected transient int mask;
+/*  126:     */  protected int size;
+/*  127:     */  protected volatile transient Object2CharSortedMap.FastSortedEntrySet<K> entries;
+/*  128:     */  protected volatile transient ObjectSortedSet<K> keys;
+/*  129:     */  protected volatile transient CharCollection values;
+/*  130: 130 */  protected transient int first = -1;
+/*  131:     */  
+/*  132: 132 */  protected transient int last = -1;
+/*  133:     */  
+/*  140:     */  protected transient long[] link;
+/*  141:     */  
+/*  149:     */  public Object2CharLinkedOpenHashMap(int expected, float f)
+/*  150:     */  {
+/*  151: 151 */    if ((f <= 0.0F) || (f > 1.0F)) throw new IllegalArgumentException("Load factor must be greater than 0 and smaller than or equal to 1");
+/*  152: 152 */    if (expected < 0) throw new IllegalArgumentException("The expected number of elements must be nonnegative");
+/*  153: 153 */    this.f = f;
+/*  154: 154 */    this.n = HashCommon.arraySize(expected, f);
+/*  155: 155 */    this.mask = (this.n - 1);
+/*  156: 156 */    this.maxFill = HashCommon.maxFill(this.n, f);
+/*  157: 157 */    this.key = ((Object[])new Object[this.n]);
+/*  158: 158 */    this.value = new char[this.n];
+/*  159: 159 */    this.used = new boolean[this.n];
+/*  160: 160 */    this.link = new long[this.n];
+/*  161:     */  }
+/*  162:     */  
+/*  165:     */  public Object2CharLinkedOpenHashMap(int expected)
+/*  166:     */  {
+/*  167: 167 */    this(expected, 0.75F);
+/*  168:     */  }
+/*  169:     */  
+/*  171:     */  public Object2CharLinkedOpenHashMap()
+/*  172:     */  {
+/*  173: 173 */    this(16, 0.75F);
+/*  174:     */  }
+/*  175:     */  
+/*  179:     */  public Object2CharLinkedOpenHashMap(Map<? extends K, ? extends Character> m, float f)
+/*  180:     */  {
+/*  181: 181 */    this(m.size(), f);
+/*  182: 182 */    putAll(m);
+/*  183:     */  }
+/*  184:     */  
+/*  187:     */  public Object2CharLinkedOpenHashMap(Map<? extends K, ? extends Character> m)
+/*  188:     */  {
+/*  189: 189 */    this(m, 0.75F);
+/*  190:     */  }
+/*  191:     */  
+/*  195:     */  public Object2CharLinkedOpenHashMap(Object2CharMap<K> m, float f)
+/*  196:     */  {
+/*  197: 197 */    this(m.size(), f);
+/*  198: 198 */    putAll(m);
+/*  199:     */  }
+/*  200:     */  
+/*  203:     */  public Object2CharLinkedOpenHashMap(Object2CharMap<K> m)
+/*  204:     */  {
+/*  205: 205 */    this(m, 0.75F);
+/*  206:     */  }
+/*  207:     */  
+/*  213:     */  public Object2CharLinkedOpenHashMap(K[] k, char[] v, float f)
+/*  214:     */  {
+/*  215: 215 */    this(k.length, f);
+/*  216: 216 */    if (k.length != v.length) throw new IllegalArgumentException("The key array and the value array have different lengths (" + k.length + " and " + v.length + ")");
+/*  217: 217 */    for (int i = 0; i < k.length; i++) { put(k[i], v[i]);
+/*  218:     */    }
+/*  219:     */  }
+/*  220:     */  
+/*  224:     */  public Object2CharLinkedOpenHashMap(K[] k, char[] v)
+/*  225:     */  {
+/*  226: 226 */    this(k, v, 0.75F);
+/*  227:     */  }
+/*  228:     */  
+/*  232:     */  public char put(K k, char v)
+/*  233:     */  {
+/*  234: 234 */    int pos = (k == null ? 142593372 : HashCommon.murmurHash3(k.hashCode())) & this.mask;
+/*  235:     */    
+/*  236: 236 */    while (this.used[pos] != 0) {
+/*  237: 237 */      if (this.key[pos] == null ? k == null : this.key[pos].equals(k)) {
+/*  238: 238 */        char oldValue = this.value[pos];
+/*  239: 239 */        this.value[pos] = v;
+/*  240: 240 */        return oldValue;
+/*  241:     */      }
+/*  242: 242 */      pos = pos + 1 & this.mask;
+/*  243:     */    }
+/*  244: 244 */    this.used[pos] = true;
+/*  245: 245 */    this.key[pos] = k;
+/*  246: 246 */    this.value[pos] = v;
+/*  247: 247 */    if (this.size == 0) {
+/*  248: 248 */      this.first = (this.last = pos);
+/*  249:     */      
+/*  250: 250 */      this.link[pos] = -1L;
+/*  251:     */    }
+/*  252:     */    else {
+/*  253: 253 */      this.link[this.last] ^= (this.link[this.last] ^ pos & 0xFFFFFFFF) & 0xFFFFFFFF;
+/*  254: 254 */      this.link[pos] = ((this.last & 0xFFFFFFFF) << 32 | 0xFFFFFFFF);
+/*  255: 255 */      this.last = pos;
+/*  256:     */    }
+/*  257: 257 */    if (++this.size >= this.maxFill) { rehash(HashCommon.arraySize(this.size + 1, this.f));
+/*  258:     */    }
+/*  259: 259 */    return this.defRetValue;
+/*  260:     */  }
+/*  261:     */  
+/*  262: 262 */  public Character put(K ok, Character ov) { char v = ov.charValue();
+/*  263: 263 */    K k = ok;
+/*  264:     */    
+/*  265: 265 */    int pos = (k == null ? 142593372 : HashCommon.murmurHash3(k.hashCode())) & this.mask;
+/*  266:     */    
+/*  267: 267 */    while (this.used[pos] != 0) {
+/*  268: 268 */      if (this.key[pos] == null ? k == null : this.key[pos].equals(k)) {
+/*  269: 269 */        Character oldValue = Character.valueOf(this.value[pos]);
+/*  270: 270 */        this.value[pos] = v;
+/*  271: 271 */        return oldValue;
+/*  272:     */      }
+/*  273: 273 */      pos = pos + 1 & this.mask;
+/*  274:     */    }
+/*  275: 275 */    this.used[pos] = true;
+/*  276: 276 */    this.key[pos] = k;
+/*  277: 277 */    this.value[pos] = v;
+/*  278: 278 */    if (this.size == 0) {
+/*  279: 279 */      this.first = (this.last = pos);
+/*  280:     */      
+/*  281: 281 */      this.link[pos] = -1L;
+/*  282:     */    }
+/*  283:     */    else {
+/*  284: 284 */      this.link[this.last] ^= (this.link[this.last] ^ pos & 0xFFFFFFFF) & 0xFFFFFFFF;
+/*  285: 285 */      this.link[pos] = ((this.last & 0xFFFFFFFF) << 32 | 0xFFFFFFFF);
+/*  286: 286 */      this.last = pos;
+/*  287:     */    }
+/*  288: 288 */    if (++this.size >= this.maxFill) { rehash(HashCommon.arraySize(this.size + 1, this.f));
+/*  289:     */    }
+/*  290: 290 */    return null;
+/*  291:     */  }
+/*  292:     */  
+/*  295:     */  protected final int shiftKeys(int pos)
+/*  296:     */  {
+/*  297:     */    int last;
+/*  298:     */    
+/*  300:     */    for (;;)
+/*  301:     */    {
+/*  302: 302 */      pos = (last = pos) + 1 & this.mask;
+/*  303: 303 */      while (this.used[pos] != 0) {
+/*  304: 304 */        int slot = (this.key[pos] == null ? 142593372 : HashCommon.murmurHash3(this.key[pos].hashCode())) & this.mask;
+/*  305: 305 */        if (last <= pos ? (last < slot) && (slot <= pos) : (last >= slot) && (slot > pos)) break;
+/*  306: 306 */        pos = pos + 1 & this.mask;
+/*  307:     */      }
+/*  308: 308 */      if (this.used[pos] == 0) break;
+/*  309: 309 */      this.key[last] = this.key[pos];
+/*  310: 310 */      this.value[last] = this.value[pos];
+/*  311: 311 */      fixPointers(pos, last);
+/*  312:     */    }
+/*  313: 313 */    this.used[last] = false;
+/*  314: 314 */    this.key[last] = null;
+/*  315: 315 */    return last;
+/*  316:     */  }
+/*  317:     */  
+/*  318:     */  public char removeChar(Object k)
+/*  319:     */  {
+/*  320: 320 */    int pos = (k == null ? 142593372 : HashCommon.murmurHash3(k.hashCode())) & this.mask;
+/*  321:     */    
+/*  322: 322 */    while (this.used[pos] != 0) {
+/*  323: 323 */      if (this.key[pos] == null ? k == null : this.key[pos].equals(k)) {
+/*  324: 324 */        this.size -= 1;
+/*  325: 325 */        fixPointers(pos);
+/*  326: 326 */        char v = this.value[pos];
+/*  327: 327 */        shiftKeys(pos);
+/*  328: 328 */        return v;
+/*  329:     */      }
+/*  330: 330 */      pos = pos + 1 & this.mask;
+/*  331:     */    }
+/*  332: 332 */    return this.defRetValue;
+/*  333:     */  }
+/*  334:     */  
+/*  335:     */  public Character remove(Object ok) {
+/*  336: 336 */    K k = ok;
+/*  337:     */    
+/*  338: 338 */    int pos = (k == null ? 142593372 : HashCommon.murmurHash3(k.hashCode())) & this.mask;
+/*  339:     */    
+/*  340: 340 */    while (this.used[pos] != 0) {
+/*  341: 341 */      if (this.key[pos] == null ? k == null : this.key[pos].equals(k)) {
+/*  342: 342 */        this.size -= 1;
+/*  343: 343 */        fixPointers(pos);
+/*  344: 344 */        char v = this.value[pos];
+/*  345: 345 */        shiftKeys(pos);
+/*  346: 346 */        return Character.valueOf(v);
+/*  347:     */      }
+/*  348: 348 */      pos = pos + 1 & this.mask;
+/*  349:     */    }
+/*  350: 350 */    return null;
+/*  351:     */  }
+/*  352:     */  
+/*  355:     */  public char removeFirstChar()
+/*  356:     */  {
+/*  357: 357 */    if (this.size == 0) throw new NoSuchElementException();
+/*  358: 358 */    this.size -= 1;
+/*  359: 359 */    int pos = this.first;
+/*  360:     */    
+/*  361: 361 */    this.first = ((int)this.link[pos]);
+/*  362: 362 */    if (0 <= this.first)
+/*  363:     */    {
+/*  364: 364 */      this.link[this.first] |= -4294967296L;
+/*  365:     */    }
+/*  366: 366 */    char v = this.value[pos];
+/*  367: 367 */    shiftKeys(pos);
+/*  368: 368 */    return v;
+/*  369:     */  }
+/*  370:     */  
+/*  373:     */  public char removeLastChar()
+/*  374:     */  {
+/*  375: 375 */    if (this.size == 0) throw new NoSuchElementException();
+/*  376: 376 */    this.size -= 1;
+/*  377: 377 */    int pos = this.last;
+/*  378:     */    
+/*  379: 379 */    this.last = ((int)(this.link[pos] >>> 32));
+/*  380: 380 */    if (0 <= this.last)
+/*  381:     */    {
+/*  382: 382 */      this.link[this.last] |= 4294967295L;
+/*  383:     */    }
+/*  384: 384 */    char v = this.value[pos];
+/*  385: 385 */    shiftKeys(pos);
+/*  386: 386 */    return v;
+/*  387:     */  }
+/*  388:     */  
+/*  389: 389 */  private void moveIndexToFirst(int i) { if ((this.size == 1) || (this.first == i)) return;
+/*  390: 390 */    if (this.last == i) {
+/*  391: 391 */      this.last = ((int)(this.link[i] >>> 32));
+/*  392:     */      
+/*  393: 393 */      this.link[this.last] |= 4294967295L;
+/*  394:     */    }
+/*  395:     */    else {
+/*  396: 396 */      long linki = this.link[i];
+/*  397: 397 */      int prev = (int)(linki >>> 32);
+/*  398: 398 */      int next = (int)linki;
+/*  399: 399 */      this.link[prev] ^= (this.link[prev] ^ linki & 0xFFFFFFFF) & 0xFFFFFFFF;
+/*  400: 400 */      this.link[next] ^= (this.link[next] ^ linki & 0x0) & 0x0;
+/*  401:     */    }
+/*  402: 402 */    this.link[this.first] ^= (this.link[this.first] ^ (i & 0xFFFFFFFF) << 32) & 0x0;
+/*  403: 403 */    this.link[i] = (0x0 | this.first & 0xFFFFFFFF);
+/*  404: 404 */    this.first = i;
+/*  405:     */  }
+/*  406:     */  
+/*  407: 407 */  private void moveIndexToLast(int i) { if ((this.size == 1) || (this.last == i)) return;
+/*  408: 408 */    if (this.first == i) {
+/*  409: 409 */      this.first = ((int)this.link[i]);
+/*  410:     */      
+/*  411: 411 */      this.link[this.first] |= -4294967296L;
+/*  412:     */    }
+/*  413:     */    else {
+/*  414: 414 */      long linki = this.link[i];
+/*  415: 415 */      int prev = (int)(linki >>> 32);
+/*  416: 416 */      int next = (int)linki;
+/*  417: 417 */      this.link[prev] ^= (this.link[prev] ^ linki & 0xFFFFFFFF) & 0xFFFFFFFF;
+/*  418: 418 */      this.link[next] ^= (this.link[next] ^ linki & 0x0) & 0x0;
+/*  419:     */    }
+/*  420: 420 */    this.link[this.last] ^= (this.link[this.last] ^ i & 0xFFFFFFFF) & 0xFFFFFFFF;
+/*  421: 421 */    this.link[i] = ((this.last & 0xFFFFFFFF) << 32 | 0xFFFFFFFF);
+/*  422: 422 */    this.last = i;
+/*  423:     */  }
+/*  424:     */  
+/*  428:     */  public char getAndMoveToFirst(K k)
+/*  429:     */  {
+/*  430: 430 */    K[] key = this.key;
+/*  431: 431 */    boolean[] used = this.used;
+/*  432: 432 */    int mask = this.mask;
+/*  433:     */    
+/*  434: 434 */    int pos = (k == null ? 142593372 : HashCommon.murmurHash3(k.hashCode())) & mask;
+/*  435:     */    
+/*  436: 436 */    while (used[pos] != 0) {
+/*  437: 437 */      if (k == null ? key[pos] == null : k.equals(key[pos])) {
+/*  438: 438 */        moveIndexToFirst(pos);
+/*  439: 439 */        return this.value[pos];
+/*  440:     */      }
+/*  441: 441 */      pos = pos + 1 & mask;
+/*  442:     */    }
+/*  443: 443 */    return this.defRetValue;
+/*  444:     */  }
+/*  445:     */  
+/*  449:     */  public char getAndMoveToLast(K k)
+/*  450:     */  {
+/*  451: 451 */    K[] key = this.key;
+/*  452: 452 */    boolean[] used = this.used;
+/*  453: 453 */    int mask = this.mask;
+/*  454:     */    
+/*  455: 455 */    int pos = (k == null ? 142593372 : HashCommon.murmurHash3(k.hashCode())) & mask;
+/*  456:     */    
+/*  457: 457 */    while (used[pos] != 0) {
+/*  458: 458 */      if (k == null ? key[pos] == null : k.equals(key[pos])) {
+/*  459: 459 */        moveIndexToLast(pos);
+/*  460: 460 */        return this.value[pos];
+/*  461:     */      }
+/*  462: 462 */      pos = pos + 1 & mask;
+/*  463:     */    }
+/*  464: 464 */    return this.defRetValue;
+/*  465:     */  }
+/*  466:     */  
+/*  471:     */  public char putAndMoveToFirst(K k, char v)
+/*  472:     */  {
+/*  473: 473 */    K[] key = this.key;
+/*  474: 474 */    boolean[] used = this.used;
+/*  475: 475 */    int mask = this.mask;
+/*  476:     */    
+/*  477: 477 */    int pos = (k == null ? 142593372 : HashCommon.murmurHash3(k.hashCode())) & mask;
+/*  478:     */    
+/*  479: 479 */    while (used[pos] != 0) {
+/*  480: 480 */      if (k == null ? key[pos] == null : k.equals(key[pos])) {
+/*  481: 481 */        char oldValue = this.value[pos];
+/*  482: 482 */        this.value[pos] = v;
+/*  483: 483 */        moveIndexToFirst(pos);
+/*  484: 484 */        return oldValue;
+/*  485:     */      }
+/*  486: 486 */      pos = pos + 1 & mask;
+/*  487:     */    }
+/*  488: 488 */    used[pos] = true;
+/*  489: 489 */    key[pos] = k;
+/*  490: 490 */    this.value[pos] = v;
+/*  491: 491 */    if (this.size == 0) {
+/*  492: 492 */      this.first = (this.last = pos);
+/*  493:     */      
+/*  494: 494 */      this.link[pos] = -1L;
+/*  495:     */    }
+/*  496:     */    else {
+/*  497: 497 */      this.link[this.first] ^= (this.link[this.first] ^ (pos & 0xFFFFFFFF) << 32) & 0x0;
+/*  498: 498 */      this.link[pos] = (0x0 | this.first & 0xFFFFFFFF);
+/*  499: 499 */      this.first = pos;
+/*  500:     */    }
+/*  501: 501 */    if (++this.size >= this.maxFill) { rehash(HashCommon.arraySize(this.size, this.f));
+/*  502:     */    }
+/*  503: 503 */    return this.defRetValue;
+/*  504:     */  }
+/*  505:     */  
+/*  510:     */  public char putAndMoveToLast(K k, char v)
+/*  511:     */  {
+/*  512: 512 */    K[] key = this.key;
+/*  513: 513 */    boolean[] used = this.used;
+/*  514: 514 */    int mask = this.mask;
+/*  515:     */    
+/*  516: 516 */    int pos = (k == null ? 142593372 : HashCommon.murmurHash3(k.hashCode())) & mask;
+/*  517:     */    
+/*  518: 518 */    while (used[pos] != 0) {
+/*  519: 519 */      if (k == null ? key[pos] == null : k.equals(key[pos])) {
+/*  520: 520 */        char oldValue = this.value[pos];
+/*  521: 521 */        this.value[pos] = v;
+/*  522: 522 */        moveIndexToLast(pos);
+/*  523: 523 */        return oldValue;
+/*  524:     */      }
+/*  525: 525 */      pos = pos + 1 & mask;
+/*  526:     */    }
+/*  527: 527 */    used[pos] = true;
+/*  528: 528 */    key[pos] = k;
+/*  529: 529 */    this.value[pos] = v;
+/*  530: 530 */    if (this.size == 0) {
+/*  531: 531 */      this.first = (this.last = pos);
+/*  532:     */      
+/*  533: 533 */      this.link[pos] = -1L;
+/*  534:     */    }
+/*  535:     */    else {
+/*  536: 536 */      this.link[this.last] ^= (this.link[this.last] ^ pos & 0xFFFFFFFF) & 0xFFFFFFFF;
+/*  537: 537 */      this.link[pos] = ((this.last & 0xFFFFFFFF) << 32 | 0xFFFFFFFF);
+/*  538: 538 */      this.last = pos;
+/*  539:     */    }
+/*  540: 540 */    if (++this.size >= this.maxFill) { rehash(HashCommon.arraySize(this.size, this.f));
+/*  541:     */    }
+/*  542: 542 */    return this.defRetValue;
+/*  543:     */  }
+/*  544:     */  
+/*  545:     */  public char getChar(Object k)
+/*  546:     */  {
+/*  547: 547 */    int pos = (k == null ? 142593372 : HashCommon.murmurHash3(k.hashCode())) & this.mask;
+/*  548:     */    
+/*  549: 549 */    while (this.used[pos] != 0) {
+/*  550: 550 */      if (this.key[pos] == null ? k == null : this.key[pos].equals(k)) return this.value[pos];
+/*  551: 551 */      pos = pos + 1 & this.mask;
+/*  552:     */    }
+/*  553: 553 */    return this.defRetValue;
+/*  554:     */  }
+/*  555:     */  
+/*  556:     */  public boolean containsKey(Object k)
+/*  557:     */  {
+/*  558: 558 */    int pos = (k == null ? 142593372 : HashCommon.murmurHash3(k.hashCode())) & this.mask;
+/*  559:     */    
+/*  560: 560 */    while (this.used[pos] != 0) {
+/*  561: 561 */      if (this.key[pos] == null ? k == null : this.key[pos].equals(k)) return true;
+/*  562: 562 */      pos = pos + 1 & this.mask;
+/*  563:     */    }
+/*  564: 564 */    return false;
+/*  565:     */  }
+/*  566:     */  
+/*  567: 567 */  public boolean containsValue(char v) { char[] value = this.value;
+/*  568: 568 */    boolean[] used = this.used;
+/*  569: 569 */    for (int i = this.n; i-- != 0; return true) label16: if ((used[i] == 0) || (value[i] != v)) break label16;
+/*  570: 570 */    return false;
+/*  571:     */  }
+/*  572:     */  
+/*  577:     */  public void clear()
+/*  578:     */  {
+/*  579: 579 */    if (this.size == 0) return;
+/*  580: 580 */    this.size = 0;
+/*  581: 581 */    BooleanArrays.fill(this.used, false);
+/*  582:     */    
+/*  583: 583 */    ObjectArrays.fill(this.key, null);
+/*  584: 584 */    this.first = (this.last = -1);
+/*  585:     */  }
+/*  586:     */  
+/*  587: 587 */  public int size() { return this.size; }
+/*  588:     */  
+/*  589:     */  public boolean isEmpty() {
+/*  590: 590 */    return this.size == 0;
+/*  591:     */  }
+/*  592:     */  
+/*  597:     */  @Deprecated
+/*  598:     */  public void growthFactor(int growthFactor) {}
+/*  599:     */  
+/*  604:     */  @Deprecated
+/*  605:     */  public int growthFactor()
+/*  606:     */  {
+/*  607: 607 */    return 16;
+/*  608:     */  }
+/*  609:     */  
+/*  610:     */  private final class MapEntry
+/*  611:     */    implements Object2CharMap.Entry<K>, Map.Entry<K, Character>
+/*  612:     */  {
+/*  613:     */    private int index;
+/*  614:     */    
+/*  615:     */    MapEntry(int index)
+/*  616:     */    {
+/*  617: 617 */      this.index = index;
+/*  618:     */    }
+/*  619:     */    
+/*  620: 620 */    public K getKey() { return Object2CharLinkedOpenHashMap.this.key[this.index]; }
+/*  621:     */    
+/*  622:     */    public Character getValue() {
+/*  623: 623 */      return Character.valueOf(Object2CharLinkedOpenHashMap.this.value[this.index]);
+/*  624:     */    }
+/*  625:     */    
+/*  626: 626 */    public char getCharValue() { return Object2CharLinkedOpenHashMap.this.value[this.index]; }
+/*  627:     */    
+/*  628:     */    public char setValue(char v) {
+/*  629: 629 */      char oldValue = Object2CharLinkedOpenHashMap.this.value[this.index];
+/*  630: 630 */      Object2CharLinkedOpenHashMap.this.value[this.index] = v;
+/*  631: 631 */      return oldValue;
+/*  632:     */    }
+/*  633:     */    
+/*  634: 634 */    public Character setValue(Character v) { return Character.valueOf(setValue(v.charValue())); }
+/*  635:     */    
+/*  636:     */    public boolean equals(Object o)
+/*  637:     */    {
+/*  638: 638 */      if (!(o instanceof Map.Entry)) return false;
+/*  639: 639 */      Map.Entry<K, Character> e = (Map.Entry)o;
+/*  640: 640 */      return (Object2CharLinkedOpenHashMap.this.key[this.index] == null ? e.getKey() == null : Object2CharLinkedOpenHashMap.this.key[this.index].equals(e.getKey())) && (Object2CharLinkedOpenHashMap.this.value[this.index] == ((Character)e.getValue()).charValue());
+/*  641:     */    }
+/*  642:     */    
+/*  643: 643 */    public int hashCode() { return (Object2CharLinkedOpenHashMap.this.key[this.index] == null ? 0 : Object2CharLinkedOpenHashMap.this.key[this.index].hashCode()) ^ Object2CharLinkedOpenHashMap.this.value[this.index]; }
+/*  644:     */    
+/*  645:     */    public String toString() {
+/*  646: 646 */      return Object2CharLinkedOpenHashMap.this.key[this.index] + "=>" + Object2CharLinkedOpenHashMap.this.value[this.index];
+/*  647:     */    }
+/*  648:     */  }
+/*  649:     */  
+/*  655:     */  protected void fixPointers(int i)
+/*  656:     */  {
+/*  657: 657 */    if (this.size == 0) {
+/*  658: 658 */      this.first = (this.last = -1);
+/*  659: 659 */      return;
+/*  660:     */    }
+/*  661: 661 */    if (this.first == i) {
+/*  662: 662 */      this.first = ((int)this.link[i]);
+/*  663: 663 */      if (0 <= this.first)
+/*  664:     */      {
+/*  665: 665 */        this.link[this.first] |= -4294967296L;
+/*  666:     */      }
+/*  667: 667 */      return;
+/*  668:     */    }
+/*  669: 669 */    if (this.last == i) {
+/*  670: 670 */      this.last = ((int)(this.link[i] >>> 32));
+/*  671: 671 */      if (0 <= this.last)
+/*  672:     */      {
+/*  673: 673 */        this.link[this.last] |= 4294967295L;
+/*  674:     */      }
+/*  675: 675 */      return;
+/*  676:     */    }
+/*  677: 677 */    long linki = this.link[i];
+/*  678: 678 */    int prev = (int)(linki >>> 32);
+/*  679: 679 */    int next = (int)linki;
+/*  680: 680 */    this.link[prev] ^= (this.link[prev] ^ linki & 0xFFFFFFFF) & 0xFFFFFFFF;
+/*  681: 681 */    this.link[next] ^= (this.link[next] ^ linki & 0x0) & 0x0;
+/*  682:     */  }
+/*  683:     */  
+/*  690:     */  protected void fixPointers(int s, int d)
+/*  691:     */  {
+/*  692: 692 */    if (this.size == 1) {
+/*  693: 693 */      this.first = (this.last = d);
+/*  694:     */      
+/*  695: 695 */      this.link[d] = -1L;
+/*  696: 696 */      return;
+/*  697:     */    }
+/*  698: 698 */    if (this.first == s) {
+/*  699: 699 */      this.first = d;
+/*  700: 700 */      this.link[((int)this.link[s])] ^= (this.link[((int)this.link[s])] ^ (d & 0xFFFFFFFF) << 32) & 0x0;
+/*  701: 701 */      this.link[d] = this.link[s];
+/*  702: 702 */      return;
+/*  703:     */    }
+/*  704: 704 */    if (this.last == s) {
+/*  705: 705 */      this.last = d;
+/*  706: 706 */      this.link[((int)(this.link[s] >>> 32))] ^= (this.link[((int)(this.link[s] >>> 32))] ^ d & 0xFFFFFFFF) & 0xFFFFFFFF;
+/*  707: 707 */      this.link[d] = this.link[s];
+/*  708: 708 */      return;
+/*  709:     */    }
+/*  710: 710 */    long links = this.link[s];
+/*  711: 711 */    int prev = (int)(links >>> 32);
+/*  712: 712 */    int next = (int)links;
+/*  713: 713 */    this.link[prev] ^= (this.link[prev] ^ d & 0xFFFFFFFF) & 0xFFFFFFFF;
+/*  714: 714 */    this.link[next] ^= (this.link[next] ^ (d & 0xFFFFFFFF) << 32) & 0x0;
+/*  715: 715 */    this.link[d] = links;
+/*  716:     */  }
+/*  717:     */  
+/*  720:     */  public K firstKey()
+/*  721:     */  {
+/*  722: 722 */    if (this.size == 0) throw new NoSuchElementException();
+/*  723: 723 */    return this.key[this.first];
+/*  724:     */  }
+/*  725:     */  
+/*  728:     */  public K lastKey()
+/*  729:     */  {
+/*  730: 730 */    if (this.size == 0) throw new NoSuchElementException();
+/*  731: 731 */    return this.key[this.last]; }
+/*  732:     */  
+/*  733: 733 */  public Comparator<? super K> comparator() { return null; }
+/*  734: 734 */  public Object2CharSortedMap<K> tailMap(K from) { throw new UnsupportedOperationException(); }
+/*  735: 735 */  public Object2CharSortedMap<K> headMap(K to) { throw new UnsupportedOperationException(); }
+/*  736: 736 */  public Object2CharSortedMap<K> subMap(K from, K to) { throw new UnsupportedOperationException(); }
+/*  737:     */  
+/*  743:     */  private class MapIterator
+/*  744:     */  {
+/*  745: 745 */    int prev = -1;
+/*  746:     */    
+/*  747: 747 */    int next = -1;
+/*  748:     */    
+/*  749: 749 */    int curr = -1;
+/*  750:     */    
+/*  751: 751 */    int index = -1;
+/*  752:     */    
+/*  753: 753 */    private MapIterator() { this.next = Object2CharLinkedOpenHashMap.this.first;
+/*  754: 754 */      this.index = 0;
+/*  755:     */    }
+/*  756:     */    
+/*  757: 757 */    private MapIterator() { if (Object2CharLinkedOpenHashMap.this.key[Object2CharLinkedOpenHashMap.this.last] == null ? from == null : Object2CharLinkedOpenHashMap.this.key[Object2CharLinkedOpenHashMap.this.last].equals(from)) {
+/*  758: 758 */        this.prev = Object2CharLinkedOpenHashMap.this.last;
+/*  759: 759 */        this.index = Object2CharLinkedOpenHashMap.this.size;
+/*  760:     */      }
+/*  761:     */      else
+/*  762:     */      {
+/*  763: 763 */        int pos = (from == null ? 142593372 : HashCommon.murmurHash3(from.hashCode())) & Object2CharLinkedOpenHashMap.this.mask;
+/*  764:     */        
+/*  765: 765 */        while (Object2CharLinkedOpenHashMap.this.used[pos] != 0) {
+/*  766: 766 */          if (Object2CharLinkedOpenHashMap.this.key[pos] == null ? from == null : Object2CharLinkedOpenHashMap.this.key[pos].equals(from))
+/*  767:     */          {
+/*  768: 768 */            this.next = ((int)Object2CharLinkedOpenHashMap.this.link[pos]);
+/*  769: 769 */            this.prev = pos;
+/*  770: 770 */            return;
+/*  771:     */          }
+/*  772: 772 */          pos = pos + 1 & Object2CharLinkedOpenHashMap.this.mask;
+/*  773:     */        }
+/*  774: 774 */        throw new NoSuchElementException("The key " + from + " does not belong to this map.");
+/*  775:     */      } }
+/*  776:     */    
+/*  777: 777 */    public boolean hasNext() { return this.next != -1; }
+/*  778: 778 */    public boolean hasPrevious() { return this.prev != -1; }
+/*  779:     */    
+/*  780: 780 */    private final void ensureIndexKnown() { if (this.index >= 0) return;
+/*  781: 781 */      if (this.prev == -1) {
+/*  782: 782 */        this.index = 0;
+/*  783: 783 */        return;
+/*  784:     */      }
+/*  785: 785 */      if (this.next == -1) {
+/*  786: 786 */        this.index = Object2CharLinkedOpenHashMap.this.size;
+/*  787: 787 */        return;
+/*  788:     */      }
+/*  789: 789 */      int pos = Object2CharLinkedOpenHashMap.this.first;
+/*  790: 790 */      this.index = 1;
+/*  791: 791 */      while (pos != this.prev) {
+/*  792: 792 */        pos = (int)Object2CharLinkedOpenHashMap.this.link[pos];
+/*  793: 793 */        this.index += 1;
+/*  794:     */      }
+/*  795:     */    }
+/*  796:     */    
+/*  797: 797 */    public int nextIndex() { ensureIndexKnown();
+/*  798: 798 */      return this.index;
+/*  799:     */    }
+/*  800:     */    
+/*  801: 801 */    public int previousIndex() { ensureIndexKnown();
+/*  802: 802 */      return this.index - 1;
+/*  803:     */    }
+/*  804:     */    
+/*  805: 805 */    public int nextEntry() { if (!hasNext()) return Object2CharLinkedOpenHashMap.this.size();
+/*  806: 806 */      this.curr = this.next;
+/*  807: 807 */      this.next = ((int)Object2CharLinkedOpenHashMap.this.link[this.curr]);
+/*  808: 808 */      this.prev = this.curr;
+/*  809: 809 */      if (this.index >= 0) this.index += 1;
+/*  810: 810 */      return this.curr;
+/*  811:     */    }
+/*  812:     */    
+/*  813: 813 */    public int previousEntry() { if (!hasPrevious()) return -1;
+/*  814: 814 */      this.curr = this.prev;
+/*  815: 815 */      this.prev = ((int)(Object2CharLinkedOpenHashMap.this.link[this.curr] >>> 32));
+/*  816: 816 */      this.next = this.curr;
+/*  817: 817 */      if (this.index >= 0) this.index -= 1;
+/*  818: 818 */      return this.curr;
+/*  819:     */    }
+/*  820:     */    
+/*  821:     */    public void remove() {
+/*  822: 822 */      ensureIndexKnown();
+/*  823: 823 */      if (this.curr == -1) throw new IllegalStateException();
+/*  824: 824 */      if (this.curr == this.prev)
+/*  825:     */      {
+/*  827: 827 */        this.index -= 1;
+/*  828: 828 */        this.prev = ((int)(Object2CharLinkedOpenHashMap.this.link[this.curr] >>> 32));
+/*  829:     */      }
+/*  830:     */      else {
+/*  831: 831 */        this.next = ((int)Object2CharLinkedOpenHashMap.this.link[this.curr]); }
+/*  832: 832 */      Object2CharLinkedOpenHashMap.this.size -= 1;
+/*  833:     */      
+/*  835: 835 */      if (this.prev == -1) { Object2CharLinkedOpenHashMap.this.first = this.next;
+/*  836:     */      } else
+/*  837: 837 */        Object2CharLinkedOpenHashMap.this.link[this.prev] ^= (Object2CharLinkedOpenHashMap.this.link[this.prev] ^ this.next & 0xFFFFFFFF) & 0xFFFFFFFF;
+/*  838: 838 */      if (this.next == -1) { Object2CharLinkedOpenHashMap.this.last = this.prev;
+/*  839:     */      } else
+/*  840: 840 */        Object2CharLinkedOpenHashMap.this.link[this.next] ^= (Object2CharLinkedOpenHashMap.this.link[this.next] ^ (this.prev & 0xFFFFFFFF) << 32) & 0x0;
+/*  841: 841 */      int pos = this.curr;
+/*  842:     */      int last;
+/*  843:     */      for (;;) {
+/*  844: 844 */        pos = (last = pos) + 1 & Object2CharLinkedOpenHashMap.this.mask;
+/*  845: 845 */        while (Object2CharLinkedOpenHashMap.this.used[pos] != 0) {
+/*  846: 846 */          int slot = (Object2CharLinkedOpenHashMap.this.key[pos] == null ? 142593372 : HashCommon.murmurHash3(Object2CharLinkedOpenHashMap.this.key[pos].hashCode())) & Object2CharLinkedOpenHashMap.this.mask;
+/*  847: 847 */          if (last <= pos ? (last < slot) && (slot <= pos) : (last >= slot) && (slot > pos)) break;
+/*  848: 848 */          pos = pos + 1 & Object2CharLinkedOpenHashMap.this.mask;
+/*  849:     */        }
+/*  850: 850 */        if (Object2CharLinkedOpenHashMap.this.used[pos] == 0) break;
+/*  851: 851 */        Object2CharLinkedOpenHashMap.this.key[last] = Object2CharLinkedOpenHashMap.this.key[pos];
+/*  852: 852 */        Object2CharLinkedOpenHashMap.this.value[last] = Object2CharLinkedOpenHashMap.this.value[pos];
+/*  853: 853 */        if (this.next == pos) this.next = last;
+/*  854: 854 */        if (this.prev == pos) this.prev = last;
+/*  855: 855 */        Object2CharLinkedOpenHashMap.this.fixPointers(pos, last);
+/*  856:     */      }
+/*  857: 857 */      Object2CharLinkedOpenHashMap.this.used[last] = false;
+/*  858: 858 */      Object2CharLinkedOpenHashMap.this.key[last] = null;
+/*  859: 859 */      this.curr = -1;
+/*  860:     */    }
+/*  861:     */    
+/*  862: 862 */    public int skip(int n) { int i = n;
+/*  863: 863 */      while ((i-- != 0) && (hasNext())) nextEntry();
+/*  864: 864 */      return n - i - 1;
+/*  865:     */    }
+/*  866:     */    
+/*  867: 867 */    public int back(int n) { int i = n;
+/*  868: 868 */      while ((i-- != 0) && (hasPrevious())) previousEntry();
+/*  869: 869 */      return n - i - 1;
+/*  870:     */    } }
+/*  871:     */  
+/*  872:     */  private class EntryIterator extends Object2CharLinkedOpenHashMap<K>.MapIterator implements ObjectListIterator<Object2CharMap.Entry<K>> { private Object2CharLinkedOpenHashMap<K>.MapEntry entry;
+/*  873:     */    
+/*  874: 874 */    public EntryIterator() { super(null); }
+/*  875:     */    
+/*  876: 876 */    public EntryIterator() { super(from, null); }
+/*  877:     */    
+/*  878:     */    public Object2CharLinkedOpenHashMap<K>.MapEntry next() {
+/*  879: 879 */      return this.entry = new Object2CharLinkedOpenHashMap.MapEntry(Object2CharLinkedOpenHashMap.this, nextEntry());
+/*  880:     */    }
+/*  881:     */    
+/*  882: 882 */    public Object2CharLinkedOpenHashMap<K>.MapEntry previous() { return this.entry = new Object2CharLinkedOpenHashMap.MapEntry(Object2CharLinkedOpenHashMap.this, previousEntry()); }
+/*  883:     */    
+/*  884:     */    public void remove()
+/*  885:     */    {
+/*  886: 886 */      super.remove();
+/*  887: 887 */      Object2CharLinkedOpenHashMap.MapEntry.access$202(this.entry, -1); }
+/*  888:     */    
+/*  889: 889 */    public void set(Object2CharMap.Entry<K> ok) { throw new UnsupportedOperationException(); }
+/*  890: 890 */    public void add(Object2CharMap.Entry<K> ok) { throw new UnsupportedOperationException(); }
+/*  891:     */  }
+/*  892:     */  
+/*  893: 893 */  private class FastEntryIterator extends Object2CharLinkedOpenHashMap<K>.MapIterator implements ObjectListIterator<Object2CharMap.Entry<K>> { final AbstractObject2CharMap.BasicEntry<K> entry = new AbstractObject2CharMap.BasicEntry(null, '\000');
+/*  894: 894 */    public FastEntryIterator() { super(null); }
+/*  895:     */    
+/*  896: 896 */    public FastEntryIterator() { super(from, null); }
+/*  897:     */    
+/*  898:     */    public AbstractObject2CharMap.BasicEntry<K> next() {
+/*  899: 899 */      int e = nextEntry();
+/*  900: 900 */      this.entry.key = Object2CharLinkedOpenHashMap.this.key[e];
+/*  901: 901 */      this.entry.value = Object2CharLinkedOpenHashMap.this.value[e];
+/*  902: 902 */      return this.entry;
+/*  903:     */    }
+/*  904:     */    
+/*  905: 905 */    public AbstractObject2CharMap.BasicEntry<K> previous() { int e = previousEntry();
+/*  906: 906 */      this.entry.key = Object2CharLinkedOpenHashMap.this.key[e];
+/*  907: 907 */      this.entry.value = Object2CharLinkedOpenHashMap.this.value[e];
+/*  908: 908 */      return this.entry; }
+/*  909:     */    
+/*  910: 910 */    public void set(Object2CharMap.Entry<K> ok) { throw new UnsupportedOperationException(); }
+/*  911: 911 */    public void add(Object2CharMap.Entry<K> ok) { throw new UnsupportedOperationException(); } }
+/*  912:     */  
+/*  913:     */  private final class MapEntrySet extends AbstractObjectSortedSet<Object2CharMap.Entry<K>> implements Object2CharSortedMap.FastSortedEntrySet<K> { private MapEntrySet() {}
+/*  914:     */    
+/*  915: 915 */    public ObjectBidirectionalIterator<Object2CharMap.Entry<K>> iterator() { return new Object2CharLinkedOpenHashMap.EntryIterator(Object2CharLinkedOpenHashMap.this); }
+/*  916:     */    
+/*  917: 917 */    public Comparator<? super Object2CharMap.Entry<K>> comparator() { return null; }
+/*  918: 918 */    public ObjectSortedSet<Object2CharMap.Entry<K>> subSet(Object2CharMap.Entry<K> fromElement, Object2CharMap.Entry<K> toElement) { throw new UnsupportedOperationException(); }
+/*  919: 919 */    public ObjectSortedSet<Object2CharMap.Entry<K>> headSet(Object2CharMap.Entry<K> toElement) { throw new UnsupportedOperationException(); }
+/*  920: 920 */    public ObjectSortedSet<Object2CharMap.Entry<K>> tailSet(Object2CharMap.Entry<K> fromElement) { throw new UnsupportedOperationException(); }
+/*  921:     */    
+/*  922: 922 */    public Object2CharMap.Entry<K> first() { if (Object2CharLinkedOpenHashMap.this.size == 0) throw new NoSuchElementException();
+/*  923: 923 */      return new Object2CharLinkedOpenHashMap.MapEntry(Object2CharLinkedOpenHashMap.this, Object2CharLinkedOpenHashMap.this.first);
+/*  924:     */    }
+/*  925:     */    
+/*  926: 926 */    public Object2CharMap.Entry<K> last() { if (Object2CharLinkedOpenHashMap.this.size == 0) throw new NoSuchElementException();
+/*  927: 927 */      return new Object2CharLinkedOpenHashMap.MapEntry(Object2CharLinkedOpenHashMap.this, Object2CharLinkedOpenHashMap.this.last);
+/*  928:     */    }
+/*  929:     */    
+/*  930:     */    public boolean contains(Object o) {
+/*  931: 931 */      if (!(o instanceof Map.Entry)) return false;
+/*  932: 932 */      Map.Entry<K, Character> e = (Map.Entry)o;
+/*  933: 933 */      K k = e.getKey();
+/*  934:     */      
+/*  935: 935 */      int pos = (k == null ? 142593372 : HashCommon.murmurHash3(k.hashCode())) & Object2CharLinkedOpenHashMap.this.mask;
+/*  936:     */      
+/*  937: 937 */      while (Object2CharLinkedOpenHashMap.this.used[pos] != 0) {
+/*  938: 938 */        if (Object2CharLinkedOpenHashMap.this.key[pos] == null ? k == null : Object2CharLinkedOpenHashMap.this.key[pos].equals(k)) return Object2CharLinkedOpenHashMap.this.value[pos] == ((Character)e.getValue()).charValue();
+/*  939: 939 */        pos = pos + 1 & Object2CharLinkedOpenHashMap.this.mask;
+/*  940:     */      }
+/*  941: 941 */      return false;
+/*  942:     */    }
+/*  943:     */    
+/*  944:     */    public boolean remove(Object o) {
+/*  945: 945 */      if (!(o instanceof Map.Entry)) return false;
+/*  946: 946 */      Map.Entry<K, Character> e = (Map.Entry)o;
+/*  947: 947 */      K k = e.getKey();
+/*  948:     */      
+/*  949: 949 */      int pos = (k == null ? 142593372 : HashCommon.murmurHash3(k.hashCode())) & Object2CharLinkedOpenHashMap.this.mask;
+/*  950:     */      
+/*  951: 951 */      while (Object2CharLinkedOpenHashMap.this.used[pos] != 0) {
+/*  952: 952 */        if (Object2CharLinkedOpenHashMap.this.key[pos] == null ? k == null : Object2CharLinkedOpenHashMap.this.key[pos].equals(k)) {
+/*  953: 953 */          Object2CharLinkedOpenHashMap.this.remove(e.getKey());
+/*  954: 954 */          return true;
+/*  955:     */        }
+/*  956: 956 */        pos = pos + 1 & Object2CharLinkedOpenHashMap.this.mask;
+/*  957:     */      }
+/*  958: 958 */      return false;
+/*  959:     */    }
+/*  960:     */    
+/*  961: 961 */    public int size() { return Object2CharLinkedOpenHashMap.this.size; }
+/*  962:     */    
+/*  963:     */    public void clear() {
+/*  964: 964 */      Object2CharLinkedOpenHashMap.this.clear();
+/*  965:     */    }
+/*  966:     */    
+/*  967: 967 */    public ObjectBidirectionalIterator<Object2CharMap.Entry<K>> iterator(Object2CharMap.Entry<K> from) { return new Object2CharLinkedOpenHashMap.EntryIterator(Object2CharLinkedOpenHashMap.this, from.getKey()); }
+/*  968:     */    
+/*  969:     */    public ObjectBidirectionalIterator<Object2CharMap.Entry<K>> fastIterator() {
+/*  970: 970 */      return new Object2CharLinkedOpenHashMap.FastEntryIterator(Object2CharLinkedOpenHashMap.this);
+/*  971:     */    }
+/*  972:     */    
+/*  973: 973 */    public ObjectBidirectionalIterator<Object2CharMap.Entry<K>> fastIterator(Object2CharMap.Entry<K> from) { return new Object2CharLinkedOpenHashMap.FastEntryIterator(Object2CharLinkedOpenHashMap.this, from.getKey()); }
+/*  974:     */  }
+/*  975:     */  
+/*  976:     */  public Object2CharSortedMap.FastSortedEntrySet<K> object2CharEntrySet() {
+/*  977: 977 */    if (this.entries == null) this.entries = new MapEntrySet(null);
+/*  978: 978 */    return this.entries;
+/*  979:     */  }
+/*  980:     */  
+/*  983:     */  private final class KeyIterator
+/*  984:     */    extends Object2CharLinkedOpenHashMap<K>.MapIterator
+/*  985:     */    implements ObjectListIterator<K>
+/*  986:     */  {
+/*  987: 987 */    public KeyIterator() { super(k, null); }
+/*  988: 988 */    public K previous() { return Object2CharLinkedOpenHashMap.this.key[previousEntry()]; }
+/*  989: 989 */    public void set(K k) { throw new UnsupportedOperationException(); }
+/*  990: 990 */    public void add(K k) { throw new UnsupportedOperationException(); }
+/*  991: 991 */    public KeyIterator() { super(null); }
+/*  992: 992 */    public K next() { return Object2CharLinkedOpenHashMap.this.key[nextEntry()]; } }
+/*  993:     */  
+/*  994:     */  private final class KeySet extends AbstractObjectSortedSet<K> { private KeySet() {}
+/*  995:     */    
+/*  996: 996 */    public ObjectListIterator<K> iterator(K from) { return new Object2CharLinkedOpenHashMap.KeyIterator(Object2CharLinkedOpenHashMap.this, from); }
+/*  997:     */    
+/*  998:     */    public ObjectListIterator<K> iterator() {
+/*  999: 999 */      return new Object2CharLinkedOpenHashMap.KeyIterator(Object2CharLinkedOpenHashMap.this);
+/* 1000:     */    }
+/* 1001:     */    
+/* 1002:1002 */    public int size() { return Object2CharLinkedOpenHashMap.this.size; }
+/* 1003:     */    
+/* 1005:1005 */    public boolean contains(Object k) { return Object2CharLinkedOpenHashMap.this.containsKey(k); }
+/* 1006:     */    
+/* 1007:     */    public boolean remove(Object k) {
+/* 1008:1008 */      int oldSize = Object2CharLinkedOpenHashMap.this.size;
+/* 1009:1009 */      Object2CharLinkedOpenHashMap.this.remove(k);
+/* 1010:1010 */      return Object2CharLinkedOpenHashMap.this.size != oldSize;
+/* 1011:     */    }
+/* 1012:     */    
+/* 1013:1013 */    public void clear() { Object2CharLinkedOpenHashMap.this.clear(); }
+/* 1014:     */    
+/* 1015:     */    public K first() {
+/* 1016:1016 */      if (Object2CharLinkedOpenHashMap.this.size == 0) throw new NoSuchElementException();
+/* 1017:1017 */      return Object2CharLinkedOpenHashMap.this.key[Object2CharLinkedOpenHashMap.this.first];
+/* 1018:     */    }
+/* 1019:     */    
+/* 1020:1020 */    public K last() { if (Object2CharLinkedOpenHashMap.this.size == 0) throw new NoSuchElementException();
+/* 1021:1021 */      return Object2CharLinkedOpenHashMap.this.key[Object2CharLinkedOpenHashMap.this.last]; }
+/* 1022:     */    
+/* 1023:1023 */    public Comparator<? super K> comparator() { return null; }
+/* 1024:1024 */    public final ObjectSortedSet<K> tailSet(K from) { throw new UnsupportedOperationException(); }
+/* 1025:1025 */    public final ObjectSortedSet<K> headSet(K to) { throw new UnsupportedOperationException(); }
+/* 1026:1026 */    public final ObjectSortedSet<K> subSet(K from, K to) { throw new UnsupportedOperationException(); }
+/* 1027:     */  }
+/* 1028:     */  
+/* 1029:1029 */  public ObjectSortedSet<K> keySet() { if (this.keys == null) this.keys = new KeySet(null);
+/* 1030:1030 */    return this.keys;
+/* 1031:     */  }
+/* 1032:     */  
+/* 1035:     */  private final class ValueIterator
+/* 1036:     */    extends Object2CharLinkedOpenHashMap.MapIterator
+/* 1037:     */    implements CharListIterator
+/* 1038:     */  {
+/* 1039:1039 */    public char previousChar() { return Object2CharLinkedOpenHashMap.this.value[previousEntry()]; }
+/* 1040:1040 */    public Character previous() { return Character.valueOf(Object2CharLinkedOpenHashMap.this.value[previousEntry()]); }
+/* 1041:1041 */    public void set(Character ok) { throw new UnsupportedOperationException(); }
+/* 1042:1042 */    public void add(Character ok) { throw new UnsupportedOperationException(); }
+/* 1043:1043 */    public void set(char v) { throw new UnsupportedOperationException(); }
+/* 1044:1044 */    public void add(char v) { throw new UnsupportedOperationException(); }
+/* 1045:1045 */    public ValueIterator() { super(null); }
+/* 1046:1046 */    public char nextChar() { return Object2CharLinkedOpenHashMap.this.value[nextEntry()]; }
+/* 1047:1047 */    public Character next() { return Character.valueOf(Object2CharLinkedOpenHashMap.this.value[nextEntry()]); }
+/* 1048:     */  }
+/* 1049:     */  
+/* 1050:1050 */  public CharCollection values() { if (this.values == null) { this.values = new AbstractCharCollection() {
+/* 1051:     */        public CharIterator iterator() {
+/* 1052:1052 */          return new Object2CharLinkedOpenHashMap.ValueIterator(Object2CharLinkedOpenHashMap.this);
+/* 1053:     */        }
+/* 1054:     */        
+/* 1055:1055 */        public int size() { return Object2CharLinkedOpenHashMap.this.size; }
+/* 1056:     */        
+/* 1057:     */        public boolean contains(char v) {
+/* 1058:1058 */          return Object2CharLinkedOpenHashMap.this.containsValue(v);
+/* 1059:     */        }
+/* 1060:     */        
+/* 1061:1061 */        public void clear() { Object2CharLinkedOpenHashMap.this.clear(); }
+/* 1062:     */      };
+/* 1063:     */    }
+/* 1064:1064 */    return this.values;
+/* 1065:     */  }
+/* 1066:     */  
+/* 1075:     */  @Deprecated
+/* 1076:     */  public boolean rehash()
+/* 1077:     */  {
+/* 1078:1078 */    return true;
+/* 1079:     */  }
+/* 1080:     */  
+/* 1091:     */  public boolean trim()
+/* 1092:     */  {
+/* 1093:1093 */    int l = HashCommon.arraySize(this.size, this.f);
+/* 1094:1094 */    if (l >= this.n) return true;
+/* 1095:     */    try {
+/* 1096:1096 */      rehash(l);
+/* 1097:     */    } catch (OutOfMemoryError cantDoIt) {
+/* 1098:1098 */      return false; }
+/* 1099:1099 */    return true;
+/* 1100:     */  }
+/* 1101:     */  
+/* 1118:     */  public boolean trim(int n)
+/* 1119:     */  {
+/* 1120:1120 */    int l = HashCommon.nextPowerOfTwo((int)Math.ceil(n / this.f));
+/* 1121:1121 */    if (this.n <= l) return true;
+/* 1122:     */    try {
+/* 1123:1123 */      rehash(l);
+/* 1124:     */    } catch (OutOfMemoryError cantDoIt) {
+/* 1125:1125 */      return false; }
+/* 1126:1126 */    return true;
+/* 1127:     */  }
+/* 1128:     */  
+/* 1137:     */  protected void rehash(int newN)
+/* 1138:     */  {
+/* 1139:1139 */    int i = this.first;int prev = -1;int newPrev = -1;
+/* 1140:     */    
+/* 1141:1141 */    K[] key = this.key;
+/* 1142:1142 */    char[] value = this.value;
+/* 1143:1143 */    int newMask = newN - 1;
+/* 1144:1144 */    K[] newKey = (Object[])new Object[newN];
+/* 1145:1145 */    char[] newValue = new char[newN];
+/* 1146:1146 */    boolean[] newUsed = new boolean[newN];
+/* 1147:1147 */    long[] link = this.link;
+/* 1148:1148 */    long[] newLink = new long[newN];
+/* 1149:1149 */    this.first = -1;
+/* 1150:1150 */    for (int j = this.size; j-- != 0;) {
+/* 1151:1151 */      K k = key[i];
+/* 1152:1152 */      int pos = (k == null ? 142593372 : HashCommon.murmurHash3(k.hashCode())) & newMask;
+/* 1153:1153 */      while (newUsed[pos] != 0) pos = pos + 1 & newMask;
+/* 1154:1154 */      newUsed[pos] = true;
+/* 1155:1155 */      newKey[pos] = k;
+/* 1156:1156 */      newValue[pos] = value[i];
+/* 1157:1157 */      if (prev != -1) {
+/* 1158:1158 */        newLink[newPrev] ^= (newLink[newPrev] ^ pos & 0xFFFFFFFF) & 0xFFFFFFFF;
+/* 1159:1159 */        newLink[pos] ^= (newLink[pos] ^ (newPrev & 0xFFFFFFFF) << 32) & 0x0;
+/* 1160:1160 */        newPrev = pos;
+/* 1161:     */      }
+/* 1162:     */      else {
+/* 1163:1163 */        newPrev = this.first = pos;
+/* 1164:     */        
+/* 1165:1165 */        newLink[pos] = -1L;
+/* 1166:     */      }
+/* 1167:1167 */      int t = i;
+/* 1168:1168 */      i = (int)link[i];
+/* 1169:1169 */      prev = t;
+/* 1170:     */    }
+/* 1171:1171 */    this.n = newN;
+/* 1172:1172 */    this.mask = newMask;
+/* 1173:1173 */    this.maxFill = HashCommon.maxFill(this.n, this.f);
+/* 1174:1174 */    this.key = newKey;
+/* 1175:1175 */    this.value = newValue;
+/* 1176:1176 */    this.used = newUsed;
+/* 1177:1177 */    this.link = newLink;
+/* 1178:1178 */    this.last = newPrev;
+/* 1179:1179 */    if (newPrev != -1)
+/* 1180:     */    {
+/* 1181:1181 */      newLink[newPrev] |= 4294967295L;
+/* 1182:     */    }
+/* 1183:     */  }
+/* 1184:     */  
+/* 1187:     */  public Object2CharLinkedOpenHashMap<K> clone()
+/* 1188:     */  {
+/* 1189:     */    Object2CharLinkedOpenHashMap<K> c;
+/* 1190:     */    
+/* 1192:     */    try
+/* 1193:     */    {
+/* 1194:1194 */      c = (Object2CharLinkedOpenHashMap)super.clone();
+/* 1195:     */    }
+/* 1196:     */    catch (CloneNotSupportedException cantHappen) {
+/* 1197:1197 */      throw new InternalError();
+/* 1198:     */    }
+/* 1199:1199 */    c.keys = null;
+/* 1200:1200 */    c.values = null;
+/* 1201:1201 */    c.entries = null;
+/* 1202:1202 */    c.key = ((Object[])this.key.clone());
+/* 1203:1203 */    c.value = ((char[])this.value.clone());
+/* 1204:1204 */    c.used = ((boolean[])this.used.clone());
+/* 1205:1205 */    c.link = ((long[])this.link.clone());
+/* 1206:1206 */    return c;
+/* 1207:     */  }
+/* 1208:     */  
+/* 1216:     */  public int hashCode()
+/* 1217:     */  {
+/* 1218:1218 */    int h = 0;
+/* 1219:1219 */    int j = this.size;int i = 0; for (int t = 0; j-- != 0;) {
+/* 1220:1220 */      while (this.used[i] == 0) i++;
+/* 1221:1221 */      if (this != this.key[i])
+/* 1222:1222 */        t = this.key[i] == null ? 0 : this.key[i].hashCode();
+/* 1223:1223 */      t ^= this.value[i];
+/* 1224:1224 */      h += t;
+/* 1225:1225 */      i++;
+/* 1226:     */    }
+/* 1227:1227 */    return h;
+/* 1228:     */  }
+/* 1229:     */  
+/* 1230:1230 */  private void writeObject(ObjectOutputStream s) throws IOException { K[] key = this.key;
+/* 1231:1231 */    char[] value = this.value;
+/* 1232:1232 */    Object2CharLinkedOpenHashMap<K>.MapIterator i = new MapIterator(null);
+/* 1233:1233 */    s.defaultWriteObject();
+/* 1234:1234 */    for (int j = this.size; j-- != 0;) {
+/* 1235:1235 */      int e = i.nextEntry();
+/* 1236:1236 */      s.writeObject(key[e]);
+/* 1237:1237 */      s.writeChar(value[e]);
+/* 1238:     */    }
+/* 1239:     */  }
+/* 1240:     */  
+/* 1241:     */  private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
+/* 1242:1242 */    s.defaultReadObject();
+/* 1243:1243 */    this.n = HashCommon.arraySize(this.size, this.f);
+/* 1244:1244 */    this.maxFill = HashCommon.maxFill(this.n, this.f);
+/* 1245:1245 */    this.mask = (this.n - 1);
+/* 1246:1246 */    K[] key = this.key = (Object[])new Object[this.n];
+/* 1247:1247 */    char[] value = this.value = new char[this.n];
+/* 1248:1248 */    boolean[] used = this.used = new boolean[this.n];
+/* 1249:1249 */    long[] link = this.link = new long[this.n];
+/* 1250:1250 */    int prev = -1;
+/* 1251:1251 */    this.first = (this.last = -1);
+/* 1252:     */    
+/* 1254:1254 */    int i = this.size; for (int pos = 0; i-- != 0;) {
+/* 1255:1255 */      K k = s.readObject();
+/* 1256:1256 */      char v = s.readChar();
+/* 1257:1257 */      pos = (k == null ? 142593372 : HashCommon.murmurHash3(k.hashCode())) & this.mask;
+/* 1258:1258 */      while (used[pos] != 0) pos = pos + 1 & this.mask;
+/* 1259:1259 */      used[pos] = true;
+/* 1260:1260 */      key[pos] = k;
+/* 1261:1261 */      value[pos] = v;
+/* 1262:1262 */      if (this.first != -1) {
+/* 1263:1263 */        link[prev] ^= (link[prev] ^ pos & 0xFFFFFFFF) & 0xFFFFFFFF;
+/* 1264:1264 */        link[pos] ^= (link[pos] ^ (prev & 0xFFFFFFFF) << 32) & 0x0;
+/* 1265:1265 */        prev = pos;
+/* 1266:     */      }
+/* 1267:     */      else {
+/* 1268:1268 */        prev = this.first = pos;
+/* 1269:     */        
+/* 1270:1270 */        link[pos] |= -4294967296L;
+/* 1271:     */      }
+/* 1272:     */    }
+/* 1273:1273 */    this.last = prev;
+/* 1274:1274 */    if (prev != -1)
+/* 1275:     */    {
+/* 1276:1276 */      link[prev] |= 4294967295L;
+/* 1277:     */    }
+/* 1278:     */  }
+/* 1279:     */  
+/* 1280:     */  private void checkTable() {}
+/* 1281:     */}
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     it.unimi.dsi.fastutil.objects.Object2CharLinkedOpenHashMap
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

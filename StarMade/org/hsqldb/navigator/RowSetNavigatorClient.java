@@ -9,23 +9,24 @@ import org.hsqldb.result.ResultMetaData;
 import org.hsqldb.rowio.RowInputInterface;
 import org.hsqldb.rowio.RowOutputInterface;
 
-public class RowSetNavigatorClient extends RowSetNavigator
+public class RowSetNavigatorClient
+  extends RowSetNavigator
 {
   public static final Object[][] emptyTable = new Object[0][];
   int currentOffset;
   int baseBlockSize;
   Object[][] table;
-
+  
   public RowSetNavigatorClient()
   {
     this.table = emptyTable;
   }
-
+  
   public RowSetNavigatorClient(int paramInt)
   {
     this.table = new Object[paramInt][];
   }
-
+  
   public RowSetNavigatorClient(RowSetNavigator paramRowSetNavigator, int paramInt1, int paramInt2)
   {
     this.size = paramRowSetNavigator.size;
@@ -40,70 +41,73 @@ public class RowSetNavigatorClient extends RowSetNavigator
     }
     paramRowSetNavigator.beforeFirst();
   }
-
+  
   public void setData(Object[][] paramArrayOfObject)
   {
     this.table = paramArrayOfObject;
     this.size = paramArrayOfObject.length;
   }
-
+  
   public void setData(int paramInt, Object[] paramArrayOfObject)
   {
     this.table[paramInt] = paramArrayOfObject;
   }
-
+  
   public Object[] getData(int paramInt)
   {
     return this.table[paramInt];
   }
-
+  
   public Object[] getCurrent()
   {
-    if ((this.currentPos < 0) || (this.currentPos >= this.size))
+    if ((this.currentPos < 0) || (this.currentPos >= this.size)) {
       return null;
-    if (this.currentPos == this.currentOffset + this.table.length)
+    }
+    if (this.currentPos == this.currentOffset + this.table.length) {
       getBlock(this.currentOffset + this.table.length);
+    }
     return this.table[(this.currentPos - this.currentOffset)];
   }
-
+  
   public Row getCurrentRow()
   {
     throw Error.runtimeError(201, "RowSetNavigatorClient");
   }
-
+  
   public void remove()
   {
     throw Error.runtimeError(201, "RowSetNavigatorClient");
   }
-
+  
   public void add(Object[] paramArrayOfObject)
   {
     ensureCapacity();
     this.table[this.size] = paramArrayOfObject;
     this.size += 1;
   }
-
+  
   public boolean addRow(Row paramRow)
   {
     throw Error.runtimeError(201, "RowSetNavigatorClient");
   }
-
+  
   public void clear()
   {
     setData(emptyTable);
     reset();
   }
-
+  
   public void release()
   {
     setData(emptyTable);
     reset();
   }
-
+  
   public boolean absolute(int paramInt)
   {
-    if (paramInt < 0)
+    if (paramInt < 0) {
       paramInt += this.size;
+    }
     if (paramInt < 0)
     {
       beforeFirst();
@@ -114,22 +118,25 @@ public class RowSetNavigatorClient extends RowSetNavigator
       afterLast();
       return false;
     }
-    if (this.size == 0)
+    if (this.size == 0) {
       return false;
+    }
     this.currentPos = paramInt;
     return true;
   }
-
+  
   public void readSimple(RowInputInterface paramRowInputInterface, ResultMetaData paramResultMetaData)
     throws IOException
   {
     this.size = paramRowInputInterface.readInt();
-    if (this.table.length < this.size)
+    if (this.table.length < this.size) {
       this.table = new Object[this.size][];
-    for (int i = 0; i < this.size; i++)
+    }
+    for (int i = 0; i < this.size; i++) {
       this.table[i] = paramRowInputInterface.readData(paramResultMetaData.columnTypes);
+    }
   }
-
+  
   public void writeSimple(RowOutputInterface paramRowOutputInterface, ResultMetaData paramResultMetaData)
     throws IOException
   {
@@ -140,7 +147,7 @@ public class RowSetNavigatorClient extends RowSetNavigator
       paramRowOutputInterface.writeData(paramResultMetaData.getColumnCount(), paramResultMetaData.columnTypes, arrayOfObject, null, null);
     }
   }
-
+  
   public void read(RowInputInterface paramRowInputInterface, ResultMetaData paramResultMetaData)
     throws IOException
   {
@@ -148,18 +155,21 @@ public class RowSetNavigatorClient extends RowSetNavigator
     this.size = paramRowInputInterface.readInt();
     this.currentOffset = paramRowInputInterface.readInt();
     this.baseBlockSize = paramRowInputInterface.readInt();
-    if (this.table.length < this.baseBlockSize)
+    if (this.table.length < this.baseBlockSize) {
       this.table = new Object[this.baseBlockSize][];
-    for (int i = 0; i < this.baseBlockSize; i++)
+    }
+    for (int i = 0; i < this.baseBlockSize; i++) {
       this.table[i] = paramRowInputInterface.readData(paramResultMetaData.columnTypes);
+    }
   }
-
+  
   public void write(RowOutputInterface paramRowOutputInterface, ResultMetaData paramResultMetaData)
     throws HsqlException, IOException
   {
     int i = this.size - this.currentOffset;
-    if (i > this.table.length)
+    if (i > this.table.length) {
       i = this.table.length;
+    }
     paramRowOutputInterface.writeLong(this.id);
     paramRowOutputInterface.writeInt(this.size);
     paramRowOutputInterface.writeInt(this.currentOffset);
@@ -170,7 +180,7 @@ public class RowSetNavigatorClient extends RowSetNavigator
       paramRowOutputInterface.writeData(paramResultMetaData.getColumnCount(), paramResultMetaData.columnTypes, arrayOfObject, null, null);
     }
   }
-
+  
   void getBlock(int paramInt)
   {
     try
@@ -179,11 +189,9 @@ public class RowSetNavigatorClient extends RowSetNavigator
       this.table = localRowSetNavigatorClient.table;
       this.currentOffset = localRowSetNavigatorClient.currentOffset;
     }
-    catch (HsqlException localHsqlException)
-    {
-    }
+    catch (HsqlException localHsqlException) {}
   }
-
+  
   private void ensureCapacity()
   {
     if (this.size == this.table.length)
@@ -196,7 +204,8 @@ public class RowSetNavigatorClient extends RowSetNavigator
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.navigator.RowSetNavigatorClient
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

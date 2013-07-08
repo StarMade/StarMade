@@ -7,7 +7,7 @@ public final class TidyMessage
   private Level level;
   private String message;
   private int errorCode;
-
+  
   public TidyMessage(int paramInt1, int paramInt2, int paramInt3, Level paramLevel, String paramString)
   {
     this.errorCode = paramInt1;
@@ -16,32 +16,32 @@ public final class TidyMessage
     this.level = paramLevel;
     this.message = paramString;
   }
-
+  
   public int getErrorCode()
   {
     return this.errorCode;
   }
-
+  
   public int getColumn()
   {
     return this.column;
   }
-
+  
   public Level getLevel()
   {
     return this.level;
   }
-
+  
   public int getLine()
   {
     return this.line;
   }
-
+  
   public String getMessage()
   {
     return this.message;
   }
-
+  
   public static final class Level
     implements Comparable
   {
@@ -50,61 +50,62 @@ public final class TidyMessage
     public static final Level WARNING = new Level(2);
     public static final Level ERROR = new Level(3);
     private short code;
-
+    
     private Level(int paramInt)
     {
       this.code = ((short)paramInt);
     }
-
+    
     public short getCode()
     {
       return this.code;
     }
-
+    
     public static Level fromCode(int paramInt)
     {
       switch (paramInt)
       {
-      case 0:
+      case 0: 
         return SUMMARY;
-      case 1:
+      case 1: 
         return INFO;
-      case 2:
+      case 2: 
         return WARNING;
-      case 3:
+      case 3: 
         return ERROR;
       }
       return null;
     }
-
+    
     public int compareTo(Object paramObject)
     {
       return this.code - ((Level)paramObject).code;
     }
-
+    
     public boolean equals(Object paramObject)
     {
-      if (!(paramObject instanceof Level))
+      if (!(paramObject instanceof Level)) {
         return false;
+      }
       return this.code == ((Level)paramObject).code;
     }
-
+    
     public String toString()
     {
       switch (this.code)
       {
-      case 0:
+      case 0: 
         return "SUMMARY";
-      case 1:
+      case 1: 
         return "INFO";
-      case 2:
+      case 2: 
         return "WARNING";
-      case 3:
+      case 3: 
         return "ERROR";
       }
       return "?";
     }
-
+    
     public int hashCode()
     {
       return super.hashCode();
@@ -112,7 +113,8 @@ public final class TidyMessage
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.w3c.tidy.TidyMessage
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

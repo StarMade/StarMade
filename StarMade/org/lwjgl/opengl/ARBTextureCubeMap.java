@@ -16,7 +16,8 @@ public final class ARBTextureCubeMap
   public static final int GL_MAX_CUBE_MAP_TEXTURE_SIZE_ARB = 34076;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.opengl.ARBTextureCubeMap
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

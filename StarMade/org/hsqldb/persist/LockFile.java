@@ -34,30 +34,30 @@ public class LockFile
   protected volatile RandomAccessFile raf;
   protected volatile boolean locked;
   private volatile Object timerTask;
-
+  
   private static final LockFile newNIOLockFile()
   {
-    if ((NIO_FILELOCK_AVAILABLE) && (NIO_LOCKFILE_CLASS != null))
+    if ((NIO_FILELOCK_AVAILABLE) && (NIO_LOCKFILE_CLASS != null)) {
       try
       {
         return (LockFile)NIO_LOCKFILE_CLASS.newInstance();
       }
-      catch (Exception localException)
-      {
-      }
+      catch (Exception localException) {}
+    }
     return null;
   }
-
+  
   public static final LockFile newLockFile(String paramString)
     throws LockFile.FileCanonicalizationException, LockFile.FileSecurityException
   {
     LockFile localLockFile = newNIOLockFile();
-    if (localLockFile == null)
+    if (localLockFile == null) {
       localLockFile = new LockFile();
+    }
     localLockFile.setPath(paramString);
     return localLockFile;
   }
-
+  
   public static final LockFile newLockFileLock(String paramString)
     throws HsqlException
   {
@@ -79,28 +79,30 @@ public class LockFile
     {
       throw Error.error(451, localBaseException2.getMessage());
     }
-    if (!bool)
+    if (!bool) {
       throw Error.error(451, localLockFile.toString());
+    }
     return localLockFile;
   }
-
+  
   private final void checkHeartbeat(boolean paramBoolean)
     throws LockFile.FileSecurityException, LockFile.LockHeldExternallyException, LockFile.UnexpectedEndOfFileException, LockFile.UnexpectedFileIOException, LockFile.UnexpectedFileNotFoundException, LockFile.WrongLengthException, LockFile.WrongMagicException
   {
     long l3 = 0L;
     try
     {
-      if (paramBoolean)
+      if (paramBoolean) {
         try
         {
-          if (this.file.createNewFile())
+          if (this.file.createNewFile()) {
             return;
+          }
         }
-        catch (IOException localIOException)
-        {
-        }
-      if (!this.file.exists())
+        catch (IOException localIOException) {}
+      }
+      if (!this.file.exists()) {
         return;
+      }
       l3 = this.file.length();
     }
     catch (SecurityException localSecurityException)
@@ -118,14 +120,15 @@ public class LockFile
     }
     long l1 = System.currentTimeMillis();
     long l2 = readHeartbeat();
-    if (Math.abs(l1 - l2) <= 10100L)
+    if (Math.abs(l1 - l2) <= 10100L) {
       throw new LockHeldExternallyException(this, "checkHeartbeat", l1, l2);
+    }
   }
-
+  
   private final void closeRAF()
     throws LockFile.UnexpectedFileIOException
   {
-    if (this.raf != null)
+    if (this.raf != null) {
       try
       {
         this.raf.close();
@@ -138,18 +141,19 @@ public class LockFile
       {
         this.raf = null;
       }
+    }
   }
-
+  
   protected boolean doOptionalLockActions()
   {
     return false;
   }
-
+  
   protected boolean doOptionalReleaseActions()
   {
     return false;
   }
-
+  
   private final void setPath(String paramString)
     throws LockFile.FileCanonicalizationException, LockFile.FileSecurityException
   {
@@ -177,7 +181,7 @@ public class LockFile
     }
     this.cpath = this.file.getPath();
   }
-
+  
   private final void openRAF()
     throws LockFile.UnexpectedFileNotFoundException, LockFile.FileSecurityException, LockFile.UnexpectedFileIOException
   {
@@ -198,7 +202,7 @@ public class LockFile
       throw new UnexpectedFileIOException(this, "openRAF", localIOException);
     }
   }
-
+  
   private final void checkMagic(DataInputStream paramDataInputStream)
     throws LockFile.FileSecurityException, LockFile.UnexpectedEndOfFileException, LockFile.UnexpectedFileIOException, LockFile.WrongMagicException
   {
@@ -209,8 +213,9 @@ public class LockFile
       for (int j = 0; j < MAGIC.length; j++)
       {
         arrayOfByte[j] = paramDataInputStream.readByte();
-        if (MAGIC[j] != arrayOfByte[j])
+        if (MAGIC[j] != arrayOfByte[j]) {
           i = 0;
+        }
       }
     }
     catch (SecurityException localSecurityException)
@@ -225,10 +230,11 @@ public class LockFile
     {
       throw new UnexpectedFileIOException(this, "checkMagic", localIOException);
     }
-    if (i == 0)
+    if (i == 0) {
       throw new WrongMagicException(this, "checkMagic", arrayOfByte);
+    }
   }
-
+  
   private final long readHeartbeat()
     throws LockFile.FileSecurityException, LockFile.UnexpectedFileNotFoundException, LockFile.UnexpectedEndOfFileException, LockFile.UnexpectedFileIOException, LockFile.WrongMagicException
   {
@@ -265,17 +271,16 @@ public class LockFile
     }
     finally
     {
-      if (localFileInputStream != null)
+      if (localFileInputStream != null) {
         try
         {
           localFileInputStream.close();
         }
-        catch (IOException localIOException4)
-        {
-        }
+        catch (IOException localIOException4) {}
+      }
     }
   }
-
+  
   private final void startHeartbeat()
   {
     if ((this.timerTask == null) || (HsqlTimer.isCancelled(this.timerTask)))
@@ -284,7 +289,7 @@ public class LockFile
       this.timerTask = timer.schedulePeriodicallyAfter(0L, 10000L, localHeartbeatRunner, true);
     }
   }
-
+  
   private final void stopHeartbeat()
   {
     if ((this.timerTask != null) && (!HsqlTimer.isCancelled(this.timerTask)))
@@ -293,7 +298,7 @@ public class LockFile
       this.timerTask = null;
     }
   }
-
+  
   private final void writeMagic()
     throws LockFile.FileSecurityException, LockFile.UnexpectedEndOfFileException, LockFile.UnexpectedFileIOException
   {
@@ -315,7 +320,7 @@ public class LockFile
       throw new UnexpectedFileIOException(this, "writeMagic", localIOException);
     }
   }
-
+  
   private final void writeHeartbeat()
     throws LockFile.FileSecurityException, LockFile.UnexpectedEndOfFileException, LockFile.UnexpectedFileIOException
   {
@@ -337,11 +342,12 @@ public class LockFile
       throw new UnexpectedFileIOException(this, "writeHeartbeat", localIOException);
     }
   }
-
+  
   public final boolean equals(Object paramObject)
   {
-    if (this == paramObject)
+    if (this == paramObject) {
       return true;
+    }
     if ((paramObject instanceof LockFile))
     {
       LockFile localLockFile = (LockFile)paramObject;
@@ -349,22 +355,22 @@ public class LockFile
     }
     return false;
   }
-
+  
   public final String getCanonicalPath()
   {
     return this.cpath;
   }
-
+  
   public final int hashCode()
   {
     return this.file == null ? 0 : this.file.hashCode();
   }
-
+  
   public final boolean isLocked()
   {
     return this.locked;
   }
-
+  
   public static final boolean isLocked(String paramString)
   {
     boolean bool = true;
@@ -374,27 +380,25 @@ public class LockFile
       localLockFile.checkHeartbeat(false);
       bool = false;
     }
-    catch (Exception localException)
-    {
-    }
+    catch (Exception localException) {}
     return bool;
   }
-
+  
   public boolean isValid()
   {
     return (isLocked()) && (this.file != null) && (this.file.exists()) && (this.raf != null);
   }
-
+  
   public String toString()
   {
     return super.toString() + "[file =" + this.cpath + ", exists=" + this.file.exists() + ", locked=" + isLocked() + ", valid=" + isValid() + ", " + toStringImpl() + "]";
   }
-
+  
   protected String toStringImpl()
   {
     return "";
   }
-
+  
   public int getPollHeartbeatRetries()
   {
     int i = 10;
@@ -402,14 +406,13 @@ public class LockFile
     {
       i = Integer.getInteger("hsqldb.lockfile_poll_retries", i).intValue();
     }
-    catch (Exception localException)
-    {
-    }
-    if (i < 1)
+    catch (Exception localException) {}
+    if (i < 1) {
       i = 1;
+    }
     return i;
   }
-
+  
   public long getPollHeartbeatInterval()
   {
     int i = getPollHeartbeatRetries();
@@ -418,14 +421,13 @@ public class LockFile
     {
       l = Long.getLong("hsqldb.lockfile.poll.interval", l).longValue();
     }
-    catch (Exception localException)
-    {
-    }
-    if (l <= 0L)
+    catch (Exception localException) {}
+    if (l <= 0L) {
       l = 10L + 10100L / i;
+    }
     return l;
   }
-
+  
   private final void pollHeartbeat()
     throws LockFile.FileSecurityException, LockFile.LockHeldExternallyException, LockFile.UnexpectedFileNotFoundException, LockFile.UnexpectedEndOfFileException, LockFile.UnexpectedFileIOException, LockFile.WrongLengthException, LockFile.WrongMagicException
   {
@@ -434,7 +436,7 @@ public class LockFile
     long l = getPollHeartbeatInterval();
     Object localObject = null;
     int k = j;
-    while (k > 0)
+    while (k > 0) {
       try
       {
         checkHeartbeat(true);
@@ -453,30 +455,39 @@ public class LockFile
         }
         k--;
       }
+    }
     if (i == 0)
     {
-      if ((localObject instanceof FileSecurityException))
+      if ((localObject instanceof FileSecurityException)) {
         throw ((FileSecurityException)localObject);
-      if ((localObject instanceof LockHeldExternallyException))
+      }
+      if ((localObject instanceof LockHeldExternallyException)) {
         throw ((LockHeldExternallyException)localObject);
-      if ((localObject instanceof UnexpectedFileNotFoundException))
+      }
+      if ((localObject instanceof UnexpectedFileNotFoundException)) {
         throw ((UnexpectedFileNotFoundException)localObject);
-      if ((localObject instanceof UnexpectedEndOfFileException))
+      }
+      if ((localObject instanceof UnexpectedEndOfFileException)) {
         throw ((UnexpectedEndOfFileException)localObject);
-      if ((localObject instanceof UnexpectedFileIOException))
+      }
+      if ((localObject instanceof UnexpectedFileIOException)) {
         throw ((UnexpectedFileIOException)localObject);
-      if ((localObject instanceof WrongLengthException))
+      }
+      if ((localObject instanceof WrongLengthException)) {
         throw ((WrongLengthException)localObject);
-      if ((localObject instanceof WrongMagicException))
+      }
+      if ((localObject instanceof WrongMagicException)) {
         throw ((WrongMagicException)localObject);
+      }
     }
   }
-
+  
   public final boolean tryLock()
     throws LockFile.FileSecurityException, LockFile.LockHeldExternallyException, LockFile.UnexpectedFileNotFoundException, LockFile.UnexpectedEndOfFileException, LockFile.UnexpectedFileIOException, LockFile.WrongLengthException, LockFile.WrongMagicException
   {
-    if (this.locked)
+    if (this.locked) {
       return true;
+    }
     try
     {
       pollHeartbeat();
@@ -487,6 +498,7 @@ public class LockFile
       FileUtil.getFileUtil().deleteOnExit(this.file);
       this.locked = true;
       startHeartbeat();
+      return this.locked;
     }
     finally
     {
@@ -497,20 +509,18 @@ public class LockFile
         {
           closeRAF();
         }
-        catch (Exception localException2)
-        {
-        }
+        catch (Exception localException2) {}
       }
     }
-    return this.locked;
   }
-
+  
   public final boolean tryRelease()
     throws LockFile.FileSecurityException, LockFile.UnexpectedFileIOException
   {
     boolean bool = !this.locked;
-    if (bool)
+    if (bool) {
       return true;
+    }
     stopHeartbeat();
     doOptionalReleaseActions();
     Object localObject1 = null;
@@ -529,9 +539,7 @@ public class LockFile
       {
         Thread.sleep(100L);
       }
-      catch (Exception localException)
-      {
-      }
+      catch (Exception localException) {}
       try
       {
         bool = this.file.delete();
@@ -545,19 +553,21 @@ public class LockFile
     {
       this.locked = false;
     }
-    if (localObject1 != null)
+    if (localObject1 != null) {
       throw localObject1;
-    if (localFileSecurityException != null)
+    }
+    if (localFileSecurityException != null) {
       throw localFileSecurityException;
+    }
     return bool;
   }
-
+  
   protected final void finalize()
     throws Throwable
   {
     tryRelease();
   }
-
+  
   static
   {
     synchronized (LockFile.class)
@@ -567,241 +577,247 @@ public class LockFile
       {
         bool1 = "true".equalsIgnoreCase(System.getProperty("hsqldb.lockfile.nio.filelock", bool1 ? "true" : "false"));
       }
-      catch (Exception localException1)
-      {
-      }
+      catch (Exception localException1) {}
       boolean bool2 = false;
       Class localClass = null;
-      if (bool1)
+      if (bool1) {
         try
         {
           Class.forName("java.nio.channels.FileLock");
           localClass = Class.forName("org.hsqldb.persist.NIOLockFile");
           bool2 = true;
         }
-        catch (Exception localException2)
-        {
-        }
+        catch (Exception localException2) {}
+      }
       NIO_FILELOCK_AVAILABLE = bool2;
       NIO_LOCKFILE_CLASS = localClass;
     }
   }
-
-  public static final class WrongMagicException extends LockFile.BaseException
+  
+  public static final class WrongMagicException
+    extends LockFile.BaseException
   {
     private final byte[] magic;
-
+    
     public WrongMagicException(LockFile paramLockFile, String paramString, byte[] paramArrayOfByte)
     {
       super(paramString);
       this.magic = paramArrayOfByte;
     }
-
+    
     public String getMessage()
     {
       String str = new StringBuilder().append(super.getMessage()).append(" magic: ").toString();
       str = new StringBuilder().append(str).append(this.magic == null ? "null" : new StringBuilder().append("'").append(StringConverter.byteArrayToHexString(this.magic)).append("'").toString()).toString();
       return str;
     }
-
+    
     public byte[] getMagic()
     {
       return this.magic == null ? null : (byte[])this.magic.clone();
     }
   }
-
-  public static final class WrongLengthException extends LockFile.BaseException
+  
+  public static final class WrongLengthException
+    extends LockFile.BaseException
   {
     private final long length;
-
+    
     public WrongLengthException(LockFile paramLockFile, String paramString, long paramLong)
     {
       super(paramString);
       this.length = paramLong;
     }
-
+    
     public long getLength()
     {
       return this.length;
     }
-
+    
     public String getMessage()
     {
       return super.getMessage() + " length: " + this.length;
     }
   }
-
-  public static final class UnexpectedFileNotFoundException extends LockFile.BaseException
+  
+  public static final class UnexpectedFileNotFoundException
+    extends LockFile.BaseException
   {
     private final FileNotFoundException reason;
-
+    
     public UnexpectedFileNotFoundException(LockFile paramLockFile, String paramString, FileNotFoundException paramFileNotFoundException)
     {
       super(paramString);
       this.reason = paramFileNotFoundException;
     }
-
+    
     public FileNotFoundException getReason()
     {
       return this.reason;
     }
-
+    
     public String getMessage()
     {
       return super.getMessage() + " reason: " + this.reason;
     }
   }
-
-  public static final class UnexpectedFileIOException extends LockFile.BaseException
+  
+  public static final class UnexpectedFileIOException
+    extends LockFile.BaseException
   {
     private final IOException reason;
-
+    
     public UnexpectedFileIOException(LockFile paramLockFile, String paramString, IOException paramIOException)
     {
       super(paramString);
       this.reason = paramIOException;
     }
-
+    
     public IOException getReason()
     {
       return this.reason;
     }
-
+    
     public String getMessage()
     {
       return super.getMessage() + " reason: " + this.reason;
     }
   }
-
-  public static final class UnexpectedEndOfFileException extends LockFile.BaseException
+  
+  public static final class UnexpectedEndOfFileException
+    extends LockFile.BaseException
   {
     private final EOFException reason;
-
+    
     public UnexpectedEndOfFileException(LockFile paramLockFile, String paramString, EOFException paramEOFException)
     {
       super(paramString);
       this.reason = paramEOFException;
     }
-
+    
     public EOFException getReason()
     {
       return this.reason;
     }
-
+    
     public String getMessage()
     {
       return super.getMessage() + " reason: " + this.reason;
     }
   }
-
-  public static final class LockHeldExternallyException extends LockFile.BaseException
+  
+  public static final class LockHeldExternallyException
+    extends LockFile.BaseException
   {
     private final long read;
     private final long heartbeat;
-
+    
     public LockHeldExternallyException(LockFile paramLockFile, String paramString, long paramLong1, long paramLong2)
     {
       super(paramString);
       this.read = paramLong1;
       this.heartbeat = paramLong2;
     }
-
+    
     public long getHeartbeat()
     {
       return this.heartbeat;
     }
-
+    
     public long getRead()
     {
       return this.read;
     }
-
+    
     public String getMessage()
     {
       return super.getMessage() + " read: " + HsqlDateTime.getTimestampString(this.read) + " heartbeat - read: " + (this.heartbeat - this.read) + " ms.";
     }
   }
-
-  public static final class FileSecurityException extends LockFile.BaseException
+  
+  public static final class FileSecurityException
+    extends LockFile.BaseException
   {
     private final SecurityException reason;
-
+    
     public FileSecurityException(LockFile paramLockFile, String paramString, SecurityException paramSecurityException)
     {
       super(paramString);
       this.reason = paramSecurityException;
     }
-
+    
     public SecurityException getReason()
     {
       return this.reason;
     }
-
+    
     public String getMessage()
     {
       return super.getMessage() + " reason: " + this.reason;
     }
   }
-
-  public static final class FileCanonicalizationException extends LockFile.BaseException
+  
+  public static final class FileCanonicalizationException
+    extends LockFile.BaseException
   {
     private final IOException reason;
-
+    
     public FileCanonicalizationException(LockFile paramLockFile, String paramString, IOException paramIOException)
     {
       super(paramString);
       this.reason = paramIOException;
     }
-
+    
     public IOException getReason()
     {
       return this.reason;
     }
-
+    
     public String getMessage()
     {
       return super.getMessage() + " reason: " + this.reason;
     }
   }
-
-  public static abstract class BaseException extends Exception
+  
+  public static abstract class BaseException
+    extends Exception
   {
     private final LockFile lockFile;
     private final String inMethod;
-
+    
     public BaseException(LockFile paramLockFile, String paramString)
     {
-      if (paramLockFile == null)
+      if (paramLockFile == null) {
         throw new NullPointerException("lockFile");
-      if (paramString == null)
+      }
+      if (paramString == null) {
         throw new NullPointerException("inMethod");
+      }
       this.lockFile = paramLockFile;
       this.inMethod = paramString;
     }
-
+    
     public String getMessage()
     {
       return "lockFile: " + this.lockFile + " method: " + this.inMethod;
     }
-
+    
     public String getInMethod()
     {
       return this.inMethod;
     }
-
+    
     public LockFile getLockFile()
     {
       return this.lockFile;
     }
   }
-
+  
   private final class HeartbeatRunner
     implements Runnable
   {
-    private HeartbeatRunner()
-    {
-    }
-
+    private HeartbeatRunner() {}
+    
     public void run()
     {
       try
@@ -816,7 +832,8 @@ public class LockFile
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.persist.LockFile
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

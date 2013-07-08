@@ -16,39 +16,46 @@ public class JDBCDriver
 {
   public static JDBCDriver driverInstance;
   public final ThreadLocal<JDBCConnection> threadConnection = new ThreadLocal();
-
+  
   public Connection connect(String paramString, Properties paramProperties)
     throws SQLException
   {
     if (paramString.regionMatches(true, 0, "jdbc:default:connection", 0, "jdbc:default:connection".length()))
     {
       JDBCConnection localJDBCConnection = (JDBCConnection)this.threadConnection.get();
-      if (localJDBCConnection == null)
+      if (localJDBCConnection == null) {
         return null;
+      }
       return localJDBCConnection;
     }
     return getConnection(paramString, paramProperties);
   }
-
+  
   public static Connection getConnection(String paramString, Properties paramProperties)
     throws SQLException
   {
     final HsqlProperties localHsqlProperties = DatabaseURL.parseURL(paramString, true, false);
-    if (localHsqlProperties == null)
+    if (localHsqlProperties == null) {
       throw Util.invalidArgument();
-    if (localHsqlProperties.isEmpty())
+    }
+    if (localHsqlProperties.isEmpty()) {
       return null;
+    }
     long l1 = 0L;
-    if (paramProperties != null)
+    if (paramProperties != null) {
       l1 = HsqlProperties.getIntegerProperty(paramProperties, "loginTimeout", 0);
+    }
     localHsqlProperties.addProperties(paramProperties);
-    if (l1 == 0L)
+    if (l1 == 0L) {
       l1 = DriverManager.getLoginTimeout();
-    if (l1 == 0L)
+    }
+    if (l1 == 0L) {
       return new JDBCConnection(localHsqlProperties);
+    }
     String str = localHsqlProperties.getProperty("connection_type");
-    if (DatabaseURL.isInProcessDatabaseType(str))
+    if (DatabaseURL.isInProcessDatabaseType(str)) {
       return new JDBCConnection(localHsqlProperties);
+    }
     JDBCConnection[] arrayOfJDBCConnection = new JDBCConnection[1];
     final SQLException[] arrayOfSQLException = new SQLException[1];
     Thread local1 = new Thread()
@@ -71,50 +78,56 @@ public class JDBCDriver
     {
       local1.join(1000L * l1);
     }
-    catch (InterruptedException localInterruptedException)
-    {
-    }
+    catch (InterruptedException localInterruptedException) {}
     try
     {
       local1.stop();
+      try
+      {
+        local1.setContextClassLoader(null);
+      }
+      catch (Throwable localThrowable1) {}
+      if (arrayOfSQLException[0] == null) {
+        break label209;
+      }
     }
-    catch (Exception localException)
-    {
-    }
-    finally
+    catch (Exception localException) {}finally
     {
       try
       {
         local1.setContextClassLoader(null);
       }
-      catch (Throwable localThrowable3)
-      {
-      }
+      catch (Throwable localThrowable3) {}
     }
-    if (arrayOfSQLException[0] != null)
-      throw arrayOfSQLException[0];
-    if (arrayOfJDBCConnection[0] != null)
+    throw arrayOfSQLException[0];
+    label209:
+    if (arrayOfJDBCConnection[0] != null) {
       return arrayOfJDBCConnection[0];
+    }
     throw Util.sqlException(1351);
   }
-
+  
   public boolean acceptsURL(String paramString)
   {
-    if (paramString == null)
+    if (paramString == null) {
       return false;
-    if (paramString.regionMatches(true, 0, "jdbc:hsqldb:", 0, "jdbc:hsqldb:".length()))
+    }
+    if (paramString.regionMatches(true, 0, "jdbc:hsqldb:", 0, "jdbc:hsqldb:".length())) {
       return true;
+    }
     return paramString.regionMatches(true, 0, "jdbc:default:connection", 0, "jdbc:default:connection".length());
   }
-
+  
   public DriverPropertyInfo[] getPropertyInfo(String paramString, Properties paramProperties)
   {
-    if (!acceptsURL(paramString))
+    if (!acceptsURL(paramString)) {
       return new DriverPropertyInfo[0];
+    }
     String[] arrayOfString = { "true", "false" };
     DriverPropertyInfo[] arrayOfDriverPropertyInfo = new DriverPropertyInfo[6];
-    if (paramProperties == null)
+    if (paramProperties == null) {
       paramProperties = new Properties();
+    }
     DriverPropertyInfo localDriverPropertyInfo = new DriverPropertyInfo("user", null);
     localDriverPropertyInfo.value = paramProperties.getProperty("user");
     localDriverPropertyInfo.required = true;
@@ -145,28 +158,28 @@ public class JDBCDriver
     arrayOfDriverPropertyInfo[5] = localDriverPropertyInfo;
     return arrayOfDriverPropertyInfo;
   }
-
+  
   public int getMajorVersion()
   {
     return 2;
   }
-
+  
   public int getMinorVersion()
   {
     return 2;
   }
-
+  
   public boolean jdbcCompliant()
   {
     return true;
   }
-
+  
   public Logger getParentLogger()
     throws SQLFeatureNotSupportedException
   {
     throw ((SQLFeatureNotSupportedException)Util.notSupported());
   }
-
+  
   static
   {
     try
@@ -174,13 +187,12 @@ public class JDBCDriver
       driverInstance = new JDBCDriver();
       DriverManager.registerDriver(driverInstance);
     }
-    catch (Exception localException)
-    {
-    }
+    catch (Exception localException) {}
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.jdbc.JDBCDriver
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

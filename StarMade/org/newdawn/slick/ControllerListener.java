@@ -1,29 +1,31 @@
 package org.newdawn.slick;
 
-public abstract interface ControllerListener extends ControlledInputReciever
+public abstract interface ControllerListener
+  extends ControlledInputReciever
 {
   public abstract void controllerLeftPressed(int paramInt);
-
+  
   public abstract void controllerLeftReleased(int paramInt);
-
+  
   public abstract void controllerRightPressed(int paramInt);
-
+  
   public abstract void controllerRightReleased(int paramInt);
-
+  
   public abstract void controllerUpPressed(int paramInt);
-
+  
   public abstract void controllerUpReleased(int paramInt);
-
+  
   public abstract void controllerDownPressed(int paramInt);
-
+  
   public abstract void controllerDownReleased(int paramInt);
-
+  
   public abstract void controllerButtonPressed(int paramInt1, int paramInt2);
-
+  
   public abstract void controllerButtonReleased(int paramInt1, int paramInt2);
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.newdawn.slick.ControllerListener
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -5,7 +5,8 @@ import org.hsqldb.Session;
 import org.hsqldb.error.Error;
 import org.hsqldb.lib.IntKeyIntValueHashMap;
 
-public abstract class DTIType extends Type
+public abstract class DTIType
+  extends Type
 {
   public static final byte[] yearToSecondSeparators = { 45, 45, 32, 58, 58, 46 };
   public static final int[] yearToSecondFactors = { 12, 1, 86400, 3600, 60, 1, 0 };
@@ -41,7 +42,7 @@ public abstract class DTIType extends Type
   public static final int maxIntervalPrecision = 9;
   public static final int maxFractionPrecision = 9;
   public static final int limitNanoseconds = 1000000000;
-
+  
   protected DTIType(int paramInt1, int paramInt2, long paramLong, int paramInt3, int paramInt4, int paramInt5)
   {
     super(paramInt1, paramInt2, paramLong, paramInt3);
@@ -50,33 +51,33 @@ public abstract class DTIType extends Type
     this.startPartIndex = intervalIndexMap.get(paramInt4);
     this.endPartIndex = intervalIndexMap.get(paramInt5);
   }
-
+  
   protected DTIType(int paramInt1, int paramInt2, long paramLong, int paramInt3)
   {
     super(paramInt1, paramInt2, paramLong, paramInt3);
     switch (paramInt2)
     {
-    case 91:
+    case 91: 
       this.startIntervalType = 101;
       this.endIntervalType = 103;
       break;
-    case 92:
-    case 94:
+    case 92: 
+    case 94: 
       this.startIntervalType = 104;
       this.endIntervalType = 106;
       break;
-    case 93:
-    case 95:
+    case 93: 
+    case 95: 
       this.startIntervalType = 101;
       this.endIntervalType = 106;
       break;
-    default:
+    default: 
       throw Error.runtimeError(201, "DTIType");
     }
     this.startPartIndex = intervalIndexMap.get(this.startIntervalType);
     this.endPartIndex = intervalIndexMap.get(this.endIntervalType);
   }
-
+  
   String intervalSecondToString(long paramLong, int paramInt, boolean paramBoolean)
   {
     StringBuffer localStringBuffer = new StringBuffer(64);
@@ -105,13 +106,16 @@ public abstract class DTIType extends Type
       }
       localStringBuffer.append(l);
       paramLong %= j;
-      if (i < this.endPartIndex)
+      if (i < this.endPartIndex) {
         localStringBuffer.append((char)yearToSecondSeparators[i]);
+      }
     }
-    if (this.scale != 0)
+    if (this.scale != 0) {
       localStringBuffer.append((char)yearToSecondSeparators[5]);
-    if (paramInt < 0)
+    }
+    if (paramInt < 0) {
       paramInt = -paramInt;
+    }
     for (i = 0; i < this.scale; i++)
     {
       j = paramInt / precisionFactors[i];
@@ -120,175 +124,185 @@ public abstract class DTIType extends Type
     }
     return localStringBuffer.toString();
   }
-
+  
   public int getStartIntervalType()
   {
     return this.startIntervalType;
   }
-
+  
   public int getEndIntervalType()
   {
     return this.endIntervalType;
   }
-
+  
   public Type getExtractType(int paramInt)
   {
     switch (paramInt)
     {
-    case 259:
-    case 260:
-    case 261:
-    case 262:
-    case 263:
-    case 264:
-    case 265:
-      if ((!isDateTimeType()) || (this.startIntervalType != 101))
+    case 259: 
+    case 260: 
+    case 261: 
+    case 262: 
+    case 263: 
+    case 264: 
+    case 265: 
+      if ((!isDateTimeType()) || (this.startIntervalType != 101)) {
         throw Error.error(5561);
-      if ((paramInt == 264) || (paramInt == 265))
+      }
+      if ((paramInt == 264) || (paramInt == 265)) {
         return Type.SQL_VARCHAR;
+      }
       return Type.SQL_INTEGER;
-    case 106:
+    case 106: 
       if (paramInt == this.startIntervalType)
       {
-        if (this.scale != 0)
+        if (this.scale != 0) {
           return new NumberType(3, this.precision + this.scale, this.scale);
+        }
       }
-      else if ((paramInt == this.endIntervalType) && (this.scale != 0))
+      else if ((paramInt == this.endIntervalType) && (this.scale != 0)) {
         return new NumberType(3, 9 + this.scale, this.scale);
-    case 101:
-    case 102:
-    case 103:
-    case 104:
-    case 105:
-      if ((paramInt < this.startIntervalType) || (paramInt > this.endIntervalType))
+      }
+    case 101: 
+    case 102: 
+    case 103: 
+    case 104: 
+    case 105: 
+      if ((paramInt < this.startIntervalType) || (paramInt > this.endIntervalType)) {
         throw Error.error(5561);
+      }
       return Type.SQL_INTEGER;
-    case 266:
-      if ((!isDateTimeType()) || (this.endIntervalType < 106))
+    case 266: 
+      if ((!isDateTimeType()) || (this.endIntervalType < 106)) {
         throw Error.error(5561);
+      }
       return Type.SQL_INTEGER;
-    case 257:
-    case 258:
-      if ((this.typeCode != 95) && (this.typeCode != 94))
+    case 257: 
+    case 258: 
+      if ((this.typeCode != 95) && (this.typeCode != 94)) {
         throw Error.error(5561);
+      }
       return Type.SQL_INTEGER;
     }
     throw Error.runtimeError(201, "DTIType");
   }
-
+  
   public static int normaliseFraction(int paramInt1, int paramInt2)
   {
     return paramInt1 / nanoScaleFactors[paramInt2] * nanoScaleFactors[paramInt2];
   }
-
+  
   static int getPrecisionExponent(long paramLong)
   {
-    for (int i = 1; (i < precisionLimits.length) && (paramLong >= precisionLimits[i]); i++);
+    for (int i = 1; (i < precisionLimits.length) && (paramLong >= precisionLimits[i]); i++) {}
     return i;
   }
-
+  
   public static int getFieldNameTypeForToken(int paramInt)
   {
     switch (paramInt)
     {
-    case 323:
+    case 323: 
       return 101;
-    case 173:
+    case 173: 
       return 102;
-    case 73:
+    case 73: 
       return 103;
-    case 127:
+    case 127: 
       return 104;
-    case 169:
+    case 169: 
       return 105;
-    case 250:
+    case 250: 
       return 106;
-    case 283:
+    case 283: 
       return 257;
-    case 284:
+    case 284: 
       return 258;
-    case 669:
+    case 669: 
       return 264;
-    case 702:
+    case 702: 
       return 265;
-    case 711:
+    case 711: 
       return 263;
-    case 670:
+    case 670: 
       return 260;
-    case 671:
+    case 671: 
       return 259;
-    case 672:
+    case 672: 
       return 261;
-    case 765:
+    case 765: 
       return 262;
-    case 724:
+    case 724: 
       return 266;
     }
     throw Error.runtimeError(201, "DTIType");
   }
-
+  
   public static String getFieldNameTokenForType(int paramInt)
   {
     switch (paramInt)
     {
-    case 101:
+    case 101: 
       return "YEAR";
-    case 102:
+    case 102: 
       return "MONTH";
-    case 103:
+    case 103: 
       return "DAY";
-    case 104:
+    case 104: 
       return "HOUR";
-    case 105:
+    case 105: 
       return "MINUTE";
-    case 106:
+    case 106: 
       return "SECOND";
-    case 257:
+    case 257: 
       return "TIMEZONE_HOUR";
-    case 258:
+    case 258: 
       return "TIMEZONE_MINUTE";
-    case 264:
+    case 264: 
       return "DAY_NAME";
-    case 265:
+    case 265: 
       return "MONTH_NAME";
-    case 263:
+    case 263: 
       return "QUARTER";
-    case 260:
+    case 260: 
       return "DAY_OF_MONTH";
-    case 259:
+    case 259: 
       return "DAY_OF_WEEK";
-    case 261:
+    case 261: 
       return "DAY_OF_YEAR";
-    case 262:
+    case 262: 
       return "WEEK_OF_YEAR";
-    case 266:
+    case 266: 
       return "SECONDS_SINCE_MIDNIGHT";
     }
     throw Error.runtimeError(201, "DTIType");
   }
-
+  
   public static boolean isValidDatetimeRange(Type paramType1, Type paramType2)
   {
-    if (!paramType1.isDateTimeType())
+    if (!paramType1.isDateTimeType()) {
       return false;
-    if (paramType2.isDateTimeType())
+    }
+    if (paramType2.isDateTimeType()) {
       return ((paramType1.typeCode != 92) || (paramType2.typeCode != 91)) && ((paramType1.typeCode != 91) || (paramType2.typeCode != 92));
-    if (paramType2.isIntervalType())
+    }
+    if (paramType2.isIntervalType()) {
       return ((DateTimeType)paramType1).canAdd((IntervalType)paramType2);
+    }
     return false;
   }
-
+  
   public abstract int getPart(Session paramSession, Object paramObject, int paramInt);
-
+  
   public abstract BigDecimal getSecondPart(Object paramObject);
-
+  
   BigDecimal getSecondPart(long paramLong1, long paramLong2)
   {
     paramLong1 *= precisionLimits[this.scale];
     paramLong1 += paramLong2 / nanoScaleFactors[this.scale];
     return BigDecimal.valueOf(paramLong1, this.scale);
   }
-
+  
   static
   {
     intervalIndexMap.put(101, 0);
@@ -300,7 +314,8 @@ public abstract class DTIType extends Type
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.types.DTIType
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

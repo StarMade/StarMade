@@ -20,34 +20,37 @@ public class TableWorks
   private Database database;
   private Table table;
   private Session session;
-
+  
   public TableWorks(Session paramSession, Table paramTable)
   {
     this.database = paramTable.database;
     this.table = paramTable;
     this.session = paramSession;
   }
-
+  
   public Table getTable()
   {
     return this.table;
   }
-
+  
   void checkCreateForeignKey(Constraint paramConstraint)
   {
     int i = (paramConstraint.core.updateAction == 4) || (paramConstraint.core.updateAction == 2) || (paramConstraint.core.updateAction == 0) || (paramConstraint.core.deleteAction == 4) || (paramConstraint.core.deleteAction == 2) ? 1 : 0;
     int j;
-    if (i != 0)
+    if (i != 0) {
       for (j = 0; j < paramConstraint.core.refCols.length; j++)
       {
         localObject1 = this.table.getColumn(paramConstraint.core.refCols[j]);
-        if (((ColumnSchema)localObject1).isGenerated())
+        if (((ColumnSchema)localObject1).isGenerated()) {
           throw Error.error(5524, ((ColumnSchema)localObject1).getNameString());
+        }
       }
-    if ((paramConstraint.core.mainName == this.table.getName()) && (ArrayUtil.haveCommonElement(paramConstraint.core.refCols, paramConstraint.core.mainCols)))
+    }
+    if ((paramConstraint.core.mainName == this.table.getName()) && (ArrayUtil.haveCommonElement(paramConstraint.core.refCols, paramConstraint.core.mainCols))) {
       throw Error.error(5527);
+    }
     i = (paramConstraint.core.updateAction == 4) || (paramConstraint.core.deleteAction == 4) ? 1 : 0;
-    if (i != 0)
+    if (i != 0) {
       for (j = 0; j < paramConstraint.core.refCols.length; j++)
       {
         localObject1 = this.table.getColumn(paramConstraint.core.refCols[j]);
@@ -58,8 +61,9 @@ public class TableWorks
           throw Error.error(5521, str);
         }
       }
+    }
     i = (paramConstraint.core.updateAction == 2) || (paramConstraint.core.deleteAction == 2) ? 1 : 0;
-    if ((i != 0) && (!this.session.isProcessingScript))
+    if ((i != 0) && (!this.session.isProcessingScript)) {
       for (j = 0; j < paramConstraint.core.refCols.length; j++)
       {
         localObject1 = this.table.getColumn(paramConstraint.core.refCols[j]);
@@ -69,23 +73,28 @@ public class TableWorks
           throw Error.error(5520, (String)localObject2);
         }
       }
+    }
     this.database.schemaManager.checkSchemaObjectNotExists(paramConstraint.getName());
-    if (this.table.getConstraint(paramConstraint.getName().name) != null)
+    if (this.table.getConstraint(paramConstraint.getName().name) != null) {
       throw Error.error(5504, paramConstraint.getName().statementName);
-    if (this.table.getFKConstraintForColumns(paramConstraint.core.mainTable, paramConstraint.core.mainCols, paramConstraint.core.refCols) != null)
+    }
+    if (this.table.getFKConstraintForColumns(paramConstraint.core.mainTable, paramConstraint.core.mainCols, paramConstraint.core.refCols) != null) {
       throw Error.error(5528, paramConstraint.getName().statementName);
-    if (paramConstraint.core.mainTable.isTemp() != this.table.isTemp())
+    }
+    if (paramConstraint.core.mainTable.isTemp() != this.table.isTemp()) {
       throw Error.error(5524, paramConstraint.getName().statementName);
+    }
     Constraint localConstraint = paramConstraint.core.mainTable.getUniqueConstraintForColumns(paramConstraint.core.mainCols);
-    if (localConstraint == null)
+    if (localConstraint == null) {
       throw Error.error(5529, paramConstraint.getMain().getName().statementName);
+    }
     paramConstraint.core.mainTable.checkColumnsMatch(paramConstraint.core.mainCols, this.table, paramConstraint.core.refCols);
     ArrayUtil.reorderMaps(localConstraint.getMainColumns(), paramConstraint.getMainColumns(), paramConstraint.getRefColumns());
     Object localObject1 = paramConstraint.core.mainTable.getColumnCheckList(paramConstraint.core.mainCols);
     Object localObject2 = this.session.getGrantee();
     ((Grantee)localObject2).checkReferences(paramConstraint.core.mainTable, (boolean[])localObject1);
   }
-
+  
   void addForeignKey(Constraint paramConstraint)
   {
     checkModifyTable();
@@ -97,8 +106,9 @@ public class TableWorks
     if (paramConstraint.core.mainTable.getSchemaName() == this.table.getSchemaName())
     {
       int i = this.database.schemaManager.getTableIndex(this.table);
-      if ((i != -1) && (i < this.database.schemaManager.getTableIndex(paramConstraint.core.mainTable)))
+      if ((i != -1) && (i < this.database.schemaManager.getTableIndex(paramConstraint.core.mainTable))) {
         bool = true;
+      }
     }
     else
     {
@@ -124,22 +134,27 @@ public class TableWorks
     this.database.schemaManager.recompileDependentObjects(localTable1);
     this.table = localTable1;
   }
-
+  
   void checkAddColumn(ColumnSchema paramColumnSchema)
   {
     checkModifyTable();
-    if ((this.table.isText()) && (!this.table.isEmpty(this.session)))
+    if ((this.table.isText()) && (!this.table.isEmpty(this.session))) {
       throw Error.error(320);
-    if (this.table.findColumn(paramColumnSchema.getName().name) != -1)
+    }
+    if (this.table.findColumn(paramColumnSchema.getName().name) != -1) {
       throw Error.error(5504);
-    if ((paramColumnSchema.isPrimaryKey()) && (this.table.hasPrimaryKey()))
+    }
+    if ((paramColumnSchema.isPrimaryKey()) && (this.table.hasPrimaryKey())) {
       throw Error.error(5530);
-    if ((paramColumnSchema.isIdentity()) && (this.table.hasIdentityColumn()))
+    }
+    if ((paramColumnSchema.isIdentity()) && (this.table.hasIdentityColumn())) {
       throw Error.error(5525);
-    if ((!this.table.isEmpty(this.session)) && (!paramColumnSchema.hasDefault()) && ((!paramColumnSchema.isNullable()) || (paramColumnSchema.isPrimaryKey())) && (!paramColumnSchema.isIdentity()))
+    }
+    if ((!this.table.isEmpty(this.session)) && (!paramColumnSchema.hasDefault()) && ((!paramColumnSchema.isNullable()) || (paramColumnSchema.isPrimaryKey())) && (!paramColumnSchema.isIdentity())) {
       throw Error.error(5531);
+    }
   }
-
+  
   void addColumn(ColumnSchema paramColumnSchema, int paramInt, HsqlArrayList paramHsqlArrayList)
   {
     Index localIndex = null;
@@ -151,12 +166,14 @@ public class TableWorks
     Constraint localConstraint2 = (Constraint)paramHsqlArrayList.get(0);
     if (localConstraint2.getConstraintType() == 4)
     {
-      if (paramColumnSchema.getDataType().isLobType())
+      if (paramColumnSchema.getDataType().isLobType()) {
         throw Error.error(5534);
+      }
       localConstraint2.core.mainCols = new int[] { paramInt };
       this.database.schemaManager.checkSchemaObjectNotExists(localConstraint2.getName());
-      if (this.table.hasPrimaryKey())
+      if (this.table.hasPrimaryKey()) {
         throw Error.error(5530);
+      }
       j = 1;
     }
     else
@@ -169,11 +186,13 @@ public class TableWorks
       localConstraint2 = (Constraint)paramHsqlArrayList.get(m);
       switch (localConstraint2.constType)
       {
-      case 2:
-        if (j != 0)
+      case 2: 
+        if (j != 0) {
           throw Error.error(5522);
-        if (paramColumnSchema.getDataType().isLobType())
+        }
+        if (paramColumnSchema.getDataType().isLobType()) {
           throw Error.error(5534);
+        }
         j = 1;
         localConstraint2.core.mainCols = new int[] { paramInt };
         this.database.schemaManager.checkSchemaObjectNotExists(localConstraint2.getName());
@@ -183,24 +202,27 @@ public class TableWorks
         localConstraint2.core.mainIndex = localIndex;
         localTable.addConstraint(localConstraint2);
         break;
-      case 0:
-        if (i != 0)
+      case 0: 
+        if (i != 0) {
           throw Error.error(5528);
+        }
         i = 1;
         localConstraint2.core.refCols = new int[] { paramInt };
         localConstraint2.core.mainTable = this.database.schemaManager.getUserTable(this.session, localConstraint2.getMainTableName());
         localConstraint2.core.refTable = localTable;
         localConstraint2.core.refName = localConstraint2.getName();
         int n = this.table == localConstraint2.core.mainTable ? 1 : 0;
-        if (n != 0)
+        if (n != 0) {
           localConstraint2.core.mainTable = localTable;
+        }
         localConstraint2.setColumnsIndexes(localTable);
         checkCreateForeignKey(localConstraint2);
         Constraint localConstraint3 = localConstraint2.core.mainTable.getUniqueConstraintForColumns(localConstraint2.core.mainCols);
         boolean bool = localConstraint2.core.mainTable.getSchemaName() != this.table.getSchemaName();
         int i1 = this.database.schemaManager.getTableIndex(this.table);
-        if ((n == 0) && (i1 < this.database.schemaManager.getTableIndex(localConstraint2.core.mainTable)))
+        if ((n == 0) && (i1 < this.database.schemaManager.getTableIndex(localConstraint2.core.mainTable))) {
           bool = true;
+        }
         HsqlNameManager.HsqlName localHsqlName2 = this.database.nameManager.newAutoName("IDX", localConstraint2.getName().name, this.table.getSchemaName(), this.table.getName(), 20);
         localIndex = localTable.createAndAddIndexStructure(localHsqlName2, localConstraint2.getRefColumns(), null, null, false, true, bool);
         localConstraint2.core.uniqueName = localConstraint3.getName();
@@ -211,9 +233,10 @@ public class TableWorks
         localTable.addConstraint(localConstraint2);
         localConstraint1 = new Constraint(localConstraint2.core.mainName, localConstraint2);
         break;
-      case 3:
-        if (k != 0)
+      case 3: 
+        if (k != 0) {
           throw Error.error(5528);
+        }
         k = 1;
         localConstraint2.prepareCheckConstraint(this.session, localTable, false);
         localTable.addConstraint(localConstraint2);
@@ -221,17 +244,18 @@ public class TableWorks
         {
           paramColumnSchema.setNullable(false);
           localTable.setColumnTypeVars(paramInt);
-          if ((!this.table.isEmpty(this.session)) && (!paramColumnSchema.hasDefault()))
+          if ((!this.table.isEmpty(this.session)) && (!paramColumnSchema.hasDefault())) {
             throw Error.error(5531);
+          }
         }
         break;
-      case 1:
       }
     }
     paramColumnSchema.compile(this.session, localTable);
     moveData(this.table, localTable, paramInt, 1);
-    if (localConstraint1 != null)
+    if (localConstraint1 != null) {
       localConstraint1.getMain().addConstraint(localConstraint1);
+    }
     registerConstraintNames(paramHsqlArrayList);
     setNewTableInSchema(localTable);
     updateConstraints(localTable, this.emptySet);
@@ -240,7 +264,7 @@ public class TableWorks
     localTable.compile(this.session, null);
     this.table = localTable;
   }
-
+  
   void updateConstraints(OrderedHashSet paramOrderedHashSet1, OrderedHashSet paramOrderedHashSet2)
   {
     for (int i = 0; i < paramOrderedHashSet1.size(); i++)
@@ -249,7 +273,7 @@ public class TableWorks
       updateConstraints(localTable, paramOrderedHashSet2);
     }
   }
-
+  
   void updateConstraints(Table paramTable, OrderedHashSet paramOrderedHashSet)
   {
     for (int i = paramTable.constraintList.length - 1; i >= 0; i--)
@@ -283,7 +307,7 @@ public class TableWorks
       }
     }
   }
-
+  
   OrderedHashSet makeNewTables(OrderedHashSet paramOrderedHashSet1, OrderedHashSet paramOrderedHashSet2, OrderedHashSet paramOrderedHashSet3)
   {
     OrderedHashSet localOrderedHashSet = new OrderedHashSet();
@@ -296,7 +320,7 @@ public class TableWorks
     }
     return localOrderedHashSet;
   }
-
+  
   void makeNewTable(OrderedHashSet paramOrderedHashSet1, OrderedHashSet paramOrderedHashSet2)
   {
     Table localTable = this.table.moveDefinition(this.session, this.table.tableType, null, null, null, -1, 0, paramOrderedHashSet1, paramOrderedHashSet2);
@@ -308,7 +332,7 @@ public class TableWorks
     moveData(this.table, localTable, -1, 0);
     this.table = localTable;
   }
-
+  
   void alterIndex(Index paramIndex, int[] paramArrayOfInt)
   {
     Index localIndex = this.database.logger.newIndex(this.table, paramIndex, paramArrayOfInt);
@@ -321,7 +345,7 @@ public class TableWorks
     arrayOfIndex[i] = localIndex;
     localPersistentStore.reindex(this.session, localIndex);
   }
-
+  
   Index addIndex(int[] paramArrayOfInt, HsqlNameManager.HsqlName paramHsqlName, boolean paramBoolean)
   {
     checkModifyTable();
@@ -343,12 +367,13 @@ public class TableWorks
     this.database.schemaManager.recompileDependentObjects(this.table);
     return localIndex;
   }
-
+  
   void addPrimaryKey(Constraint paramConstraint)
   {
     checkModifyTable();
-    if (this.table.hasPrimaryKey())
+    if (this.table.hasPrimaryKey()) {
       throw Error.error(5532);
+    }
     this.database.schemaManager.checkSchemaObjectNotExists(paramConstraint.getName());
     Table localTable = this.table.moveDefinition(this.session, this.table.tableType, null, paramConstraint, null, -1, 0, this.emptySet, this.emptySet);
     moveData(this.table, localTable, -1, 0);
@@ -358,13 +383,14 @@ public class TableWorks
     updateConstraints(this.table, this.emptySet);
     this.database.schemaManager.recompileDependentObjects(this.table);
   }
-
+  
   void addUniqueConstraint(int[] paramArrayOfInt, HsqlNameManager.HsqlName paramHsqlName)
   {
     checkModifyTable();
     this.database.schemaManager.checkSchemaObjectNotExists(paramHsqlName);
-    if (this.table.getUniqueConstraintForColumns(paramArrayOfInt) != null)
+    if (this.table.getUniqueConstraintForColumns(paramArrayOfInt) != null) {
       throw Error.error(5522);
+    }
     HsqlNameManager.HsqlName localHsqlName = this.database.nameManager.newAutoName("IDX", paramHsqlName.name, this.table.getSchemaName(), this.table.getName(), 20);
     Index localIndex = this.table.createIndexStructure(localHsqlName, paramArrayOfInt, null, null, true, true, false);
     Constraint localConstraint = new Constraint(paramHsqlName, this.table, localIndex, 2);
@@ -376,13 +402,14 @@ public class TableWorks
     updateConstraints(this.table, this.emptySet);
     this.database.schemaManager.recompileDependentObjects(this.table);
   }
-
+  
   void addUniqueConstraint(Constraint paramConstraint)
   {
     checkModifyTable();
     this.database.schemaManager.checkSchemaObjectNotExists(paramConstraint.getName());
-    if (this.table.getUniqueConstraintForColumns(paramConstraint.getMainColumns()) != null)
+    if (this.table.getUniqueConstraintForColumns(paramConstraint.getMainColumns()) != null) {
       throw Error.error(5522);
+    }
     Table localTable = this.table.moveDefinition(this.session, this.table.tableType, null, paramConstraint, paramConstraint.getMainIndex(), -1, 0, this.emptySet, this.emptySet);
     moveData(this.table, localTable, -1, 0);
     this.table = localTable;
@@ -391,7 +418,7 @@ public class TableWorks
     updateConstraints(this.table, this.emptySet);
     this.database.schemaManager.recompileDependentObjects(this.table);
   }
-
+  
   void addCheckConstraint(Constraint paramConstraint)
   {
     checkModifyTable();
@@ -406,7 +433,7 @@ public class TableWorks
     }
     this.database.schemaManager.addSchemaObject(paramConstraint);
   }
-
+  
   void dropIndex(String paramString)
   {
     checkModifyTable();
@@ -425,11 +452,12 @@ public class TableWorks
       updateConstraints(localTable, this.emptySet);
       this.table = localTable;
     }
-    if (!localIndex.isConstraint())
+    if (!localIndex.isConstraint()) {
       this.database.schemaManager.removeSchemaObject(localIndex.getName());
+    }
     this.database.schemaManager.recompileDependentObjects(this.table);
   }
-
+  
   void dropColumn(int paramInt, boolean paramBoolean)
   {
     OrderedHashSet localOrderedHashSet1 = new OrderedHashSet();
@@ -449,8 +477,9 @@ public class TableWorks
         localHsqlName2 = localConstraint1.getName();
         throw Error.error(5536, localHsqlName2.getSchemaQualifiedStatementName());
       }
-      if (!localOrderedHashSet5.isEmpty())
-        label221: for (int i = 0; i < localOrderedHashSet5.size(); i++)
+      if (!localOrderedHashSet5.isEmpty()) {
+        label221:
+        for (int i = 0; i < localOrderedHashSet5.size(); i++)
         {
           localHsqlName2 = (HsqlNameManager.HsqlName)localOrderedHashSet5.get(i);
           if (localHsqlName2 != localHsqlName1)
@@ -458,12 +487,14 @@ public class TableWorks
             for (int k = 0; k < localOrderedHashSet2.size(); k++)
             {
               Constraint localConstraint3 = (Constraint)localOrderedHashSet2.get(k);
-              if (localConstraint3.getName() == localHsqlName2)
+              if (localConstraint3.getName() == localHsqlName2) {
                 break label221;
+              }
             }
             throw Error.error(5536, localHsqlName2.getSchemaQualifiedStatementName());
           }
         }
+      }
     }
     localOrderedHashSet2.addAll(localOrderedHashSet3);
     localOrderedHashSet3.clear();
@@ -502,7 +533,7 @@ public class TableWorks
     localTable.compile(this.session, null);
     this.table = localTable;
   }
-
+  
   void registerConstraintNames(HsqlArrayList paramHsqlArrayList)
   {
     for (int i = 0; i < paramHsqlArrayList.size(); i++)
@@ -510,19 +541,20 @@ public class TableWorks
       Constraint localConstraint = (Constraint)paramHsqlArrayList.get(i);
       switch (localConstraint.constType)
       {
-      case 2:
-      case 3:
-      case 4:
+      case 2: 
+      case 3: 
+      case 4: 
         this.database.schemaManager.addSchemaObject(localConstraint);
       }
     }
   }
-
+  
   void dropConstraint(String paramString, boolean paramBoolean)
   {
     Constraint localConstraint = this.table.getConstraint(paramString);
-    if (localConstraint == null)
+    if (localConstraint == null) {
       throw Error.error(5501, paramString);
+    }
     Object localObject1;
     Object localObject2;
     Object localObject3;
@@ -530,10 +562,10 @@ public class TableWorks
     Table localTable1;
     switch (localConstraint.getConstraintType())
     {
-    case 1:
+    case 1: 
       throw Error.error(4002);
-    case 2:
-    case 4:
+    case 2: 
+    case 4: 
       checkModifyTable();
       localObject1 = this.table.getDependentConstraints(localConstraint);
       if ((!paramBoolean) && (!((OrderedHashSet)localObject1).isEmpty()))
@@ -549,18 +581,21 @@ public class TableWorks
       {
         localObject4 = (Constraint)((OrderedHashSet)localObject1).get(i);
         Table localTable2 = ((Constraint)localObject4).getMain();
-        if (localTable2 != this.table)
+        if (localTable2 != this.table) {
           ((OrderedHashSet)localObject2).add(localTable2);
+        }
         localTable2 = ((Constraint)localObject4).getRef();
-        if (localTable2 != this.table)
+        if (localTable2 != this.table) {
           ((OrderedHashSet)localObject2).add(localTable2);
+        }
         ((OrderedHashSet)localObject3).add(((Constraint)localObject4).getMainName());
         ((OrderedHashSet)localObject3).add(((Constraint)localObject4).getRefName());
         localOrderedHashSet.add(((Constraint)localObject4).getRefIndex().getName());
       }
       ((OrderedHashSet)localObject3).add(localConstraint.getName());
-      if (localConstraint.getConstraintType() == 2)
+      if (localConstraint.getConstraintType() == 2) {
         localOrderedHashSet.add(localConstraint.getMainIndex().getName());
+      }
       localTable1 = this.table.moveDefinition(this.session, this.table.tableType, null, null, null, -1, 0, (OrderedHashSet)localObject3, localOrderedHashSet);
       moveData(this.table, localTable1, -1, 0);
       localObject2 = makeNewTables((OrderedHashSet)localObject2, (OrderedHashSet)localObject3, localOrderedHashSet);
@@ -582,7 +617,7 @@ public class TableWorks
       this.database.schemaManager.recompileDependentObjects(localTable1);
       this.table = localTable1;
       break;
-    case 0:
+    case 0: 
       checkModifyTable();
       localObject1 = new OrderedHashSet();
       localObject2 = localConstraint.getMain();
@@ -600,7 +635,7 @@ public class TableWorks
       this.database.schemaManager.recompileDependentObjects(this.table);
       this.table = localTable1;
       break;
-    case 3:
+    case 3: 
       this.database.schemaManager.removeSchemaObject(localConstraint.getName());
       if (localConstraint.isNotNull())
       {
@@ -611,30 +646,33 @@ public class TableWorks
       break;
     }
   }
-
+  
   void retypeColumn(ColumnSchema paramColumnSchema1, ColumnSchema paramColumnSchema2)
   {
     Type localType1 = paramColumnSchema1.getDataType();
     Type localType2 = paramColumnSchema2.getDataType();
     checkModifyTable();
-    if ((localType1.equals(localType2)) && (paramColumnSchema1.getIdentitySequence() == paramColumnSchema2.getIdentitySequence()))
+    if ((localType1.equals(localType2)) && (paramColumnSchema1.getIdentitySequence() == paramColumnSchema2.getIdentitySequence())) {
       return;
+    }
     if ((!this.table.isEmpty(this.session)) && (localType1.typeCode != localType2.typeCode))
     {
       boolean bool = paramColumnSchema2.getDataType().canConvertFrom(paramColumnSchema1.getDataType());
       switch (localType1.typeCode)
       {
-      case 1111:
-      case 2000:
+      case 1111: 
+      case 2000: 
         bool = false;
       }
-      if (!bool)
+      if (!bool) {
         throw Error.error(5561);
+      }
     }
     int i = this.table.getColumnIndex(paramColumnSchema1.getName().name);
     int j = localType2.canMoveFrom(localType1);
-    if ((j == 0) && (paramColumnSchema2.isIdentity()) && (!paramColumnSchema1.isIdentity()) && (paramColumnSchema1.isNullable()) && (!paramColumnSchema1.isPrimaryKey()))
+    if ((j == 0) && (paramColumnSchema2.isIdentity()) && (!paramColumnSchema1.isIdentity()) && (paramColumnSchema1.isNullable()) && (!paramColumnSchema1.isPrimaryKey())) {
       j = 1;
+    }
     if (j == 1)
     {
       checkConvertColDataType(paramColumnSchema1, paramColumnSchema2);
@@ -655,7 +693,7 @@ public class TableWorks
     checkConvertColDataType(paramColumnSchema1, paramColumnSchema2);
     retypeColumn(paramColumnSchema2, i);
   }
-
+  
   void checkConvertColDataType(ColumnSchema paramColumnSchema1, ColumnSchema paramColumnSchema2)
   {
     int i = this.table.getColumnIndex(paramColumnSchema1.getName().name);
@@ -664,12 +702,13 @@ public class TableWorks
     {
       Row localRow = localRowIterator.getNextRow();
       Object localObject = localRow.getData()[i];
-      if ((!paramColumnSchema2.isNullable()) && (localObject == null))
+      if ((!paramColumnSchema2.isNullable()) && (localObject == null)) {
         throw Error.error(10);
+      }
       paramColumnSchema2.getDataType().convertToType(this.session, localObject, paramColumnSchema1.getDataType());
     }
   }
-
+  
   private void retypeColumn(ColumnSchema paramColumnSchema, int paramInt)
   {
     Table localTable = this.table.moveDefinition(this.session, this.table.tableType, paramColumnSchema, null, null, paramInt, 0, this.emptySet, this.emptySet);
@@ -679,17 +718,19 @@ public class TableWorks
     this.database.schemaManager.recompileDependentObjects(this.table);
     this.table = localTable;
   }
-
+  
   void setColNullability(ColumnSchema paramColumnSchema, boolean paramBoolean)
   {
     Constraint localConstraint = null;
     int i = this.table.getColumnIndex(paramColumnSchema.getName().name);
-    if (paramColumnSchema.isNullable() == paramBoolean)
+    if (paramColumnSchema.isNullable() == paramBoolean) {
       return;
+    }
     if (paramBoolean)
     {
-      if (paramColumnSchema.isPrimaryKey())
+      if (paramColumnSchema.isPrimaryKey()) {
         throw Error.error(5526);
+      }
       this.table.checkColumnInFKConstraint(i, 2);
       removeColumnNotNullConstraints(i);
     }
@@ -705,28 +746,30 @@ public class TableWorks
       this.database.schemaManager.addSchemaObject(localConstraint);
     }
   }
-
+  
   void setColDefaultExpression(int paramInt, Expression paramExpression)
   {
-    if (paramExpression == null)
+    if (paramExpression == null) {
       this.table.checkColumnInFKConstraint(paramInt, 4);
+    }
     ColumnSchema localColumnSchema = this.table.getColumn(paramInt);
     localColumnSchema.setDefaultExpression(paramExpression);
     this.table.setColumnTypeVars(paramInt);
   }
-
+  
   public boolean setTableType(Session paramSession, int paramInt)
   {
     int i = this.table.getTableType();
-    if (i == paramInt)
+    if (i == paramInt) {
       return false;
+    }
     switch (paramInt)
     {
-    case 5:
+    case 5: 
       break;
-    case 4:
+    case 4: 
       break;
-    default:
+    default: 
       return false;
     }
     Table localTable;
@@ -745,7 +788,7 @@ public class TableWorks
     this.database.schemaManager.recompileDependentObjects(this.table);
     return true;
   }
-
+  
   void setNewTablesInSchema(OrderedHashSet paramOrderedHashSet)
   {
     for (int i = 0; i < paramOrderedHashSet.size(); i++)
@@ -754,39 +797,45 @@ public class TableWorks
       setNewTableInSchema(localTable);
     }
   }
-
+  
   void setNewTableInSchema(Table paramTable)
   {
     int i = this.database.schemaManager.getTableIndex(paramTable);
-    if (i != -1)
+    if (i != -1) {
       this.database.schemaManager.setTable(i, paramTable);
+    }
   }
-
+  
   void removeColumnNotNullConstraints(int paramInt)
   {
     for (int i = this.table.constraintList.length - 1; i >= 0; i--)
     {
       Constraint localConstraint = this.table.constraintList[i];
-      if ((localConstraint.isNotNull()) && (localConstraint.notNullColumnIndex == paramInt))
+      if ((localConstraint.isNotNull()) && (localConstraint.notNullColumnIndex == paramInt)) {
         this.database.schemaManager.removeSchemaObject(localConstraint.getName());
+      }
     }
     ColumnSchema localColumnSchema = this.table.getColumn(paramInt);
     localColumnSchema.setNullable(true);
     this.table.setColumnTypeVars(paramInt);
   }
-
+  
   private void checkModifyTable()
   {
-    if (this.session.getUser().isSystem())
+    if (this.session.getUser().isSystem()) {
       return;
-    if (this.session.isProcessingScript)
+    }
+    if (this.session.isProcessingScript) {
       return;
-    if ((this.database.isFilesReadOnly()) || (this.table.isReadOnly()))
+    }
+    if ((this.database.isFilesReadOnly()) || (this.table.isReadOnly())) {
       throw Error.error(456);
-    if ((this.table.isText()) && (this.table.isConnected()))
+    }
+    if ((this.table.isText()) && (this.table.isConnected())) {
       throw Error.error(320);
+    }
   }
-
+  
   void moveData(Table paramTable1, Table paramTable2, int paramInt1, int paramInt2)
   {
     int i = paramTable1.getTableType();
@@ -794,8 +843,9 @@ public class TableWorks
     if (i == 3)
     {
       localObject = this.database.sessionManager.getAllSessions();
-      for (int j = 0; j < localObject.length; j++)
+      for (int j = 0; j < localObject.length; j++) {
         localObject[j].sessionData.persistentStoreCollection.moveData(paramTable1, paramTable2, paramInt1, paramInt2);
+      }
     }
     else
     {
@@ -816,7 +866,8 @@ public class TableWorks
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.TableWorks
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

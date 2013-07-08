@@ -11,7 +11,7 @@ public class AxisAngle4d
   public double z;
   public double angle;
   static final double EPS = 1.0E-006D;
-
+  
   public AxisAngle4d(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4)
   {
     this.x = paramDouble1;
@@ -19,7 +19,7 @@ public class AxisAngle4d
     this.z = paramDouble3;
     this.angle = paramDouble4;
   }
-
+  
   public AxisAngle4d(double[] paramArrayOfDouble)
   {
     this.x = paramArrayOfDouble[0];
@@ -27,7 +27,7 @@ public class AxisAngle4d
     this.z = paramArrayOfDouble[2];
     this.angle = paramArrayOfDouble[3];
   }
-
+  
   public AxisAngle4d(AxisAngle4d paramAxisAngle4d)
   {
     this.x = paramAxisAngle4d.x;
@@ -35,7 +35,7 @@ public class AxisAngle4d
     this.z = paramAxisAngle4d.z;
     this.angle = paramAxisAngle4d.angle;
   }
-
+  
   public AxisAngle4d(AxisAngle4f paramAxisAngle4f)
   {
     this.x = paramAxisAngle4f.x;
@@ -43,7 +43,7 @@ public class AxisAngle4d
     this.z = paramAxisAngle4f.z;
     this.angle = paramAxisAngle4f.angle;
   }
-
+  
   public AxisAngle4d(Vector3d paramVector3d, double paramDouble)
   {
     this.x = paramVector3d.x;
@@ -51,7 +51,7 @@ public class AxisAngle4d
     this.z = paramVector3d.z;
     this.angle = paramDouble;
   }
-
+  
   public AxisAngle4d()
   {
     this.x = 0.0D;
@@ -59,7 +59,7 @@ public class AxisAngle4d
     this.z = 1.0D;
     this.angle = 0.0D;
   }
-
+  
   public final void set(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4)
   {
     this.x = paramDouble1;
@@ -67,7 +67,7 @@ public class AxisAngle4d
     this.z = paramDouble3;
     this.angle = paramDouble4;
   }
-
+  
   public final void set(double[] paramArrayOfDouble)
   {
     this.x = paramArrayOfDouble[0];
@@ -75,7 +75,7 @@ public class AxisAngle4d
     this.z = paramArrayOfDouble[2];
     this.angle = paramArrayOfDouble[3];
   }
-
+  
   public final void set(AxisAngle4d paramAxisAngle4d)
   {
     this.x = paramAxisAngle4d.x;
@@ -83,7 +83,7 @@ public class AxisAngle4d
     this.z = paramAxisAngle4d.z;
     this.angle = paramAxisAngle4d.angle;
   }
-
+  
   public final void set(AxisAngle4f paramAxisAngle4f)
   {
     this.x = paramAxisAngle4f.x;
@@ -91,7 +91,7 @@ public class AxisAngle4d
     this.z = paramAxisAngle4f.z;
     this.angle = paramAxisAngle4f.angle;
   }
-
+  
   public final void set(Vector3d paramVector3d, double paramDouble)
   {
     this.x = paramVector3d.x;
@@ -99,7 +99,7 @@ public class AxisAngle4d
     this.z = paramVector3d.z;
     this.angle = paramDouble;
   }
-
+  
   public final void get(double[] paramArrayOfDouble)
   {
     paramArrayOfDouble[0] = this.x;
@@ -107,7 +107,7 @@ public class AxisAngle4d
     paramArrayOfDouble[2] = this.z;
     paramArrayOfDouble[3] = this.angle;
   }
-
+  
   public final void set(Matrix4f paramMatrix4f)
   {
     Matrix3d localMatrix3d = new Matrix3d();
@@ -135,7 +135,7 @@ public class AxisAngle4d
       this.angle = 0.0D;
     }
   }
-
+  
   public final void set(Matrix4d paramMatrix4d)
   {
     Matrix3d localMatrix3d = new Matrix3d();
@@ -163,7 +163,7 @@ public class AxisAngle4d
       this.angle = 0.0D;
     }
   }
-
+  
   public final void set(Matrix3f paramMatrix3f)
   {
     this.x = (paramMatrix3f.m21 - paramMatrix3f.m12);
@@ -189,7 +189,7 @@ public class AxisAngle4d
       this.angle = 0.0D;
     }
   }
-
+  
   public final void set(Matrix3d paramMatrix3d)
   {
     this.x = ((float)(paramMatrix3d.m21 - paramMatrix3d.m12));
@@ -215,7 +215,7 @@ public class AxisAngle4d
       this.angle = 0.0D;
     }
   }
-
+  
   public final void set(Quat4f paramQuat4f)
   {
     double d1 = paramQuat4f.x * paramQuat4f.x + paramQuat4f.y * paramQuat4f.y + paramQuat4f.z * paramQuat4f.z;
@@ -236,7 +236,7 @@ public class AxisAngle4d
       this.angle = 0.0D;
     }
   }
-
+  
   public final void set(Quat4d paramQuat4d)
   {
     double d1 = paramQuat4d.x * paramQuat4d.x + paramQuat4d.y * paramQuat4d.y + paramQuat4d.z * paramQuat4d.z;
@@ -257,24 +257,22 @@ public class AxisAngle4d
       this.angle = 0.0D;
     }
   }
-
+  
   public String toString()
   {
     return "(" + this.x + ", " + this.y + ", " + this.z + ", " + this.angle + ")";
   }
-
+  
   public boolean equals(AxisAngle4d paramAxisAngle4d)
   {
     try
     {
       return (this.x == paramAxisAngle4d.x) && (this.y == paramAxisAngle4d.y) && (this.z == paramAxisAngle4d.z) && (this.angle == paramAxisAngle4d.angle);
     }
-    catch (NullPointerException localNullPointerException)
-    {
-    }
+    catch (NullPointerException localNullPointerException) {}
     return false;
   }
-
+  
   public boolean equals(Object paramObject)
   {
     try
@@ -286,27 +284,28 @@ public class AxisAngle4d
     {
       return false;
     }
-    catch (ClassCastException localClassCastException)
-    {
-    }
+    catch (ClassCastException localClassCastException) {}
     return false;
   }
-
+  
   public boolean epsilonEquals(AxisAngle4d paramAxisAngle4d, double paramDouble)
   {
     double d = this.x - paramAxisAngle4d.x;
-    if ((d < 0.0D ? -d : d) > paramDouble)
+    if ((d < 0.0D ? -d : d) > paramDouble) {
       return false;
+    }
     d = this.y - paramAxisAngle4d.y;
-    if ((d < 0.0D ? -d : d) > paramDouble)
+    if ((d < 0.0D ? -d : d) > paramDouble) {
       return false;
+    }
     d = this.z - paramAxisAngle4d.z;
-    if ((d < 0.0D ? -d : d) > paramDouble)
+    if ((d < 0.0D ? -d : d) > paramDouble) {
       return false;
+    }
     d = this.angle - paramAxisAngle4d.angle;
     return (d < 0.0D ? -d : d) <= paramDouble;
   }
-
+  
   public int hashCode()
   {
     long l = 1L;
@@ -316,7 +315,7 @@ public class AxisAngle4d
     l = 31L * l + VecMathUtil.doubleToLongBits(this.angle);
     return (int)(l ^ l >> 32);
   }
-
+  
   public Object clone()
   {
     try
@@ -325,12 +324,13 @@ public class AxisAngle4d
     }
     catch (CloneNotSupportedException localCloneNotSupportedException)
     {
+      throw new InternalError();
     }
-    throw new InternalError();
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     javax.vecmath.AxisAngle4d
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

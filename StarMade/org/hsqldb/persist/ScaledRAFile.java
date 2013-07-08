@@ -40,11 +40,11 @@ final class ScaledRAFile
   final boolean extendLength;
   long seekPosition;
   int cacheHit;
-
+  
   static RandomAccessInterface newScaledRAFile(Database paramDatabase, String paramString, boolean paramBoolean, int paramInt)
     throws FileNotFoundException, IOException
   {
-    if (paramInt == 3)
+    if (paramInt == 3) {
       try
       {
         String str1 = paramDatabase.getURLProperties().getProperty("storage_class_name");
@@ -61,10 +61,12 @@ final class ScaledRAFile
         }
         Constructor localConstructor = localClass.getConstructor(new Class[] { String.class, Boolean.class, Object.class });
         Object localObject2 = localConstructor.newInstance(new Object[] { paramString, new Boolean(paramBoolean), str2 });
-        if ((localObject2 instanceof RandomAccessInterface))
+        if ((localObject2 instanceof RandomAccessInterface)) {
           return (RandomAccessInterface)localObject2;
-        if ((localObject2 instanceof Storage))
+        }
+        if ((localObject2 instanceof Storage)) {
           return new ScaledRAStorageWrapper((Storage)localObject2);
+        }
         throw new IOException();
       }
       catch (ClassNotFoundException localClassNotFoundException1)
@@ -87,30 +89,32 @@ final class ScaledRAFile
       {
         throw new IOException();
       }
-    if (paramInt == 2)
+    }
+    if (paramInt == 2) {
       return new ScaledRAFileInJar(paramString);
+    }
     if (paramInt == 5)
     {
       localObject1 = new ScaledRAFile(paramDatabase, paramString, paramBoolean, false, true);
       return localObject1;
     }
-    if (paramInt == 0)
+    if (paramInt == 0) {
       return new ScaledRAFile(paramDatabase, paramString, paramBoolean, true, false);
+    }
     Object localObject1 = new File(paramString);
     long l = ((File)localObject1).length();
-    if (l > paramDatabase.logger.propNioMaxSize)
+    if (l > paramDatabase.logger.propNioMaxSize) {
       return new ScaledRAFile(paramDatabase, paramString, paramBoolean, true, false);
+    }
     try
     {
       Class.forName("java.nio.MappedByteBuffer");
       return new ScaledRAFileHybrid(paramDatabase, paramString, paramBoolean);
     }
-    catch (Exception localException)
-    {
-    }
+    catch (Exception localException) {}
     return new ScaledRAFile(paramDatabase, paramString, paramBoolean, true, false);
   }
-
+  
   ScaledRAFile(Database paramDatabase, String paramString, boolean paramBoolean1, boolean paramBoolean2, boolean paramBoolean3)
     throws FileNotFoundException, IOException
   {
@@ -129,36 +133,39 @@ final class ScaledRAFile
     this.fileLength = length();
     readIntoBuffer();
   }
-
+  
   public long length()
     throws IOException
   {
     return this.file.length();
   }
-
+  
   public void seek(long paramLong)
     throws IOException
   {
-    if ((this.readOnly) && (this.fileLength < paramLong))
+    if ((this.readOnly) && (this.fileLength < paramLong)) {
       throw new IOException("read beyond end of file");
+    }
     this.seekPosition = paramLong;
   }
-
+  
   public long getFilePointer()
     throws IOException
   {
     return this.seekPosition;
   }
-
+  
   private void readIntoBuffer()
     throws IOException
   {
     long l1 = this.seekPosition & 0xFFFFF000;
     long l2 = this.fileLength - l1;
-    if (l2 > this.buffer.length)
+    if (l2 > this.buffer.length) {
       l2 = this.buffer.length;
-    if (l2 < 0L)
+    }
+    if (l2 < 0L) {
       throw new IOException("read beyond end of file");
+    }
     try
     {
       this.file.seek(l1);
@@ -172,18 +179,20 @@ final class ScaledRAFile
       throw localIOException;
     }
   }
-
+  
   public int read()
     throws IOException
   {
     try
     {
-      if (this.seekPosition >= this.fileLength)
+      if (this.seekPosition >= this.fileLength) {
         return -1;
-      if ((this.seekPosition < this.bufferOffset) || (this.seekPosition >= this.bufferOffset + this.buffer.length))
+      }
+      if ((this.seekPosition < this.bufferOffset) || (this.seekPosition >= this.bufferOffset + this.buffer.length)) {
         readIntoBuffer();
-      else
+      } else {
         this.cacheHit += 1;
+      }
       int i = this.buffer[((int)(this.seekPosition - this.bufferOffset))] & 0xFF;
       this.seekPosition += 1L;
       return i;
@@ -195,7 +204,7 @@ final class ScaledRAFile
       throw localIOException;
     }
   }
-
+  
   public long readLong()
     throws IOException
   {
@@ -203,7 +212,7 @@ final class ScaledRAFile
     read(this.valueBuffer, 0, 8);
     return this.vbai.readLong();
   }
-
+  
   public int readInt()
     throws IOException
   {
@@ -211,14 +220,15 @@ final class ScaledRAFile
     read(this.valueBuffer, 0, 4);
     return this.vbai.readInt();
   }
-
+  
   public void read(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
     throws IOException
   {
     try
     {
-      if (this.seekPosition + paramInt2 > this.fileLength)
+      if (this.seekPosition + paramInt2 > this.fileLength) {
         throw new EOFException();
+      }
       if ((paramInt2 > this.buffer.length) && ((this.seekPosition < this.bufferOffset) || (this.seekPosition >= this.bufferOffset + this.buffer.length)))
       {
         this.file.seek(this.seekPosition);
@@ -226,13 +236,15 @@ final class ScaledRAFile
         this.seekPosition += paramInt2;
         return;
       }
-      if ((this.seekPosition < this.bufferOffset) || (this.seekPosition >= this.bufferOffset + this.buffer.length))
+      if ((this.seekPosition < this.bufferOffset) || (this.seekPosition >= this.bufferOffset + this.buffer.length)) {
         readIntoBuffer();
-      else
+      } else {
         this.cacheHit += 1;
+      }
       this.ba.reset();
-      if (this.seekPosition - this.bufferOffset != this.ba.skip(this.seekPosition - this.bufferOffset))
+      if (this.seekPosition - this.bufferOffset != this.ba.skip(this.seekPosition - this.bufferOffset)) {
         throw new EOFException();
+      }
       int i = this.ba.read(paramArrayOfByte, paramInt1, paramInt2);
       this.seekPosition += i;
       if (i < paramInt2)
@@ -249,19 +261,21 @@ final class ScaledRAFile
       throw localIOException;
     }
   }
-
+  
   public void write(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
     throws IOException
   {
     try
     {
       this.file.seek(this.seekPosition);
-      if ((this.seekPosition < this.bufferOffset + this.buffer.length) && (this.seekPosition + paramInt2 > this.bufferOffset))
+      if ((this.seekPosition < this.bufferOffset + this.buffer.length) && (this.seekPosition + paramInt2 > this.bufferOffset)) {
         writeToBuffer(paramArrayOfByte, paramInt1, paramInt2);
+      }
       this.file.write(paramArrayOfByte, paramInt1, paramInt2);
       this.seekPosition += paramInt2;
-      if ((!this.extendLength) && (this.fileLength < this.seekPosition))
+      if ((!this.extendLength) && (this.fileLength < this.seekPosition)) {
         this.fileLength = this.seekPosition;
+      }
     }
     catch (IOException localIOException)
     {
@@ -270,7 +284,7 @@ final class ScaledRAFile
       throw localIOException;
     }
   }
-
+  
   public void writeInt(int paramInt)
     throws IOException
   {
@@ -278,7 +292,7 @@ final class ScaledRAFile
     this.vbao.writeInt(paramInt);
     write(this.valueBuffer, 0, 4);
   }
-
+  
   public void writeLong(long paramLong)
     throws IOException
   {
@@ -286,22 +300,23 @@ final class ScaledRAFile
     this.vbao.writeLong(paramLong);
     write(this.valueBuffer, 0, 8);
   }
-
+  
   public void close()
     throws IOException
   {
     this.file.close();
   }
-
+  
   public boolean isReadOnly()
   {
     return this.readOnly;
   }
-
+  
   public boolean ensureLength(long paramLong)
   {
-    if (paramLong <= this.fileLength)
+    if (paramLong <= this.fileLength) {
       return true;
+    }
     try
     {
       extendLength(paramLong);
@@ -312,7 +327,7 @@ final class ScaledRAFile
     }
     return true;
   }
-
+  
   public boolean setLength(long paramLong)
   {
     try
@@ -324,12 +339,10 @@ final class ScaledRAFile
       readIntoBuffer();
       return true;
     }
-    catch (Throwable localThrowable)
-    {
-    }
+    catch (Throwable localThrowable) {}
     return false;
   }
-
+  
   public void synch()
   {
     try
@@ -341,7 +354,7 @@ final class ScaledRAFile
       this.database.logger.logSevereEvent("RA file sync error ", localIOException);
     }
   }
-
+  
   private void writeToBuffer(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
     throws IOException
   {
@@ -355,33 +368,36 @@ final class ScaledRAFile
       k = 0;
     }
     int m = (int)(this.bufferOffset + this.buffer.length - this.seekPosition);
-    if (m < i)
+    if (m < i) {
       i = m;
+    }
     System.arraycopy(paramArrayOfByte, j, this.buffer, k, i);
   }
-
+  
   private long getExtendLength(long paramLong)
   {
-    if (!this.extendLength)
+    if (!this.extendLength) {
       return paramLong;
+    }
     int i;
-    if (paramLong < 262144L)
+    if (paramLong < 262144L) {
       i = 2;
-    else if (paramLong < 1048576L)
+    } else if (paramLong < 1048576L) {
       i = 6;
-    else if (paramLong < 33554432L)
+    } else if (paramLong < 33554432L) {
       i = 8;
-    else
+    } else {
       i = 12;
+    }
     paramLong = getBinaryNormalisedCeiling(paramLong, 12 + i);
     return paramLong;
   }
-
+  
   private void extendLength(long paramLong)
     throws IOException
   {
     long l = getExtendLength(paramLong);
-    if (l > this.fileLength)
+    if (l > this.fileLength) {
       try
       {
         this.file.seek(l - 1L);
@@ -393,8 +409,9 @@ final class ScaledRAFile
         this.database.logger.logWarningEvent("data file enlarge failed ", localIOException);
         throw localIOException;
       }
+    }
   }
-
+  
   private void resetPointer()
   {
     try
@@ -403,22 +420,22 @@ final class ScaledRAFile
       this.fileLength = length();
       readIntoBuffer();
     }
-    catch (Throwable localThrowable)
-    {
-    }
+    catch (Throwable localThrowable) {}
   }
-
+  
   static long getBinaryNormalisedCeiling(long paramLong, int paramInt)
   {
     long l1 = -1L << paramInt;
     long l2 = paramLong & l1;
-    if (l2 != paramLong)
+    if (l2 != paramLong) {
       l2 += (1 << paramInt);
+    }
     return l2;
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.persist.ScaledRAFile
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -18,20 +18,20 @@ public class JDBCParameterMetaData
   String[] classNames;
   int parameterCount;
   private boolean translateTTIType;
-
+  
   public int getParameterCount()
     throws SQLException
   {
     return this.parameterCount;
   }
-
+  
   public int isNullable(int paramInt)
     throws SQLException
   {
     checkRange(paramInt);
     return 2;
   }
-
+  
   public boolean isSigned(int paramInt)
     throws SQLException
   {
@@ -39,20 +39,22 @@ public class JDBCParameterMetaData
     Type localType = translateType(this.rmd.columnTypes[(--paramInt)]);
     return localType.isNumberType();
   }
-
+  
   public int getPrecision(int paramInt)
     throws SQLException
   {
     checkRange(paramInt);
     Type localType = translateType(this.rmd.columnTypes[(--paramInt)]);
-    if (localType.isDateTimeType())
+    if (localType.isDateTimeType()) {
       return localType.displaySize();
+    }
     long l = localType.precision;
-    if (l > 2147483647L)
+    if (l > 2147483647L) {
       l = 0L;
+    }
     return (int)l;
   }
-
+  
   public int getScale(int paramInt)
     throws SQLException
   {
@@ -60,7 +62,7 @@ public class JDBCParameterMetaData
     Type localType = translateType(this.rmd.columnTypes[(--paramInt)]);
     return localType.scale;
   }
-
+  
   public int getParameterType(int paramInt)
     throws SQLException
   {
@@ -68,7 +70,7 @@ public class JDBCParameterMetaData
     Type localType = translateType(this.rmd.columnTypes[(--paramInt)]);
     return localType.getJDBCTypeCode();
   }
-
+  
   public String getParameterTypeName(int paramInt)
     throws SQLException
   {
@@ -76,7 +78,7 @@ public class JDBCParameterMetaData
     Type localType = translateType(this.rmd.columnTypes[(--paramInt)]);
     return localType.getNameString();
   }
-
+  
   public String getParameterClassName(int paramInt)
     throws SQLException
   {
@@ -84,47 +86,51 @@ public class JDBCParameterMetaData
     Type localType = translateType(this.rmd.columnTypes[(--paramInt)]);
     return localType.getJDBCClassName();
   }
-
+  
   public int getParameterMode(int paramInt)
     throws SQLException
   {
     checkRange(paramInt);
     return this.rmd.paramModes[(--paramInt)];
   }
-
+  
   public <T> T unwrap(Class<T> paramClass)
     throws SQLException
   {
-    if (isWrapperFor(paramClass))
+    if (isWrapperFor(paramClass)) {
       return this;
+    }
     throw Util.invalidArgument("iface: " + paramClass);
   }
-
+  
   public boolean isWrapperFor(Class<?> paramClass)
     throws SQLException
   {
     return (paramClass != null) && (paramClass.isAssignableFrom(getClass()));
   }
-
+  
   JDBCParameterMetaData(JDBCConnection paramJDBCConnection, ResultMetaData paramResultMetaData)
     throws SQLException
   {
     this.rmd = paramResultMetaData;
     this.parameterCount = this.rmd.getColumnCount();
-    if (paramJDBCConnection.clientProperties != null)
+    if (paramJDBCConnection.clientProperties != null) {
       this.translateTTIType = paramJDBCConnection.clientProperties.isPropertyTrue("jdbc.translate_tti_types");
+    }
   }
-
+  
   private Type translateType(Type paramType)
   {
-    if (this.translateTTIType)
-      if (paramType.isIntervalType())
+    if (this.translateTTIType) {
+      if (paramType.isIntervalType()) {
         paramType = ((IntervalType)paramType).getCharacterType();
-      else if (paramType.isDateTimeTypeWithZone())
+      } else if (paramType.isDateTimeTypeWithZone()) {
         paramType = ((DateTimeType)paramType).getDateTimeTypeWithoutZone();
+      }
+    }
     return paramType;
   }
-
+  
   void checkRange(int paramInt)
     throws SQLException
   {
@@ -134,7 +140,7 @@ public class JDBCParameterMetaData
       throw Util.outOfRangeArgument(str);
     }
   }
-
+  
   public String toString()
   {
     try
@@ -146,7 +152,7 @@ public class JDBCParameterMetaData
       return super.toString() + "[toStringImpl_exception=" + localThrowable + "]";
     }
   }
-
+  
   private String toStringImpl()
     throws Exception
   {
@@ -196,7 +202,8 @@ public class JDBCParameterMetaData
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.jdbc.JDBCParameterMetaData
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

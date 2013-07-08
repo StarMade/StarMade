@@ -76,22 +76,22 @@ public class LobManager
   private static final String deleteLobCallSQL = "CALL SYSTEM_LOBS.DELETE_LOB(?, ?)";
   private static final String deleteUnusedCallSQL = "CALL SYSTEM_LOBS.DELETE_UNUSED_LOBS(?)";
   private static final String getLobCountSQL = "SELECT COUNT(*) FROM SYSTEM_LOBS.LOB_IDS";
-
+  
   public LobManager(Database paramDatabase)
   {
     this.database = paramDatabase;
   }
-
+  
   public void lock()
   {
     this.writeLock.lock();
   }
-
+  
   public void unlock()
   {
     this.writeLock.unlock();
   }
-
+  
   public void createSchema()
   {
     this.sysLobSession = this.database.sessionManager.getSysLobSession();
@@ -107,9 +107,7 @@ public class LobManager
     {
       localInputStreamReader = new InputStreamReader(localInputStream, "ISO-8859-1");
     }
-    catch (Exception localException)
-    {
-    }
+    catch (Exception localException) {}
     LineNumberReader localLineNumberReader = new LineNumberReader(localInputStreamReader);
     LineGroupReader localLineGroupReader = new LineGroupReader(localLineNumberReader, starters);
     HashMappedList localHashMappedList = localLineGroupReader.getAsMap();
@@ -117,13 +115,14 @@ public class LobManager
     String str = (String)localHashMappedList.get("/*lob_schema_definition*/");
     Statement localStatement = this.sysLobSession.compileStatement(str);
     Result localResult = localStatement.execute(this.sysLobSession);
-    if (localResult.isError())
+    if (localResult.isError()) {
       throw localResult.getException();
+    }
     HsqlNameManager.HsqlName localHsqlName = this.database.schemaManager.getSchemaHsqlName("SYSTEM_LOBS");
     Table localTable = this.database.schemaManager.getTable(this.sysLobSession, "BLOCKS", "SYSTEM_LOBS");
     compileStatements();
   }
-
+  
   public void compileStatements()
   {
     this.writeLock.lock();
@@ -147,7 +146,7 @@ public class LobManager
       this.writeLock.unlock();
     }
   }
-
+  
   public void initialiseLobSpace()
   {
     Statement localStatement = this.sysLobSession.compileStatement("INSERT INTO SYSTEM_LOBS.BLOCKS VALUES(?,?,?)");
@@ -157,7 +156,7 @@ public class LobManager
     arrayOfObject[2] = ValuePool.getLong(0L);
     this.sysLobSession.executeCompiledStatement(localStatement, arrayOfObject);
   }
-
+  
   public void open()
   {
     this.lobBlockSize = this.database.logger.getLobBlockSize();
@@ -176,25 +175,27 @@ public class LobManager
       this.byteBuffer = new byte[this.lobBlockSize];
     }
   }
-
+  
   public void close()
   {
     this.lobStore.close();
     this.lobStore = null;
   }
-
+  
   public LobStore getLobStore()
   {
-    if (this.lobStore == null)
+    if (this.lobStore == null) {
       open();
+    }
     return this.lobStore;
   }
-
+  
   private long getNewLobID()
   {
     Result localResult = this.getNextLobId.execute(this.sysLobSession);
-    if (localResult.isError())
+    if (localResult.isError()) {
       return 0L;
+    }
     RowSetNavigator localRowSetNavigator = localResult.getNavigator();
     boolean bool = localRowSetNavigator.next();
     if (!bool)
@@ -205,7 +206,7 @@ public class LobManager
     Object[] arrayOfObject = localRowSetNavigator.getCurrent();
     return ((Long)arrayOfObject[0]).longValue();
   }
-
+  
   private Object[] getLobHeader(long paramLong)
   {
     ResultMetaData localResultMetaData = this.getLob.getParametersMetaData();
@@ -214,8 +215,9 @@ public class LobManager
     this.sysLobSession.sessionContext.pushDynamicArguments(arrayOfObject1);
     Result localResult = this.getLob.execute(this.sysLobSession);
     this.sysLobSession.sessionContext.pop();
-    if (localResult.isError())
+    if (localResult.isError()) {
       return null;
+    }
     RowSetNavigator localRowSetNavigator = localResult.getNavigator();
     boolean bool = localRowSetNavigator.next();
     if (!bool)
@@ -226,7 +228,7 @@ public class LobManager
     Object[] arrayOfObject2 = localRowSetNavigator.getCurrent();
     return arrayOfObject2;
   }
-
+  
   public BlobData getBlob(long paramLong)
   {
     this.writeLock.lock();
@@ -247,7 +249,7 @@ public class LobManager
       this.writeLock.unlock();
     }
   }
-
+  
   public ClobData getClob(long paramLong)
   {
     this.writeLock.lock();
@@ -268,7 +270,7 @@ public class LobManager
       this.writeLock.unlock();
     }
   }
-
+  
   public long createBlob(Session paramSession, long paramLong)
   {
     this.writeLock.lock();
@@ -291,7 +293,7 @@ public class LobManager
       this.writeLock.unlock();
     }
   }
-
+  
   public long createClob(Session paramSession, long paramLong)
   {
     this.writeLock.lock();
@@ -314,7 +316,7 @@ public class LobManager
       this.writeLock.unlock();
     }
   }
-
+  
   public Result deleteLob(long paramLong)
   {
     this.writeLock.lock();
@@ -334,7 +336,7 @@ public class LobManager
       this.writeLock.unlock();
     }
   }
-
+  
   public Result deleteUnusedLobs()
   {
     this.writeLock.lock();
@@ -347,13 +349,15 @@ public class LobManager
       }
       Object localObject1 = this.database.sessionManager.getAllSessions();
       long l1 = 9223372036854775807L;
-      for (int i = 0; i < localObject1.length; i++)
+      for (int i = 0; i < localObject1.length; i++) {
         if (!localObject1[i].isClosed())
         {
           long l2 = localObject1[i].sessionData.getFirstLobID();
-          if ((l2 != 0L) && (l2 < l1))
+          if ((l2 != 0L) && (l2 < l1)) {
             l1 = l2;
+          }
         }
+      }
       Object[] arrayOfObject = new Object[1];
       arrayOfObject[0] = new Long(l1);
       Result localResult1 = this.sysLobSession.executeCompiledStatement(this.deleteUnusedLobs, arrayOfObject);
@@ -366,15 +370,16 @@ public class LobManager
       this.writeLock.unlock();
     }
   }
-
+  
   public Result getLength(long paramLong)
   {
     this.writeLock.lock();
     try
     {
       Object[] arrayOfObject = getLobHeader(paramLong);
-      if (arrayOfObject == null)
+      if (arrayOfObject == null) {
         throw Error.error(3474);
+      }
       long l = ((Long)arrayOfObject[1]).longValue();
       int i = ((Integer)arrayOfObject[3]).intValue();
       ResultLob localResultLob = ResultLob.newLobSetResponse(paramLong, l);
@@ -390,7 +395,7 @@ public class LobManager
       this.writeLock.unlock();
     }
   }
-
+  
   public int compare(BlobData paramBlobData, byte[] paramArrayOfByte)
   {
     this.writeLock.lock();
@@ -412,7 +417,7 @@ public class LobManager
         m = 1;
         return m;
       }
-      while (true)
+      for (;;)
       {
         m = arrayOfInt[i][0] + k;
         byte[] arrayOfByte = getLobStore().getBlockBytes(m, 1);
@@ -442,8 +447,9 @@ public class LobManager
           k = 0;
           i++;
         }
-        if ((i == arrayOfInt.length) || (j >= paramArrayOfByte.length))
+        if ((i == arrayOfInt.length) || (j >= paramArrayOfByte.length)) {
           break;
+        }
       }
       if (l == paramArrayOfByte.length)
       {
@@ -458,11 +464,12 @@ public class LobManager
       this.writeLock.unlock();
     }
   }
-
+  
   public int compare(BlobData paramBlobData1, BlobData paramBlobData2)
   {
-    if (paramBlobData1.getId() == paramBlobData2.getId())
+    if (paramBlobData1.getId() == paramBlobData2.getId()) {
       return 0;
+    }
     this.writeLock.lock();
     try
     {
@@ -474,7 +481,7 @@ public class LobManager
       this.writeLock.unlock();
     }
   }
-
+  
   public int compare(Collation paramCollation, ClobData paramClobData, String paramString)
   {
     this.writeLock.lock();
@@ -496,17 +503,19 @@ public class LobManager
         m = 1;
         return m;
       }
-      while (true)
+      for (;;)
       {
         m = arrayOfInt[i][0] + k;
         byte[] arrayOfByte = getLobStore().getBlockBytes(m, 1);
         long l2 = l1 - (arrayOfInt[i][2] + k) * this.lobBlockSize / 2L;
-        if (l2 > this.lobBlockSize / 2)
+        if (l2 > this.lobBlockSize / 2) {
           l2 = this.lobBlockSize / 2;
+        }
         String str1 = new String(ArrayUtil.byteArrayToChars(arrayOfByte), 0, (int)l2);
         int n = paramString.length() - j;
-        if (n > this.lobBlockSize / 2)
+        if (n > this.lobBlockSize / 2) {
           n = this.lobBlockSize / 2;
+        }
         String str2 = paramString.substring(j, j + n);
         int i1 = paramCollation.compare(str1, str2);
         if (i1 != 0)
@@ -521,8 +530,9 @@ public class LobManager
           k = 0;
           i++;
         }
-        if ((i == arrayOfInt.length) || (j >= paramString.length()))
+        if ((i == arrayOfInt.length) || (j >= paramString.length())) {
           break;
+        }
       }
       if (l1 == paramString.length())
       {
@@ -537,14 +547,15 @@ public class LobManager
       this.writeLock.unlock();
     }
   }
-
+  
   public int compare(Collation paramCollation, ClobData paramClobData1, ClobData paramClobData2)
   {
-    if (paramClobData1.getId() == paramClobData2.getId())
+    if (paramClobData1.getId() == paramClobData2.getId()) {
       return 0;
+    }
     return compareText(paramCollation, paramClobData1.getId(), paramClobData2.getId());
   }
-
+  
   private int compareBytes(long paramLong1, long paramLong2)
   {
     Object[] arrayOfObject = getLobHeader(paramLong1);
@@ -557,19 +568,23 @@ public class LobManager
     int j = 0;
     int k = 0;
     int m = 0;
-    if (l1 == 0L)
+    if (l1 == 0L) {
       return l2 == 0L ? 0 : -1;
-    if (l2 == 0L)
+    }
+    if (l2 == 0L) {
       return 1;
-    while (true)
+    }
+    for (;;)
     {
       int n = arrayOfInt1[i][0] + k;
       int i1 = arrayOfInt2[j][0] + m;
       byte[] arrayOfByte1 = getLobStore().getBlockBytes(n, 1);
       byte[] arrayOfByte2 = getLobStore().getBlockBytes(i1, 1);
-      for (int i2 = 0; i2 < arrayOfByte1.length; i2++)
-        if (arrayOfByte1[i2] != arrayOfByte2[i2])
+      for (int i2 = 0; i2 < arrayOfByte1.length; i2++) {
+        if (arrayOfByte1[i2] != arrayOfByte2[i2]) {
           return (arrayOfByte1[i2] & 0xFF) > (arrayOfByte2[i2] & 0xFF) ? 1 : -1;
+        }
+      }
       k++;
       m++;
       if (k == arrayOfInt1[i][1])
@@ -582,14 +597,16 @@ public class LobManager
         m = 0;
         j++;
       }
-      if ((i == arrayOfInt1.length) || (j == arrayOfInt2.length))
+      if ((i == arrayOfInt1.length) || (j == arrayOfInt2.length)) {
         break;
+      }
     }
-    if (l1 == l2)
+    if (l1 == l2) {
       return 0;
+    }
     return l1 > l2 ? 1 : -1;
   }
-
+  
   private int compareText(Collation paramCollation, long paramLong1, long paramLong2)
   {
     Object[] arrayOfObject = getLobHeader(paramLong1);
@@ -602,27 +619,32 @@ public class LobManager
     int j = 0;
     int k = 0;
     int m = 0;
-    if (l1 == 0L)
+    if (l1 == 0L) {
       return l2 == 0L ? 0 : -1;
-    if (l2 == 0L)
+    }
+    if (l2 == 0L) {
       return 1;
-    while (true)
+    }
+    for (;;)
     {
       int n = arrayOfInt1[i][0] + k;
       int i1 = arrayOfInt2[j][0] + m;
       byte[] arrayOfByte1 = getLobStore().getBlockBytes(n, 1);
       byte[] arrayOfByte2 = getLobStore().getBlockBytes(i1, 1);
       long l3 = l1 - (arrayOfInt1[i][2] + k) * this.lobBlockSize / 2L;
-      if (l3 > this.lobBlockSize / 2)
+      if (l3 > this.lobBlockSize / 2) {
         l3 = this.lobBlockSize / 2;
+      }
       long l4 = l2 - (arrayOfInt2[j][2] + m) * this.lobBlockSize / 2L;
-      if (l4 > this.lobBlockSize / 2)
+      if (l4 > this.lobBlockSize / 2) {
         l4 = this.lobBlockSize / 2;
+      }
       String str1 = new String(ArrayUtil.byteArrayToChars(arrayOfByte1), 0, (int)l3);
       String str2 = new String(ArrayUtil.byteArrayToChars(arrayOfByte2), 0, (int)l4);
       int i2 = paramCollation.compare(str1, str2);
-      if (i2 != 0)
+      if (i2 != 0) {
         return i2;
+      }
       k++;
       m++;
       if (k == arrayOfInt1[i][1])
@@ -635,29 +657,33 @@ public class LobManager
         m = 0;
         j++;
       }
-      if ((i == arrayOfInt1.length) || (j == arrayOfInt2.length))
+      if ((i == arrayOfInt1.length) || (j == arrayOfInt2.length)) {
         break;
+      }
     }
-    if (l1 == l2)
+    if (l1 == l2) {
       return 0;
+    }
     return l1 > l2 ? 1 : -1;
   }
-
+  
   public Result getLob(long paramLong1, long paramLong2, long paramLong3)
   {
-    if (paramLong2 == 0L)
+    if (paramLong2 == 0L) {
       return createDuplicateLob(paramLong1, paramLong3, false);
+    }
     throw Error.runtimeError(201, "LobManager");
   }
-
+  
   public Result createDuplicateLob(long paramLong)
   {
     Result localResult = getLength(paramLong);
-    if (localResult.isError())
+    if (localResult.isError()) {
       return localResult;
+    }
     return createDuplicateLob(paramLong, ((ResultLob)localResult).getBlockLength(), true);
   }
-
+  
   public Result createDuplicateLob(long paramLong1, long paramLong2, boolean paramBoolean)
   {
     this.writeLock.lock();
@@ -696,11 +722,13 @@ public class LobManager
       }
       long l3 = paramLong2;
       int i = ((Integer)arrayOfObject1[3]).intValue();
-      if (i == 40)
+      if (i == 40) {
         l3 *= 2L;
+      }
       int j = (int)(l3 / this.lobBlockSize);
-      if (l3 % this.lobBlockSize != 0L)
+      if (l3 % this.lobBlockSize != 0L) {
         j++;
+      }
       createBlockAddresses(l2, 0, j);
       int[][] arrayOfInt1 = getBlockAddresses(paramLong1, 0, 2147483647);
       int[][] arrayOfInt2 = getBlockAddresses(l2, 0, 2147483647);
@@ -730,15 +758,16 @@ public class LobManager
       this.writeLock.unlock();
     }
   }
-
+  
   public Result getTruncateLength(long paramLong)
   {
     this.writeLock.lock();
     try
     {
       Object[] arrayOfObject = getLobHeader(paramLong);
-      if (arrayOfObject == null)
+      if (arrayOfObject == null) {
         throw Error.error(3474);
+      }
       long l = ((Long)arrayOfObject[1]).longValue();
       int i = ((Integer)arrayOfObject[3]).intValue();
       ResultLob localResultLob = ResultLob.newLobSetResponse(paramLong, l);
@@ -749,14 +778,14 @@ public class LobManager
       this.writeLock.unlock();
     }
   }
-
+  
   private void copyBlockSet(int[][] paramArrayOfInt1, int[][] paramArrayOfInt2)
   {
     int i = 0;
     int j = 0;
     int k = 0;
     int m = 0;
-    while (true)
+    for (;;)
     {
       byte[] arrayOfByte = getLobStore().getBlockBytes(paramArrayOfInt1[i][0] + k, 1);
       getLobStore().setBlockBytes(arrayOfByte, paramArrayOfInt2[j][0] + m, 1);
@@ -772,22 +801,24 @@ public class LobManager
         m = 0;
         j++;
       }
-      if ((i == paramArrayOfInt1.length) || (j == paramArrayOfInt2.length))
+      if ((i == paramArrayOfInt1.length) || (j == paramArrayOfInt2.length)) {
         break;
+      }
     }
     this.storeModified = true;
   }
-
+  
   public Result getChars(long paramLong1, long paramLong2, int paramInt)
   {
     Result localResult = getBytes(paramLong1, paramLong2 * 2L, paramInt * 2);
-    if (localResult.isError())
+    if (localResult.isError()) {
       return localResult;
+    }
     byte[] arrayOfByte = ((ResultLob)localResult).getByteArray();
     char[] arrayOfChar = ArrayUtil.byteArrayToChars(arrayOfByte);
     return ResultLob.newLobGetCharsResponse(paramLong1, paramLong2, arrayOfChar);
   }
-
+  
   public Result getBytes(long paramLong1, long paramLong2, int paramInt)
   {
     this.writeLock.lock();
@@ -797,10 +828,11 @@ public class LobManager
       int j = (int)(paramLong2 % this.lobBlockSize);
       int k = (int)((paramLong2 + paramInt) / this.lobBlockSize);
       int m = (int)((paramLong2 + paramInt) % this.lobBlockSize);
-      if (m == 0)
+      if (m == 0) {
         m = this.lobBlockSize;
-      else
+      } else {
         k++;
+      }
       if (paramInt == 0)
       {
         ResultLob localResultLob1 = ResultLob.newLobGetBytesResponse(paramLong1, paramLong2, BinaryData.zeroLengthBytes);
@@ -816,8 +848,9 @@ public class LobManager
       }
       int i1 = 0;
       int i2 = arrayOfInt[i1][1] + arrayOfInt[i1][2] - i;
-      if (arrayOfInt[i1][1] + arrayOfInt[i1][2] > k)
+      if (arrayOfInt[i1][1] + arrayOfInt[i1][2] > k) {
         i2 -= arrayOfInt[i1][1] + arrayOfInt[i1][2] - k;
+      }
       byte[] arrayOfByte2;
       try
       {
@@ -829,16 +862,18 @@ public class LobManager
         return localResult2;
       }
       int i3 = this.lobBlockSize * i2 - j;
-      if (i3 > paramInt)
+      if (i3 > paramInt) {
         i3 = paramInt;
+      }
       System.arraycopy(arrayOfByte2, j, arrayOfByte1, n, i3);
       n += i3;
       i1++;
       while ((i1 < arrayOfInt.length) && (n < paramInt))
       {
         i2 = arrayOfInt[i1][1];
-        if (arrayOfInt[i1][1] + arrayOfInt[i1][2] > k)
+        if (arrayOfInt[i1][1] + arrayOfInt[i1][2] > k) {
           i2 -= arrayOfInt[i1][1] + arrayOfInt[i1][2] - k;
+        }
         try
         {
           arrayOfByte2 = getLobStore().getBlockBytes(arrayOfInt[i1][0], i2);
@@ -849,8 +884,9 @@ public class LobManager
           return localResult3;
         }
         i3 = this.lobBlockSize * i2;
-        if (i3 > paramInt - n)
+        if (i3 > paramInt - n) {
           i3 = paramInt - n;
+        }
         System.arraycopy(arrayOfByte2, 0, arrayOfByte1, n, i3);
         n += i3;
         i1++;
@@ -863,11 +899,12 @@ public class LobManager
       this.writeLock.unlock();
     }
   }
-
+  
   private Result setBytesBA(long paramLong1, long paramLong2, byte[] paramArrayOfByte, int paramInt)
   {
-    if (paramInt == 0)
+    if (paramInt == 0) {
       return ResultLob.newLobSetResponse(paramLong1, 0L);
+    }
     this.writeLock.lock();
     try
     {
@@ -876,14 +913,16 @@ public class LobManager
       int k = (int)(paramLong2 % this.lobBlockSize);
       int m = (int)((paramLong2 + paramInt) / this.lobBlockSize);
       int n = (int)((paramLong2 + paramInt) % this.lobBlockSize);
-      if (n == 0)
+      if (n == 0) {
         n = this.lobBlockSize;
-      else
+      } else {
         m++;
+      }
       int[][] arrayOfInt = getBlockAddresses(paramLong1, j, m);
       int i1 = j;
-      if (arrayOfInt.length > 0)
+      if (arrayOfInt.length > 0) {
         i1 = arrayOfInt[(arrayOfInt.length - 1)][2] + arrayOfInt[(arrayOfInt.length - 1)][1];
+      }
       if (i1 < m)
       {
         createBlockAddresses(paramLong1, i1, m - i1);
@@ -907,8 +946,9 @@ public class LobManager
           }
           if (i3 < l2)
           {
-            if (i != 0)
+            if (i != 0) {
               i5 = (int)((l2 - i3) % this.lobBlockSize);
+            }
             l2 = i3;
           }
           getLobStore().setBlockBytes(paramArrayOfByte, l3, i2, (int)l2);
@@ -935,25 +975,27 @@ public class LobManager
       this.writeLock.unlock();
     }
   }
-
+  
   private Result setBytesIS(long paramLong1, InputStream paramInputStream, long paramLong2, boolean paramBoolean)
   {
     long l = 0L;
     int i = (int)(paramLong2 / this.lobBlockSize);
     int j = (int)(paramLong2 % this.lobBlockSize);
-    if (j == 0)
+    if (j == 0) {
       j = this.lobBlockSize;
-    else
+    } else {
       i++;
+    }
     createBlockAddresses(paramLong1, 0, i);
     int[][] arrayOfInt = getBlockAddresses(paramLong1, 0, i);
-    for (int k = 0; k < arrayOfInt.length; k++)
+    for (int k = 0; k < arrayOfInt.length; k++) {
       for (int m = 0; m < arrayOfInt[k][1]; m++)
       {
         int n = this.lobBlockSize;
         ArrayUtil.fillArray(this.byteBuffer, 0, (byte)0);
-        if ((k == arrayOfInt.length - 1) && (m == arrayOfInt[k][1] - 1))
+        if ((k == arrayOfInt.length - 1) && (m == arrayOfInt[k][1] - 1)) {
           n = j;
+        }
         try
         {
           int i1 = 0;
@@ -962,13 +1004,15 @@ public class LobManager
             int i2 = paramInputStream.read(this.byteBuffer, i1, n);
             if (i2 == -1)
             {
-              if (paramBoolean)
+              if (paramBoolean) {
                 i2 = n;
-              else
+              } else {
                 return Result.newErrorResult(new EOFException());
+              }
             }
-            else
+            else {
               l += i2;
+            }
             n -= i2;
             i1 += i2;
           }
@@ -986,14 +1030,16 @@ public class LobManager
           return Result.newErrorResult(localHsqlException);
         }
       }
+    }
     this.storeModified = true;
     return ResultLob.newLobSetResponse(paramLong1, l);
   }
-
+  
   public Result setBytes(long paramLong1, long paramLong2, byte[] paramArrayOfByte, int paramInt)
   {
-    if (paramInt == 0)
+    if (paramInt == 0) {
       return ResultLob.newLobSetResponse(paramLong1, 0L);
+    }
     this.writeLock.lock();
     try
     {
@@ -1028,11 +1074,12 @@ public class LobManager
       this.writeLock.unlock();
     }
   }
-
+  
   public Result setBytesForNewBlob(long paramLong1, InputStream paramInputStream, long paramLong2)
   {
-    if (paramLong2 == 0L)
+    if (paramLong2 == 0L) {
       return ResultLob.newLobSetResponse(paramLong1, 0L);
+    }
     this.writeLock.lock();
     try
     {
@@ -1045,11 +1092,12 @@ public class LobManager
       this.writeLock.unlock();
     }
   }
-
+  
   public Result setChars(long paramLong1, long paramLong2, char[] paramArrayOfChar)
   {
-    if (paramArrayOfChar.length == 0)
+    if (paramArrayOfChar.length == 0) {
       return ResultLob.newLobSetResponse(paramLong1, 0L);
+    }
     this.writeLock.lock();
     try
     {
@@ -1085,11 +1133,12 @@ public class LobManager
       this.writeLock.unlock();
     }
   }
-
+  
   public Result setCharsForNewClob(long paramLong1, InputStream paramInputStream, long paramLong2, boolean paramBoolean)
   {
-    if (paramLong2 == 0L)
+    if (paramLong2 == 0L) {
       return ResultLob.newLobSetResponse(paramLong1, 0L);
+    }
     this.writeLock.lock();
     try
     {
@@ -1100,8 +1149,9 @@ public class LobManager
         return localResult2;
       }
       long l = ((ResultLob)localResult1).getBlockLength();
-      if (l < paramLong2)
+      if (l < paramLong2) {
         localResult3 = truncate(paramLong1, l);
+      }
       Result localResult3 = localResult1;
       return localResult3;
     }
@@ -1110,7 +1160,7 @@ public class LobManager
       this.writeLock.unlock();
     }
   }
-
+  
   public Result truncate(long paramLong1, long paramLong2)
   {
     this.writeLock.lock();
@@ -1124,8 +1174,9 @@ public class LobManager
       }
       long l1 = ((Long)arrayOfObject1[1]).longValue();
       long l2 = paramLong2;
-      if (((Integer)arrayOfObject1[3]).intValue() == 40)
+      if (((Integer)arrayOfObject1[3]).intValue() == 40) {
         l2 *= 2L;
+      }
       int i = (int)((l2 + this.lobBlockSize - 1L) / this.lobBlockSize);
       ResultMetaData localResultMetaData = this.deleteLobPartCall.getParametersMetaData();
       Object[] arrayOfObject2 = new Object[localResultMetaData.getColumnCount()];
@@ -1143,7 +1194,7 @@ public class LobManager
       this.writeLock.unlock();
     }
   }
-
+  
   private Result setLength(long paramLong1, long paramLong2)
   {
     ResultMetaData localResultMetaData = this.updateLobLength.getParametersMetaData();
@@ -1153,7 +1204,7 @@ public class LobManager
     Result localResult = this.sysLobSession.executeCompiledStatement(this.updateLobLength, arrayOfObject);
     return localResult;
   }
-
+  
   public Result adjustUsageCount(Session paramSession, long paramLong, int paramInt)
   {
     ResultMetaData localResultMetaData = this.updateLobUsage.getParametersMetaData();
@@ -1165,7 +1216,7 @@ public class LobManager
     paramSession.sessionContext.pop();
     return localResult;
   }
-
+  
   private int[][] getBlockAddresses(long paramLong, int paramInt1, int paramInt2)
   {
     ResultMetaData localResultMetaData = this.getLobPart.getParametersMetaData();
@@ -1190,7 +1241,7 @@ public class LobManager
     localRowSetNavigator.release();
     return arrayOfInt;
   }
-
+  
   private void deleteBlockAddresses(long paramLong, int paramInt1, int paramInt2)
   {
     ResultMetaData localResultMetaData = this.deleteLobPartCall.getParametersMetaData();
@@ -1201,7 +1252,7 @@ public class LobManager
     arrayOfObject[3] = ValuePool.getLong(this.sysLobSession.getTransactionTimestamp());
     Result localResult = this.sysLobSession.executeCompiledStatement(this.deleteLobPartCall, arrayOfObject);
   }
-
+  
   private void divideBlockAddresses(long paramLong, int paramInt)
   {
     ResultMetaData localResultMetaData = this.divideLobPartCall.getParametersMetaData();
@@ -1210,7 +1261,7 @@ public class LobManager
     arrayOfObject[1] = ValuePool.getLong(paramLong);
     Result localResult = this.sysLobSession.executeCompiledStatement(this.divideLobPartCall, arrayOfObject);
   }
-
+  
   private void createBlockAddresses(long paramLong, int paramInt1, int paramInt2)
   {
     ResultMetaData localResultMetaData = this.createLobPartCall.getParametersMetaData();
@@ -1220,15 +1271,17 @@ public class LobManager
     arrayOfObject[2] = ValuePool.getLong(paramLong);
     Result localResult = this.sysLobSession.executeCompiledStatement(this.createLobPartCall, arrayOfObject);
   }
-
+  
   private int getBlockAddress(int[][] paramArrayOfInt, int paramInt)
   {
-    for (int i = 0; i < paramArrayOfInt.length; i++)
-      if (paramArrayOfInt[i][2] + paramArrayOfInt[i][1] > paramInt)
+    for (int i = 0; i < paramArrayOfInt.length; i++) {
+      if (paramArrayOfInt[i][2] + paramArrayOfInt[i][1] > paramInt) {
         return paramArrayOfInt[i][0] - paramArrayOfInt[i][2] + paramInt;
+      }
+    }
     return -1;
   }
-
+  
   public int getLobCount()
   {
     this.writeLock.lock();
@@ -1254,7 +1307,7 @@ public class LobManager
       this.writeLock.unlock();
     }
   }
-
+  
   public void synch()
   {
     if ((this.storeModified) && (this.lobStore != null))
@@ -1271,26 +1324,26 @@ public class LobManager
       }
     }
   }
-
+  
   private static abstract interface UPDATE_LENGTH
   {
     public static final int LOB_LENGTH = 0;
     public static final int LOB_ID = 1;
   }
-
+  
   private static abstract interface UPDATE_USAGE
   {
     public static final int BLOCK_COUNT = 0;
     public static final int LOB_ID = 1;
   }
-
+  
   private static abstract interface ALLOC_BLOCKS
   {
     public static final int BLOCK_COUNT = 0;
     public static final int BLOCK_OFFSET = 1;
     public static final int LOB_ID = 2;
   }
-
+  
   private static abstract interface DELETE_BLOCKS
   {
     public static final int LOB_ID = 0;
@@ -1298,20 +1351,20 @@ public class LobManager
     public static final int BLOCK_LIMIT = 2;
     public static final int TX_ID = 3;
   }
-
+  
   private static abstract interface DIVIDE_BLOCK
   {
     public static final int BLOCK_OFFSET = 0;
     public static final int LOB_ID = 1;
   }
-
+  
   private static abstract interface GET_LOB_PART
   {
     public static final int LOB_ID = 0;
     public static final int BLOCK_OFFSET = 1;
     public static final int BLOCK_LIMIT = 2;
   }
-
+  
   private static abstract interface LOB_IDS
   {
     public static final int LOB_ID = 0;
@@ -1319,7 +1372,7 @@ public class LobManager
     public static final int LOB_USAGE_COUNT = 2;
     public static final int LOB_TYPE = 3;
   }
-
+  
   private static abstract interface LOBS
   {
     public static final int BLOCK_ADDR = 0;
@@ -1329,7 +1382,8 @@ public class LobManager
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.persist.LobManager
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

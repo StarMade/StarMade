@@ -22,28 +22,28 @@ public class ParserBase
   protected int parsePosition;
   static final BigDecimal LONG_MAX_VALUE_INCREMENT = BigDecimal.valueOf(9223372036854775807L).add(BigDecimal.valueOf(1L));
   private static final IntKeyIntValueHashMap expressionTypeMap = new IntKeyIntValueHashMap(37);
-
+  
   ParserBase(Scanner paramScanner)
   {
     this.scanner = paramScanner;
     this.token = this.scanner.token;
   }
-
+  
   public Scanner getScanner()
   {
     return this.scanner;
   }
-
+  
   public int getParsePosition()
   {
     return this.parsePosition;
   }
-
+  
   public void setParsePosition(int paramInt)
   {
     this.parsePosition = paramInt;
   }
-
+  
   void reset(String paramString)
   {
     this.scanner.reset(paramString);
@@ -53,59 +53,62 @@ public class ParserBase
     this.isRecording = false;
     this.recordedStatement = null;
   }
-
+  
   int getPosition()
   {
     return this.scanner.getTokenPosition();
   }
-
+  
   void rewind(int paramInt)
   {
-    if (paramInt == this.scanner.getTokenPosition())
+    if (paramInt == this.scanner.getTokenPosition()) {
       return;
+    }
     this.scanner.position(paramInt);
     if (this.isRecording)
     {
       for (int i = this.recordedStatement.size() - 1; i >= 0; i--)
       {
         Token localToken = (Token)this.recordedStatement.get(i);
-        if (localToken.position < paramInt)
+        if (localToken.position < paramInt) {
           break;
+        }
       }
       this.recordedStatement.setSize(i + 1);
     }
     read();
   }
-
+  
   String getLastPart()
   {
     return this.scanner.getPart(this.parsePosition, this.scanner.getTokenPosition());
   }
-
+  
   String getLastPart(int paramInt)
   {
     return this.scanner.getPart(paramInt, this.scanner.getTokenPosition());
   }
-
+  
   String getLastPartAndCurrent(int paramInt)
   {
     return this.scanner.getPart(paramInt, this.scanner.getPosition());
   }
-
+  
   String getStatement(int paramInt, short[] paramArrayOfShort)
   {
-    while ((this.token.tokenType != 791) && (this.token.tokenType != 848) && (ArrayUtil.find(paramArrayOfShort, this.token.tokenType) == -1))
+    while ((this.token.tokenType != 791) && (this.token.tokenType != 848) && (ArrayUtil.find(paramArrayOfShort, this.token.tokenType) == -1)) {
       read();
+    }
     String str = this.scanner.getPart(paramInt, this.scanner.getTokenPosition());
     return str;
   }
-
+  
   String getStatementForRoutine(int paramInt, short[] paramArrayOfShort)
   {
     int i = 0;
     int j = -1;
     int k = -1;
-    while (true)
+    for (;;)
     {
       if (this.token.tokenType == 791)
       {
@@ -114,13 +117,15 @@ public class ParserBase
       }
       else if (this.token.tokenType == 848)
       {
-        if ((j > 0) && (j == i - 1))
+        if ((j > 0) && (j == i - 1)) {
           rewind(k);
+        }
       }
       else
       {
-        if (ArrayUtil.find(paramArrayOfShort, this.token.tokenType) != -1)
+        if (ArrayUtil.find(paramArrayOfShort, this.token.tokenType) != -1) {
           break;
+        }
       }
       read();
       i++;
@@ -128,21 +133,22 @@ public class ParserBase
     String str = this.scanner.getPart(paramInt, this.scanner.getTokenPosition());
     return str;
   }
-
+  
   void startRecording()
   {
     this.recordedStatement = new HsqlArrayList();
     this.recordedStatement.add(this.token.duplicate());
     this.isRecording = true;
   }
-
+  
   Token getRecordedToken()
   {
-    if (this.isRecording)
+    if (this.isRecording) {
       return (Token)this.recordedStatement.get(this.recordedStatement.size() - 1);
+    }
     return this.dummyToken;
   }
-
+  
   Token[] getRecordedStatement()
   {
     this.isRecording = false;
@@ -152,7 +158,7 @@ public class ParserBase
     this.recordedStatement = null;
     return arrayOfToken;
   }
-
+  
   void read()
   {
     this.scanner.scanNext();
@@ -161,28 +167,28 @@ public class ParserBase
       int i = -1;
       switch (this.token.tokenType)
       {
-      case 856:
+      case 856: 
         i = 5587;
         break;
-      case 855:
+      case 855: 
         i = 5588;
         break;
-      case 857:
+      case 857: 
         i = 5586;
         break;
-      case 853:
+      case 853: 
         i = 5584;
         break;
-      case -1:
+      case -1: 
         i = 5582;
         break;
-      case 854:
+      case 854: 
         i = 5585;
         break;
-      case 858:
+      case 858: 
         i = 5589;
         break;
-      case 859:
+      case 859: 
         i = 5583;
       }
       throw Error.error(i, this.token.getFullString());
@@ -194,85 +200,93 @@ public class ParserBase
       this.recordedStatement.add(localToken);
     }
   }
-
+  
   boolean isReservedKey()
   {
     return this.scanner.token.isReservedIdentifier;
   }
-
+  
   boolean isCoreReservedKey()
   {
     return this.scanner.token.isCoreReservedIdentifier;
   }
-
+  
   boolean isNonReservedIdentifier()
   {
     return (!this.scanner.token.isReservedIdentifier) && ((this.scanner.token.isUndelimitedIdentifier) || (this.scanner.token.isDelimitedIdentifier));
   }
-
+  
   void checkIsNonReservedIdentifier()
   {
-    if (!isNonReservedIdentifier())
+    if (!isNonReservedIdentifier()) {
       throw unexpectedToken();
+    }
   }
-
+  
   boolean isNonCoreReservedIdentifier()
   {
     return (!this.scanner.token.isCoreReservedIdentifier) && ((this.scanner.token.isUndelimitedIdentifier) || (this.scanner.token.isDelimitedIdentifier));
   }
-
+  
   void checkIsNonCoreReservedIdentifier()
   {
-    if (!isNonCoreReservedIdentifier())
+    if (!isNonCoreReservedIdentifier()) {
       throw unexpectedToken();
+    }
   }
-
+  
   void checkIsIrregularCharInIdentifier()
   {
-    if (this.scanner.token.hasIrregularChar)
+    if (this.scanner.token.hasIrregularChar) {
       throw unexpectedToken();
+    }
   }
-
+  
   boolean isIdentifier()
   {
     return (this.scanner.token.isUndelimitedIdentifier) || (this.scanner.token.isDelimitedIdentifier);
   }
-
+  
   void checkIsIdentifier()
   {
-    if (!isIdentifier())
+    if (!isIdentifier()) {
       throw unexpectedToken();
+    }
   }
-
+  
   boolean isDelimitedIdentifier()
   {
     return this.scanner.token.isDelimitedIdentifier;
   }
-
+  
   void checkIsDelimitedIdentifier()
   {
-    if (this.token.tokenType != 847)
+    if (this.token.tokenType != 847) {
       throw Error.error(5569);
+    }
   }
-
+  
   void checkIsNotQuoted()
   {
-    if (this.token.tokenType == 847)
+    if (this.token.tokenType == 847) {
       throw unexpectedToken();
+    }
   }
-
+  
   void checkIsValue()
   {
-    if (this.token.tokenType != 845)
+    if (this.token.tokenType != 845) {
       throw unexpectedToken();
+    }
   }
-
+  
   void checkIsValue(int paramInt)
   {
-    if ((this.token.tokenType != 845) || (this.token.dataType.typeCode != paramInt))
+    if ((this.token.tokenType != 845) || (this.token.dataType.typeCode != paramInt)) {
       throw unexpectedToken();
+    }
   }
-
+  
   void checkIsThis(int paramInt)
   {
     if (this.token.tokenType != paramInt)
@@ -281,46 +295,49 @@ public class ParserBase
       throw unexpectedTokenRequire(str);
     }
   }
-
+  
   boolean isUndelimitedSimpleName()
   {
     return (this.token.isUndelimitedIdentifier) && (this.token.namePrefix == null);
   }
-
+  
   boolean isDelimitedSimpleName()
   {
     return (this.token.isDelimitedIdentifier) && (this.token.namePrefix == null);
   }
-
+  
   boolean isSimpleName()
   {
     return (isNonCoreReservedIdentifier()) && (this.token.namePrefix == null);
   }
-
+  
   void checkIsSimpleName()
   {
-    if (!isSimpleName())
+    if (!isSimpleName()) {
       throw unexpectedToken();
+    }
   }
-
+  
   void readUnquotedIdentifier(String paramString)
   {
     checkIsSimpleName();
-    if (!this.token.tokenString.equals(paramString))
+    if (!this.token.tokenString.equals(paramString)) {
       throw unexpectedToken();
+    }
     read();
   }
-
+  
   String readQuotedString()
   {
     checkIsValue();
-    if (this.token.dataType.typeCode != 1)
+    if (this.token.dataType.typeCode != 1) {
       throw Error.error(5563);
+    }
     String str = this.token.tokenString;
     read();
     return str;
   }
-
+  
   void readThis(int paramInt)
   {
     if (this.token.tokenType != paramInt)
@@ -330,7 +347,7 @@ public class ParserBase
     }
     read();
   }
-
+  
   boolean readIfThis(int paramInt)
   {
     if (this.token.tokenType == paramInt)
@@ -340,13 +357,13 @@ public class ParserBase
     }
     return false;
   }
-
+  
   Integer readIntegerObject()
   {
     int i = readInteger();
     return ValuePool.getInt(i);
   }
-
+  
   int readInteger()
   {
     int i = 0;
@@ -361,15 +378,17 @@ public class ParserBase
       read();
       return -2147483648;
     }
-    if (this.token.dataType.typeCode != 4)
+    if (this.token.dataType.typeCode != 4) {
       throw Error.error(5563);
+    }
     int j = ((Number)this.token.tokenValue).intValue();
-    if (i != 0)
+    if (i != 0) {
       j = -j;
+    }
     read();
     return j;
   }
-
+  
   long readBigint()
   {
     int i = 0;
@@ -384,15 +403,17 @@ public class ParserBase
       read();
       return -9223372036854775808L;
     }
-    if ((this.token.dataType.typeCode != 4) && (this.token.dataType.typeCode != 25))
+    if ((this.token.dataType.typeCode != 4) && (this.token.dataType.typeCode != 25)) {
       throw Error.error(5563);
+    }
     long l = ((Number)this.token.tokenValue).longValue();
-    if (i != 0)
+    if (i != 0) {
       l = -l;
+    }
     read();
     return l;
   }
-
+  
   Expression readDateTimeIntervalLiteral(Session paramSession)
   {
     int i = getPosition();
@@ -401,7 +422,7 @@ public class ParserBase
     Object localObject2;
     switch (this.token.tokenType)
     {
-    case 72:
+    case 72: 
       read();
       if ((this.token.tokenType == 845) && (this.token.dataType.typeCode == 1))
       {
@@ -411,7 +432,7 @@ public class ParserBase
         return new ExpressionValue(localObject1, Type.SQL_DATE);
       }
       break;
-    case 281:
+    case 281: 
       read();
       if ((this.token.tokenType == 845) && (this.token.dataType.typeCode == 1))
       {
@@ -422,7 +443,7 @@ public class ParserBase
         return new ExpressionValue(localObject1, (Type)localObject2);
       }
       break;
-    case 282:
+    case 282: 
       read();
       if ((this.token.tokenType == 845) && (this.token.dataType.typeCode == 1))
       {
@@ -433,7 +454,7 @@ public class ParserBase
         return new ExpressionValue(localObject1, (Type)localObject2);
       }
       break;
-    case 140:
+    case 140: 
       int j = 0;
       read();
       if (this.token.tokenType == 784)
@@ -454,19 +475,20 @@ public class ParserBase
           localObject2 = readIntervalType(false);
           Object localObject3 = this.scanner.newInterval((String)localObject1, (IntervalType)localObject2);
           localObject2 = (IntervalType)this.scanner.dateTimeType;
-          if (j != 0)
+          if (j != 0) {
             localObject3 = ((IntervalType)localObject2).negate(localObject3);
+          }
           return new ExpressionValue(localObject3, (Type)localObject2);
         }
       }
       break;
-    default:
+    default: 
       throw Error.runtimeError(201, "ParserBase");
     }
     rewind(i);
     return null;
   }
-
+  
   IntervalType readIntervalType(boolean paramBoolean)
   {
     int i = paramBoolean ? 9 : -1;
@@ -478,16 +500,19 @@ public class ParserBase
     {
       read();
       i = readInteger();
-      if (i <= 0)
+      if (i <= 0) {
         throw Error.error(5592);
+      }
       if (this.token.tokenType == 774)
       {
-        if (k != 250)
+        if (k != 250) {
           throw unexpectedToken();
+        }
         read();
         j = readInteger();
-        if (j < 0)
+        if (j < 0) {
           throw Error.error(5592);
+        }
       }
       readThis(772);
     }
@@ -499,97 +524,105 @@ public class ParserBase
     }
     if (this.token.tokenType == 786)
     {
-      if ((m != 250) || (m == k))
+      if ((m != 250) || (m == k)) {
         throw unexpectedToken();
+      }
       read();
       j = readInteger();
-      if (j < 0)
+      if (j < 0) {
         throw Error.error(5592);
+      }
       readThis(772);
     }
     int n = ArrayUtil.find(Tokens.SQL_INTERVAL_FIELD_CODES, k);
     int i1 = ArrayUtil.find(Tokens.SQL_INTERVAL_FIELD_CODES, m);
     return IntervalType.getIntervalType(n, i1, i, j);
   }
-
+  
   static int getExpressionType(int paramInt)
   {
     int i = expressionTypeMap.get(paramInt, -1);
-    if (i == -1)
+    if (i == -1) {
       throw Error.runtimeError(201, "ParserBase");
+    }
     return i;
   }
-
+  
   HsqlException unexpectedToken(String paramString)
   {
     return Error.parseError(5581, paramString, this.scanner.getLineNumber());
   }
-
+  
   HsqlException unexpectedTokenRequire(String paramString)
   {
-    if (this.token.tokenType == 848)
+    if (this.token.tokenType == 848) {
       return Error.parseError(5590, 1, this.scanner.getLineNumber(), new Object[] { "", paramString });
+    }
     String str;
-    if (this.token.charsetSchema != null)
+    if (this.token.charsetSchema != null) {
       str = this.token.charsetSchema;
-    else if (this.token.charsetName != null)
+    } else if (this.token.charsetName != null) {
       str = this.token.charsetName;
-    else if (this.token.namePrePrefix != null)
+    } else if (this.token.namePrePrefix != null) {
       str = this.token.namePrePrefix;
-    else if (this.token.namePrefix != null)
+    } else if (this.token.namePrefix != null) {
       str = this.token.namePrefix;
-    else
+    } else {
       str = this.token.tokenString;
+    }
     return Error.parseError(5581, 1, this.scanner.getLineNumber(), new Object[] { str, paramString });
   }
-
+  
   HsqlException unexpectedToken()
   {
-    if (this.token.tokenType == 848)
+    if (this.token.tokenType == 848) {
       return Error.parseError(5590, null, this.scanner.getLineNumber());
+    }
     String str;
-    if (this.token.charsetSchema != null)
+    if (this.token.charsetSchema != null) {
       str = this.token.charsetSchema;
-    else if (this.token.charsetName != null)
+    } else if (this.token.charsetName != null) {
       str = this.token.charsetName;
-    else if (this.token.namePrePrefix != null)
+    } else if (this.token.namePrePrefix != null) {
       str = this.token.namePrePrefix;
-    else if (this.token.namePrefix != null)
+    } else if (this.token.namePrefix != null) {
       str = this.token.namePrefix;
-    else
+    } else {
       str = this.token.tokenString;
+    }
     return Error.parseError(5581, str, this.scanner.getLineNumber());
   }
-
+  
   HsqlException tooManyIdentifiers()
   {
     String str;
-    if (this.token.namePrePrePrefix != null)
+    if (this.token.namePrePrePrefix != null) {
       str = this.token.namePrePrePrefix;
-    else if (this.token.namePrePrefix != null)
+    } else if (this.token.namePrePrefix != null) {
       str = this.token.namePrePrefix;
-    else if (this.token.namePrefix != null)
+    } else if (this.token.namePrefix != null) {
       str = this.token.namePrefix;
-    else
+    } else {
       str = this.token.tokenString;
+    }
     return Error.parseError(5551, str, this.scanner.getLineNumber());
   }
-
+  
   HsqlException unsupportedFeature()
   {
     return Error.error(1551, this.token.tokenString);
   }
-
+  
   HsqlException unsupportedFeature(String paramString)
   {
     return Error.error(1551, paramString);
   }
-
+  
   public Number convertToNumber(String paramString, NumberType paramNumberType)
   {
     return this.scanner.convertToNumber(paramString, paramNumberType);
   }
-
+  
   static
   {
     expressionTypeMap.put(396, 41);
@@ -616,7 +649,8 @@ public class ParserBase
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.ParserBase
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

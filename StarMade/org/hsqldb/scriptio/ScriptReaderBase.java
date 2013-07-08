@@ -26,73 +26,74 @@ public abstract class ScriptReaderBase
   PersistentStore currentStore;
   NumberSequence currentSequence;
   String currentSchema;
-
+  
   ScriptReaderBase(Database paramDatabase)
   {
     this.database = paramDatabase;
   }
-
+  
   public void readAll(Session paramSession)
   {
     readDDL(paramSession);
     readExistingData(paramSession);
   }
-
+  
   protected abstract void readDDL(Session paramSession);
-
+  
   protected abstract void readExistingData(Session paramSession);
-
+  
   public abstract boolean readLoggedStatement(Session paramSession);
-
+  
   public int getStatementType()
   {
     return this.statementType;
   }
-
+  
   public int getSessionNumber()
   {
     return this.sessionNumber;
   }
-
+  
   public Object[] getData()
   {
     return this.rowData;
   }
-
+  
   public String getLoggedStatement()
   {
     return this.statement;
   }
-
+  
   public NumberSequence getCurrentSequence()
   {
     return this.currentSequence;
   }
-
+  
   public long getSequenceValue()
   {
     return this.sequenceValue;
   }
-
+  
   public Table getCurrentTable()
   {
     return this.currentTable;
   }
-
+  
   public String getCurrentSchema()
   {
     return this.currentSchema;
   }
-
+  
   public int getLineNumber()
   {
     return this.lineCount;
   }
-
+  
   public abstract void close();
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.scriptio.ScriptReaderBase
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

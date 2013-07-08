@@ -1,711 +1,686 @@
-/*      */ package it.unimi.dsi.fastutil.ints;
-/*      */ 
-/*      */ import it.unimi.dsi.fastutil.BigArrays;
-/*      */ import it.unimi.dsi.fastutil.Hash.Strategy;
-/*      */ import it.unimi.dsi.fastutil.bytes.ByteBigArrays;
-/*      */ import java.io.Serializable;
-/*      */ import java.util.Arrays;
-/*      */ import java.util.Random;
-/*      */ 
-/*      */ public class IntBigArrays
-/*      */ {
-/*      */   public static final long ONEOVERPHI = 106039L;
-/*   84 */   public static final int[][] EMPTY_BIG_ARRAY = new int[0][];
-/*      */ 
-/*  564 */   public static final Hash.Strategy HASH_STRATEGY = new BigArrayHashStrategy(null);
-/*      */   private static final int SMALL = 7;
-/*      */   private static final int MEDIUM = 40;
-/*      */   private static final int DIGIT_BITS = 8;
-/*      */   private static final int DIGIT_MASK = 255;
-/*      */   private static final int DIGITS_PER_ELEMENT = 4;
-/*      */ 
-/*      */   public static int get(int[][] array, long index)
-/*      */   {
-/*   92 */     return array[BigArrays.segment(index)][BigArrays.displacement(index)];
-/*      */   }
-/*      */ 
-/*      */   public static void set(int[][] array, long index, int value)
-/*      */   {
-/*  100 */     array[BigArrays.segment(index)][BigArrays.displacement(index)] = value;
-/*      */   }
-/*      */ 
-/*      */   public static void swap(int[][] array, long first, long second)
-/*      */   {
-/*  109 */     int t = array[BigArrays.segment(first)][BigArrays.displacement(first)];
-/*  110 */     array[BigArrays.segment(first)][BigArrays.displacement(first)] = array[BigArrays.segment(second)][BigArrays.displacement(second)];
-/*  111 */     array[BigArrays.segment(second)][BigArrays.displacement(second)] = t;
-/*      */   }
-/*      */ 
-/*      */   public static void add(int[][] array, long index, int incr)
-/*      */   {
-/*  120 */     array[BigArrays.segment(index)][BigArrays.displacement(index)] += incr;
-/*      */   }
-/*      */ 
-/*      */   public static void mul(int[][] array, long index, int factor)
-/*      */   {
-/*  129 */     array[BigArrays.segment(index)][BigArrays.displacement(index)] *= factor;
-/*      */   }
-/*      */ 
-/*      */   public static void incr(int[][] array, long index)
-/*      */   {
-/*  137 */     array[BigArrays.segment(index)][BigArrays.displacement(index)] += 1;
-/*      */   }
-/*      */ 
-/*      */   public static void decr(int[][] array, long index)
-/*      */   {
-/*  145 */     array[BigArrays.segment(index)][BigArrays.displacement(index)] -= 1;
-/*      */   }
-/*      */ 
-/*      */   public static long length(int[][] array)
-/*      */   {
-/*  153 */     int length = array.length;
-/*  154 */     return length == 0 ? 0L : BigArrays.start(length - 1) + array[(length - 1)].length;
-/*      */   }
-/*      */ 
-/*      */   public static void copy(int[][] srcArray, long srcPos, int[][] destArray, long destPos, long length)
-/*      */   {
-/*  166 */     if (destPos <= srcPos) {
-/*  167 */       int srcSegment = BigArrays.segment(srcPos);
-/*  168 */       int destSegment = BigArrays.segment(destPos);
-/*  169 */       int srcDispl = BigArrays.displacement(srcPos);
-/*  170 */       int destDispl = BigArrays.displacement(destPos);
-/*      */ 
-/*  172 */       while (length > 0L) {
-/*  173 */         int l = (int)Math.min(length, Math.min(srcArray[srcSegment].length - srcDispl, destArray[destSegment].length - destDispl));
-/*  174 */         System.arraycopy(srcArray[srcSegment], srcDispl, destArray[destSegment], destDispl, l);
-/*  175 */         if (srcDispl += l == 134217728) {
-/*  176 */           srcDispl = 0;
-/*  177 */           srcSegment++;
-/*      */         }
-/*  179 */         if (destDispl += l == 134217728) {
-/*  180 */           destDispl = 0;
-/*  181 */           destSegment++;
-/*      */         }
-/*  183 */         length -= l;
-/*      */       }
-/*      */     }
-/*      */     else {
-/*  187 */       int srcSegment = BigArrays.segment(srcPos + length);
-/*  188 */       int destSegment = BigArrays.segment(destPos + length);
-/*  189 */       int srcDispl = BigArrays.displacement(srcPos + length);
-/*  190 */       int destDispl = BigArrays.displacement(destPos + length);
-/*      */ 
-/*  192 */       while (length > 0L) {
-/*  193 */         if (srcDispl == 0) {
-/*  194 */           srcDispl = 134217728;
-/*  195 */           srcSegment--;
-/*      */         }
-/*  197 */         if (destDispl == 0) {
-/*  198 */           destDispl = 134217728;
-/*  199 */           destSegment--;
-/*      */         }
-/*  201 */         int l = (int)Math.min(length, Math.min(srcDispl, destDispl));
-/*  202 */         System.arraycopy(srcArray[srcSegment], srcDispl - l, destArray[destSegment], destDispl - l, l);
-/*  203 */         srcDispl -= l;
-/*  204 */         destDispl -= l;
-/*  205 */         length -= l;
-/*      */       }
-/*      */     }
-/*      */   }
-/*      */ 
-/*      */   public static void copyFromBig(int[][] srcArray, long srcPos, int[] destArray, int destPos, int length)
-/*      */   {
-/*  218 */     int srcSegment = BigArrays.segment(srcPos);
-/*  219 */     int srcDispl = BigArrays.displacement(srcPos);
-/*      */ 
-/*  221 */     while (length > 0) {
-/*  222 */       int l = Math.min(srcArray[srcSegment].length - srcDispl, length);
-/*  223 */       System.arraycopy(srcArray[srcSegment], srcDispl, destArray, destPos, l);
-/*  224 */       if (srcDispl += l == 134217728) {
-/*  225 */         srcDispl = 0;
-/*  226 */         srcSegment++;
-/*      */       }
-/*  228 */       destPos += l;
-/*  229 */       length -= l;
-/*      */     }
-/*      */   }
-/*      */ 
-/*      */   public static void copyToBig(int[] srcArray, int srcPos, int[][] destArray, long destPos, long length)
-/*      */   {
-/*  241 */     int destSegment = BigArrays.segment(destPos);
-/*  242 */     int destDispl = BigArrays.displacement(destPos);
-/*      */ 
-/*  244 */     while (length > 0L) {
-/*  245 */       int l = (int)Math.min(destArray[destSegment].length - destDispl, length);
-/*  246 */       System.arraycopy(srcArray, srcPos, destArray[destSegment], destDispl, l);
-/*  247 */       if (destDispl += l == 134217728) {
-/*  248 */         destDispl = 0;
-/*  249 */         destSegment++;
-/*      */       }
-/*  251 */       srcPos += l;
-/*  252 */       length -= l;
-/*      */     }
-/*      */   }
-/*      */ 
-/*      */   public static int[][] newBigArray(long length)
-/*      */   {
-/*  261 */     if (length == 0L) return EMPTY_BIG_ARRAY;
-/*  262 */     int baseLength = (int)((length + 134217727L) / 134217728L);
-/*  263 */     int[][] base = new int[baseLength][];
-/*  264 */     int residual = (int)(length & 0x7FFFFFF);
-/*  265 */     if (residual != 0) {
-/*  266 */       for (int i = 0; i < baseLength - 1; i++) base[i] = new int[134217728];
-/*  267 */       base[(baseLength - 1)] = new int[residual];
-/*      */     } else {
-/*  269 */       for (int i = 0; i < baseLength; i++) base[i] = new int[134217728]; 
-/*      */     }
-/*  270 */     return base;
-/*      */   }
-/*      */ 
-/*      */   public static int[][] wrap(int[] array)
-/*      */   {
-/*  280 */     if (array.length == 0) return EMPTY_BIG_ARRAY;
-/*  281 */     if (array.length <= 134217728) return new int[][] { array };
-/*  282 */     int[][] bigArray = newBigArray(array.length);
-/*  283 */     for (int i = 0; i < bigArray.length; i++) System.arraycopy(array, (int)BigArrays.start(i), bigArray[i], 0, bigArray[i].length);
-/*  284 */     return bigArray;
-/*      */   }
-/*      */ 
-/*      */   public static int[][] ensureCapacity(int[][] array, long length)
-/*      */   {
-/*  301 */     return ensureCapacity(array, length, length(array));
-/*      */   }
-/*      */ 
-/*      */   public static int[][] ensureCapacity(int[][] array, long length, long preserve)
-/*      */   {
-/*  316 */     long oldLength = length(array);
-/*  317 */     if (length > oldLength) {
-/*  318 */       int valid = array.length - ((array.length == 0) || ((array.length > 0) && (array[(array.length - 1)].length == 134217728)) ? 0 : 1);
-/*  319 */       int baseLength = (int)((length + 134217727L) / 134217728L);
-/*  320 */       int[][] base = (int[][])Arrays.copyOf(array, baseLength);
-/*  321 */       int residual = (int)(length & 0x7FFFFFF);
-/*  322 */       if (residual != 0) {
-/*  323 */         for (int i = valid; i < baseLength - 1; i++) base[i] = new int[134217728];
-/*  324 */         base[(baseLength - 1)] = new int[residual];
-/*      */       } else {
-/*  326 */         for (int i = valid; i < baseLength; i++) base[i] = new int[134217728]; 
-/*      */       }
-/*  327 */       if (preserve - valid * 134217728L > 0L) copy(array, valid * 134217728L, base, valid * 134217728L, preserve - valid * 134217728L);
-/*  328 */       return base;
-/*      */     }
-/*  330 */     return array;
-/*      */   }
-/*      */ 
-/*      */   public static int[][] grow(int[][] array, long length)
-/*      */   {
-/*  351 */     long oldLength = length(array);
-/*  352 */     return length > oldLength ? grow(array, length, oldLength) : array;
-/*      */   }
-/*      */ 
-/*      */   public static int[][] grow(int[][] array, long length, long preserve)
-/*      */   {
-/*  374 */     long oldLength = length(array);
-/*  375 */     return length > oldLength ? ensureCapacity(array, Math.max(106039L * oldLength >>> 16, length), preserve) : array;
-/*      */   }
-/*      */ 
-/*      */   public static int[][] trim(int[][] array, long length)
-/*      */   {
-/*  391 */     long oldLength = length(array);
-/*  392 */     if (length >= oldLength) return array;
-/*  393 */     int baseLength = (int)((length + 134217727L) / 134217728L);
-/*  394 */     int[][] base = (int[][])Arrays.copyOf(array, baseLength);
-/*  395 */     int residual = (int)(length & 0x7FFFFFF);
-/*  396 */     if (residual != 0) base[(baseLength - 1)] = IntArrays.trim(base[(baseLength - 1)], residual);
-/*  397 */     return base;
-/*      */   }
-/*      */ 
-/*      */   public static int[][] setLength(int[][] array, long length)
-/*      */   {
-/*  416 */     long oldLength = length(array);
-/*  417 */     if (length == oldLength) return array;
-/*  418 */     if (length < oldLength) return trim(array, length);
-/*  419 */     return ensureCapacity(array, length);
-/*      */   }
-/*      */ 
-/*      */   public static int[][] copy(int[][] array, long offset, long length)
-/*      */   {
-/*  429 */     ensureOffsetLength(array, offset, length);
-/*  430 */     int[][] a = newBigArray(length);
-/*      */ 
-/*  432 */     copy(array, offset, a, 0L, length);
-/*  433 */     return a;
-/*      */   }
-/*      */ 
-/*      */   public static int[][] copy(int[][] array)
-/*      */   {
-/*  441 */     int[][] base = (int[][])array.clone();
-/*  442 */     for (int i = base.length; i-- != 0; base[i] = ((int[])array[i].clone()));
-/*  443 */     return base;
-/*      */   }
-/*      */ 
-/*      */   public static void fill(int[][] array, int value)
-/*      */   {
-/*  454 */     for (int i = array.length; i-- != 0; IntArrays.fill(array[i], value));
-/*      */   }
-/*      */ 
-/*      */   public static void fill(int[][] array, long from, long to, int value)
-/*      */   {
-/*  468 */     long length = length(array);
-/*  469 */     BigArrays.ensureFromTo(length, from, to);
-/*  470 */     int fromSegment = BigArrays.segment(from);
-/*  471 */     int toSegment = BigArrays.segment(to);
-/*  472 */     int fromDispl = BigArrays.displacement(from);
-/*  473 */     int toDispl = BigArrays.displacement(to);
-/*  474 */     if (fromSegment == toSegment) {
-/*  475 */       IntArrays.fill(array[fromSegment], fromDispl, toDispl, value);
-/*  476 */       return;
-/*      */     }
-/*  478 */     if (toDispl != 0) IntArrays.fill(array[toSegment], 0, toDispl, value); while (true) {
-/*  479 */       toSegment--; if (toSegment <= fromSegment) break; IntArrays.fill(array[toSegment], value);
-/*  480 */     }IntArrays.fill(array[fromSegment], fromDispl, 134217728, value);
-/*      */   }
-/*      */ 
-/*      */   public static boolean equals(int[][] a1, int[][] a2)
-/*      */   {
-/*  492 */     if (length(a1) != length(a2)) return false; int[] t;
-/*      */     int[] u;
-/*      */     int j;
-/*      */     do { int i = a1.length;
-/*      */ 
-/*  499 */       while (j-- == 0)
-/*      */       {
-/*  495 */         if (i-- == 0) break;
-/*  496 */         t = a1[i];
-/*  497 */         u = a2[i];
-/*  498 */         j = t.length;
-/*      */       } } while (t[j] == u[j]); return false;
-/*      */ 
-/*  501 */     return true;
-/*      */   }
-/*      */ 
-/*      */   public static String toString(int[][] a)
-/*      */   {
-/*  510 */     if (a == null) return "null";
-/*  511 */     long last = length(a) - 1L;
-/*  512 */     if (last == -1L) return "[]";
-/*  513 */     StringBuilder b = new StringBuilder();
-/*  514 */     b.append('[');
-/*  515 */     for (long i = 0L; ; i += 1L) {
-/*  516 */       b.append(String.valueOf(get(a, i)));
-/*  517 */       if (i == last) return b.append(']').toString();
-/*  518 */       b.append(", ");
-/*      */     }
-/*      */   }
-/*      */ 
-/*      */   public static void ensureFromTo(int[][] a, long from, long to)
-/*      */   {
-/*  532 */     BigArrays.ensureFromTo(length(a), from, to);
-/*      */   }
-/*      */ 
-/*      */   public static void ensureOffsetLength(int[][] a, long offset, long length)
-/*      */   {
-/*  545 */     BigArrays.ensureOffsetLength(length(a), offset, length);
-/*      */   }
-/*      */ 
-/*      */   private static void vecSwap(int[][] x, long a, long b, long n)
-/*      */   {
-/*  568 */     for (int i = 0; i < n; b += 1L) { swap(x, a, b); i++; a += 1L; } 
-/*      */   }
-/*      */ 
-/*  571 */   private static long med3(int[][] x, long a, long b, long c, IntComparator comp) { int ab = comp.compare(get(x, a), get(x, b));
-/*  572 */     int ac = comp.compare(get(x, a), get(x, c));
-/*  573 */     int bc = comp.compare(get(x, b), get(x, c));
-/*  574 */     return ac > 0 ? c : bc > 0 ? b : ab < 0 ? a : ac < 0 ? c : bc < 0 ? b : a;
-/*      */   }
-/*      */ 
-/*      */   private static void selectionSort(int[][] a, long from, long to, IntComparator comp)
-/*      */   {
-/*  579 */     for (long i = from; i < to - 1L; i += 1L) {
-/*  580 */       long m = i;
-/*  581 */       for (long j = i + 1L; j < to; j += 1L) if (comp.compare(get(a, j), get(a, m)) < 0) m = j;
-/*  582 */       if (m != i) swap(a, i, m);
-/*      */     }
-/*      */   }
-/*      */ 
-/*      */   public static void quickSort(int[][] x, long from, long to, IntComparator comp)
-/*      */   {
-/*  598 */     long len = to - from;
-/*      */ 
-/*  600 */     if (len < 7L) {
-/*  601 */       for (long i = from; i < to; i += 1L)
-/*  602 */         for (long j = i; (j > from) && (comp.compare(get(x, j - 1L), get(x, j)) > 0); j -= 1L) swap(x, j, j - 1L);
-/*  603 */       return;
-/*      */     }
-/*      */ 
-/*  606 */     long m = from + len / 2L;
-/*  607 */     if (len > 7L) {
-/*  608 */       long l = from;
-/*  609 */       long n = to - 1L;
-/*  610 */       if (len > 40L) {
-/*  611 */         long s = len / 8L;
-/*  612 */         l = med3(x, l, l + s, l + 2L * s, comp);
-/*  613 */         m = med3(x, m - s, m, m + s, comp);
-/*  614 */         n = med3(x, n - 2L * s, n - s, n, comp);
-/*      */       }
-/*  616 */       m = med3(x, l, m, n, comp);
-/*      */     }
-/*  618 */     int v = get(x, m);
-/*      */ 
-/*  620 */     long a = from; long b = a; long c = to - 1L; long d = c;
-/*      */     while (true)
-/*      */     {
-/*      */       int comparison;
-/*  623 */       if ((b <= c) && ((comparison = comp.compare(get(x, b), v)) <= 0)) {
-/*  624 */         if (comparison == 0) swap(x, a++, b);
-/*  625 */         b += 1L;
-/*      */       }
-/*      */       else
-/*      */       {
-/*      */         int comparison;
-/*  627 */         while ((c >= b) && ((comparison = comp.compare(get(x, c), v)) >= 0)) {
-/*  628 */           if (comparison == 0) swap(x, c, d--);
-/*  629 */           c -= 1L;
-/*      */         }
-/*  631 */         if (b > c) break;
-/*  632 */         swap(x, b++, c--);
-/*      */       }
-/*      */     }
-/*  635 */     long n = to;
-/*  636 */     long s = Math.min(a - from, b - a);
-/*  637 */     vecSwap(x, from, b - s, s);
-/*  638 */     s = Math.min(d - c, n - d - 1L);
-/*  639 */     vecSwap(x, b, n - s, s);
-/*      */ 
-/*  641 */     if ((s = b - a) > 1L) quickSort(x, from, from + s, comp);
-/*  642 */     if ((s = d - c) > 1L) quickSort(x, n - s, n, comp); 
-/*      */   }
-/*      */ 
-/*      */   private static long med3(int[][] x, long a, long b, long c)
-/*      */   {
-/*  646 */     int ab = get(x, a) == get(x, b) ? 0 : get(x, a) < get(x, b) ? -1 : 1;
-/*  647 */     int ac = get(x, a) == get(x, c) ? 0 : get(x, a) < get(x, c) ? -1 : 1;
-/*  648 */     int bc = get(x, b) == get(x, c) ? 0 : get(x, b) < get(x, c) ? -1 : 1;
-/*  649 */     return ac > 0 ? c : bc > 0 ? b : ab < 0 ? a : ac < 0 ? c : bc < 0 ? b : a;
-/*      */   }
-/*      */ 
-/*      */   private static void selectionSort(int[][] a, long from, long to)
-/*      */   {
-/*  654 */     for (long i = from; i < to - 1L; i += 1L) {
-/*  655 */       long m = i;
-/*  656 */       for (long j = i + 1L; j < to; j += 1L) if (get(a, j) < get(a, m)) m = j;
-/*  657 */       if (m != i) swap(a, i, m);
-/*      */     }
-/*      */   }
-/*      */ 
-/*      */   public static void quickSort(int[][] x, IntComparator comp)
-/*      */   {
-/*  672 */     quickSort(x, 0L, length(x), comp);
-/*      */   }
-/*      */ 
-/*      */   public static void quickSort(int[][] x, long from, long to)
-/*      */   {
-/*  686 */     long len = to - from;
-/*      */ 
-/*  688 */     if (len < 7L) {
-/*  689 */       for (long i = from; i < to; i += 1L)
-/*  690 */         for (long j = i; j > from; j -= 1L) { if ((get(x, j - 1L) == get(x, j) ? 0 : get(x, j - 1L) < get(x, j) ? -1 : 1) <= 0) break; swap(x, j, j - 1L); }
-/*  691 */       return;
-/*      */     }
-/*      */ 
-/*  694 */     long m = from + len / 2L;
-/*  695 */     if (len > 7L) {
-/*  696 */       long l = from;
-/*  697 */       long n = to - 1L;
-/*  698 */       if (len > 40L) {
-/*  699 */         long s = len / 8L;
-/*  700 */         l = med3(x, l, l + s, l + 2L * s);
-/*  701 */         m = med3(x, m - s, m, m + s);
-/*  702 */         n = med3(x, n - 2L * s, n - s, n);
-/*      */       }
-/*  704 */       m = med3(x, l, m, n);
-/*      */     }
-/*  706 */     int v = get(x, m);
-/*      */ 
-/*  708 */     long a = from; long b = a; long c = to - 1L; long d = c;
-/*      */     while (true)
-/*      */     {
-/*  711 */       if (b <= c)
-/*      */       {
-/*      */         int comparison;
-/*  711 */         if ((comparison = get(x, b) == v ? 0 : get(x, b) < v ? -1 : 1) <= 0) {
-/*  712 */           if (comparison == 0) swap(x, a++, b);
-/*  713 */           b += 1L;
-/*      */         }
-/*      */       } else { while (c >= b)
-/*      */         {
-/*      */           int comparison;
-/*  715 */           if ((comparison = get(x, c) == v ? 0 : get(x, c) < v ? -1 : 1) < 0) break;
-/*  716 */           if (comparison == 0) swap(x, c, d--);
-/*  717 */           c -= 1L;
-/*      */         }
-/*  719 */         if (b > c) break;
-/*  720 */         swap(x, b++, c--);
-/*      */       }
-/*      */     }
-/*  723 */     long n = to;
-/*  724 */     long s = Math.min(a - from, b - a);
-/*  725 */     vecSwap(x, from, b - s, s);
-/*  726 */     s = Math.min(d - c, n - d - 1L);
-/*  727 */     vecSwap(x, b, n - s, s);
-/*      */ 
-/*  729 */     if ((s = b - a) > 1L) quickSort(x, from, from + s);
-/*  730 */     if ((s = d - c) > 1L) quickSort(x, n - s, n);
-/*      */   }
-/*      */ 
-/*      */   public static void quickSort(int[][] x)
-/*      */   {
-/*  742 */     quickSort(x, 0L, length(x));
-/*      */   }
-/*      */ 
-/*      */   public static long binarySearch(int[][] a, long from, long to, int key)
-/*      */   {
-/*  767 */     to -= 1L;
-/*  768 */     while (from <= to) {
-/*  769 */       long mid = from + to >>> 1;
-/*  770 */       int midVal = get(a, mid);
-/*  771 */       if (midVal < key) from = mid + 1L;
-/*  772 */       else if (midVal > key) to = mid - 1L; else
-/*  773 */         return mid;
-/*      */     }
-/*  775 */     return -(from + 1L);
-/*      */   }
-/*      */ 
-/*      */   public static long binarySearch(int[][] a, int key)
-/*      */   {
-/*  796 */     return binarySearch(a, 0L, length(a), key);
-/*      */   }
-/*      */ 
-/*      */   public static long binarySearch(int[][] a, long from, long to, int key, IntComparator c)
-/*      */   {
-/*  821 */     to -= 1L;
-/*  822 */     while (from <= to) {
-/*  823 */       long mid = from + to >>> 1;
-/*  824 */       int midVal = get(a, mid);
-/*  825 */       int cmp = c.compare(midVal, key);
-/*  826 */       if (cmp < 0) from = mid + 1L;
-/*  827 */       else if (cmp > 0) to = mid - 1L; else
-/*  828 */         return mid;
-/*      */     }
-/*  830 */     return -(from + 1L);
-/*      */   }
-/*      */ 
-/*      */   public static long binarySearch(int[][] a, int key, IntComparator c)
-/*      */   {
-/*  852 */     return binarySearch(a, 0L, length(a), key, c);
-/*      */   }
-/*      */ 
-/*      */   public static void radixSort(int[][] a)
-/*      */   {
-/*  878 */     radixSort(a, 0L, length(a));
-/*      */   }
-/*      */ 
-/*      */   public static void radixSort(int[][] a, long from, long to)
-/*      */   {
-/*  899 */     int maxLevel = 3;
-/*  900 */     int stackSize = 766;
-/*  901 */     long[] offsetStack = new long[766];
-/*  902 */     int offsetPos = 0;
-/*  903 */     long[] lengthStack = new long[766];
-/*  904 */     int lengthPos = 0;
-/*  905 */     int[] levelStack = new int[766];
-/*  906 */     int levelPos = 0;
-/*  907 */     offsetStack[(offsetPos++)] = from;
-/*  908 */     lengthStack[(lengthPos++)] = (to - from);
-/*  909 */     levelStack[(levelPos++)] = 0;
-/*  910 */     long[] count = new long[256];
-/*  911 */     long[] pos = new long[256];
-/*  912 */     byte[][] digit = ByteBigArrays.newBigArray(to - from);
-/*  913 */     while (offsetPos > 0) {
-/*  914 */       long first = offsetStack[(--offsetPos)];
-/*  915 */       long length = lengthStack[(--lengthPos)];
-/*  916 */       int level = levelStack[(--levelPos)];
-/*  917 */       int signMask = level % 4 == 0 ? 128 : 0;
-/*  918 */       if (length < 40L) {
-/*  919 */         selectionSort(a, first, first + length);
-/*      */       }
-/*      */       else {
-/*  922 */         int shift = (3 - level % 4) * 8;
-/*      */ 
-/*  924 */         for (long i = length; i-- != 0L; ByteBigArrays.set(digit, i, (byte)(get(a, first + i) >>> shift & 0xFF ^ signMask)));
-/*  925 */         for (long i = length; i-- != 0L; count[(ByteBigArrays.get(digit, i) & 0xFF)] += 1L);
-/*  927 */         int lastUsed = -1;
-/*  928 */         long p = 0L;
-/*  929 */         for (int i = 0; i < 256; i++) {
-/*  930 */           if (count[i] != 0L) {
-/*  931 */             lastUsed = i;
-/*  932 */             if ((level < 3) && (count[i] > 1L))
-/*      */             {
-/*  934 */               offsetStack[(offsetPos++)] = (p + first);
-/*  935 */               lengthStack[(lengthPos++)] = count[i];
-/*  936 */               levelStack[(levelPos++)] = (level + 1);
-/*      */             }
-/*      */           }
-/*      */           long tmp354_353 = (p + count[i]); p = tmp354_353; pos[i] = tmp354_353;
-/*      */         }
-/*      */ 
-/*  942 */         long end = length - count[lastUsed];
-/*  943 */         count[lastUsed] = 0L;
-/*      */ 
-/*  945 */         int c = -1;
-/*  946 */         for (long i = 0L; i < end; count[c] = 0L) {
-/*  947 */           int t = get(a, i + first);
-/*  948 */           c = ByteBigArrays.get(digit, i) & 0xFF;
-/*      */           while (true)
-/*      */           {
-/*      */             long d;
-/*  949 */             if ((d = pos[c] -= 1L) <= i) break;
-/*  950 */             int z = t;
-/*  951 */             int zz = c;
-/*  952 */             t = get(a, d + first);
-/*  953 */             c = ByteBigArrays.get(digit, d) & 0xFF;
-/*  954 */             set(a, d + first, z);
-/*  955 */             ByteBigArrays.set(digit, d, (byte)zz);
-/*      */           }
-/*  957 */           set(a, i + first, t);
-/*      */ 
-/*  946 */           i += count[c];
-/*      */         }
-/*      */       }
-/*      */     }
-/*      */   }
-/*      */ 
-/*      */   private static void selectionSort(int[][] a, int[][] b, long from, long to)
-/*      */   {
-/*  962 */     for (long i = from; i < to - 1L; i += 1L) {
-/*  963 */       long m = i;
-/*  964 */       for (long j = i + 1L; j < to; j += 1L)
-/*  965 */         if ((get(a, j) < get(a, m)) || ((get(a, j) == get(a, m)) && (get(b, j) < get(b, m)))) m = j;
-/*  966 */       if (m != i) {
-/*  967 */         int t = get(a, i);
-/*  968 */         set(a, i, get(a, m));
-/*  969 */         set(a, m, t);
-/*  970 */         t = get(b, i);
-/*  971 */         set(b, i, get(b, m));
-/*  972 */         set(b, m, t);
-/*      */       }
-/*      */     }
-/*      */   }
-/*      */ 
-/*      */   public static void radixSort(int[][] a, int[][] b)
-/*      */   {
-/*  996 */     radixSort(a, b, 0L, length(a));
-/*      */   }
-/*      */ 
-/*      */   public static void radixSort(int[][] a, int[][] b, long from, long to)
-/*      */   {
-/* 1021 */     int layers = 2;
-/* 1022 */     if (length(a) != length(b)) throw new IllegalArgumentException("Array size mismatch.");
-/* 1023 */     int maxLevel = 7;
-/* 1024 */     int stackSize = 1786;
-/* 1025 */     long[] offsetStack = new long[1786];
-/* 1026 */     int offsetPos = 0;
-/* 1027 */     long[] lengthStack = new long[1786];
-/* 1028 */     int lengthPos = 0;
-/* 1029 */     int[] levelStack = new int[1786];
-/* 1030 */     int levelPos = 0;
-/* 1031 */     offsetStack[(offsetPos++)] = from;
-/* 1032 */     lengthStack[(lengthPos++)] = (to - from);
-/* 1033 */     levelStack[(levelPos++)] = 0;
-/* 1034 */     long[] count = new long[256];
-/* 1035 */     long[] pos = new long[256];
-/* 1036 */     byte[][] digit = ByteBigArrays.newBigArray(to - from);
-/* 1037 */     while (offsetPos > 0) {
-/* 1038 */       long first = offsetStack[(--offsetPos)];
-/* 1039 */       long length = lengthStack[(--lengthPos)];
-/* 1040 */       int level = levelStack[(--levelPos)];
-/* 1041 */       int signMask = level % 4 == 0 ? 128 : 0;
-/* 1042 */       if (length < 40L) {
-/* 1043 */         selectionSort(a, b, first, first + length);
-/*      */       }
-/*      */       else {
-/* 1046 */         int[][] k = level < 4 ? a : b;
-/* 1047 */         int shift = (3 - level % 4) * 8;
-/*      */ 
-/* 1049 */         for (long i = length; i-- != 0L; ByteBigArrays.set(digit, i, (byte)(get(k, first + i) >>> shift & 0xFF ^ signMask)));
-/* 1050 */         for (long i = length; i-- != 0L; count[(ByteBigArrays.get(digit, i) & 0xFF)] += 1L);
-/* 1052 */         int lastUsed = -1;
-/* 1053 */         long p = 0L;
-/* 1054 */         for (int i = 0; i < 256; i++) {
-/* 1055 */           if (count[i] != 0L) {
-/* 1056 */             lastUsed = i;
-/* 1057 */             if ((level < 7) && (count[i] > 1L)) {
-/* 1058 */               offsetStack[(offsetPos++)] = (p + first);
-/* 1059 */               lengthStack[(lengthPos++)] = count[i];
-/* 1060 */               levelStack[(levelPos++)] = (level + 1);
-/*      */             }
-/*      */           }
-/*      */           long tmp398_397 = (p + count[i]); p = tmp398_397; pos[i] = tmp398_397;
-/*      */         }
-/*      */ 
-/* 1066 */         long end = length - count[lastUsed];
-/* 1067 */         count[lastUsed] = 0L;
-/*      */ 
-/* 1069 */         int c = -1;
-/* 1070 */         for (long i = 0L; i < end; count[c] = 0L) {
-/* 1071 */           int t = get(a, i + first);
-/* 1072 */           int u = get(b, i + first);
-/* 1073 */           c = ByteBigArrays.get(digit, i) & 0xFF;
-/*      */           while (true)
-/*      */           {
-/*      */             long d;
-/* 1074 */             if ((d = pos[c] -= 1L) <= i) break;
-/* 1075 */             int z = t;
-/* 1076 */             int zz = c;
-/* 1077 */             t = get(a, d + first);
-/* 1078 */             set(a, d + first, z);
-/* 1079 */             z = u;
-/* 1080 */             u = get(b, d + first);
-/* 1081 */             set(b, d + first, z);
-/* 1082 */             c = ByteBigArrays.get(digit, d) & 0xFF;
-/* 1083 */             ByteBigArrays.set(digit, d, (byte)zz);
-/*      */           }
-/* 1085 */           set(a, i + first, t);
-/* 1086 */           set(b, i + first, u);
-/*      */ 
-/* 1070 */           i += count[c];
-/*      */         }
-/*      */       }
-/*      */     }
-/*      */   }
-/*      */ 
-/*      */   public static int[][] shuffle(int[][] a, long from, long to, Random random)
-/*      */   {
-/* 1099 */     for (long i = to - from; i-- != 0L; ) {
-/* 1100 */       long p = (random.nextLong() & 0xFFFFFFFF) % (i + 1L);
-/* 1101 */       int t = get(a, from + i);
-/* 1102 */       set(a, from + i, get(a, from + p));
-/* 1103 */       set(a, from + p, t);
-/*      */     }
-/* 1105 */     return a;
-/*      */   }
-/*      */ 
-/*      */   public static int[][] shuffle(int[][] a, Random random)
-/*      */   {
-/* 1114 */     for (long i = length(a); i-- != 0L; ) {
-/* 1115 */       long p = (random.nextLong() & 0xFFFFFFFF) % (i + 1L);
-/* 1116 */       int t = get(a, i);
-/* 1117 */       set(a, i, get(a, p));
-/* 1118 */       set(a, p, t);
-/*      */     }
-/* 1120 */     return a;
-/*      */   }
-/*      */ 
-/*      */   private static final class BigArrayHashStrategy
-/*      */     implements Hash.Strategy<int[][]>, Serializable
-/*      */   {
-/*      */     public static final long serialVersionUID = -7046029254386353129L;
-/*      */ 
-/*      */     public int hashCode(int[][] o)
-/*      */     {
-/*  551 */       return Arrays.deepHashCode(o);
-/*      */     }
-/*      */     public boolean equals(int[][] a, int[][] b) {
-/*  554 */       return IntBigArrays.equals(a, b);
-/*      */     }
-/*      */   }
-/*      */ }
+/*    1:     */package it.unimi.dsi.fastutil.ints;
+/*    2:     */
+/*    3:     */import it.unimi.dsi.fastutil.BigArrays;
+/*    4:     */import it.unimi.dsi.fastutil.Hash.Strategy;
+/*    5:     */import it.unimi.dsi.fastutil.bytes.ByteBigArrays;
+/*    6:     */import java.io.Serializable;
+/*    7:     */import java.util.Arrays;
+/*    8:     */import java.util.Random;
+/*    9:     */
+/*   81:     */public class IntBigArrays
+/*   82:     */{
+/*   83:     */  public static final long ONEOVERPHI = 106039L;
+/*   84:  84 */  public static final int[][] EMPTY_BIG_ARRAY = new int[0][];
+/*   85:     */  
+/*   90:     */  public static int get(int[][] array, long index)
+/*   91:     */  {
+/*   92:  92 */    return array[BigArrays.segment(index)][BigArrays.displacement(index)];
+/*   93:     */  }
+/*   94:     */  
+/*   98:     */  public static void set(int[][] array, long index, int value)
+/*   99:     */  {
+/*  100: 100 */    array[BigArrays.segment(index)][BigArrays.displacement(index)] = value;
+/*  101:     */  }
+/*  102:     */  
+/*  107:     */  public static void swap(int[][] array, long first, long second)
+/*  108:     */  {
+/*  109: 109 */    int t = array[BigArrays.segment(first)][BigArrays.displacement(first)];
+/*  110: 110 */    array[BigArrays.segment(first)][BigArrays.displacement(first)] = array[BigArrays.segment(second)][BigArrays.displacement(second)];
+/*  111: 111 */    array[BigArrays.segment(second)][BigArrays.displacement(second)] = t;
+/*  112:     */  }
+/*  113:     */  
+/*  118:     */  public static void add(int[][] array, long index, int incr)
+/*  119:     */  {
+/*  120: 120 */    array[BigArrays.segment(index)][BigArrays.displacement(index)] += incr;
+/*  121:     */  }
+/*  122:     */  
+/*  127:     */  public static void mul(int[][] array, long index, int factor)
+/*  128:     */  {
+/*  129: 129 */    array[BigArrays.segment(index)][BigArrays.displacement(index)] *= factor;
+/*  130:     */  }
+/*  131:     */  
+/*  135:     */  public static void incr(int[][] array, long index)
+/*  136:     */  {
+/*  137: 137 */    array[BigArrays.segment(index)][BigArrays.displacement(index)] += 1;
+/*  138:     */  }
+/*  139:     */  
+/*  143:     */  public static void decr(int[][] array, long index)
+/*  144:     */  {
+/*  145: 145 */    array[BigArrays.segment(index)][BigArrays.displacement(index)] -= 1;
+/*  146:     */  }
+/*  147:     */  
+/*  151:     */  public static long length(int[][] array)
+/*  152:     */  {
+/*  153: 153 */    int length = array.length;
+/*  154: 154 */    return length == 0 ? 0L : BigArrays.start(length - 1) + array[(length - 1)].length;
+/*  155:     */  }
+/*  156:     */  
+/*  164:     */  public static void copy(int[][] srcArray, long srcPos, int[][] destArray, long destPos, long length)
+/*  165:     */  {
+/*  166: 166 */    if (destPos <= srcPos) {
+/*  167: 167 */      int srcSegment = BigArrays.segment(srcPos);
+/*  168: 168 */      int destSegment = BigArrays.segment(destPos);
+/*  169: 169 */      int srcDispl = BigArrays.displacement(srcPos);
+/*  170: 170 */      int destDispl = BigArrays.displacement(destPos);
+/*  171:     */      
+/*  172: 172 */      while (length > 0L) {
+/*  173: 173 */        int l = (int)Math.min(length, Math.min(srcArray[srcSegment].length - srcDispl, destArray[destSegment].length - destDispl));
+/*  174: 174 */        System.arraycopy(srcArray[srcSegment], srcDispl, destArray[destSegment], destDispl, l);
+/*  175: 175 */        if (srcDispl += l == 134217728) {
+/*  176: 176 */          srcDispl = 0;
+/*  177: 177 */          srcSegment++;
+/*  178:     */        }
+/*  179: 179 */        if (destDispl += l == 134217728) {
+/*  180: 180 */          destDispl = 0;
+/*  181: 181 */          destSegment++;
+/*  182:     */        }
+/*  183: 183 */        length -= l;
+/*  184:     */      }
+/*  185:     */    }
+/*  186:     */    else {
+/*  187: 187 */      int srcSegment = BigArrays.segment(srcPos + length);
+/*  188: 188 */      int destSegment = BigArrays.segment(destPos + length);
+/*  189: 189 */      int srcDispl = BigArrays.displacement(srcPos + length);
+/*  190: 190 */      int destDispl = BigArrays.displacement(destPos + length);
+/*  191:     */      
+/*  192: 192 */      while (length > 0L) {
+/*  193: 193 */        if (srcDispl == 0) {
+/*  194: 194 */          srcDispl = 134217728;
+/*  195: 195 */          srcSegment--;
+/*  196:     */        }
+/*  197: 197 */        if (destDispl == 0) {
+/*  198: 198 */          destDispl = 134217728;
+/*  199: 199 */          destSegment--;
+/*  200:     */        }
+/*  201: 201 */        int l = (int)Math.min(length, Math.min(srcDispl, destDispl));
+/*  202: 202 */        System.arraycopy(srcArray[srcSegment], srcDispl - l, destArray[destSegment], destDispl - l, l);
+/*  203: 203 */        srcDispl -= l;
+/*  204: 204 */        destDispl -= l;
+/*  205: 205 */        length -= l;
+/*  206:     */      }
+/*  207:     */    }
+/*  208:     */  }
+/*  209:     */  
+/*  216:     */  public static void copyFromBig(int[][] srcArray, long srcPos, int[] destArray, int destPos, int length)
+/*  217:     */  {
+/*  218: 218 */    int srcSegment = BigArrays.segment(srcPos);
+/*  219: 219 */    int srcDispl = BigArrays.displacement(srcPos);
+/*  220:     */    
+/*  221: 221 */    while (length > 0) {
+/*  222: 222 */      int l = Math.min(srcArray[srcSegment].length - srcDispl, length);
+/*  223: 223 */      System.arraycopy(srcArray[srcSegment], srcDispl, destArray, destPos, l);
+/*  224: 224 */      if (srcDispl += l == 134217728) {
+/*  225: 225 */        srcDispl = 0;
+/*  226: 226 */        srcSegment++;
+/*  227:     */      }
+/*  228: 228 */      destPos += l;
+/*  229: 229 */      length -= l;
+/*  230:     */    }
+/*  231:     */  }
+/*  232:     */  
+/*  239:     */  public static void copyToBig(int[] srcArray, int srcPos, int[][] destArray, long destPos, long length)
+/*  240:     */  {
+/*  241: 241 */    int destSegment = BigArrays.segment(destPos);
+/*  242: 242 */    int destDispl = BigArrays.displacement(destPos);
+/*  243:     */    
+/*  244: 244 */    while (length > 0L) {
+/*  245: 245 */      int l = (int)Math.min(destArray[destSegment].length - destDispl, length);
+/*  246: 246 */      System.arraycopy(srcArray, srcPos, destArray[destSegment], destDispl, l);
+/*  247: 247 */      if (destDispl += l == 134217728) {
+/*  248: 248 */        destDispl = 0;
+/*  249: 249 */        destSegment++;
+/*  250:     */      }
+/*  251: 251 */      srcPos += l;
+/*  252: 252 */      length -= l;
+/*  253:     */    }
+/*  254:     */  }
+/*  255:     */  
+/*  259:     */  public static int[][] newBigArray(long length)
+/*  260:     */  {
+/*  261: 261 */    if (length == 0L) return EMPTY_BIG_ARRAY;
+/*  262: 262 */    int baseLength = (int)((length + 134217727L) / 134217728L);
+/*  263: 263 */    int[][] base = new int[baseLength][];
+/*  264: 264 */    int residual = (int)(length & 0x7FFFFFF);
+/*  265: 265 */    if (residual != 0) {
+/*  266: 266 */      for (int i = 0; i < baseLength - 1; i++) base[i] = new int[134217728];
+/*  267: 267 */      base[(baseLength - 1)] = new int[residual];
+/*  268:     */    } else {
+/*  269: 269 */      for (int i = 0; i < baseLength; i++) base[i] = new int[134217728]; }
+/*  270: 270 */    return base;
+/*  271:     */  }
+/*  272:     */  
+/*  278:     */  public static int[][] wrap(int[] array)
+/*  279:     */  {
+/*  280: 280 */    if (array.length == 0) return EMPTY_BIG_ARRAY;
+/*  281: 281 */    if (array.length <= 134217728) return new int[][] { array };
+/*  282: 282 */    int[][] bigArray = newBigArray(array.length);
+/*  283: 283 */    for (int i = 0; i < bigArray.length; i++) System.arraycopy(array, (int)BigArrays.start(i), bigArray[i], 0, bigArray[i].length);
+/*  284: 284 */    return bigArray;
+/*  285:     */  }
+/*  286:     */  
+/*  299:     */  public static int[][] ensureCapacity(int[][] array, long length)
+/*  300:     */  {
+/*  301: 301 */    return ensureCapacity(array, length, length(array));
+/*  302:     */  }
+/*  303:     */  
+/*  314:     */  public static int[][] ensureCapacity(int[][] array, long length, long preserve)
+/*  315:     */  {
+/*  316: 316 */    long oldLength = length(array);
+/*  317: 317 */    if (length > oldLength) {
+/*  318: 318 */      int valid = array.length - ((array.length == 0) || ((array.length > 0) && (array[(array.length - 1)].length == 134217728)) ? 0 : 1);
+/*  319: 319 */      int baseLength = (int)((length + 134217727L) / 134217728L);
+/*  320: 320 */      int[][] base = (int[][])Arrays.copyOf(array, baseLength);
+/*  321: 321 */      int residual = (int)(length & 0x7FFFFFF);
+/*  322: 322 */      if (residual != 0) {
+/*  323: 323 */        for (int i = valid; i < baseLength - 1; i++) base[i] = new int[134217728];
+/*  324: 324 */        base[(baseLength - 1)] = new int[residual];
+/*  325:     */      } else {
+/*  326: 326 */        for (int i = valid; i < baseLength; i++) base[i] = new int[134217728]; }
+/*  327: 327 */      if (preserve - valid * 134217728L > 0L) copy(array, valid * 134217728L, base, valid * 134217728L, preserve - valid * 134217728L);
+/*  328: 328 */      return base;
+/*  329:     */    }
+/*  330: 330 */    return array;
+/*  331:     */  }
+/*  332:     */  
+/*  349:     */  public static int[][] grow(int[][] array, long length)
+/*  350:     */  {
+/*  351: 351 */    long oldLength = length(array);
+/*  352: 352 */    return length > oldLength ? grow(array, length, oldLength) : array;
+/*  353:     */  }
+/*  354:     */  
+/*  372:     */  public static int[][] grow(int[][] array, long length, long preserve)
+/*  373:     */  {
+/*  374: 374 */    long oldLength = length(array);
+/*  375: 375 */    return length > oldLength ? ensureCapacity(array, Math.max(106039L * oldLength >>> 16, length), preserve) : array;
+/*  376:     */  }
+/*  377:     */  
+/*  389:     */  public static int[][] trim(int[][] array, long length)
+/*  390:     */  {
+/*  391: 391 */    long oldLength = length(array);
+/*  392: 392 */    if (length >= oldLength) return array;
+/*  393: 393 */    int baseLength = (int)((length + 134217727L) / 134217728L);
+/*  394: 394 */    int[][] base = (int[][])Arrays.copyOf(array, baseLength);
+/*  395: 395 */    int residual = (int)(length & 0x7FFFFFF);
+/*  396: 396 */    if (residual != 0) base[(baseLength - 1)] = IntArrays.trim(base[(baseLength - 1)], residual);
+/*  397: 397 */    return base;
+/*  398:     */  }
+/*  399:     */  
+/*  414:     */  public static int[][] setLength(int[][] array, long length)
+/*  415:     */  {
+/*  416: 416 */    long oldLength = length(array);
+/*  417: 417 */    if (length == oldLength) return array;
+/*  418: 418 */    if (length < oldLength) return trim(array, length);
+/*  419: 419 */    return ensureCapacity(array, length);
+/*  420:     */  }
+/*  421:     */  
+/*  427:     */  public static int[][] copy(int[][] array, long offset, long length)
+/*  428:     */  {
+/*  429: 429 */    ensureOffsetLength(array, offset, length);
+/*  430: 430 */    int[][] a = newBigArray(length);
+/*  431:     */    
+/*  432: 432 */    copy(array, offset, a, 0L, length);
+/*  433: 433 */    return a;
+/*  434:     */  }
+/*  435:     */  
+/*  439:     */  public static int[][] copy(int[][] array)
+/*  440:     */  {
+/*  441: 441 */    int[][] base = (int[][])array.clone();
+/*  442: 442 */    for (int i = base.length; i-- != 0; base[i] = ((int[])array[i].clone())) {}
+/*  443: 443 */    return base;
+/*  444:     */  }
+/*  445:     */  
+/*  452:     */  public static void fill(int[][] array, int value)
+/*  453:     */  {
+/*  454: 454 */    for (int i = array.length; i-- != 0; IntArrays.fill(array[i], value)) {}
+/*  455:     */  }
+/*  456:     */  
+/*  466:     */  public static void fill(int[][] array, long from, long to, int value)
+/*  467:     */  {
+/*  468: 468 */    long length = length(array);
+/*  469: 469 */    BigArrays.ensureFromTo(length, from, to);
+/*  470: 470 */    int fromSegment = BigArrays.segment(from);
+/*  471: 471 */    int toSegment = BigArrays.segment(to);
+/*  472: 472 */    int fromDispl = BigArrays.displacement(from);
+/*  473: 473 */    int toDispl = BigArrays.displacement(to);
+/*  474: 474 */    if (fromSegment == toSegment) {
+/*  475: 475 */      IntArrays.fill(array[fromSegment], fromDispl, toDispl, value);
+/*  476: 476 */      return;
+/*  477:     */    }
+/*  478: 478 */    if (toDispl != 0) IntArrays.fill(array[toSegment], 0, toDispl, value);
+/*  479: 479 */    for (;;) { toSegment--; if (toSegment <= fromSegment) break; IntArrays.fill(array[toSegment], value); }
+/*  480: 480 */    IntArrays.fill(array[fromSegment], fromDispl, 134217728, value);
+/*  481:     */  }
+/*  482:     */  
+/*  490:     */  public static boolean equals(int[][] a1, int[][] a2)
+/*  491:     */  {
+/*  492: 492 */    if (length(a1) != length(a2)) return false;
+/*  493: 493 */    int[] t; int[] u; int j; do { int i = a1.length;
+/*  494:     */      
+/*  499: 499 */      while (j-- == 0)
+/*  500:     */      {
+/*  501: 495 */        if (i-- == 0) break;
+/*  502: 496 */        t = a1[i];
+/*  503: 497 */        u = a2[i];
+/*  504: 498 */        j = t.length;
+/*  505: 499 */      } } while (t[j] == u[j]); return false;
+/*  506:     */    
+/*  507: 501 */    return true;
+/*  508:     */  }
+/*  509:     */  
+/*  514:     */  public static String toString(int[][] a)
+/*  515:     */  {
+/*  516: 510 */    if (a == null) return "null";
+/*  517: 511 */    long last = length(a) - 1L;
+/*  518: 512 */    if (last == -1L) return "[]";
+/*  519: 513 */    StringBuilder b = new StringBuilder();
+/*  520: 514 */    b.append('[');
+/*  521: 515 */    for (long i = 0L;; i += 1L) {
+/*  522: 516 */      b.append(String.valueOf(get(a, i)));
+/*  523: 517 */      if (i == last) return b.append(']').toString();
+/*  524: 518 */      b.append(", ");
+/*  525:     */    }
+/*  526:     */  }
+/*  527:     */  
+/*  536:     */  public static void ensureFromTo(int[][] a, long from, long to)
+/*  537:     */  {
+/*  538: 532 */    BigArrays.ensureFromTo(length(a), from, to);
+/*  539:     */  }
+/*  540:     */  
+/*  549:     */  public static void ensureOffsetLength(int[][] a, long offset, long length)
+/*  550:     */  {
+/*  551: 545 */    BigArrays.ensureOffsetLength(length(a), offset, length);
+/*  552:     */  }
+/*  553:     */  
+/*  554:     */  private static final class BigArrayHashStrategy implements Hash.Strategy<int[][]>, Serializable {
+/*  555:     */    public static final long serialVersionUID = -7046029254386353129L;
+/*  556:     */    
+/*  557: 551 */    public int hashCode(int[][] o) { return Arrays.deepHashCode(o); }
+/*  558:     */    
+/*  559:     */    public boolean equals(int[][] a, int[][] b) {
+/*  560: 554 */      return IntBigArrays.equals(a, b);
+/*  561:     */    }
+/*  562:     */  }
+/*  563:     */  
+/*  570: 564 */  public static final Hash.Strategy HASH_STRATEGY = new BigArrayHashStrategy(null);
+/*  571:     */  private static final int SMALL = 7;
+/*  572:     */  private static final int MEDIUM = 40;
+/*  573:     */  
+/*  574: 568 */  private static void vecSwap(int[][] x, long a, long b, long n) { for (int i = 0; i < n; b += 1L) { swap(x, a, b);i++;a += 1L;
+/*  575:     */    } }
+/*  576:     */  
+/*  577: 571 */  private static long med3(int[][] x, long a, long b, long c, IntComparator comp) { int ab = comp.compare(get(x, a), get(x, b));
+/*  578: 572 */    int ac = comp.compare(get(x, a), get(x, c));
+/*  579: 573 */    int bc = comp.compare(get(x, b), get(x, c));
+/*  580: 574 */    return ac > 0 ? c : bc > 0 ? b : ab < 0 ? a : ac < 0 ? c : bc < 0 ? b : a;
+/*  581:     */  }
+/*  582:     */  
+/*  583:     */  private static void selectionSort(int[][] a, long from, long to, IntComparator comp)
+/*  584:     */  {
+/*  585: 579 */    for (long i = from; i < to - 1L; i += 1L) {
+/*  586: 580 */      long m = i;
+/*  587: 581 */      for (long j = i + 1L; j < to; j += 1L) if (comp.compare(get(a, j), get(a, m)) < 0) m = j;
+/*  588: 582 */      if (m != i) { swap(a, i, m);
+/*  589:     */      }
+/*  590:     */    }
+/*  591:     */  }
+/*  592:     */  
+/*  602:     */  public static void quickSort(int[][] x, long from, long to, IntComparator comp)
+/*  603:     */  {
+/*  604: 598 */    long len = to - from;
+/*  605:     */    
+/*  606: 600 */    if (len < 7L) {
+/*  607: 601 */      for (long i = from; i < to; i += 1L)
+/*  608: 602 */        for (long j = i; (j > from) && (comp.compare(get(x, j - 1L), get(x, j)) > 0); j -= 1L) swap(x, j, j - 1L);
+/*  609: 603 */      return;
+/*  610:     */    }
+/*  611:     */    
+/*  612: 606 */    long m = from + len / 2L;
+/*  613: 607 */    if (len > 7L) {
+/*  614: 608 */      long l = from;
+/*  615: 609 */      long n = to - 1L;
+/*  616: 610 */      if (len > 40L) {
+/*  617: 611 */        long s = len / 8L;
+/*  618: 612 */        l = med3(x, l, l + s, l + 2L * s, comp);
+/*  619: 613 */        m = med3(x, m - s, m, m + s, comp);
+/*  620: 614 */        n = med3(x, n - 2L * s, n - s, n, comp);
+/*  621:     */      }
+/*  622: 616 */      m = med3(x, l, m, n, comp);
+/*  623:     */    }
+/*  624: 618 */    int v = get(x, m);
+/*  625:     */    
+/*  626: 620 */    long a = from;long b = a;long c = to - 1L;long d = c;
+/*  627:     */    for (;;) {
+/*  628:     */      int comparison;
+/*  629: 623 */      if ((b <= c) && ((comparison = comp.compare(get(x, b), v)) <= 0)) {
+/*  630: 624 */        if (comparison == 0) swap(x, a++, b);
+/*  631: 625 */        b += 1L;
+/*  632:     */      } else { int comparison;
+/*  633: 627 */        while ((c >= b) && ((comparison = comp.compare(get(x, c), v)) >= 0)) {
+/*  634: 628 */          if (comparison == 0) swap(x, c, d--);
+/*  635: 629 */          c -= 1L;
+/*  636:     */        }
+/*  637: 631 */        if (b > c) break;
+/*  638: 632 */        swap(x, b++, c--);
+/*  639:     */      }
+/*  640:     */    }
+/*  641: 635 */    long n = to;
+/*  642: 636 */    long s = Math.min(a - from, b - a);
+/*  643: 637 */    vecSwap(x, from, b - s, s);
+/*  644: 638 */    s = Math.min(d - c, n - d - 1L);
+/*  645: 639 */    vecSwap(x, b, n - s, s);
+/*  646:     */    
+/*  647: 641 */    if ((s = b - a) > 1L) quickSort(x, from, from + s, comp);
+/*  648: 642 */    if ((s = d - c) > 1L) quickSort(x, n - s, n, comp);
+/*  649:     */  }
+/*  650:     */  
+/*  651:     */  private static long med3(int[][] x, long a, long b, long c) {
+/*  652: 646 */    int ab = get(x, a) == get(x, b) ? 0 : get(x, a) < get(x, b) ? -1 : 1;
+/*  653: 647 */    int ac = get(x, a) == get(x, c) ? 0 : get(x, a) < get(x, c) ? -1 : 1;
+/*  654: 648 */    int bc = get(x, b) == get(x, c) ? 0 : get(x, b) < get(x, c) ? -1 : 1;
+/*  655: 649 */    return ac > 0 ? c : bc > 0 ? b : ab < 0 ? a : ac < 0 ? c : bc < 0 ? b : a;
+/*  656:     */  }
+/*  657:     */  
+/*  658:     */  private static void selectionSort(int[][] a, long from, long to)
+/*  659:     */  {
+/*  660: 654 */    for (long i = from; i < to - 1L; i += 1L) {
+/*  661: 655 */      long m = i;
+/*  662: 656 */      for (long j = i + 1L; j < to; j += 1L) if (get(a, j) < get(a, m)) m = j;
+/*  663: 657 */      if (m != i) { swap(a, i, m);
+/*  664:     */      }
+/*  665:     */    }
+/*  666:     */  }
+/*  667:     */  
+/*  676:     */  public static void quickSort(int[][] x, IntComparator comp)
+/*  677:     */  {
+/*  678: 672 */    quickSort(x, 0L, length(x), comp);
+/*  679:     */  }
+/*  680:     */  
+/*  690:     */  public static void quickSort(int[][] x, long from, long to)
+/*  691:     */  {
+/*  692: 686 */    long len = to - from;
+/*  693:     */    
+/*  694: 688 */    if (len < 7L) {
+/*  695: 689 */      for (long i = from; i < to; i += 1L)
+/*  696: 690 */        for (long j = i; j > from; j -= 1L) { if ((get(x, j - 1L) == get(x, j) ? 0 : get(x, j - 1L) < get(x, j) ? -1 : 1) <= 0) break; swap(x, j, j - 1L); }
+/*  697: 691 */      return;
+/*  698:     */    }
+/*  699:     */    
+/*  700: 694 */    long m = from + len / 2L;
+/*  701: 695 */    if (len > 7L) {
+/*  702: 696 */      long l = from;
+/*  703: 697 */      long n = to - 1L;
+/*  704: 698 */      if (len > 40L) {
+/*  705: 699 */        long s = len / 8L;
+/*  706: 700 */        l = med3(x, l, l + s, l + 2L * s);
+/*  707: 701 */        m = med3(x, m - s, m, m + s);
+/*  708: 702 */        n = med3(x, n - 2L * s, n - s, n);
+/*  709:     */      }
+/*  710: 704 */      m = med3(x, l, m, n);
+/*  711:     */    }
+/*  712: 706 */    int v = get(x, m);
+/*  713:     */    
+/*  714: 708 */    long a = from;long b = a;long c = to - 1L;long d = c;
+/*  715:     */    for (;;)
+/*  716:     */    {
+/*  717: 711 */      if (b <= c) { int comparison; if ((comparison = get(x, b) == v ? 0 : get(x, b) < v ? -1 : 1) <= 0) {
+/*  718: 712 */          if (comparison == 0) swap(x, a++, b);
+/*  719: 713 */          b += 1L;
+/*  720:     */        }
+/*  721: 715 */      } else { while (c >= b) { int comparison; if ((comparison = get(x, c) == v ? 0 : get(x, c) < v ? -1 : 1) < 0) break;
+/*  722: 716 */          if (comparison == 0) swap(x, c, d--);
+/*  723: 717 */          c -= 1L;
+/*  724:     */        }
+/*  725: 719 */        if (b > c) break;
+/*  726: 720 */        swap(x, b++, c--);
+/*  727:     */      }
+/*  728:     */    }
+/*  729: 723 */    long n = to;
+/*  730: 724 */    long s = Math.min(a - from, b - a);
+/*  731: 725 */    vecSwap(x, from, b - s, s);
+/*  732: 726 */    s = Math.min(d - c, n - d - 1L);
+/*  733: 727 */    vecSwap(x, b, n - s, s);
+/*  734:     */    
+/*  735: 729 */    if ((s = b - a) > 1L) quickSort(x, from, from + s);
+/*  736: 730 */    if ((s = d - c) > 1L) { quickSort(x, n - s, n);
+/*  737:     */    }
+/*  738:     */  }
+/*  739:     */  
+/*  746:     */  public static void quickSort(int[][] x)
+/*  747:     */  {
+/*  748: 742 */    quickSort(x, 0L, length(x));
+/*  749:     */  }
+/*  750:     */  
+/*  771:     */  public static long binarySearch(int[][] a, long from, long to, int key)
+/*  772:     */  {
+/*  773: 767 */    to -= 1L;
+/*  774: 768 */    while (from <= to) {
+/*  775: 769 */      long mid = from + to >>> 1;
+/*  776: 770 */      int midVal = get(a, mid);
+/*  777: 771 */      if (midVal < key) { from = mid + 1L;
+/*  778: 772 */      } else if (midVal > key) to = mid - 1L; else
+/*  779: 773 */        return mid;
+/*  780:     */    }
+/*  781: 775 */    return -(from + 1L);
+/*  782:     */  }
+/*  783:     */  
+/*  800:     */  public static long binarySearch(int[][] a, int key)
+/*  801:     */  {
+/*  802: 796 */    return binarySearch(a, 0L, length(a), key);
+/*  803:     */  }
+/*  804:     */  
+/*  825:     */  public static long binarySearch(int[][] a, long from, long to, int key, IntComparator c)
+/*  826:     */  {
+/*  827: 821 */    to -= 1L;
+/*  828: 822 */    while (from <= to) {
+/*  829: 823 */      long mid = from + to >>> 1;
+/*  830: 824 */      int midVal = get(a, mid);
+/*  831: 825 */      int cmp = c.compare(midVal, key);
+/*  832: 826 */      if (cmp < 0) { from = mid + 1L;
+/*  833: 827 */      } else if (cmp > 0) to = mid - 1L; else
+/*  834: 828 */        return mid;
+/*  835:     */    }
+/*  836: 830 */    return -(from + 1L);
+/*  837:     */  }
+/*  838:     */  
+/*  856:     */  public static long binarySearch(int[][] a, int key, IntComparator c)
+/*  857:     */  {
+/*  858: 852 */    return binarySearch(a, 0L, length(a), key, c);
+/*  859:     */  }
+/*  860:     */  
+/*  866:     */  private static final int DIGIT_BITS = 8;
+/*  867:     */  
+/*  872:     */  private static final int DIGIT_MASK = 255;
+/*  873:     */  
+/*  877:     */  private static final int DIGITS_PER_ELEMENT = 4;
+/*  878:     */  
+/*  882:     */  public static void radixSort(int[][] a)
+/*  883:     */  {
+/*  884: 878 */    radixSort(a, 0L, length(a));
+/*  885:     */  }
+/*  886:     */  
+/*  903:     */  public static void radixSort(int[][] a, long from, long to)
+/*  904:     */  {
+/*  905: 899 */    int maxLevel = 3;
+/*  906: 900 */    int stackSize = 766;
+/*  907: 901 */    long[] offsetStack = new long[766];
+/*  908: 902 */    int offsetPos = 0;
+/*  909: 903 */    long[] lengthStack = new long[766];
+/*  910: 904 */    int lengthPos = 0;
+/*  911: 905 */    int[] levelStack = new int[766];
+/*  912: 906 */    int levelPos = 0;
+/*  913: 907 */    offsetStack[(offsetPos++)] = from;
+/*  914: 908 */    lengthStack[(lengthPos++)] = (to - from);
+/*  915: 909 */    levelStack[(levelPos++)] = 0;
+/*  916: 910 */    long[] count = new long[256];
+/*  917: 911 */    long[] pos = new long[256];
+/*  918: 912 */    byte[][] digit = ByteBigArrays.newBigArray(to - from);
+/*  919: 913 */    while (offsetPos > 0) {
+/*  920: 914 */      long first = offsetStack[(--offsetPos)];
+/*  921: 915 */      long length = lengthStack[(--lengthPos)];
+/*  922: 916 */      int level = levelStack[(--levelPos)];
+/*  923: 917 */      int signMask = level % 4 == 0 ? 128 : 0;
+/*  924: 918 */      if (length < 40L) {
+/*  925: 919 */        selectionSort(a, first, first + length);
+/*  926:     */      }
+/*  927:     */      else {
+/*  928: 922 */        int shift = (3 - level % 4) * 8;
+/*  929:     */        
+/*  930: 924 */        for (long i = length; i-- != 0L; ByteBigArrays.set(digit, i, (byte)(get(a, first + i) >>> shift & 0xFF ^ signMask))) {}
+/*  931: 925 */        for (long i = length; i-- != 0L; count[(ByteBigArrays.get(digit, i) & 0xFF)] += 1L) {}
+/*  932:     */        
+/*  933: 927 */        int lastUsed = -1;
+/*  934: 928 */        long p = 0L;
+/*  935: 929 */        for (int i = 0; i < 256; i++) {
+/*  936: 930 */          if (count[i] != 0L) {
+/*  937: 931 */            lastUsed = i;
+/*  938: 932 */            if ((level < 3) && (count[i] > 1L))
+/*  939:     */            {
+/*  940: 934 */              offsetStack[(offsetPos++)] = (p + first);
+/*  941: 935 */              lengthStack[(lengthPos++)] = count[i];
+/*  942: 936 */              levelStack[(levelPos++)] = (level + 1);
+/*  943:     */            }
+/*  944:     */          }
+/*  945: 939 */          long tmp354_353 = (p + count[i]);p = tmp354_353;pos[i] = tmp354_353;
+/*  946:     */        }
+/*  947:     */        
+/*  948: 942 */        long end = length - count[lastUsed];
+/*  949: 943 */        count[lastUsed] = 0L;
+/*  950:     */        
+/*  951: 945 */        int c = -1;
+/*  952: 946 */        for (long i = 0L; i < end; count[c] = 0L) {
+/*  953: 947 */          int t = get(a, i + first);
+/*  954: 948 */          c = ByteBigArrays.get(digit, i) & 0xFF;
+/*  955: 949 */          for (;;) { long d; if ((d = pos[c] -= 1L) <= i) break;
+/*  956: 950 */            int z = t;
+/*  957: 951 */            int zz = c;
+/*  958: 952 */            t = get(a, d + first);
+/*  959: 953 */            c = ByteBigArrays.get(digit, d) & 0xFF;
+/*  960: 954 */            set(a, d + first, z);
+/*  961: 955 */            ByteBigArrays.set(digit, d, (byte)zz);
+/*  962:     */          }
+/*  963: 957 */          set(a, i + first, t);i += count[c];
+/*  964:     */        }
+/*  965:     */      }
+/*  966:     */    } }
+/*  967:     */  
+/*  968: 962 */  private static void selectionSort(int[][] a, int[][] b, long from, long to) { for (long i = from; i < to - 1L; i += 1L) {
+/*  969: 963 */      long m = i;
+/*  970: 964 */      for (long j = i + 1L; j < to; j += 1L)
+/*  971: 965 */        if ((get(a, j) < get(a, m)) || ((get(a, j) == get(a, m)) && (get(b, j) < get(b, m)))) m = j;
+/*  972: 966 */      if (m != i) {
+/*  973: 967 */        int t = get(a, i);
+/*  974: 968 */        set(a, i, get(a, m));
+/*  975: 969 */        set(a, m, t);
+/*  976: 970 */        t = get(b, i);
+/*  977: 971 */        set(b, i, get(b, m));
+/*  978: 972 */        set(b, m, t);
+/*  979:     */      }
+/*  980:     */    }
+/*  981:     */  }
+/*  982:     */  
+/* 1000:     */  public static void radixSort(int[][] a, int[][] b)
+/* 1001:     */  {
+/* 1002: 996 */    radixSort(a, b, 0L, length(a));
+/* 1003:     */  }
+/* 1004:     */  
+/* 1025:     */  public static void radixSort(int[][] a, int[][] b, long from, long to)
+/* 1026:     */  {
+/* 1027:1021 */    int layers = 2;
+/* 1028:1022 */    if (length(a) != length(b)) throw new IllegalArgumentException("Array size mismatch.");
+/* 1029:1023 */    int maxLevel = 7;
+/* 1030:1024 */    int stackSize = 1786;
+/* 1031:1025 */    long[] offsetStack = new long[1786];
+/* 1032:1026 */    int offsetPos = 0;
+/* 1033:1027 */    long[] lengthStack = new long[1786];
+/* 1034:1028 */    int lengthPos = 0;
+/* 1035:1029 */    int[] levelStack = new int[1786];
+/* 1036:1030 */    int levelPos = 0;
+/* 1037:1031 */    offsetStack[(offsetPos++)] = from;
+/* 1038:1032 */    lengthStack[(lengthPos++)] = (to - from);
+/* 1039:1033 */    levelStack[(levelPos++)] = 0;
+/* 1040:1034 */    long[] count = new long[256];
+/* 1041:1035 */    long[] pos = new long[256];
+/* 1042:1036 */    byte[][] digit = ByteBigArrays.newBigArray(to - from);
+/* 1043:1037 */    while (offsetPos > 0) {
+/* 1044:1038 */      long first = offsetStack[(--offsetPos)];
+/* 1045:1039 */      long length = lengthStack[(--lengthPos)];
+/* 1046:1040 */      int level = levelStack[(--levelPos)];
+/* 1047:1041 */      int signMask = level % 4 == 0 ? 128 : 0;
+/* 1048:1042 */      if (length < 40L) {
+/* 1049:1043 */        selectionSort(a, b, first, first + length);
+/* 1050:     */      }
+/* 1051:     */      else {
+/* 1052:1046 */        int[][] k = level < 4 ? a : b;
+/* 1053:1047 */        int shift = (3 - level % 4) * 8;
+/* 1054:     */        
+/* 1055:1049 */        for (long i = length; i-- != 0L; ByteBigArrays.set(digit, i, (byte)(get(k, first + i) >>> shift & 0xFF ^ signMask))) {}
+/* 1056:1050 */        for (long i = length; i-- != 0L; count[(ByteBigArrays.get(digit, i) & 0xFF)] += 1L) {}
+/* 1057:     */        
+/* 1058:1052 */        int lastUsed = -1;
+/* 1059:1053 */        long p = 0L;
+/* 1060:1054 */        for (int i = 0; i < 256; i++) {
+/* 1061:1055 */          if (count[i] != 0L) {
+/* 1062:1056 */            lastUsed = i;
+/* 1063:1057 */            if ((level < 7) && (count[i] > 1L)) {
+/* 1064:1058 */              offsetStack[(offsetPos++)] = (p + first);
+/* 1065:1059 */              lengthStack[(lengthPos++)] = count[i];
+/* 1066:1060 */              levelStack[(levelPos++)] = (level + 1);
+/* 1067:     */            }
+/* 1068:     */          }
+/* 1069:1063 */          long tmp398_397 = (p + count[i]);p = tmp398_397;pos[i] = tmp398_397;
+/* 1070:     */        }
+/* 1071:     */        
+/* 1072:1066 */        long end = length - count[lastUsed];
+/* 1073:1067 */        count[lastUsed] = 0L;
+/* 1074:     */        
+/* 1075:1069 */        int c = -1;
+/* 1076:1070 */        for (long i = 0L; i < end; count[c] = 0L) {
+/* 1077:1071 */          int t = get(a, i + first);
+/* 1078:1072 */          int u = get(b, i + first);
+/* 1079:1073 */          c = ByteBigArrays.get(digit, i) & 0xFF;
+/* 1080:1074 */          for (;;) { long d; if ((d = pos[c] -= 1L) <= i) break;
+/* 1081:1075 */            int z = t;
+/* 1082:1076 */            int zz = c;
+/* 1083:1077 */            t = get(a, d + first);
+/* 1084:1078 */            set(a, d + first, z);
+/* 1085:1079 */            z = u;
+/* 1086:1080 */            u = get(b, d + first);
+/* 1087:1081 */            set(b, d + first, z);
+/* 1088:1082 */            c = ByteBigArrays.get(digit, d) & 0xFF;
+/* 1089:1083 */            ByteBigArrays.set(digit, d, (byte)zz);
+/* 1090:     */          }
+/* 1091:1085 */          set(a, i + first, t);
+/* 1092:1086 */          set(b, i + first, u);i += count[c];
+/* 1093:     */        }
+/* 1094:     */      }
+/* 1095:     */    }
+/* 1096:     */  }
+/* 1097:     */  
+/* 1104:     */  public static int[][] shuffle(int[][] a, long from, long to, Random random)
+/* 1105:     */  {
+/* 1106:1099 */    for (long i = to - from; i-- != 0L;) {
+/* 1107:1100 */      long p = (random.nextLong() & 0xFFFFFFFF) % (i + 1L);
+/* 1108:1101 */      int t = get(a, from + i);
+/* 1109:1102 */      set(a, from + i, get(a, from + p));
+/* 1110:1103 */      set(a, from + p, t);
+/* 1111:     */    }
+/* 1112:1105 */    return a;
+/* 1113:     */  }
+/* 1114:     */  
+/* 1119:     */  public static int[][] shuffle(int[][] a, Random random)
+/* 1120:     */  {
+/* 1121:1114 */    for (long i = length(a); i-- != 0L;) {
+/* 1122:1115 */      long p = (random.nextLong() & 0xFFFFFFFF) % (i + 1L);
+/* 1123:1116 */      int t = get(a, i);
+/* 1124:1117 */      set(a, i, get(a, p));
+/* 1125:1118 */      set(a, p, t);
+/* 1126:     */    }
+/* 1127:1120 */    return a;
+/* 1128:     */  }
+/* 1129:     */}
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     it.unimi.dsi.fastutil.ints.IntBigArrays
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

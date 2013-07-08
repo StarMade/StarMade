@@ -34,14 +34,14 @@ public class Collation
   private boolean padSpace = true;
   private Charset charset;
   private HsqlNameManager.HsqlName sourceName;
-
+  
   private Collation()
   {
     this.locale = Locale.ENGLISH;
     this.name = HsqlNameManager.newInfoSchemaObjectName(defaultCollationName, false, 15);
     this.isFinal = true;
   }
-
+  
   private Collation(String paramString1, String paramString2, String paramString3)
   {
     this.locale = new Locale(paramString2, paramString3);
@@ -51,7 +51,7 @@ public class Collation
     this.charset = TypeInvariants.SQL_TEXT;
     this.isFinal = true;
   }
-
+  
   public Collation(HsqlNameManager.HsqlName paramHsqlName, Collation paramCollation, Charset paramCharset, Boolean paramBoolean)
   {
     this.name = paramHsqlName;
@@ -63,34 +63,35 @@ public class Collation
     this.sourceName = paramCollation.name;
     this.padSpace = paramBoolean.booleanValue();
   }
-
+  
   public static Collation getDefaultInstance()
   {
     return defaultCollation;
   }
-
+  
   public static Collation newDatabaseInstance()
   {
     Collation localCollation = new Collation();
     localCollation.isFinal = false;
     return localCollation;
   }
-
+  
   public static Iterator getCollationsIterator()
   {
     return nameToJavaName.keySet().iterator();
   }
-
+  
   public static Iterator getLocalesIterator()
   {
     return nameToJavaName.values().iterator();
   }
-
+  
   public static synchronized Collation getCollation(String paramString)
   {
     Collation localCollation = (Collation)dbNameToCollation.get(paramString);
-    if (localCollation != null)
+    if (localCollation != null) {
       return localCollation;
+    }
     if (defaultCollationName.equals(paramString))
     {
       dbNameToCollation.put(defaultCollationName, defaultCollation);
@@ -100,8 +101,9 @@ public class Collation
     if (str1 == null)
     {
       str1 = (String)nameToJavaName.get(paramString);
-      if (str1 == null)
+      if (str1 == null) {
         throw Error.error(5501, str1);
+      }
     }
     String[] arrayOfString = StringUtil.split(str1, "-");
     String str2 = arrayOfString[0];
@@ -110,14 +112,15 @@ public class Collation
     dbNameToCollation.put(paramString, localCollation);
     return localCollation;
   }
-
+  
   public void setPadding(boolean paramBoolean)
   {
-    if (this.isFinal)
+    if (this.isFinal) {
       throw Error.error(5503);
+    }
     this.padSpace = paramBoolean;
   }
-
+  
   public void setCollationAsLocale()
   {
     Locale localLocale = Locale.getDefault();
@@ -126,15 +129,14 @@ public class Collation
     {
       setCollation(str, Boolean.valueOf(false));
     }
-    catch (HsqlException localHsqlException)
-    {
-    }
+    catch (HsqlException localHsqlException) {}
   }
-
+  
   public void setCollation(String paramString, Boolean paramBoolean)
   {
-    if (this.isFinal)
+    if (this.isFinal) {
       throw Error.error(5503, paramString);
+    }
     if (defaultCollationName.equals(paramString))
     {
       this.locale = Locale.ENGLISH;
@@ -145,10 +147,12 @@ public class Collation
     else
     {
       String str1 = (String)nameToJavaName.get(paramString);
-      if (str1 == null)
+      if (str1 == null) {
         str1 = (String)dbNameToJavaName.get(paramString);
-      if (str1 == null)
+      }
+      if (str1 == null) {
         throw Error.error(5501, paramString);
+      }
       this.name.rename(paramString, true);
       String[] arrayOfString = StringUtil.split(str1, "-");
       String str2 = arrayOfString[0];
@@ -159,96 +163,96 @@ public class Collation
     }
     this.padSpace = paramBoolean.booleanValue();
   }
-
+  
   public boolean isPadSpace()
   {
     return this.padSpace;
   }
-
+  
   public boolean isEqualAlwaysIdentical()
   {
     return this.collator == null;
   }
-
+  
   public int compare(String paramString1, String paramString2)
   {
     int i;
-    if (this.collator == null)
+    if (this.collator == null) {
       i = paramString1.compareTo(paramString2);
-    else
+    } else {
       i = this.collator.compare(paramString1, paramString2);
+    }
     return i < 0 ? -1 : i == 0 ? 0 : 1;
   }
-
+  
   public int compareIgnoreCase(String paramString1, String paramString2)
   {
     int i;
-    if (this.collator == null)
+    if (this.collator == null) {
       i = JavaSystem.compareIngnoreCase(paramString1, paramString2);
-    else
+    } else {
       i = this.collator.compare(toUpperCase(paramString1), toUpperCase(paramString2));
+    }
     return i < 0 ? -1 : i == 0 ? 0 : 1;
   }
-
+  
   public String toUpperCase(String paramString)
   {
     return paramString.toUpperCase(this.locale);
   }
-
+  
   public String toLowerCase(String paramString)
   {
     return paramString.toLowerCase(this.locale);
   }
-
+  
   public boolean isDefaultCollation()
   {
     return (this.collator == null) && (this.padSpace);
   }
-
+  
   public boolean isObjectCollation()
   {
     return (this.isFinal) && (this.collator != null);
   }
-
+  
   public HsqlNameManager.HsqlName getName()
   {
     return this.name;
   }
-
+  
   public int getType()
   {
     return 15;
   }
-
+  
   public HsqlNameManager.HsqlName getSchemaName()
   {
     return this.name.schema;
   }
-
+  
   public HsqlNameManager.HsqlName getCatalogName()
   {
     return this.name.schema.schema;
   }
-
+  
   public Grantee getOwner()
   {
     return this.name.schema.owner;
   }
-
+  
   public OrderedHashSet getReferences()
   {
     return new OrderedHashSet();
   }
-
+  
   public OrderedHashSet getComponents()
   {
     return null;
   }
-
-  public void compile(Session paramSession, SchemaObject paramSchemaObject)
-  {
-  }
-
+  
+  public void compile(Session paramSession, SchemaObject paramSchemaObject) {}
+  
   public String getSQL()
   {
     StringBuffer localStringBuffer = new StringBuffer();
@@ -260,18 +264,19 @@ public class Collation
     localStringBuffer.append("FROM").append(' ');
     localStringBuffer.append(this.sourceName.statementName);
     localStringBuffer.append(' ');
-    if (this.padSpace)
+    if (this.padSpace) {
       localStringBuffer.append("PAD").append(' ').append("SPACE");
-    else
+    } else {
       localStringBuffer.append("NO").append(' ').append("PAD");
+    }
     return localStringBuffer.toString();
   }
-
+  
   public long getChangeTimestamp()
   {
     return 0L;
   }
-
+  
   public String getDatabaseCollationSQL()
   {
     StringBuffer localStringBuffer = new StringBuffer();
@@ -280,13 +285,14 @@ public class Collation
     localStringBuffer.append("COLLATION").append(' ');
     localStringBuffer.append(getName().statementName);
     localStringBuffer.append(' ');
-    if (this.padSpace)
+    if (this.padSpace) {
       localStringBuffer.append("PAD").append(' ').append("SPACE");
-    else
+    } else {
       localStringBuffer.append("NO").append(' ').append("PAD");
+    }
     return localStringBuffer.toString();
   }
-
+  
   static
   {
     nameToJavaName.put("Afrikaans", "af-ZA");
@@ -396,7 +402,8 @@ public class Collation
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.types.Collation
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

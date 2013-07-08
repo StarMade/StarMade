@@ -15,7 +15,8 @@ import org.hsqldb.lib.OrderedHashSet;
 import org.hsqldb.persist.CachedObject;
 import org.hsqldb.persist.PersistentStore;
 
-public class TransactionManagerMVCC extends TransactionManagerCommon
+public class TransactionManagerMVCC
+  extends TransactionManagerCommon
   implements TransactionManager
 {
   HsqlDeque committedTransactions = new HsqlDeque();
@@ -27,7 +28,7 @@ public class TransactionManagerMVCC extends TransactionManagerCommon
   long unlockTxTs;
   long unlockSessionId;
   int redoCount = 0;
-
+  
   public TransactionManagerMVCC(Database paramDatabase)
   {
     this.database = paramDatabase;
@@ -35,42 +36,41 @@ public class TransactionManagerMVCC extends TransactionManagerCommon
     this.rowActionMap = new LongKeyHashMap(10000);
     this.txModel = 2;
   }
-
+  
   public long getGlobalChangeTimestamp()
   {
     return this.globalChangeTimestamp.get();
   }
-
+  
   public boolean isMVRows()
   {
     return true;
   }
-
+  
   public boolean isMVCC()
   {
     return true;
   }
-
+  
   public int getTransactionControl()
   {
     return 2;
   }
-
+  
   public void setTransactionControl(Session paramSession, int paramInt)
   {
     super.setTransactionControl(paramSession, paramInt);
   }
-
-  public void completeActions(Session paramSession)
-  {
-  }
-
+  
+  public void completeActions(Session paramSession) {}
+  
   public boolean prepareCommitActions(Session paramSession)
   {
     Object[] arrayOfObject = paramSession.rowActionList.getArray();
     int i = paramSession.rowActionList.size();
-    if (paramSession.abortTransaction)
+    if (paramSession.abortTransaction) {
       return false;
+    }
     this.writeLock.lock();
     try
     {
@@ -104,11 +104,12 @@ public class TransactionManagerMVCC extends TransactionManagerCommon
       paramSession.tempSet.clear();
     }
   }
-
+  
   public boolean commitTransaction(Session paramSession)
   {
-    if (paramSession.abortTransaction)
+    if (paramSession.abortTransaction) {
       return false;
+    }
     int i = paramSession.rowActionList.size();
     Object[] arrayOfObject = paramSession.rowActionList.getArray();
     this.writeLock.lock();
@@ -167,7 +168,7 @@ public class TransactionManagerMVCC extends TransactionManagerCommon
     }
     return true;
   }
-
+  
   public void rollback(Session paramSession)
   {
     this.writeLock.lock();
@@ -187,7 +188,7 @@ public class TransactionManagerMVCC extends TransactionManagerCommon
       this.writeLock.unlock();
     }
   }
-
+  
   public void rollbackSavepoint(Session paramSession, int paramInt)
   {
     long l = paramSession.sessionContext.savepointTimestamps.get(paramInt);
@@ -200,23 +201,25 @@ public class TransactionManagerMVCC extends TransactionManagerCommon
     }
     rollbackPartial(paramSession, i, l);
   }
-
+  
   public void rollbackAction(Session paramSession)
   {
     rollbackPartial(paramSession, paramSession.actionIndex, paramSession.actionTimestamp);
   }
-
+  
   void rollbackPartial(Session paramSession, int paramInt, long paramLong)
   {
     Object[] arrayOfObject = paramSession.rowActionList.getArray();
     int i = paramSession.rowActionList.size();
-    if (paramInt == i)
+    if (paramInt == i) {
       return;
+    }
     for (int j = paramInt; j < i; j++)
     {
       RowAction localRowAction = (RowAction)arrayOfObject[j];
-      if (localRowAction == null)
+      if (localRowAction == null) {
         throw Error.runtimeError(458, "null rollback action ");
+      }
       localRowAction.rollback(paramSession, paramLong);
     }
     this.writeLock.lock();
@@ -231,7 +234,7 @@ public class TransactionManagerMVCC extends TransactionManagerCommon
     }
     paramSession.rowActionList.setSize(paramInt);
   }
-
+  
   public RowAction addDeleteAction(Session paramSession, Table paramTable, Row paramRow, int[] paramArrayOfInt)
   {
     RowAction localRowAction = addDeleteActionToRow(paramSession, paramTable, paramRow, paramArrayOfInt);
@@ -262,8 +265,9 @@ public class TransactionManagerMVCC extends TransactionManagerCommon
         {
           localSession = ((RowActionBase)paramSession.tempSet.get(0)).session;
           paramSession.tempSet.clear();
-          if (localSession != null)
+          if (localSession != null) {
             bool = checkDeadlock(paramSession, localSession);
+          }
         }
         if (bool)
         {
@@ -291,7 +295,7 @@ public class TransactionManagerMVCC extends TransactionManagerCommon
     paramSession.rowActionList.add(localRowAction);
     return localRowAction;
   }
-
+  
   public void addInsertAction(Session paramSession, Table paramTable, PersistentStore paramPersistentStore, Row paramRow, int[] paramArrayOfInt)
   {
     RowAction localRowAction = paramRow.rowAction;
@@ -299,18 +303,21 @@ public class TransactionManagerMVCC extends TransactionManagerCommon
     boolean bool = false;
     int i = 1;
     Object localObject1 = null;
-    if (localRowAction == null)
+    if (localRowAction == null) {
       throw Error.runtimeError(458, "null insert action ");
-    if (paramTable.tableType == 5)
+    }
+    if (paramTable.tableType == 5) {
       this.rowActionMap.put(localRowAction.getPos(), localRowAction);
+    }
     try
     {
       paramPersistentStore.indexRow(paramSession, paramRow);
     }
     catch (HsqlException localHsqlException)
     {
-      if (paramSession.tempSet.isEmpty())
+      if (paramSession.tempSet.isEmpty()) {
         throw localHsqlException;
+      }
       bool = true;
       localObject1 = localHsqlException;
     }
@@ -326,15 +333,16 @@ public class TransactionManagerMVCC extends TransactionManagerCommon
       RowActionBase localRowActionBase = (RowActionBase)paramSession.tempSet.get(0);
       localSession = localRowActionBase.session;
       paramSession.tempSet.clear();
-      if (localRowActionBase.commitTimestamp != 0L)
+      if (localRowActionBase.commitTimestamp != 0L) {
         i = 0;
+      }
       switch (paramSession.isolationLevel)
       {
-      case 4:
-      case 8:
+      case 4: 
+      case 8: 
         bool = false;
         break;
-      default:
+      default: 
         bool = checkDeadlock(paramSession, localSession);
       }
       if (bool)
@@ -360,54 +368,60 @@ public class TransactionManagerMVCC extends TransactionManagerCommon
       this.writeLock.unlock();
     }
   }
-
+  
   public boolean canRead(Session paramSession, Row paramRow, int paramInt, int[] paramArrayOfInt)
   {
     RowAction localRowAction = paramRow.rowAction;
     if (paramInt == 0)
     {
-      if (localRowAction == null)
+      if (localRowAction == null) {
         return true;
+      }
       return localRowAction.canRead(paramSession, 0);
     }
     if (paramInt == 2)
     {
       boolean bool;
-      if (localRowAction == null)
+      if (localRowAction == null) {
         bool = true;
-      else
+      } else {
         bool = localRowAction.canRead(paramSession, 0);
+      }
       return bool;
     }
-    if (localRowAction == null)
+    if (localRowAction == null) {
       return true;
+    }
     return localRowAction.canRead(paramSession, paramInt);
   }
-
+  
   public boolean canRead(Session paramSession, long paramLong, int paramInt)
   {
     RowAction localRowAction = (RowAction)this.rowActionMap.get(paramLong);
-    if (localRowAction == null)
+    if (localRowAction == null) {
       return true;
+    }
     return localRowAction.canRead(paramSession, paramInt);
   }
-
+  
   public void setTransactionInfo(CachedObject paramCachedObject)
   {
-    if (paramCachedObject.isMemory())
+    if (paramCachedObject.isMemory()) {
       return;
+    }
     Row localRow = (Row)paramCachedObject;
     RowAction localRowAction = (RowAction)this.rowActionMap.get(localRow.position);
     localRow.rowAction = localRowAction;
   }
-
+  
   public void removeTransactionInfo(CachedObject paramCachedObject)
   {
-    if (paramCachedObject.isMemory())
+    if (paramCachedObject.isMemory()) {
       return;
+    }
     this.rowActionMap.remove(paramCachedObject.getPos());
   }
-
+  
   void addToCommittedQueue(Session paramSession, Object[] paramArrayOfObject)
   {
     synchronized (this.committedTransactionTimestamps)
@@ -416,18 +430,19 @@ public class TransactionManagerMVCC extends TransactionManagerCommon
       this.committedTransactionTimestamps.addLast(paramSession.actionTimestamp);
     }
   }
-
+  
   void mergeExpiredTransactions(Session paramSession)
   {
     long l1 = getFirstLiveTransactionTimestamp();
-    while (true)
+    for (;;)
     {
       long l2;
       Object[] arrayOfObject;
       synchronized (this.committedTransactionTimestamps)
       {
-        if (this.committedTransactionTimestamps.isEmpty())
+        if (this.committedTransactionTimestamps.isEmpty()) {
           break;
+        }
         l2 = this.committedTransactionTimestamps.getFirst();
         if (l2 < l1)
         {
@@ -443,7 +458,7 @@ public class TransactionManagerMVCC extends TransactionManagerCommon
       finaliseRows(paramSession, arrayOfObject, 0, arrayOfObject.length, true);
     }
   }
-
+  
   public void beginTransaction(Session paramSession)
   {
     this.writeLock.lock();
@@ -463,13 +478,15 @@ public class TransactionManagerMVCC extends TransactionManagerCommon
       this.writeLock.unlock();
     }
   }
-
+  
   public void beginAction(Session paramSession, Statement paramStatement)
   {
-    if (paramSession.isTransaction)
+    if (paramSession.isTransaction) {
       return;
-    if (paramStatement == null)
+    }
+    if (paramStatement == null) {
       return;
+    }
     this.writeLock.lock();
     try
     {
@@ -477,12 +494,14 @@ public class TransactionManagerMVCC extends TransactionManagerCommon
       {
         paramStatement = paramSession.statementManager.getStatement(paramSession, paramStatement);
         paramSession.sessionContext.currentStatement = paramStatement;
-        if (paramStatement == null)
+        if (paramStatement == null) {
           return;
+        }
       }
       paramSession.isPreTransaction = true;
-      if ((!this.isLockedMode) && (!paramStatement.isCatalogLock()))
+      if ((!this.isLockedMode) && (!paramStatement.isCatalogLock())) {
         return;
+      }
       beginActionTPL(paramSession, paramStatement);
     }
     finally
@@ -490,7 +509,7 @@ public class TransactionManagerMVCC extends TransactionManagerCommon
       this.writeLock.unlock();
     }
   }
-
+  
   public void beginActionResume(Session paramSession)
   {
     this.writeLock.lock();
@@ -511,7 +530,7 @@ public class TransactionManagerMVCC extends TransactionManagerCommon
       this.writeLock.unlock();
     }
   }
-
+  
   RowAction addDeleteActionToRow(Session paramSession, Table paramTable, Row paramRow, int[] paramArrayOfInt)
   {
     RowAction localRowAction = null;
@@ -527,8 +546,9 @@ public class TransactionManagerMVCC extends TransactionManagerCommon
           if (localRowAction == null)
           {
             localRowAction = RowAction.addDeleteAction(paramSession, paramTable, paramRow, paramArrayOfInt);
-            if (localRowAction != null)
+            if (localRowAction != null) {
               this.rowActionMap.put(paramRow.getPos(), localRowAction);
+            }
           }
           else
           {
@@ -548,7 +568,7 @@ public class TransactionManagerMVCC extends TransactionManagerCommon
     }
     return localRowAction;
   }
-
+  
   void endTransaction(Session paramSession)
   {
     long l = paramSession.transactionTimestamp;
@@ -560,7 +580,7 @@ public class TransactionManagerMVCC extends TransactionManagerCommon
       mergeExpiredTransactions(paramSession);
     }
   }
-
+  
   private void countDownLatches(Session paramSession)
   {
     for (int i = 0; i < paramSession.waitingSessions.size(); i++)
@@ -571,26 +591,28 @@ public class TransactionManagerMVCC extends TransactionManagerCommon
     }
     paramSession.waitingSessions.clear();
   }
-
+  
   void getTransactionSessions(HashSet paramHashSet)
   {
     Session[] arrayOfSession = this.database.sessionManager.getAllSessions();
     for (int i = 0; i < arrayOfSession.length; i++)
     {
       long l = arrayOfSession[i].getTransactionTimestamp();
-      if (this.liveTransactionTimestamps.contains(l))
+      if (this.liveTransactionTimestamps.contains(l)) {
         paramHashSet.add(arrayOfSession[i]);
-      else if (arrayOfSession[i].isPreTransaction)
+      } else if (arrayOfSession[i].isPreTransaction) {
         paramHashSet.add(arrayOfSession[i]);
-      else if (arrayOfSession[i].isTransaction)
+      } else if (arrayOfSession[i].isTransaction) {
         paramHashSet.add(arrayOfSession[i]);
+      }
     }
   }
-
+  
   void endTransactionTPL(Session paramSession)
   {
-    if (this.catalogWriteSession != paramSession)
+    if (this.catalogWriteSession != paramSession) {
       return;
+    }
     Object localObject = null;
     paramSession.waitingSessions.size();
     Session localSession;
@@ -626,15 +648,18 @@ public class TransactionManagerMVCC extends TransactionManagerCommon
     this.unlockTxTs = paramSession.actionTimestamp;
     this.unlockSessionId = paramSession.getId();
   }
-
+  
   boolean beginActionTPL(Session paramSession, Statement paramStatement)
   {
-    if (paramStatement == null)
+    if (paramStatement == null) {
       return true;
-    if (paramSession.abortTransaction)
+    }
+    if (paramSession.abortTransaction) {
       return false;
-    if (paramSession == this.catalogWriteSession)
+    }
+    if (paramSession == this.catalogWriteSession) {
       return true;
+    }
     paramSession.tempSet.clear();
     if ((paramStatement.isCatalogLock()) && (this.catalogWriteSession == null))
     {
@@ -644,26 +669,32 @@ public class TransactionManagerMVCC extends TransactionManagerCommon
       this.lockSessionId = paramSession.getId();
       getTransactionSessions(paramSession.tempSet);
       paramSession.tempSet.remove(paramSession);
-      if (!paramSession.tempSet.isEmpty())
+      if (!paramSession.tempSet.isEmpty()) {
         setWaitingSessionTPL(paramSession);
+      }
       return true;
     }
-    if (!this.isLockedMode)
+    if (!this.isLockedMode) {
       return true;
+    }
     if (paramStatement.getTableNamesForWrite().length > 0)
     {
-      if (paramStatement.getTableNamesForWrite()[0].schema == SqlInvariants.LOBS_SCHEMA_HSQLNAME)
+      if (paramStatement.getTableNamesForWrite()[0].schema == SqlInvariants.LOBS_SCHEMA_HSQLNAME) {
         return true;
+      }
     }
     else if (paramStatement.getTableNamesForRead().length > 0)
     {
-      if (paramStatement.getTableNamesForRead()[0].schema == SqlInvariants.LOBS_SCHEMA_HSQLNAME)
+      if (paramStatement.getTableNamesForRead()[0].schema == SqlInvariants.LOBS_SCHEMA_HSQLNAME) {
         return true;
+      }
     }
-    else
+    else {
       return true;
-    if (paramSession.waitingSessions.contains(this.catalogWriteSession))
+    }
+    if (paramSession.waitingSessions.contains(this.catalogWriteSession)) {
       return true;
+    }
     if (this.catalogWriteSession.waitingSessions.add(paramSession))
     {
       paramSession.waitedSessions.add(this.catalogWriteSession);
@@ -673,7 +704,8 @@ public class TransactionManagerMVCC extends TransactionManagerCommon
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.TransactionManagerMVCC
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -23,7 +23,7 @@ public class DatabaseManager
   static final IntKeyHashMap databaseIDMap = new IntKeyHashMap();
   static HashMap serverMap = new HashMap();
   private static final HsqlTimer timer = new HsqlTimer();
-
+  
   public static Vector getDatabaseURIs()
   {
     Vector localVector = new Vector();
@@ -38,7 +38,7 @@ public class DatabaseManager
     }
     return localVector;
   }
-
+  
   public static void closeDatabases(int paramInt)
   {
     synchronized (databaseIDMap)
@@ -51,13 +51,11 @@ public class DatabaseManager
         {
           localDatabase.close(paramInt);
         }
-        catch (HsqlException localHsqlException)
-        {
-        }
+        catch (HsqlException localHsqlException) {}
       }
     }
   }
-
+  
   public static Session newSession(int paramInt1, String paramString1, String paramString2, String paramString3, int paramInt2)
   {
     Database localDatabase = null;
@@ -65,21 +63,23 @@ public class DatabaseManager
     {
       localDatabase = (Database)databaseIDMap.get(paramInt1);
     }
-    if (localDatabase == null)
+    if (localDatabase == null) {
       return null;
+    }
     ??? = localDatabase.connect(paramString1, paramString2, paramString3, paramInt2);
     ((Session)???).isNetwork = true;
     return ???;
   }
-
+  
   public static Session newSession(String paramString1, String paramString2, String paramString3, String paramString4, HsqlProperties paramHsqlProperties, String paramString5, int paramInt)
   {
     Database localDatabase = getDatabase(paramString1, paramString2, paramHsqlProperties);
-    if (localDatabase == null)
+    if (localDatabase == null) {
       return null;
+    }
     return localDatabase.connect(paramString3, paramString4, paramString5, paramInt);
   }
-
+  
   public static Session getSession(int paramInt, long paramLong)
   {
     Database localDatabase = null;
@@ -89,19 +89,19 @@ public class DatabaseManager
     }
     return localDatabase == null ? null : localDatabase.sessionManager.getSession(paramLong);
   }
-
+  
   public static int getDatabase(String paramString1, String paramString2, Server paramServer, HsqlProperties paramHsqlProperties)
   {
     Database localDatabase = getDatabase(paramString1, paramString2, paramHsqlProperties);
     registerServer(paramServer, localDatabase);
     return localDatabase.databaseID;
   }
-
+  
   public static Database getDatabase(int paramInt)
   {
     return (Database)databaseIDMap.get(paramInt);
   }
-
+  
   public static void shutdownDatabases(Server paramServer, int paramInt)
   {
     Database[] arrayOfDatabase;
@@ -111,10 +111,11 @@ public class DatabaseManager
       arrayOfDatabase = new Database[localHashSet.size()];
       localHashSet.toArray(arrayOfDatabase);
     }
-    for (int i = 0; i < arrayOfDatabase.length; i++)
+    for (int i = 0; i < arrayOfDatabase.length; i++) {
       arrayOfDatabase[i].close(paramInt);
+    }
   }
-
+  
   public static Database getDatabase(String paramString1, String paramString2, HsqlProperties paramHsqlProperties)
   {
     Database localDatabase = getDatabaseObject(paramString1, paramString2, paramHsqlProperties);
@@ -122,21 +123,22 @@ public class DatabaseManager
     {
       switch (localDatabase.getState())
       {
-      case 1:
+      case 1: 
         break;
-      case 4:
-        if (lookupDatabaseObject(paramString1, paramString2) == null)
+      case 4: 
+        if (lookupDatabaseObject(paramString1, paramString2) == null) {
           addDatabaseObject(paramString1, paramString2, localDatabase);
+        }
         localDatabase.open();
         break;
-      case 2:
-      case 3:
+      case 2: 
+      case 3: 
         throw Error.error(451, 23);
       }
     }
     return localDatabase;
   }
-
+  
   private static synchronized Database getDatabaseObject(String paramString1, String paramString2, HsqlProperties paramHsqlProperties)
   {
     Object localObject1 = paramString2;
@@ -186,7 +188,7 @@ public class DatabaseManager
     }
     return localDatabase;
   }
-
+  
   public static synchronized Database lookupDatabaseObject(String paramString1, String paramString2)
   {
     String str = paramString2;
@@ -210,7 +212,7 @@ public class DatabaseManager
     }
     return (Database)localHashMap.get(str);
   }
-
+  
   private static synchronized void addDatabaseObject(String paramString1, String paramString2, Database paramDatabase)
   {
     String str = paramString2;
@@ -238,7 +240,7 @@ public class DatabaseManager
     }
     localHashMap.put(str, paramDatabase);
   }
-
+  
   static void removeDatabase(Database paramDatabase)
   {
     int i = paramDatabase.databaseID;
@@ -274,10 +276,11 @@ public class DatabaseManager
     {
       localHashMap.remove(str3);
     }
-    if (bool)
+    if (bool) {
       ValuePool.resetPool();
+    }
   }
-
+  
   public static void deRegisterServer(Server paramServer)
   {
     synchronized (serverMap)
@@ -285,18 +288,19 @@ public class DatabaseManager
       serverMap.remove(paramServer);
     }
   }
-
+  
   private static void registerServer(Server paramServer, Database paramDatabase)
   {
     synchronized (serverMap)
     {
-      if (!serverMap.containsKey(paramServer))
+      if (!serverMap.containsKey(paramServer)) {
         serverMap.put(paramServer, new HashSet());
+      }
       HashSet localHashSet = (HashSet)serverMap.get(paramServer);
       localHashSet.add(paramDatabase);
     }
   }
-
+  
   private static void notifyServers(Database paramDatabase)
   {
     Server[] arrayOfServer;
@@ -314,16 +318,18 @@ public class DatabaseManager
       {
         localHashSet = (HashSet)serverMap.get(localServer);
       }
-      if (localHashSet != null)
+      if (localHashSet != null) {
         synchronized (localHashSet)
         {
           bool = localHashSet.remove(paramDatabase);
         }
-      if (bool)
+      }
+      if (bool) {
         localServer.notify(0, paramDatabase.databaseID);
+      }
     }
   }
-
+  
   static boolean isServerDB(Database paramDatabase)
   {
     Iterator localIterator = serverMap.keySet().iterator();
@@ -331,31 +337,31 @@ public class DatabaseManager
     {
       Server localServer = (Server)localIterator.next();
       HashSet localHashSet = (HashSet)serverMap.get(localServer);
-      if (localHashSet.contains(paramDatabase))
+      if (localHashSet.contains(paramDatabase)) {
         return true;
+      }
     }
     return false;
   }
-
+  
   public static HsqlTimer getTimer()
   {
     return timer;
   }
-
+  
   private static String filePathToKey(String paramString)
   {
     try
     {
       return FileUtil.getFileUtil().canonicalPath(paramString);
     }
-    catch (Exception localException)
-    {
-    }
+    catch (Exception localException) {}
     return paramString;
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.DatabaseManager
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

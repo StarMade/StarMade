@@ -21,7 +21,8 @@ final class ArgumentNaming
   static final String ARG_SUFFIX = "suffix";
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.jasypt.intf.cli.ArgumentNaming
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

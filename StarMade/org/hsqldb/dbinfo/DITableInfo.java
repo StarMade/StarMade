@@ -20,12 +20,12 @@ final class DITableInfo
   private int hnd_column_remarks = -1;
   private int hnd_table_remarks = -1;
   private Table table;
-
+  
   DITableInfo()
   {
     setupBundles();
   }
-
+  
   void setupBundles()
   {
     synchronized (BundleHandler.class)
@@ -37,92 +37,89 @@ final class DITableInfo
       BundleHandler.setLocale(localLocale);
     }
   }
-
+  
   Integer getBRIPseudo()
   {
     return ValuePool.getInt(this.bestRowNotPseudo);
   }
-
+  
   Integer getBRIScope()
   {
     return this.table.isWritable() ? ValuePool.getInt(this.bestRowTemporary) : ValuePool.getInt(this.bestRowSession);
   }
-
+  
   String getColName(int paramInt)
   {
     return this.table.getColumn(paramInt).getName().name;
   }
-
+  
   String getColRemarks(int paramInt)
   {
-    if (this.table.getTableType() != 1)
+    if (this.table.getTableType() != 1) {
       return this.table.getColumn(paramInt).getName().comment;
+    }
     String str = getName() + "_" + getColName(paramInt);
     return BundleHandler.getString(this.hnd_column_remarks, str);
   }
-
+  
   String getHsqlType()
   {
     switch (this.table.getTableType())
     {
-    case 1:
-    case 3:
-    case 4:
+    case 1: 
+    case 3: 
+    case 4: 
       return "MEMORY";
-    case 5:
+    case 5: 
       return "CACHED";
-    case 6:
-    case 7:
+    case 6: 
+    case 7: 
       return "TEXT";
-    case 2:
-    case 8:
     }
     return null;
   }
-
+  
   String getName()
   {
     return this.table.getName().name;
   }
-
+  
   String getRemark()
   {
     return this.table.getTableType() == 1 ? BundleHandler.getString(this.hnd_table_remarks, getName()) : this.table.getName().comment;
   }
-
+  
   String getJDBCStandardType()
   {
     switch (this.table.getTableType())
     {
-    case 8:
+    case 8: 
       return "VIEW";
-    case 3:
-    case 6:
+    case 3: 
+    case 6: 
       return "GLOBAL TEMPORARY";
-    case 1:
+    case 1: 
       return "SYSTEM TABLE";
-    case 2:
-    case 4:
-    case 5:
-    case 7:
     }
-    if (this.table.getOwner().isSystem())
+    if (this.table.getOwner().isSystem()) {
       return "SYSTEM TABLE";
+    }
     return "TABLE";
   }
-
+  
   Table getTable()
   {
     return this.table;
   }
-
+  
   void setTable(Table paramTable)
   {
     this.table = paramTable;
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.dbinfo.DITableInfo
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

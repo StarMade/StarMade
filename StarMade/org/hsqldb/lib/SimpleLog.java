@@ -21,7 +21,7 @@ public class SimpleLog
   String[] logTypeNames;
   private String filePath;
   private StringBuffer sb;
-
+  
   public SimpleLog(String paramString, int paramInt, boolean paramBoolean)
   {
     this.isSystem = (paramString == null);
@@ -31,7 +31,7 @@ public class SimpleLog
     this.sb = new StringBuffer(256);
     setLevel(paramInt);
   }
-
+  
   private void setupWriter()
   {
     if (this.level == 0)
@@ -39,7 +39,7 @@ public class SimpleLog
       close();
       return;
     }
-    if (this.writer == null)
+    if (this.writer == null) {
       if (this.isSystem)
       {
         this.writer = new PrintWriter(System.out);
@@ -49,8 +49,9 @@ public class SimpleLog
         File localFile = new File(this.filePath);
         setupLog(localFile);
       }
+    }
   }
-
+  
   private void setupLog(File paramFile)
   {
     try
@@ -64,50 +65,54 @@ public class SimpleLog
       this.writer = new PrintWriter(System.out);
     }
   }
-
+  
   public int getLevel()
   {
     return this.level;
   }
-
+  
   public void setLevel(int paramInt)
   {
     this.level = paramInt;
     setupWriter();
   }
-
+  
   public PrintWriter getPrintWriter()
   {
     return this.writer;
   }
-
+  
   public synchronized void logContext(int paramInt, String paramString)
   {
-    if (this.level < paramInt)
+    if (this.level < paramInt) {
       return;
+    }
     this.sb.append(HsqlDateTime.getSystemTimeString()).append(' ');
     this.sb.append(this.logTypeNames[paramInt]).append(' ').append(paramString);
     this.writer.println(this.sb.toString());
     this.sb.setLength(0);
   }
-
+  
   public synchronized void logContext(int paramInt, String paramString1, String paramString2, String paramString3)
   {
-    if (this.level < paramInt)
+    if (this.level < paramInt) {
       return;
+    }
     this.sb.append(HsqlDateTime.getSystemTimeString()).append(' ');
     this.sb.append(this.logTypeNames[paramInt]).append(' ').append(paramString1);
     this.sb.append(' ').append(paramString2).append(' ').append(paramString3);
     this.writer.println(this.sb.toString());
     this.sb.setLength(0);
   }
-
+  
   public synchronized void logContext(Throwable paramThrowable, String paramString, int paramInt)
   {
-    if (this.level == 0)
+    if (this.level == 0) {
       return;
-    if (this.writer == null)
+    }
+    if (this.writer == null) {
       return;
+    }
     this.sb.append(HsqlDateTime.getSystemTimeString()).append(' ');
     this.sb.append(this.logTypeNames[paramInt]).append(' ').append(paramString);
     Throwable localThrowable = new Throwable();
@@ -129,13 +134,14 @@ public class SimpleLog
     this.writer.println(this.sb.toString());
     this.sb.setLength(0);
   }
-
+  
   public void flush()
   {
-    if (this.writer != null)
+    if (this.writer != null) {
       this.writer.flush();
+    }
   }
-
+  
   public void close()
   {
     if ((this.writer != null) && (!this.isSystem))
@@ -147,7 +153,8 @@ public class SimpleLog
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.lib.SimpleLog
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

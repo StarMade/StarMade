@@ -12,7 +12,8 @@ public final class ARBCompressedTexturePixelStorage
   public static final int GL_PACK_COMPRESSED_BLOCK_SIZE = 37166;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.opengl.ARBCompressedTexturePixelStorage
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

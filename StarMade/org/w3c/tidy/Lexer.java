@@ -70,7 +70,7 @@ public class Lexer
   private static final int CDATA_INTERMEDIATE = 0;
   private static final int CDATA_STARTTAG = 1;
   private static final int CDATA_ENDTAG = 2;
-
+  
   public Lexer(StreamIn paramStreamIn, Configuration paramConfiguration, Report paramReport)
   {
     this.report = paramReport;
@@ -85,65 +85,70 @@ public class Lexer
     this.configuration = paramConfiguration;
     this.nodeList = new Vector();
   }
-
+  
   public Node newNode()
   {
     Node localNode = new Node();
     this.nodeList.add(localNode);
     return localNode;
   }
-
+  
   public Node newNode(short paramShort, byte[] paramArrayOfByte, int paramInt1, int paramInt2)
   {
     Node localNode = new Node(paramShort, paramArrayOfByte, paramInt1, paramInt2);
     this.nodeList.add(localNode);
     return localNode;
   }
-
+  
   public Node newNode(short paramShort, byte[] paramArrayOfByte, int paramInt1, int paramInt2, String paramString)
   {
     Node localNode = new Node(paramShort, paramArrayOfByte, paramInt1, paramInt2, paramString, this.configuration.tt);
     this.nodeList.add(localNode);
     return localNode;
   }
-
+  
   public Node cloneNode(Node paramNode)
   {
     Node localNode = paramNode.cloneNode(false);
     this.nodeList.add(localNode);
     for (AttVal localAttVal = localNode.attributes; localAttVal != null; localAttVal = localAttVal.next)
     {
-      if (localAttVal.asp != null)
+      if (localAttVal.asp != null) {
         this.nodeList.add(localAttVal.asp);
-      if (localAttVal.php != null)
+      }
+      if (localAttVal.php != null) {
         this.nodeList.add(localAttVal.php);
+      }
     }
     return localNode;
   }
-
+  
   public AttVal cloneAttributes(AttVal paramAttVal)
   {
     AttVal localAttVal1 = (AttVal)paramAttVal.clone();
     for (AttVal localAttVal2 = localAttVal1; localAttVal2 != null; localAttVal2 = localAttVal2.next)
     {
-      if (localAttVal2.asp != null)
+      if (localAttVal2.asp != null) {
         this.nodeList.add(localAttVal2.asp);
-      if (localAttVal2.php != null)
+      }
+      if (localAttVal2.php != null) {
         this.nodeList.add(localAttVal2.php);
+      }
     }
     return localAttVal1;
   }
-
+  
   protected void updateNodeTextArrays(byte[] paramArrayOfByte1, byte[] paramArrayOfByte2)
   {
     for (int i = 0; i < this.nodeList.size(); i++)
     {
       Node localNode = (Node)this.nodeList.get(i);
-      if (localNode.textarray == paramArrayOfByte1)
+      if (localNode.textarray == paramArrayOfByte1) {
         localNode.textarray = paramArrayOfByte2;
+      }
     }
   }
-
+  
   public Node newLineNode()
   {
     Node localNode = newNode();
@@ -153,21 +158,23 @@ public class Lexer
     localNode.end = this.lexsize;
     return localNode;
   }
-
+  
   public boolean endOfInput()
   {
     return this.in.isEndOfStream();
   }
-
+  
   public void addByte(int paramInt)
   {
     if (this.lexsize + 1 >= this.lexlength)
     {
-      while (this.lexsize + 1 >= this.lexlength)
-        if (this.lexlength == 0)
+      while (this.lexsize + 1 >= this.lexlength) {
+        if (this.lexlength == 0) {
           this.lexlength = 8192;
-        else
+        } else {
           this.lexlength *= 2;
+        }
+      }
       byte[] arrayOfByte = this.lexbuf;
       this.lexbuf = new byte[this.lexlength];
       if (arrayOfByte != null)
@@ -179,17 +186,19 @@ public class Lexer
     this.lexbuf[(this.lexsize++)] = ((byte)paramInt);
     this.lexbuf[this.lexsize] = 0;
   }
-
+  
   public void changeChar(byte paramByte)
   {
-    if (this.lexsize > 0)
+    if (this.lexsize > 0) {
       this.lexbuf[(this.lexsize - 1)] = paramByte;
+    }
   }
-
+  
   public void addCharToLexer(int paramInt)
   {
-    if (((this.configuration.xmlOut) || (this.configuration.xHTML)) && ((paramInt < 32) || (paramInt > 55295)) && (paramInt != 9) && (paramInt != 10) && (paramInt != 13) && ((paramInt < 57344) || (paramInt > 65533)) && ((paramInt < 65536) || (paramInt > 1114111)))
+    if (((this.configuration.xmlOut) || (this.configuration.xHTML)) && ((paramInt < 32) || (paramInt > 55295)) && (paramInt != 9) && (paramInt != 10) && (paramInt != 13) && ((paramInt < 57344) || (paramInt > 65533)) && ((paramInt < 65536) || (paramInt > 1114111))) {
       return;
+    }
     int i = 0;
     int[] arrayOfInt = { 0 };
     byte[] arrayOfByte = new byte[10];
@@ -201,16 +210,18 @@ public class Lexer
       arrayOfByte[2] = -67;
       arrayOfInt[0] = 3;
     }
-    for (i = 0; i < arrayOfInt[0]; i++)
+    for (i = 0; i < arrayOfInt[0]; i++) {
       addByte(arrayOfByte[i]);
+    }
   }
-
+  
   public void addStringToLexer(String paramString)
   {
-    for (int i = 0; i < paramString.length(); i++)
+    for (int i = 0; i < paramString.length(); i++) {
       addCharToLexer(paramString.charAt(i));
+    }
   }
-
+  
   public void parseEntity(short paramShort)
   {
     int j = 1;
@@ -218,7 +229,7 @@ public class Lexer
     int i = this.lexsize - 1;
     int i1 = this.in.getCurcol() - 1;
     int m;
-    while ((m = this.in.readChar()) != -1)
+    while ((m = this.in.readChar()) != -1) {
       if (m == 59)
       {
         k = 1;
@@ -236,14 +247,17 @@ public class Lexer
       else
       {
         j = 0;
-        if (TidyUtils.isNamechar((char)m))
+        if (TidyUtils.isNamechar((char)m)) {
           addCharToLexer(m);
-        else
+        } else {
           this.in.ungetChar(m);
+        }
       }
+    }
     String str = TidyUtils.getString(this.lexbuf, i, this.lexsize - i);
-    if (("&apos".equals(str)) && (!this.configuration.xmlOut) && (!this.isvoyager) && (!this.configuration.xHTML))
+    if (("&apos".equals(str)) && (!this.configuration.xmlOut) && (!this.isvoyager) && (!this.configuration.xHTML)) {
       this.report.entityError(this, (short)5, str, 39);
+    }
     int n = EntityTable.getDefaultEntityTable().entityCode(str);
     if ((n <= 0) || ((n >= 256) && (m != 59)))
     {
@@ -254,13 +268,15 @@ public class Lexer
         if ((n >= 128) && (n <= 159))
         {
           int i2 = 0;
-          if ("WIN1252".equals(this.configuration.replacementCharEncoding))
+          if ("WIN1252".equals(this.configuration.replacementCharEncoding)) {
             i2 = EncodingUtils.decodeWin1252(n);
-          else if ("MACROMAN".equals(this.configuration.replacementCharEncoding))
+          } else if ("MACROMAN".equals(this.configuration.replacementCharEncoding)) {
             i2 = EncodingUtils.decodeMacRoman(n);
+          }
           int i3 = i2 != 0 ? 0 : 1;
-          if (m != 59)
+          if (m != 59) {
             this.report.entityError(this, (short)2, str, m);
+          }
           this.report.encodingError(this, (short)(0x52 | i3), n);
           if (i2 != 0)
           {
@@ -278,8 +294,9 @@ public class Lexer
         {
           this.report.entityError(this, (short)3, str, n);
         }
-        if (k != 0)
+        if (k != 0) {
           addCharToLexer(59);
+        }
       }
       else
       {
@@ -295,8 +312,9 @@ public class Lexer
         this.report.entityError(this, (short)1, str, m);
       }
       this.lexsize = i;
-      if ((n == 160) && (TidyUtils.toBoolean(paramShort & 0x2)))
+      if ((n == 160) && (TidyUtils.toBoolean(paramShort & 0x2))) {
         n = 32;
+      }
       addCharToLexer(n);
       if ((n == 38) && (!this.configuration.quoteAmpersand))
       {
@@ -307,7 +325,7 @@ public class Lexer
       }
     }
   }
-
+  
   public char parseTagName()
   {
     int i = this.lexbuf[this.txtstart];
@@ -318,67 +336,79 @@ public class Lexer
     }
     while (((i = this.in.readChar()) != -1) && (TidyUtils.isNamechar((char)i)))
     {
-      if ((!this.configuration.xmlTags) && (TidyUtils.isUpper((char)i)))
+      if ((!this.configuration.xmlTags) && (TidyUtils.isUpper((char)i))) {
         i = TidyUtils.toLower((char)i);
+      }
       addCharToLexer(i);
     }
     this.txtend = this.lexsize;
     return (char)i;
   }
-
+  
   public void addStringLiteral(String paramString)
   {
     int i = paramString.length();
-    for (int j = 0; j < i; j++)
+    for (int j = 0; j < i; j++) {
       addCharToLexer(paramString.charAt(j));
+    }
   }
-
+  
   void addStringLiteralLen(String paramString, int paramInt)
   {
     int i = paramString.length();
-    if (i < paramInt)
+    if (i < paramInt) {
       paramInt = i;
-    for (int j = 0; j < paramInt; j++)
+    }
+    for (int j = 0; j < paramInt; j++) {
       addCharToLexer(paramString.charAt(j));
+    }
   }
-
+  
   public short htmlVersion()
   {
-    if (TidyUtils.toBoolean(this.versions & 0x1))
+    if (TidyUtils.toBoolean(this.versions & 0x1)) {
       return 1;
-    if ((!(this.configuration.xmlOut | this.configuration.xmlTags | this.isvoyager)) && (TidyUtils.toBoolean(this.versions & 0x2)))
+    }
+    if ((!(this.configuration.xmlOut | this.configuration.xmlTags | this.isvoyager)) && (TidyUtils.toBoolean(this.versions & 0x2))) {
       return 2;
-    if (TidyUtils.toBoolean(this.versions & 0x400))
+    }
+    if (TidyUtils.toBoolean(this.versions & 0x400)) {
       return 1024;
-    if (TidyUtils.toBoolean(this.versions & 0x4))
+    }
+    if (TidyUtils.toBoolean(this.versions & 0x4)) {
       return 4;
-    if (TidyUtils.toBoolean(this.versions & 0x8))
+    }
+    if (TidyUtils.toBoolean(this.versions & 0x8)) {
       return 8;
-    if (TidyUtils.toBoolean(this.versions & 0x10))
+    }
+    if (TidyUtils.toBoolean(this.versions & 0x10)) {
       return 16;
+    }
     return 0;
   }
-
+  
   public String htmlVersionName()
   {
     int i = apparentVersion();
-    for (int j = 0; j < W3CVERSION.length; j++)
+    for (int j = 0; j < W3CVERSION.length; j++) {
       if (i == W3CVERSION[j].code)
       {
-        if (this.isvoyager)
+        if (this.isvoyager) {
           return W3CVERSION[j].voyagerName;
+        }
         return W3CVERSION[j].name;
       }
+    }
     return null;
   }
-
+  
   public boolean addGenerator(Node paramNode)
   {
     Node localNode2 = paramNode.findHEAD(this.configuration.tt);
     if (localNode2 != null)
     {
       String str = "HTML Tidy for Java (vers. " + Report.RELEASE_DATE_STRING + "), see jtidy.sourceforge.net";
-      for (Node localNode1 = localNode2.content; localNode1 != null; localNode1 = localNode1.next)
+      for (Node localNode1 = localNode2.content; localNode1 != null; localNode1 = localNode1.next) {
         if (localNode1.tag == this.configuration.tt.tagMeta)
         {
           AttVal localAttVal = localNode1.getAttrByName("name");
@@ -392,6 +422,7 @@ public class Lexer
             }
           }
         }
+      }
       localNode1 = inferredTag("meta");
       localNode1.addAttribute("content", str);
       localNode1.addAttribute("name", "generator");
@@ -400,71 +431,80 @@ public class Lexer
     }
     return false;
   }
-
+  
   public boolean checkDocTypeKeyWords(Node paramNode)
   {
     int i = paramNode.end - paramNode.start;
     String str = TidyUtils.getString(this.lexbuf, paramNode.start, i);
     return (!TidyUtils.findBadSubString("SYSTEM", str, str.length())) && (!TidyUtils.findBadSubString("PUBLIC", str, str.length())) && (!TidyUtils.findBadSubString("//DTD", str, str.length())) && (!TidyUtils.findBadSubString("//W3C", str, str.length())) && (!TidyUtils.findBadSubString("//EN", str, str.length()));
   }
-
+  
   public short findGivenVersion(Node paramNode)
   {
     String str3 = TidyUtils.getString(this.lexbuf, paramNode.start, 5);
-    if (!"html ".equalsIgnoreCase(str3))
+    if (!"html ".equalsIgnoreCase(str3)) {
       return 0;
-    if (!checkDocTypeKeyWords(paramNode))
+    }
+    if (!checkDocTypeKeyWords(paramNode)) {
       this.report.warning(this, paramNode, null, (short)37);
+    }
     str3 = TidyUtils.getString(this.lexbuf, paramNode.start + 5, 7);
     if ("SYSTEM ".equalsIgnoreCase(str3))
     {
-      if (!str3.substring(0, 6).equals("SYSTEM"))
+      if (!str3.substring(0, 6).equals("SYSTEM")) {
         System.arraycopy(TidyUtils.getBytes("SYSTEM"), 0, this.lexbuf, paramNode.start + 5, 6);
+      }
       return 0;
     }
     if ("PUBLIC ".equalsIgnoreCase(str3))
     {
-      if (!str3.substring(0, 6).equals("PUBLIC"))
+      if (!str3.substring(0, 6).equals("PUBLIC")) {
         System.arraycopy(TidyUtils.getBytes("PUBLIC "), 0, this.lexbuf, paramNode.start + 5, 6);
+      }
     }
-    else
+    else {
       this.badDoctype = true;
-    for (int i = paramNode.start; i < paramNode.end; i++)
+    }
+    for (int i = paramNode.start; i < paramNode.end; i++) {
       if (this.lexbuf[i] == 34)
       {
         str3 = TidyUtils.getString(this.lexbuf, i + 1, 12);
         String str4 = TidyUtils.getString(this.lexbuf, i + 1, 13);
         if (str3.equals("-//W3C//DTD "))
         {
-          for (j = i + 13; (j < paramNode.end) && (this.lexbuf[j] != 47); j++);
+          for (j = i + 13; (j < paramNode.end) && (this.lexbuf[j] != 47); j++) {}
           k = j - i - 13;
           str1 = TidyUtils.getString(this.lexbuf, i + 13, k);
           for (j = 1; j < W3CVERSION.length; j++)
           {
             str2 = W3CVERSION[j].name;
-            if ((k == str2.length()) && (str2.equals(str1)))
+            if ((k == str2.length()) && (str2.equals(str1))) {
               return W3CVERSION[j].code;
+            }
           }
         }
-        if (!str4.equals("-//IETF//DTD "))
+        if (!str4.equals("-//IETF//DTD ")) {
           break;
-        for (int j = i + 14; (j < paramNode.end) && (this.lexbuf[j] != 47); j++);
+        }
+        for (int j = i + 14; (j < paramNode.end) && (this.lexbuf[j] != 47); j++) {}
         int k = j - i - 14;
         String str1 = TidyUtils.getString(this.lexbuf, i + 14, k);
         String str2 = W3CVERSION[0].name;
-        if ((k != str2.length()) || (!str2.equals(str1)))
+        if ((k != str2.length()) || (!str2.equals(str1))) {
           break;
+        }
         return W3CVERSION[0].code;
       }
+    }
     return 0;
   }
-
+  
   public void fixHTMLNameSpace(Node paramNode, String paramString)
   {
-    for (Node localNode = paramNode.content; (localNode != null) && (localNode.tag != this.configuration.tt.tagHtml); localNode = localNode.next);
+    for (Node localNode = paramNode.content; (localNode != null) && (localNode.tag != this.configuration.tt.tagHtml); localNode = localNode.next) {}
     if (localNode != null)
     {
-      for (AttVal localAttVal = localNode.attributes; (localAttVal != null) && (!localAttVal.attribute.equals("xmlns")); localAttVal = localAttVal.next);
+      for (AttVal localAttVal = localNode.attributes; (localAttVal != null) && (!localAttVal.attribute.equals("xmlns")); localAttVal = localAttVal.next) {}
       if (localAttVal != null)
       {
         if (!localAttVal.value.equals(paramString))
@@ -481,12 +521,13 @@ public class Lexer
       }
     }
   }
-
+  
   Node newXhtmlDocTypeNode(Node paramNode)
   {
     Node localNode1 = paramNode.findHTML(this.configuration.tt);
-    if (localNode1 == null)
+    if (localNode1 == null) {
       return null;
+    }
     Node localNode2 = newNode();
     localNode2.setType((short)1);
     localNode2.next = localNode1;
@@ -506,7 +547,7 @@ public class Lexer
     localNode1.prev = localNode2;
     return localNode2;
   }
-
+  
   public boolean setXHTMLDocType(Node paramNode)
   {
     String str1 = " ";
@@ -518,8 +559,9 @@ public class Lexer
     fixHTMLNameSpace(paramNode, str3);
     if (this.configuration.docTypeMode == 0)
     {
-      if (localNode != null)
+      if (localNode != null) {
         Node.discardElement(localNode);
+      }
       return true;
     }
     if (this.configuration.docTypeMode == 1)
@@ -548,8 +590,9 @@ public class Lexer
       {
         str1 = null;
         str2 = "";
-        if (localNode != null)
+        if (localNode != null) {
           Node.discardElement(localNode);
+        }
       }
     }
     else if (this.configuration.docTypeMode == 2)
@@ -567,8 +610,9 @@ public class Lexer
       str1 = this.configuration.docTypeStr;
       str2 = "";
     }
-    if (str1 == null)
+    if (str1 == null) {
       return false;
+    }
     if (localNode != null)
     {
       if ((this.configuration.xHTML) || (this.configuration.xmlOut))
@@ -587,8 +631,9 @@ public class Lexer
         }
       }
     }
-    else if ((localNode = newXhtmlDocTypeNode(paramNode)) == null)
+    else if ((localNode = newXhtmlDocTypeNode(paramNode)) == null) {
       return false;
+    }
     this.txtstart = this.lexsize;
     this.txtend = this.lexsize;
     addStringLiteral("html PUBLIC ");
@@ -602,10 +647,11 @@ public class Lexer
       addStringLiteral(str1);
       addStringLiteral("\"");
     }
-    if ((this.configuration.wraplen != 0) && (str2.length() + 6 >= this.configuration.wraplen))
+    if ((this.configuration.wraplen != 0) && (str2.length() + 6 >= this.configuration.wraplen)) {
       addStringLiteral("\n\"");
-    else
+    } else {
       addStringLiteral(" \"");
+    }
     addStringLiteral(str2);
     addStringLiteral("\"");
     if ((i > 0) && (str4 != null))
@@ -621,36 +667,42 @@ public class Lexer
     localNode.end = j;
     return false;
   }
-
+  
   public short apparentVersion()
   {
     switch (this.doctype)
     {
-    case 0:
+    case 0: 
       return htmlVersion();
-    case 1:
-      if (TidyUtils.toBoolean(this.versions & 0x1))
+    case 1: 
+      if (TidyUtils.toBoolean(this.versions & 0x1)) {
         return 1;
+      }
       break;
-    case 2:
-      if (TidyUtils.toBoolean(this.versions & 0x2))
+    case 2: 
+      if (TidyUtils.toBoolean(this.versions & 0x2)) {
         return 2;
+      }
       break;
-    case 4:
-      if (TidyUtils.toBoolean(this.versions & 0x4))
+    case 4: 
+      if (TidyUtils.toBoolean(this.versions & 0x4)) {
         return 4;
+      }
       break;
-    case 8:
-      if (TidyUtils.toBoolean(this.versions & 0x8))
+    case 8: 
+      if (TidyUtils.toBoolean(this.versions & 0x8)) {
         return 8;
+      }
       break;
-    case 16:
-      if (TidyUtils.toBoolean(this.versions & 0x10))
+    case 16: 
+      if (TidyUtils.toBoolean(this.versions & 0x10)) {
         return 16;
+      }
       break;
-    case 1024:
-      if (TidyUtils.toBoolean(this.versions & 0x400))
+    case 1024: 
+      if (TidyUtils.toBoolean(this.versions & 0x400)) {
         return 1024;
+      }
       break;
     }
     this.lines = 1;
@@ -658,21 +710,24 @@ public class Lexer
     this.report.warning(this, null, null, (short)28);
     return htmlVersion();
   }
-
+  
   public boolean fixDocType(Node paramNode)
   {
     int i = 4;
-    if (this.badDoctype)
+    if (this.badDoctype) {
       this.report.warning(this, null, null, (short)35);
+    }
     Node localNode = paramNode.findDocType();
     if (this.configuration.docTypeMode == 0)
     {
-      if (localNode != null)
+      if (localNode != null) {
         Node.discardElement(localNode);
+      }
       return true;
     }
-    if (this.configuration.xmlOut)
+    if (this.configuration.xmlOut) {
       return true;
+    }
     if (this.configuration.docTypeMode == 2)
     {
       Node.discardElement(localNode);
@@ -689,50 +744,60 @@ public class Lexer
     {
       if (localNode != null)
       {
-        if (this.doctype == 0)
+        if (this.doctype == 0) {
           return false;
+        }
         switch (this.doctype)
         {
-        case 0:
+        case 0: 
           return false;
-        case 1:
-          if (TidyUtils.toBoolean(this.versions & 0x1))
+        case 1: 
+          if (TidyUtils.toBoolean(this.versions & 0x1)) {
             return true;
+          }
           break;
-        case 2:
-          if (TidyUtils.toBoolean(this.versions & 0x2))
+        case 2: 
+          if (TidyUtils.toBoolean(this.versions & 0x2)) {
             return true;
+          }
           break;
-        case 4:
-          if (TidyUtils.toBoolean(this.versions & 0x4))
+        case 4: 
+          if (TidyUtils.toBoolean(this.versions & 0x4)) {
             return true;
+          }
           break;
-        case 8:
-          if (TidyUtils.toBoolean(this.versions & 0x8))
+        case 8: 
+          if (TidyUtils.toBoolean(this.versions & 0x8)) {
             return true;
+          }
           break;
-        case 16:
-          if (TidyUtils.toBoolean(this.versions & 0x10))
+        case 16: 
+          if (TidyUtils.toBoolean(this.versions & 0x10)) {
             return true;
+          }
           break;
-        case 1024:
-          if (TidyUtils.toBoolean(this.versions & 0x400))
+        case 1024: 
+          if (TidyUtils.toBoolean(this.versions & 0x400)) {
             return true;
+          }
           break;
         }
       }
       i = htmlVersion();
     }
-    if (i == 0)
+    if (i == 0) {
       return false;
+    }
     if ((this.configuration.xmlOut) || (this.configuration.xmlTags) || (this.isvoyager))
     {
-      if (localNode != null)
+      if (localNode != null) {
         Node.discardElement(localNode);
+      }
       fixHTMLNameSpace(paramNode, "http://www.w3.org/1999/xhtml");
     }
-    if ((localNode == null) && ((localNode = newXhtmlDocTypeNode(paramNode)) == null))
+    if ((localNode == null) && ((localNode = newXhtmlDocTypeNode(paramNode)) == null)) {
       return false;
+    }
     this.txtstart = this.lexsize;
     this.txtend = this.lexsize;
     addStringLiteral("html PUBLIC ");
@@ -756,12 +821,13 @@ public class Lexer
     else
     {
       addStringLiteral("\"-//W3C//DTD ");
-      for (int j = 0; j < W3CVERSION.length; j++)
+      for (int j = 0; j < W3CVERSION.length; j++) {
         if (i == W3CVERSION[j].code)
         {
           addStringLiteral(W3CVERSION[j].name);
           break;
         }
+      }
       addStringLiteral("//EN\"");
     }
     this.txtend = this.lexsize;
@@ -772,7 +838,7 @@ public class Lexer
     localNode.end = k;
     return true;
   }
-
+  
   public boolean fixXmlDecl(Node paramNode)
   {
     Node localNode;
@@ -795,23 +861,26 @@ public class Lexer
     AttVal localAttVal2 = localNode.getAttrByName("encoding");
     if ((localAttVal2 == null) && (!"UTF8".equals(this.configuration.getOutCharEncodingName())))
     {
-      if ("ISO8859_1".equals(this.configuration.getOutCharEncodingName()))
+      if ("ISO8859_1".equals(this.configuration.getOutCharEncodingName())) {
         localNode.addAttribute("encoding", "iso-8859-1");
-      if ("ISO2022".equals(this.configuration.getOutCharEncodingName()))
+      }
+      if ("ISO2022".equals(this.configuration.getOutCharEncodingName())) {
         localNode.addAttribute("encoding", "iso-2022");
+      }
     }
-    if (localAttVal1 == null)
+    if (localAttVal1 == null) {
       localNode.addAttribute("version", "1.0");
+    }
     return true;
   }
-
+  
   public Node inferredTag(String paramString)
   {
     Node localNode = newNode((short)5, this.lexbuf, this.txtstart, this.txtend, paramString);
     localNode.implicit = true;
     return localNode;
   }
-
+  
   public Node getCDATA(Node paramNode)
   {
     int i = 0;
@@ -834,8 +903,9 @@ public class Lexer
       {
         if (m != 60)
         {
-          if ((n != 0) && (!TidyUtils.isWhite((char)m)))
+          if ((n != 0) && (!TidyUtils.isWhite((char)m))) {
             n = 0;
+          }
         }
         else
         {
@@ -903,8 +973,9 @@ public class Lexer
         if (!TidyUtils.isLetter((char)m))
         {
           bool = paramNode.element.equalsIgnoreCase(TidyUtils.getString(this.lexbuf, i, paramNode.element.length()));
-          if (bool)
+          if (bool) {
             j++;
+          }
           k = 0;
         }
       }
@@ -914,16 +985,18 @@ public class Lexer
         int i2;
         if ((n != 0) && (!bool))
         {
-          for (i2 = this.lexsize - 1; i2 >= i; i2--)
+          for (i2 = this.lexsize - 1; i2 >= i; i2--) {
             this.in.ungetChar(this.lexbuf[i2]);
+          }
           this.in.ungetChar(47);
           this.in.ungetChar(60);
           break;
         }
         if ((bool) && (j-- <= 0))
         {
-          for (i2 = this.lexsize - 1; i2 >= i; i2--)
+          for (i2 = this.lexsize - 1; i2 >= i; i2--) {
             this.in.ungetChar(this.lexbuf[i2]);
+          }
           this.in.ungetChar(47);
           this.in.ungetChar(60);
           this.lexsize -= this.lexsize - i + 2;
@@ -937,8 +1010,9 @@ public class Lexer
           this.report.error(this, null, null, (short)32);
           if (paramNode.isJavaScript())
           {
-            for (i2 = this.lexsize; i2 > i - 1; i2--)
+            for (i2 = this.lexsize; i2 > i - 1; i2--) {
               this.lexbuf[i2] = this.lexbuf[(i2 - 1)];
+            }
             this.lexbuf[(i - 1)] = 92;
             this.lexsize += 1;
           }
@@ -946,20 +1020,22 @@ public class Lexer
         k = 0;
       }
     }
-    if (n != 0)
+    if (n != 0) {
       this.lexsize = (this.txtstart = this.txtend);
-    else
+    } else {
       this.txtend = this.lexsize;
-    if (m == -1)
+    }
+    if (m == -1) {
       this.report.error(this, paramNode, null, (short)6);
+    }
     return newNode((short)4, this.lexbuf, this.txtstart, this.txtend);
   }
-
+  
   public void ungetToken()
   {
     this.pushed = true;
   }
-
+  
   public Node getToken(short paramShort)
   {
     int i = 0;
@@ -972,8 +1048,9 @@ public class Lexer
       this.pushed = false;
       return this.token;
     }
-    if ((this.insert != -1) || (this.inode != null))
+    if ((this.insert != -1) || (this.inode != null)) {
       return insertedToken();
+    }
     this.lines = this.in.getCurline();
     this.columns = this.in.getCurcol();
     this.waswhite = false;
@@ -981,8 +1058,9 @@ public class Lexer
     this.txtend = this.lexsize;
     while ((i = this.in.readChar()) != -1)
     {
-      if ((this.insertspace) && (paramShort != 0))
+      if ((this.insertspace) && (paramShort != 0)) {
         addCharToLexer(32);
+      }
       if ((this.insertspace) && (!TidyUtils.toBoolean(paramShort & 0x0)))
       {
         this.waswhite = true;
@@ -991,14 +1069,15 @@ public class Lexer
       if (i == 13)
       {
         i = this.in.readChar();
-        if (i != 10)
+        if (i != 10) {
           this.in.ungetChar(i);
+        }
         i = 10;
       }
       addCharToLexer(i);
       switch (this.state)
       {
-      case 0:
+      case 0: 
         if ((TidyUtils.isWhite((char)i)) && (paramShort == 0) && (this.lexsize == this.txtstart + 1))
         {
           this.lexsize -= 1;
@@ -1024,20 +1103,23 @@ public class Lexer
           else
           {
             this.waswhite = true;
-            if ((paramShort != 2) && (paramShort != 3) && (i != 32))
+            if ((paramShort != 2) && (paramShort != 3) && (i != 32)) {
               changeChar((byte)32);
+            }
           }
         }
         else
         {
-          if ((i == 38) && (paramShort != 3))
+          if ((i == 38) && (paramShort != 3)) {
             parseEntity(paramShort);
-          if (paramShort == 0)
+          }
+          if (paramShort == 0) {
             paramShort = 1;
+          }
           this.waswhite = false;
         }
         break;
-      case 1:
+      case 1: 
         if (i == 47)
         {
           i = this.in.readChar();
@@ -1116,8 +1198,7 @@ public class Lexer
                 this.in.ungetChar(i);
                 break;
               }
-            }
-            while (!TidyUtils.isWhite((char)i));
+            } while (!TidyUtils.isWhite((char)i));
             do
             {
               i = this.in.readChar();
@@ -1126,8 +1207,7 @@ public class Lexer
                 this.in.ungetChar(i);
                 break;
               }
-            }
-            while (TidyUtils.isWhite((char)i));
+            } while (TidyUtils.isWhite((char)i));
             this.in.ungetChar(i);
             if (this.txtend > this.txtstart)
             {
@@ -1153,10 +1233,10 @@ public class Lexer
             do
             {
               i = this.in.readChar();
-              if (i == 62)
+              if (i == 62) {
                 break;
-            }
-            while (i != -1);
+              }
+            } while (i != -1);
             this.in.ungetChar(i);
             this.lexsize -= 2;
             this.lexbuf[this.lexsize] = 0;
@@ -1217,15 +1297,16 @@ public class Lexer
           this.waswhite = false;
         }
         break;
-      case 2:
+      case 2: 
         this.txtstart = (this.lexsize - 1);
         this.columns -= 2;
         i = parseTagName();
         this.token = newNode((short)6, this.lexbuf, this.txtstart, this.txtend, TidyUtils.getString(this.lexbuf, this.txtstart, this.txtend - this.txtstart));
         this.lexsize = this.txtstart;
         this.txtend = this.txtstart;
-        while (TidyUtils.isWhite((char)i))
+        while (TidyUtils.isWhite((char)i)) {
           i = this.in.readChar();
+        }
         if (i == -1)
         {
           this.in.ungetChar(i);
@@ -1244,7 +1325,7 @@ public class Lexer
           return this.token;
         }
         break;
-      case 3:
+      case 3: 
         this.txtstart = (this.lexsize - 1);
         i = parseTagName();
         arrayOfBoolean[0] = false;
@@ -1252,12 +1333,14 @@ public class Lexer
         this.token = newNode((short)(arrayOfBoolean[0] != 0 ? 7 : 5), this.lexbuf, this.txtstart, this.txtend, TidyUtils.getString(this.lexbuf, this.txtstart, this.txtend - this.txtstart));
         if (i != 62)
         {
-          if (i == 47)
+          if (i == 47) {
             this.in.ungetChar(i);
+          }
           localObject = parseAttrs(arrayOfBoolean);
         }
-        if (arrayOfBoolean[0] != 0)
+        if (arrayOfBoolean[0] != 0) {
           this.token.type = 7;
+        }
         this.token.attributes = ((AttVal)localObject);
         this.lexsize = this.txtstart;
         this.txtend = this.txtstart;
@@ -1267,8 +1350,9 @@ public class Lexer
           if (i == 13)
           {
             i = this.in.readChar();
-            if (i != 10)
+            if (i != 10) {
               this.in.ungetChar(i);
+            }
           }
           else if ((i != 10) && (i != 12))
           {
@@ -1288,32 +1372,36 @@ public class Lexer
         else if (!this.configuration.xmlTags)
         {
           constrainVersion(this.token.tag.versions);
-          if (TidyUtils.toBoolean(this.token.tag.versions & 0x1C0))
-            if ((this.configuration.makeClean) && (this.token.tag != this.configuration.tt.tagNobr) && (this.token.tag != this.configuration.tt.tagWbr))
+          if (TidyUtils.toBoolean(this.token.tag.versions & 0x1C0)) {
+            if ((this.configuration.makeClean) && (this.token.tag != this.configuration.tt.tagNobr) && (this.token.tag != this.configuration.tt.tagWbr)) {
               this.report.warning(this, null, this.token, (short)21);
-            else if (!this.configuration.makeClean)
+            } else if (!this.configuration.makeClean) {
               this.report.warning(this, null, this.token, (short)21);
-          if (this.token.tag.getChkattrs() != null)
+            }
+          }
+          if (this.token.tag.getChkattrs() != null) {
             this.token.tag.getChkattrs().check(this, this.token);
-          else
+          } else {
             this.token.checkAttributes(this);
+          }
           this.token.repairDuplicateAttributes(this);
         }
         return this.token;
-      case 4:
+      case 4: 
         if (i == 45)
         {
           i = this.in.readChar();
           addCharToLexer(i);
           if (i == 45)
           {
-            while (true)
+            for (;;)
             {
               i = this.in.readChar();
               if (i == 62)
               {
-                if (j != 0)
+                if (j != 0) {
                   this.report.warning(this, null, null, (short)29);
+                }
                 this.txtend = (this.lexsize - 2);
                 this.lexbuf[this.lexsize] = 0;
                 this.state = 0;
@@ -1323,13 +1411,15 @@ public class Lexer
                 if (i == 13)
                 {
                   i = this.in.readChar();
-                  if (i != 10)
+                  if (i != 10) {
                     this.token.linebreak = true;
+                  }
                 }
-                if (i == 10)
+                if (i == 10) {
                   this.token.linebreak = true;
-                else
+                } else {
                   this.in.ungetChar(i);
+                }
                 return this.token;
               }
               if (j == 0)
@@ -1338,21 +1428,24 @@ public class Lexer
                 this.columns = (this.in.getCurcol() - 3);
               }
               j++;
-              if (this.configuration.fixComments)
+              if (this.configuration.fixComments) {
                 this.lexbuf[(this.lexsize - 2)] = 61;
+              }
               addCharToLexer(i);
-              if (i != 45)
+              if (i != 45) {
                 break;
+              }
             }
             this.lexbuf[(this.lexsize - 2)] = 61;
           }
         }
         break;
-      case 5:
+      case 5: 
         if (TidyUtils.isWhite((char)i))
         {
-          if (this.waswhite)
+          if (this.waswhite) {
             this.lexsize -= 1;
+          }
           this.waswhite = true;
         }
         else
@@ -1361,11 +1454,13 @@ public class Lexer
         }
         if (k != 0)
         {
-          if (i == 93)
+          if (i == 93) {
             k = 0;
+          }
         }
-        else if (i == 91)
+        else if (i == 91) {
           k = 1;
+        }
         if ((k == 0) && (i == 62))
         {
           this.lexsize -= 1;
@@ -1378,7 +1473,7 @@ public class Lexer
           return this.token;
         }
         break;
-      case 6:
+      case 6: 
         if ((this.lexsize - this.txtstart == 3) && (TidyUtils.getString(this.lexbuf, this.txtstart, 3).equals("php")))
         {
           this.state = 12;
@@ -1415,7 +1510,7 @@ public class Lexer
           return this.token;
         }
         break;
-      case 10:
+      case 10: 
         if (i == 37)
         {
           i = this.in.readChar();
@@ -1435,7 +1530,7 @@ public class Lexer
           }
         }
         break;
-      case 11:
+      case 11: 
         if (i == 35)
         {
           i = this.in.readChar();
@@ -1455,7 +1550,7 @@ public class Lexer
           }
         }
         break;
-      case 12:
+      case 12: 
         if (i == 63)
         {
           i = this.in.readChar();
@@ -1475,7 +1570,7 @@ public class Lexer
           }
         }
         break;
-      case 13:
+      case 13: 
         if ((!TidyUtils.isWhite((char)i)) || (i == 63))
         {
           if (i != 63)
@@ -1511,7 +1606,7 @@ public class Lexer
           }
         }
         break;
-      case 9:
+      case 9: 
         if ((i == 91) && (this.lexsize == this.txtstart + 6) && (TidyUtils.getString(this.lexbuf, this.txtstart, 6).equals("CDATA[")))
         {
           this.state = 8;
@@ -1536,7 +1631,7 @@ public class Lexer
           }
         }
         break;
-      case 8:
+      case 8: 
         if (i == 93)
         {
           i = this.in.readChar();
@@ -1564,7 +1659,6 @@ public class Lexer
           }
         }
         break;
-      case 7:
       }
     }
     if (this.state == 0)
@@ -1584,8 +1678,9 @@ public class Lexer
     }
     else if (this.state == 4)
     {
-      if (i == -1)
+      if (i == -1) {
         this.report.warning(this, null, null, (short)29);
+      }
       this.txtend = this.lexsize;
       this.lexbuf[this.lexsize] = 0;
       this.state = 0;
@@ -1595,7 +1690,7 @@ public class Lexer
     }
     return null;
   }
-
+  
   public Node parseAsp()
   {
     Node localNode = null;
@@ -1604,22 +1699,25 @@ public class Lexer
     while ((i = this.in.readChar()) != -1)
     {
       addCharToLexer(i);
-      if (i == 37)
+      if (i == 37) {
         if ((i = this.in.readChar()) != -1)
         {
           addCharToLexer(i);
-          if (i == 62)
+          if (i == 62) {
             break;
+          }
         }
+      }
     }
     this.lexsize -= 2;
     this.txtend = this.lexsize;
-    if (this.txtend > this.txtstart)
+    if (this.txtend > this.txtstart) {
       localNode = newNode((short)10, this.lexbuf, this.txtstart, this.txtend);
+    }
     this.txtstart = this.txtend;
     return localNode;
   }
-
+  
   public Node parsePhp()
   {
     Node localNode = null;
@@ -1628,22 +1726,25 @@ public class Lexer
     while ((i = this.in.readChar()) != -1)
     {
       addCharToLexer(i);
-      if (i == 63)
+      if (i == 63) {
         if ((i = this.in.readChar()) != -1)
         {
           addCharToLexer(i);
-          if (i == 62)
+          if (i == 62) {
             break;
+          }
         }
+      }
     }
     this.lexsize -= 2;
     this.txtend = this.lexsize;
-    if (this.txtend > this.txtstart)
+    if (this.txtend > this.txtstart) {
       localNode = newNode((short)12, this.lexbuf, this.txtstart, this.txtend);
+    }
     this.txtstart = this.txtend;
     return localNode;
   }
-
+  
   public String parseAttribute(boolean[] paramArrayOfBoolean, Node[] paramArrayOfNode1, Node[] paramArrayOfNode2)
   {
     int i = 0;
@@ -1651,7 +1752,7 @@ public class Lexer
     int k = 0;
     paramArrayOfNode1[0] = null;
     paramArrayOfNode2[0] = null;
-    while (true)
+    for (;;)
     {
       j = this.in.readChar();
       if (j == 47)
@@ -1667,8 +1768,9 @@ public class Lexer
       }
       else
       {
-        if (j == 62)
+        if (j == 62) {
           return null;
+        }
         if (j == 60)
         {
           j = this.in.readChar();
@@ -1683,8 +1785,9 @@ public class Lexer
             return null;
           }
           this.in.ungetChar(j);
-          if (this.state != 13)
+          if (this.state != 13) {
             this.in.ungetChar(60);
+          }
           this.report.attrError(this, this.token, null, (short)52);
           return null;
         }
@@ -1704,14 +1807,15 @@ public class Lexer
             this.in.ungetChar(j);
             return null;
           }
-          if (!TidyUtils.isWhite((char)j))
+          if (!TidyUtils.isWhite((char)j)) {
             break;
+          }
         }
       }
     }
     i = this.lexsize;
     k = j;
-    while (true)
+    for (;;)
     {
       if ((j == 61) || (j == 62))
       {
@@ -1729,10 +1833,12 @@ public class Lexer
         this.in.ungetChar(j);
         break;
       }
-      if (TidyUtils.isWhite((char)j))
+      if (TidyUtils.isWhite((char)j)) {
         break;
-      if ((!this.configuration.xmlTags) && (TidyUtils.isUpper((char)j)))
+      }
+      if ((!this.configuration.xmlTags) && (TidyUtils.isUpper((char)j))) {
         j = TidyUtils.toLower((char)j);
+      }
       addCharToLexer(j);
       k = j;
       j = this.in.readChar();
@@ -1742,20 +1848,22 @@ public class Lexer
     this.lexsize = i;
     return str;
   }
-
+  
   public int parseServerInstruction()
   {
     int j = 34;
     int k = 0;
     int i = this.in.readChar();
     addCharToLexer(i);
-    if ((i == 37) || (i == 63) || (i == 64))
+    if ((i == 37) || (i == 63) || (i == 64)) {
       k = 1;
-    while (true)
+    }
+    for (;;)
     {
       i = this.in.readChar();
-      if (i == -1)
+      if (i == -1) {
         break;
+      }
       if (i == 62)
       {
         if (k != 0)
@@ -1766,8 +1874,9 @@ public class Lexer
         this.in.ungetChar(i);
         break;
       }
-      if ((k == 0) && (TidyUtils.isWhite((char)i)))
+      if ((k == 0) && (TidyUtils.isWhite((char)i))) {
         break;
+      }
       addCharToLexer(i);
       if (i == 34)
       {
@@ -1787,8 +1896,7 @@ public class Lexer
             return 0;
           }
           addCharToLexer(i);
-        }
-        while (i != 34);
+        } while (i != 34);
         j = 39;
       }
       else if (i == 39)
@@ -1809,13 +1917,12 @@ public class Lexer
             return 0;
           }
           addCharToLexer(i);
-        }
-        while (i != 39);
+        } while (i != 39);
       }
     }
     return j;
   }
-
+  
   public String parseValue(String paramString, boolean paramBoolean, boolean[] paramArrayOfBoolean, int[] paramArrayOfInt)
   {
     int i = 0;
@@ -1824,28 +1931,31 @@ public class Lexer
     int n = 0;
     int i2 = 0;
     paramArrayOfInt[0] = 34;
-    if (this.configuration.literalAttribs)
+    if (this.configuration.literalAttribs) {
       m = 0;
-    while (true)
+    }
+    for (;;)
     {
       n = this.in.readChar();
-      if (n == -1)
+      if (n == -1) {
         this.in.ungetChar(n);
-      else if (!TidyUtils.isWhite((char)n))
+      } else if (!TidyUtils.isWhite((char)n)) {
         break;
+      }
     }
     if ((n != 61) && (n != 34) && (n != 39))
     {
       this.in.ungetChar(n);
       return null;
     }
-    while (true)
+    for (;;)
     {
       n = this.in.readChar();
-      if (n == -1)
+      if (n == -1) {
         this.in.ungetChar(n);
-      else if (!TidyUtils.isWhite((char)n))
+      } else if (!TidyUtils.isWhite((char)n)) {
         break;
+      }
     }
     if ((n == 34) || (n == 39))
     {
@@ -1867,7 +1977,7 @@ public class Lexer
     int i3 = 0;
     int j = this.lexsize;
     n = 0;
-    while (true)
+    for (;;)
     {
       int i1 = n;
       n = this.in.readChar();
@@ -1921,19 +2031,23 @@ public class Lexer
       }
       else
       {
-        if (n == i2)
+        if (n == i2) {
           break;
+        }
         if (n == 13)
         {
           n = this.in.readChar();
-          if (n != 10)
+          if (n != 10) {
             this.in.ungetChar(n);
+          }
           n = 10;
         }
-        if ((n == 10) || (n == 60) || (n == 62))
+        if ((n == 10) || (n == 60) || (n == 62)) {
           i3++;
-        if (n == 62)
+        }
+        if (n == 62) {
           k = 1;
+        }
       }
       if (n == 38)
       {
@@ -1960,8 +2074,9 @@ public class Lexer
         }
         if (TidyUtils.isWhite((char)n))
         {
-          if (i2 == 0)
+          if (i2 == 0) {
             break;
+          }
           if (m != 0)
           {
             if ((n == 10) && (AttributeTable.getDefaultAttributeTable().isUrl(paramString)))
@@ -1970,66 +2085,74 @@ public class Lexer
               continue;
             }
             n = 32;
-            if (i1 != 32);
+            if (i1 != 32) {}
           }
         }
         else
         {
-          if ((paramBoolean) && (TidyUtils.isUpper((char)n)))
+          if ((paramBoolean) && (TidyUtils.isUpper((char)n))) {
             n = TidyUtils.toLower((char)n);
+          }
           addCharToLexer(n);
         }
       }
     }
-    if ((i3 > 10) && (k != 0) && (m != 0) && (!AttributeTable.getDefaultAttributeTable().isScript(paramString)) && ((!AttributeTable.getDefaultAttributeTable().isUrl(paramString)) || (!"javascript:".equals(TidyUtils.getString(this.lexbuf, j, 11)))) && (!"<xml ".equals(TidyUtils.getString(this.lexbuf, j, 5))))
+    if ((i3 > 10) && (k != 0) && (m != 0) && (!AttributeTable.getDefaultAttributeTable().isScript(paramString)) && ((!AttributeTable.getDefaultAttributeTable().isUrl(paramString)) || (!"javascript:".equals(TidyUtils.getString(this.lexbuf, j, 11)))) && (!"<xml ".equals(TidyUtils.getString(this.lexbuf, j, 5)))) {
       this.report.error(this, null, null, (short)16);
+    }
     i = this.lexsize - j;
     this.lexsize = j;
     String str;
     if ((i > 0) || (i2 != 0))
     {
-      if (m != 0)
+      if (m != 0) {
         if (!TidyUtils.isInValuesIgnoreCase(new String[] { "alt", "title", "value", "prompt" }, paramString))
         {
-          while (TidyUtils.isWhite((char)this.lexbuf[(j + i - 1)]))
+          while (TidyUtils.isWhite((char)this.lexbuf[(j + i - 1)])) {
             i--;
+          }
           while ((TidyUtils.isWhite((char)this.lexbuf[j])) && (j < i))
           {
             j++;
             i--;
           }
         }
+      }
       str = TidyUtils.getString(this.lexbuf, j, i);
     }
     else
     {
       str = null;
     }
-    if (i2 != 0)
+    if (i2 != 0) {
       paramArrayOfInt[0] = i2;
-    else
+    } else {
       paramArrayOfInt[0] = 34;
+    }
     return str;
   }
-
+  
   public static boolean isValidAttrName(String paramString)
   {
     char c = paramString.charAt(0);
-    if (!TidyUtils.isLetter(c))
+    if (!TidyUtils.isLetter(c)) {
       return false;
+    }
     for (int i = 1; i < paramString.length(); i++)
     {
       c = paramString.charAt(i);
-      if (!TidyUtils.isNamechar(c))
+      if (!TidyUtils.isNamechar(c)) {
         return false;
+      }
     }
     return true;
   }
-
+  
   public static boolean isCSS1Selector(String paramString)
   {
-    if (paramString == null)
+    if (paramString == null) {
       return false;
+    }
     boolean bool = true;
     int i = 0;
     for (int j = 0; (bool) && (j < paramString.length()); j++)
@@ -2046,8 +2169,9 @@ public class Lexer
           i++;
           bool = i < 6;
         }
-        if (bool)
+        if (bool) {
           bool = (j > 0) || (i > 0);
+        }
       }
       else
       {
@@ -2057,7 +2181,7 @@ public class Lexer
     }
     return bool;
   }
-
+  
   public AttVal parseAttrs(boolean[] paramArrayOfBoolean)
   {
     int[] arrayOfInt = new int[1];
@@ -2077,8 +2201,9 @@ public class Lexer
         }
         else
         {
-          if (arrayOfNode2[0] == null)
+          if (arrayOfNode2[0] == null) {
             break;
+          }
           localAttVal = new AttVal((AttVal)localObject, null, null, arrayOfNode2[0], 0, null, null);
           localObject = localAttVal;
         }
@@ -2095,81 +2220,95 @@ public class Lexer
         else
         {
           localAttVal = new AttVal(null, null, null, null, 0, str1, str2);
-          if (str2 != null)
+          if (str2 != null) {
             this.report.attrError(this, this.token, localAttVal, (short)51);
-          else if (TidyUtils.lastChar(str1) == 34)
+          } else if (TidyUtils.lastChar(str1) == 34) {
             this.report.attrError(this, this.token, localAttVal, (short)58);
-          else
+          } else {
             this.report.attrError(this, this.token, localAttVal, (short)48);
+          }
         }
       }
     }
     return localObject;
   }
-
+  
   public void pushInline(Node paramNode)
   {
-    if (paramNode.implicit)
+    if (paramNode.implicit) {
       return;
-    if (paramNode.tag == null)
+    }
+    if (paramNode.tag == null) {
       return;
-    if (!TidyUtils.toBoolean(paramNode.tag.model & 0x10))
+    }
+    if (!TidyUtils.toBoolean(paramNode.tag.model & 0x10)) {
       return;
-    if (TidyUtils.toBoolean(paramNode.tag.model & 0x800))
+    }
+    if (TidyUtils.toBoolean(paramNode.tag.model & 0x800)) {
       return;
-    if ((paramNode.tag != this.configuration.tt.tagFont) && (isPushed(paramNode)))
+    }
+    if ((paramNode.tag != this.configuration.tt.tagFont) && (isPushed(paramNode))) {
       return;
+    }
     IStack localIStack = new IStack();
     localIStack.tag = paramNode.tag;
     localIStack.element = paramNode.element;
-    if (paramNode.attributes != null)
+    if (paramNode.attributes != null) {
       localIStack.attributes = cloneAttributes(paramNode.attributes);
+    }
     this.istack.push(localIStack);
   }
-
+  
   public void popInline(Node paramNode)
   {
     IStack localIStack;
     if (paramNode != null)
     {
-      if (paramNode.tag == null)
+      if (paramNode.tag == null) {
         return;
-      if (!TidyUtils.toBoolean(paramNode.tag.model & 0x10))
+      }
+      if (!TidyUtils.toBoolean(paramNode.tag.model & 0x10)) {
         return;
-      if (TidyUtils.toBoolean(paramNode.tag.model & 0x800))
+      }
+      if (TidyUtils.toBoolean(paramNode.tag.model & 0x800)) {
         return;
+      }
       if (paramNode.tag == this.configuration.tt.tagA)
       {
         while (this.istack.size() > 0)
         {
           localIStack = (IStack)this.istack.pop();
-          if (localIStack.tag == this.configuration.tt.tagA)
+          if (localIStack.tag == this.configuration.tt.tagA) {
             break;
+          }
         }
-        if (this.insert >= this.istack.size())
+        if (this.insert >= this.istack.size()) {
           this.insert = -1;
+        }
         return;
       }
     }
     if (this.istack.size() > 0)
     {
       localIStack = (IStack)this.istack.pop();
-      if (this.insert >= this.istack.size())
+      if (this.insert >= this.istack.size()) {
         this.insert = -1;
+      }
     }
   }
-
+  
   public boolean isPushed(Node paramNode)
   {
     for (int i = this.istack.size() - 1; i >= 0; i--)
     {
       IStack localIStack = (IStack)this.istack.elementAt(i);
-      if (localIStack.tag == paramNode.tag)
+      if (localIStack.tag == paramNode.tag) {
         return true;
+      }
     }
     return false;
   }
-
+  
   public int inlineDup(Node paramNode)
   {
     int i = this.istack.size() - this.istackbase;
@@ -2180,7 +2319,7 @@ public class Lexer
     }
     return i;
   }
-
+  
   public Node insertedToken()
   {
     if (this.insert == -1)
@@ -2199,85 +2338,103 @@ public class Lexer
     IStack localIStack = (IStack)this.istack.elementAt(this.insert);
     localNode.element = localIStack.element;
     localNode.tag = localIStack.tag;
-    if (localIStack.attributes != null)
+    if (localIStack.attributes != null) {
       localNode.attributes = cloneAttributes(localIStack.attributes);
+    }
     int i = this.insert;
     i++;
-    if (i < this.istack.size())
+    if (i < this.istack.size()) {
       this.insert = i;
-    else
+    } else {
       this.insert = -1;
+    }
     return localNode;
   }
-
+  
   public boolean canPrune(Node paramNode)
   {
-    if (paramNode.type == 4)
+    if (paramNode.type == 4) {
       return true;
-    if (paramNode.content != null)
+    }
+    if (paramNode.content != null) {
       return false;
-    if ((paramNode.tag == this.configuration.tt.tagA) && (paramNode.attributes != null))
+    }
+    if ((paramNode.tag == this.configuration.tt.tagA) && (paramNode.attributes != null)) {
       return false;
-    if ((paramNode.tag == this.configuration.tt.tagP) && (!this.configuration.dropEmptyParas))
+    }
+    if ((paramNode.tag == this.configuration.tt.tagP) && (!this.configuration.dropEmptyParas)) {
       return false;
-    if (paramNode.tag == null)
+    }
+    if (paramNode.tag == null) {
       return false;
-    if (TidyUtils.toBoolean(paramNode.tag.model & 0x200))
+    }
+    if (TidyUtils.toBoolean(paramNode.tag.model & 0x200)) {
       return false;
-    if (TidyUtils.toBoolean(paramNode.tag.model & 0x1))
+    }
+    if (TidyUtils.toBoolean(paramNode.tag.model & 0x1)) {
       return false;
-    if (paramNode.tag == this.configuration.tt.tagApplet)
+    }
+    if (paramNode.tag == this.configuration.tt.tagApplet) {
       return false;
-    if (paramNode.tag == this.configuration.tt.tagObject)
+    }
+    if (paramNode.tag == this.configuration.tt.tagObject) {
       return false;
-    if ((paramNode.tag == this.configuration.tt.tagScript) && (paramNode.getAttrByName("src") != null))
+    }
+    if ((paramNode.tag == this.configuration.tt.tagScript) && (paramNode.getAttrByName("src") != null)) {
       return false;
-    if (paramNode.tag == this.configuration.tt.tagTitle)
+    }
+    if (paramNode.tag == this.configuration.tt.tagTitle) {
       return false;
-    if (paramNode.tag == this.configuration.tt.tagIframe)
+    }
+    if (paramNode.tag == this.configuration.tt.tagIframe) {
       return false;
+    }
     return (paramNode.getAttrByName("id") == null) && (paramNode.getAttrByName("name") == null);
   }
-
+  
   public void fixId(Node paramNode)
   {
     AttVal localAttVal1 = paramNode.getAttrByName("name");
     AttVal localAttVal2 = paramNode.getAttrByName("id");
-    if (localAttVal1 != null)
+    if (localAttVal1 != null) {
       if (localAttVal2 != null)
       {
-        if ((localAttVal2.value != null) && (!localAttVal2.value.equals(localAttVal1.value)))
+        if ((localAttVal2.value != null) && (!localAttVal2.value.equals(localAttVal1.value))) {
           this.report.attrError(this, paramNode, localAttVal1, (short)60);
+        }
       }
-      else if (this.configuration.xmlOut)
+      else if (this.configuration.xmlOut) {
         paramNode.addAttribute("id", localAttVal1.value);
+      }
+    }
   }
-
+  
   public void deferDup()
   {
     this.insert = -1;
     this.inode = null;
   }
-
+  
   void constrainVersion(int paramInt)
   {
     this.versions = ((short)(this.versions & (paramInt | 0x1C0)));
   }
-
+  
   protected boolean preContent(Node paramNode)
   {
-    if (paramNode.tag == this.configuration.tt.tagP)
+    if (paramNode.tag == this.configuration.tt.tagP) {
       return true;
+    }
     return (paramNode.tag != null) && (paramNode.tag != this.configuration.tt.tagP) && (TidyUtils.toBoolean(paramNode.tag.model & 0x100010));
   }
-
+  
   private static class W3CVersionInfo
   {
     String name;
     String voyagerName;
     String profile;
     short code;
-
+    
     public W3CVersionInfo(String paramString1, String paramString2, String paramString3, short paramShort)
     {
       this.name = paramString1;
@@ -2288,7 +2445,8 @@ public class Lexer
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.w3c.tidy.Lexer
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

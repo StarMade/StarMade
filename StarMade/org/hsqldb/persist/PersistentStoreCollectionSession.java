@@ -22,46 +22,49 @@ public class PersistentStoreCollectionSession
   private LongKeyHashMap rowStoreMapStatement = new LongKeyHashMap();
   private HsqlDeque rowStoreListStatement;
   DataFileCacheSession resultCache;
-
+  
   public PersistentStoreCollectionSession(Session paramSession)
   {
     this.session = paramSession;
   }
-
+  
   public void setStore(Object paramObject, PersistentStore paramPersistentStore)
   {
     TableBase localTableBase = (TableBase)paramObject;
     switch (localTableBase.persistenceScope)
     {
-    case 21:
-      if (paramPersistentStore == null)
+    case 21: 
+      if (paramPersistentStore == null) {
         this.rowStoreMapStatement.remove(localTableBase.getPersistenceId());
-      else
+      } else {
         this.rowStoreMapStatement.put(localTableBase.getPersistenceId(), paramPersistentStore);
+      }
       break;
-    case 22:
-    case 24:
-      if (paramPersistentStore == null)
+    case 22: 
+    case 24: 
+      if (paramPersistentStore == null) {
         this.rowStoreMapTransaction.remove(localTableBase.getPersistenceId());
-      else
+      } else {
         this.rowStoreMapTransaction.put(localTableBase.getPersistenceId(), paramPersistentStore);
+      }
       break;
-    case 23:
-      if (paramPersistentStore == null)
+    case 23: 
+      if (paramPersistentStore == null) {
         this.rowStoreMapSession.remove(localTableBase.getPersistenceId());
-      else
+      } else {
         this.rowStoreMapSession.put(localTableBase.getPersistenceId(), paramPersistentStore);
+      }
       break;
-    default:
+    default: 
       throw Error.runtimeError(201, "PersistentStoreCollectionSession");
     }
   }
-
+  
   public PersistentStore getViewStore(long paramLong)
   {
     return (PersistentStore)this.rowStoreMapStatement.get(paramLong);
   }
-
+  
   public PersistentStore getStore(Object paramObject)
   {
     try
@@ -70,32 +73,34 @@ public class PersistentStoreCollectionSession
       PersistentStore localPersistentStore;
       switch (localTableBase.persistenceScope)
       {
-      case 21:
+      case 21: 
         localPersistentStore = (PersistentStore)this.rowStoreMapStatement.get(localTableBase.getPersistenceId());
-        if (localPersistentStore == null)
+        if (localPersistentStore == null) {
           localPersistentStore = this.session.database.logger.newStore(this.session, this, localTableBase);
+        }
         return localPersistentStore;
-      case 22:
-      case 24:
+      case 22: 
+      case 24: 
         localPersistentStore = (PersistentStore)this.rowStoreMapTransaction.get(localTableBase.getPersistenceId());
-        if (localPersistentStore == null)
+        if (localPersistentStore == null) {
           localPersistentStore = this.session.database.logger.newStore(this.session, this, localTableBase);
-        if (localTableBase.getTableType() == 1)
+        }
+        if (localTableBase.getTableType() == 1) {
           this.session.database.dbInfo.setStore(this.session, (Table)localTableBase, localPersistentStore);
+        }
         return localPersistentStore;
-      case 23:
+      case 23: 
         localPersistentStore = (PersistentStore)this.rowStoreMapSession.get(localTableBase.getPersistenceId());
-        if (localPersistentStore == null)
+        if (localPersistentStore == null) {
           localPersistentStore = this.session.database.logger.newStore(this.session, this, localTableBase);
+        }
         return localPersistentStore;
       }
     }
-    catch (HsqlException localHsqlException)
-    {
-    }
+    catch (HsqlException localHsqlException) {}
     throw Error.runtimeError(201, "PersistentStoreCollectionSession");
   }
-
+  
   public void clearAllTables()
   {
     clearSessionTables();
@@ -103,11 +108,12 @@ public class PersistentStoreCollectionSession
     clearStatementTables();
     closeResultCache();
   }
-
+  
   public void clearResultTables(long paramLong)
   {
-    if (this.rowStoreMapSession.isEmpty())
+    if (this.rowStoreMapSession.isEmpty()) {
       return;
+    }
     Iterator localIterator = this.rowStoreMapSession.values().iterator();
     while (localIterator.hasNext())
     {
@@ -119,11 +125,12 @@ public class PersistentStoreCollectionSession
       }
     }
   }
-
+  
   public void clearSessionTables()
   {
-    if (this.rowStoreMapSession.isEmpty())
+    if (this.rowStoreMapSession.isEmpty()) {
       return;
+    }
     Iterator localIterator = this.rowStoreMapSession.values().iterator();
     while (localIterator.hasNext())
     {
@@ -132,11 +139,12 @@ public class PersistentStoreCollectionSession
     }
     this.rowStoreMapSession.clear();
   }
-
+  
   public void clearTransactionTables()
   {
-    if (this.rowStoreMapTransaction.isEmpty())
+    if (this.rowStoreMapTransaction.isEmpty()) {
       return;
+    }
     Iterator localIterator = this.rowStoreMapTransaction.values().iterator();
     while (localIterator.hasNext())
     {
@@ -145,11 +153,12 @@ public class PersistentStoreCollectionSession
     }
     this.rowStoreMapTransaction.clear();
   }
-
+  
   public void clearStatementTables()
   {
-    if (this.rowStoreMapStatement.isEmpty())
+    if (this.rowStoreMapStatement.isEmpty()) {
       return;
+    }
     Iterator localIterator = this.rowStoreMapStatement.values().iterator();
     while (localIterator.hasNext())
     {
@@ -158,38 +167,40 @@ public class PersistentStoreCollectionSession
     }
     this.rowStoreMapStatement.clear();
   }
-
+  
   public void registerIndex(Table paramTable)
   {
     PersistentStore localPersistentStore = findStore(paramTable);
-    if (localPersistentStore == null)
+    if (localPersistentStore == null) {
       return;
+    }
     localPersistentStore.resetAccessorKeys(paramTable.getIndexList());
   }
-
+  
   public PersistentStore findStore(Table paramTable)
   {
     PersistentStore localPersistentStore = null;
     switch (paramTable.persistenceScope)
     {
-    case 21:
+    case 21: 
       localPersistentStore = (PersistentStore)this.rowStoreMapStatement.get(paramTable.getPersistenceId());
       break;
-    case 22:
-    case 24:
+    case 22: 
+    case 24: 
       localPersistentStore = (PersistentStore)this.rowStoreMapTransaction.get(paramTable.getPersistenceId());
       break;
-    case 23:
+    case 23: 
       localPersistentStore = (PersistentStore)this.rowStoreMapSession.get(paramTable.getPersistenceId());
     }
     return localPersistentStore;
   }
-
+  
   public void moveData(Table paramTable1, Table paramTable2, int paramInt1, int paramInt2)
   {
     PersistentStore localPersistentStore1 = findStore(paramTable1);
-    if (localPersistentStore1 == null)
+    if (localPersistentStore1 == null) {
       return;
+    }
     PersistentStore localPersistentStore2 = getStore(paramTable2);
     try
     {
@@ -203,11 +214,12 @@ public class PersistentStoreCollectionSession
     }
     setStore(paramTable1, null);
   }
-
+  
   public void push()
   {
-    if (this.rowStoreListStatement == null)
+    if (this.rowStoreListStatement == null) {
       this.rowStoreListStatement = new HsqlDeque();
+    }
     if (this.rowStoreMapStatement.isEmpty())
     {
       this.rowStoreListStatement.add(ValuePool.emptyObjectArray);
@@ -217,7 +229,7 @@ public class PersistentStoreCollectionSession
     this.rowStoreListStatement.add(arrayOfObject);
     this.rowStoreMapStatement.clear();
   }
-
+  
   public void pop()
   {
     Object[] arrayOfObject = (Object[])this.rowStoreListStatement.removeLast();
@@ -228,14 +240,15 @@ public class PersistentStoreCollectionSession
       this.rowStoreMapStatement.put(localPersistentStore.getTable().getPersistenceId(), localPersistentStore);
     }
   }
-
+  
   public DataFileCacheSession getResultCache()
   {
     if (this.resultCache == null)
     {
       String str = this.session.database.logger.getTempDirectoryPath();
-      if (str == null)
+      if (str == null) {
         return null;
+      }
       try
       {
         this.resultCache = new DataFileCacheSession(this.session.database, str + "/session_" + Long.toString(this.session.getId()));
@@ -248,7 +261,7 @@ public class PersistentStoreCollectionSession
     }
     return this.resultCache;
   }
-
+  
   public void closeResultCache()
   {
     if (this.resultCache != null)
@@ -258,20 +271,19 @@ public class PersistentStoreCollectionSession
         this.resultCache.close(false);
         this.resultCache.deleteFile();
       }
-      catch (HsqlException localHsqlException)
-      {
-      }
+      catch (HsqlException localHsqlException) {}
       this.resultCache = null;
     }
   }
-
+  
   public void release()
   {
     clearAllTables();
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.persist.PersistentStoreCollectionSession
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

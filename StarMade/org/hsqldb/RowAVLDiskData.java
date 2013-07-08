@@ -6,13 +6,14 @@ import org.hsqldb.persist.PersistentStore;
 import org.hsqldb.rowio.RowInputInterface;
 import org.hsqldb.rowio.RowOutputInterface;
 
-public class RowAVLDiskData extends RowAVL
+public class RowAVLDiskData
+  extends RowAVL
 {
   PersistentStore store;
   int accessCount;
   boolean hasDataChanged;
   int storageSize;
-
+  
   public RowAVLDiskData(PersistentStore paramPersistentStore, TableBase paramTableBase, Object[] paramArrayOfObject)
   {
     super(paramTableBase, paramArrayOfObject);
@@ -20,7 +21,7 @@ public class RowAVLDiskData extends RowAVL
     this.store = paramPersistentStore;
     this.hasDataChanged = true;
   }
-
+  
   public RowAVLDiskData(PersistentStore paramPersistentStore, TableBase paramTableBase, RowInputInterface paramRowInputInterface)
     throws IOException
   {
@@ -32,18 +33,18 @@ public class RowAVLDiskData extends RowAVL
     this.hasDataChanged = false;
     this.store = paramPersistentStore;
   }
-
+  
   public void getRowData(TableBase paramTableBase, RowInputInterface paramRowInputInterface)
     throws IOException
   {
     this.rowData = paramRowInputInterface.readData(paramTableBase.getColumnTypes());
   }
-
+  
   public void setData(Object[] paramArrayOfObject)
   {
     this.rowData = paramArrayOfObject;
   }
-
+  
   public Object[] getData()
   {
     Object[] arrayOfObject = this.rowData;
@@ -71,7 +72,7 @@ public class RowAVLDiskData extends RowAVL
     }
     return arrayOfObject;
   }
-
+  
   public void setNewNodes(PersistentStore paramPersistentStore)
   {
     int i = paramPersistentStore.getAccessorKeys().length;
@@ -83,7 +84,7 @@ public class RowAVLDiskData extends RowAVL
       localNodeAVL = localNodeAVL.nNext;
     }
   }
-
+  
   public NodeAVL insertNode(int paramInt)
   {
     NodeAVL localNodeAVL1 = getNode(paramInt - 1);
@@ -92,17 +93,17 @@ public class RowAVLDiskData extends RowAVL
     localNodeAVL1.nNext = localNodeAVL2;
     return localNodeAVL2;
   }
-
+  
   void setPrimaryNode(NodeAVL paramNodeAVL)
   {
     this.nPrimaryNode = paramNodeAVL;
   }
-
+  
   public int getRealSize(RowOutputInterface paramRowOutputInterface)
   {
     return paramRowOutputInterface.getSize(this);
   }
-
+  
   public void write(RowOutputInterface paramRowOutputInterface)
   {
     paramRowOutputInterface.writeSize(this.storageSize);
@@ -110,75 +111,77 @@ public class RowAVLDiskData extends RowAVL
     paramRowOutputInterface.writeEnd();
     this.hasDataChanged = false;
   }
-
+  
   public synchronized void setChanged(boolean paramBoolean)
   {
     this.hasDataChanged = paramBoolean;
   }
-
+  
   public boolean isNew()
   {
     return false;
   }
-
+  
   public boolean hasChanged()
   {
     return this.hasDataChanged;
   }
-
+  
   public void updateAccessCount(int paramInt)
   {
     this.accessCount = paramInt;
   }
-
+  
   public int getAccessCount()
   {
     return this.accessCount;
   }
-
+  
   public int getStorageSize()
   {
     return this.storageSize;
   }
-
+  
   public void setStorageSize(int paramInt)
   {
     this.storageSize = paramInt;
   }
-
+  
   public void setPos(long paramLong)
   {
     this.position = paramLong;
   }
-
+  
   public boolean isMemory()
   {
     return true;
   }
-
+  
   public boolean isInMemory()
   {
     return this.rowData != null;
   }
-
+  
   public boolean isKeepInMemory()
   {
     return false;
   }
-
+  
   public boolean keepInMemory(boolean paramBoolean)
   {
     return true;
   }
-
+  
   public void setInMemory(boolean paramBoolean)
   {
-    if (!paramBoolean)
+    if (!paramBoolean) {
       this.rowData = null;
+    }
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.RowAVLDiskData
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

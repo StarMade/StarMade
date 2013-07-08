@@ -23,12 +23,12 @@ class ConnectionDialogCommon
   private static File recentSettings = null;
   static String emptySettingName = "Recent settings...";
   private static String homedir = null;
-
+  
   static String[][] getTypes()
   {
     return sJDBCTypes;
   }
-
+  
   static synchronized Hashtable loadRecentConnectionSettings()
     throws IOException
   {
@@ -38,8 +38,9 @@ class ConnectionDialogCommon
       if (recentSettings == null)
       {
         setHomeDir();
-        if (homedir == null)
+        if (homedir == null) {
           return localHashtable;
+        }
         recentSettings = new File(homedir, "hsqlprefs.dat");
         if (!recentSettings.exists())
         {
@@ -59,17 +60,15 @@ class ConnectionDialogCommon
       localFileInputStream = new FileInputStream(recentSettings);
       localObjectInputStream = new ObjectInputStream(localFileInputStream);
       localHashtable.clear();
-      while (true)
+      for (;;)
       {
         ConnectionSetting localConnectionSetting = (ConnectionSetting)localObjectInputStream.readObject();
-        if (!emptySettingName.equals(localConnectionSetting.getName()))
+        if (!emptySettingName.equals(localConnectionSetting.getName())) {
           localHashtable.put(localConnectionSetting.getName(), localConnectionSetting);
+        }
       }
     }
-    catch (EOFException localEOFException)
-    {
-    }
-    catch (ClassNotFoundException localClassNotFoundException)
+    catch (EOFException localEOFException) {}catch (ClassNotFoundException localClassNotFoundException)
     {
       throw new IOException("Unrecognized class type " + localClassNotFoundException.getMessage());
     }
@@ -77,26 +76,25 @@ class ConnectionDialogCommon
     {
       throw new IOException("Unrecognized class type " + localClassCastException.getMessage());
     }
-    catch (Throwable localThrowable2)
+    catch (Throwable localThrowable2) {}finally
     {
-    }
-    finally
-    {
-      if (localObjectInputStream != null)
+      if (localObjectInputStream != null) {
         localObjectInputStream.close();
-      if (localFileInputStream != null)
+      }
+      if (localFileInputStream != null) {
         localFileInputStream.close();
+      }
     }
     return localHashtable;
   }
-
+  
   static void addToRecentConnectionSettings(Hashtable paramHashtable, ConnectionSetting paramConnectionSetting)
     throws IOException
   {
     paramHashtable.put(paramConnectionSetting.getName(), paramConnectionSetting);
     storeRecentConnectionSettings(paramHashtable);
   }
-
+  
   private static void storeRecentConnectionSettings(Hashtable paramHashtable)
   {
     try
@@ -104,27 +102,28 @@ class ConnectionDialogCommon
       if (recentSettings == null)
       {
         setHomeDir();
-        if (homedir == null)
+        if (homedir == null) {
           return;
+        }
         recentSettings = new File(homedir, "hsqlprefs.dat");
-        if (recentSettings.exists());
+        if (recentSettings.exists()) {}
       }
-      if ((paramHashtable == null) || (paramHashtable.size() == 0))
+      if ((paramHashtable == null) || (paramHashtable.size() == 0)) {
         return;
+      }
       FileOutputStream localFileOutputStream = new FileOutputStream(recentSettings);
       ObjectOutputStream localObjectOutputStream = new ObjectOutputStream(localFileOutputStream);
       Enumeration localEnumeration = paramHashtable.elements();
-      while (localEnumeration.hasMoreElements())
+      while (localEnumeration.hasMoreElements()) {
         localObjectOutputStream.writeObject(localEnumeration.nextElement());
+      }
       localObjectOutputStream.flush();
       localObjectOutputStream.close();
       localFileOutputStream.close();
     }
-    catch (Throwable localThrowable)
-    {
-    }
+    catch (Throwable localThrowable) {}
   }
-
+  
   static void deleteRecentConnectionSettings()
   {
     try
@@ -132,8 +131,9 @@ class ConnectionDialogCommon
       if (recentSettings == null)
       {
         setHomeDir();
-        if (homedir == null)
+        if (homedir == null) {
           return;
+        }
         recentSettings = new File(homedir, "hsqlprefs.dat");
       }
       if (!recentSettings.exists())
@@ -144,14 +144,12 @@ class ConnectionDialogCommon
       recentSettings.delete();
       recentSettings = null;
     }
-    catch (Throwable localThrowable)
-    {
-    }
+    catch (Throwable localThrowable) {}
   }
-
+  
   public static void setHomeDir()
   {
-    if (homedir == null)
+    if (homedir == null) {
       try
       {
         Class localClass = Class.forName("sun.security.action.GetPropertyAction");
@@ -163,10 +161,12 @@ class ConnectionDialogCommon
       {
         System.err.println("No access to home directory.  Continuing without...");
       }
+    }
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.util.ConnectionDialogCommon
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

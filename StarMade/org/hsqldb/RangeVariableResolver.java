@@ -43,7 +43,7 @@ public class RangeVariableResolver
   OrderedHashSet tempSet = new OrderedHashSet();
   HashMap tempMap = new HashMap();
   MultiValueHashMap tempMultiMap = new MultiValueHashMap();
-
+  
   RangeVariableResolver(QuerySpecification paramQuerySpecification)
   {
     this.select = paramQuerySpecification;
@@ -53,7 +53,7 @@ public class RangeVariableResolver
     this.sortAndSlice = paramQuerySpecification.sortAndSlice;
     initialise();
   }
-
+  
   RangeVariableResolver(RangeVariable[] paramArrayOfRangeVariable, Expression paramExpression, ParserDQL.CompileContext paramCompileContext)
   {
     this.rangeVariables = paramArrayOfRangeVariable;
@@ -61,7 +61,7 @@ public class RangeVariableResolver
     this.compileContext = paramCompileContext;
     initialise();
   }
-
+  
   private void initialise()
   {
     this.firstLeftJoinIndex = this.rangeVariables.length;
@@ -71,16 +71,19 @@ public class RangeVariableResolver
     this.inExpressions = new Expression[this.rangeVariables.length];
     this.inInJoin = new boolean[this.rangeVariables.length];
     this.tempJoinExpressions = new HsqlArrayList[this.rangeVariables.length];
-    for (int i = 0; i < this.rangeVariables.length; i++)
+    for (int i = 0; i < this.rangeVariables.length; i++) {
       this.tempJoinExpressions[i] = new HsqlArrayList();
+    }
     this.joinExpressions = new HsqlArrayList[this.rangeVariables.length];
-    for (i = 0; i < this.rangeVariables.length; i++)
+    for (i = 0; i < this.rangeVariables.length; i++) {
       this.joinExpressions[i] = new HsqlArrayList();
+    }
     this.whereExpressions = new HsqlArrayList[this.rangeVariables.length];
-    for (i = 0; i < this.rangeVariables.length; i++)
+    for (i = 0; i < this.rangeVariables.length; i++) {
       this.whereExpressions[i] = new HsqlArrayList();
+    }
   }
-
+  
   void processConditions(Session paramSession)
   {
     this.session = paramSession;
@@ -88,8 +91,9 @@ public class RangeVariableResolver
     for (int i = 0; i < this.rangeVariables.length; i++)
     {
       this.rangeVarSet.add(this.rangeVariables[i]);
-      if (this.rangeVariables[i].joinCondition != null)
+      if (this.rangeVariables[i].joinCondition != null) {
         decomposeAndConditions(paramSession, this.rangeVariables[i].joinCondition, this.tempJoinExpressions[i]);
+      }
     }
     Object localObject;
     for (i = 0; i < this.queryConditions.size(); i++)
@@ -126,27 +130,31 @@ public class RangeVariableResolver
       int j = 0;
       if (((RangeVariable)localObject).isLeftJoin)
       {
-        if (this.firstLeftJoinIndex == this.rangeVariables.length)
+        if (this.firstLeftJoinIndex == this.rangeVariables.length) {
           this.firstLeftJoinIndex = i;
+        }
         j = 1;
       }
       if (((RangeVariable)localObject).isRightJoin)
       {
-        if (this.firstRightJoinIndex == this.rangeVariables.length)
+        if (this.firstRightJoinIndex == this.rangeVariables.length) {
           this.firstRightJoinIndex = i;
+        }
         this.lastRightJoinIndex = i;
         j = 1;
       }
       if (((RangeVariable)localObject).isLateral)
       {
-        if (this.firstLateralJoinIndex == this.rangeVariables.length)
+        if (this.firstLateralJoinIndex == this.rangeVariables.length) {
           this.firstLateralJoinIndex = i;
+        }
         j = 1;
       }
       if (j != 0)
       {
-        if (this.firstOuterJoinIndex == this.rangeVariables.length)
+        if (this.firstOuterJoinIndex == this.rangeVariables.length) {
           this.firstOuterJoinIndex = i;
+        }
         this.lastOuterJoinIndex = i;
       }
     }
@@ -159,21 +167,26 @@ public class RangeVariableResolver
     {
       this.select.startInnerRange = 0;
       this.select.endInnerRange = this.rangeVariables.length;
-      if (this.firstRightJoinIndex < this.rangeVariables.length)
+      if (this.firstRightJoinIndex < this.rangeVariables.length) {
         this.select.startInnerRange = this.firstRightJoinIndex;
-      if (this.firstLeftJoinIndex < this.rangeVariables.length)
+      }
+      if (this.firstLeftJoinIndex < this.rangeVariables.length) {
         this.select.endInnerRange = this.firstLeftJoinIndex;
+      }
     }
-    for (i = 0; i < this.rangeVariables.length; i++)
+    for (i = 0; i < this.rangeVariables.length; i++) {
       this.rangeVariables[i].rangePositionInJoin = i;
-    if ((this.expandInExpression) && (this.inExpressionCount != 0))
+    }
+    if ((this.expandInExpression) && (this.inExpressionCount != 0)) {
       setInConditionsAsTables();
+    }
   }
-
+  
   static Expression decomposeAndConditions(Session paramSession, Expression paramExpression, HsqlList paramHsqlList)
   {
-    if (paramExpression == null)
+    if (paramExpression == null) {
       return Expression.EXPR_TRUE;
+    }
     Expression localExpression1 = paramExpression.getLeftNode();
     Expression localExpression2 = paramExpression.getRightNode();
     int i = paramExpression.getType();
@@ -181,10 +194,12 @@ public class RangeVariableResolver
     {
       localExpression1 = decomposeAndConditions(paramSession, localExpression1, paramHsqlList);
       localExpression2 = decomposeAndConditions(paramSession, localExpression2, paramHsqlList);
-      if (localExpression1 == Expression.EXPR_TRUE)
+      if (localExpression1 == Expression.EXPR_TRUE) {
         return localExpression2;
-      if (localExpression2 == Expression.EXPR_TRUE)
+      }
+      if (localExpression2 == Expression.EXPR_TRUE) {
         return localExpression1;
+      }
       paramExpression.setLeftNode(localExpression1);
       paramExpression.setRightNode(localExpression2);
       return paramExpression;
@@ -199,15 +214,17 @@ public class RangeVariableResolver
       }
       return Expression.EXPR_TRUE;
     }
-    if (paramExpression != Expression.EXPR_TRUE)
+    if (paramExpression != Expression.EXPR_TRUE) {
       paramHsqlList.add(paramExpression);
+    }
     return Expression.EXPR_TRUE;
   }
-
+  
   static Expression decomposeOrConditions(Expression paramExpression, HsqlList paramHsqlList)
   {
-    if (paramExpression == null)
+    if (paramExpression == null) {
       return Expression.EXPR_FALSE;
+    }
     Expression localExpression1 = paramExpression.getLeftNode();
     Expression localExpression2 = paramExpression.getRightNode();
     int i = paramExpression.getType();
@@ -215,29 +232,36 @@ public class RangeVariableResolver
     {
       localExpression1 = decomposeOrConditions(localExpression1, paramHsqlList);
       localExpression2 = decomposeOrConditions(localExpression2, paramHsqlList);
-      if (localExpression1 == Expression.EXPR_FALSE)
+      if (localExpression1 == Expression.EXPR_FALSE) {
         return localExpression2;
-      if (localExpression2 == Expression.EXPR_FALSE)
+      }
+      if (localExpression2 == Expression.EXPR_FALSE) {
         return localExpression1;
+      }
       paramExpression = new ExpressionLogical(50, localExpression1, localExpression2);
       return paramExpression;
     }
-    if (paramExpression != Expression.EXPR_FALSE)
+    if (paramExpression != Expression.EXPR_FALSE) {
       paramHsqlList.add(paramExpression);
+    }
     return Expression.EXPR_FALSE;
   }
-
+  
   void expandConditions()
   {
     HsqlArrayList[] arrayOfHsqlArrayList = this.tempJoinExpressions;
-    if (this.firstRightJoinIndex == this.rangeVariables.length)
+    if (this.firstRightJoinIndex == this.rangeVariables.length) {
       moveConditions(this.tempJoinExpressions, 0, this.firstOuterJoinIndex, this.queryConditions, -1);
-    if (this.firstOuterJoinIndex < 2)
+    }
+    if (this.firstOuterJoinIndex < 2) {
       return;
-    for (int i = 0; i < this.firstOuterJoinIndex; i++)
+    }
+    for (int i = 0; i < this.firstOuterJoinIndex; i++) {
       moveConditions(this.tempJoinExpressions, 0, this.firstOuterJoinIndex, this.tempJoinExpressions[i], i);
-    if (this.firstOuterJoinIndex < 3)
+    }
+    if (this.firstOuterJoinIndex < 3) {
       return;
+    }
     for (i = 0; i < this.firstOuterJoinIndex; i++)
     {
       HsqlArrayList localHsqlArrayList = arrayOfHsqlArrayList[i];
@@ -252,14 +276,15 @@ public class RangeVariableResolver
       for (int n = 0; n < localHsqlArrayList.size(); n++)
       {
         localObject1 = (Expression)localHsqlArrayList.get(n);
-        if (localObject1 != ExpressionLogical.EXPR_TRUE)
+        if (localObject1 != ExpressionLogical.EXPR_TRUE) {
           if (((Expression)localObject1).isSingleColumnEqual)
           {
             j = 1;
-            if (((Expression)localObject1).getLeftNode().opType == 2)
+            if (((Expression)localObject1).getLeftNode().opType == 2) {
               this.tempMap.put(((Expression)localObject1).getLeftNode().getColumn(), ((Expression)localObject1).getRightNode());
-            else if (((Expression)localObject1).getRightNode().opType == 2)
+            } else if (((Expression)localObject1).getRightNode().opType == 2) {
               this.tempMap.put(((Expression)localObject1).getRightNode().getColumn(), ((Expression)localObject1).getLeftNode());
+            }
           }
           else if ((((Expression)localObject1).isColumnEqual) && (((Expression)localObject1).getLeftNode().getRangeVariable() != ((Expression)localObject1).getRightNode().getRangeVariable()) && (((Expression)localObject1).getLeftNode().getRangeVariable() != null) && (((Expression)localObject1).getRightNode().getRangeVariable() != null))
           {
@@ -286,19 +311,22 @@ public class RangeVariableResolver
                 {
                   localObject3 = ((Expression)localObject1).getLeftNode().getColumn();
                   this.tempMultiMap.put(localObject3, ((Expression)localObject1).getRightNode());
-                  if (this.tempMultiMap.valueCount(localObject3) > 1)
+                  if (this.tempMultiMap.valueCount(localObject3) > 1) {
                     m = 1;
+                  }
                 }
                 else if (((Expression)localObject1).getRightNode().getRangeVariable() == this.rangeVariables[i])
                 {
                   localObject3 = ((Expression)localObject1).getRightNode().getColumn();
                   this.tempMultiMap.put(localObject3, ((Expression)localObject1).getLeftNode());
-                  if (this.tempMultiMap.valueCount(localObject3) > 1)
+                  if (this.tempMultiMap.valueCount(localObject3) > 1) {
                     m = 1;
+                  }
                 }
               }
             }
           }
+        }
       }
       Iterator localIterator;
       Object localObject2;
@@ -311,8 +339,9 @@ public class RangeVariableResolver
           localObject1 = localIterator.next();
           localObject2 = this.tempMultiMap.get(localObject1);
           this.tempSet.clear();
-          while (((Iterator)localObject2).hasNext())
+          while (((Iterator)localObject2).hasNext()) {
             this.tempSet.add(((Iterator)localObject2).next());
+          }
           while (this.tempSet.size() > 1)
           {
             localObject3 = (Expression)this.tempSet.remove(this.tempSet.size() - 1);
@@ -346,7 +375,7 @@ public class RangeVariableResolver
       }
     }
   }
-
+  
   void moveConditions(HsqlList[] paramArrayOfHsqlList, int paramInt1, int paramInt2, HsqlList paramHsqlList, int paramInt3)
   {
     for (int i = 0; i < paramHsqlList.size(); i++)
@@ -367,31 +396,38 @@ public class RangeVariableResolver
       }
     }
   }
-
+  
   void closeJoinChain(HsqlList[] paramArrayOfHsqlList, Expression paramExpression1, Expression paramExpression2)
   {
     int i = this.rangeVarSet.getIndex(paramExpression1.getRangeVariable());
     int j = this.rangeVarSet.getIndex(paramExpression2.getRangeVariable());
     int k = i > j ? i : j;
-    if ((i == -1) || (j == -1))
+    if ((i == -1) || (j == -1)) {
       return;
+    }
     ExpressionLogical localExpressionLogical = new ExpressionLogical(paramExpression1, paramExpression2);
-    for (int m = 0; m < paramArrayOfHsqlList[k].size(); m++)
-      if (localExpressionLogical.equals(paramArrayOfHsqlList[k].get(m)))
+    for (int m = 0; m < paramArrayOfHsqlList[k].size(); m++) {
+      if (localExpressionLogical.equals(paramArrayOfHsqlList[k].get(m))) {
         return;
+      }
+    }
     paramArrayOfHsqlList[k].add(localExpressionLogical);
   }
-
+  
   void reorder()
   {
-    if ((this.rangeVariables.length == 1) || (this.firstRightJoinIndex != this.rangeVariables.length))
+    if ((this.rangeVariables.length == 1) || (this.firstRightJoinIndex != this.rangeVariables.length)) {
       return;
-    if (this.firstLeftJoinIndex == 1)
+    }
+    if (this.firstLeftJoinIndex == 1) {
       return;
-    if (this.firstLateralJoinIndex != this.rangeVariables.length)
+    }
+    if (this.firstLateralJoinIndex != this.rangeVariables.length) {
       return;
-    if ((this.sortAndSlice.usingIndex) && (this.sortAndSlice.primaryTableIndex != null))
+    }
+    if ((this.sortAndSlice.usingIndex) && (this.sortAndSlice.primaryTableIndex != null)) {
       return;
+    }
     HsqlArrayList localHsqlArrayList1 = new HsqlArrayList();
     HsqlArrayList localHsqlArrayList2 = new HsqlArrayList();
     for (int i = 0; i < this.firstLeftJoinIndex; i++)
@@ -400,19 +436,21 @@ public class RangeVariableResolver
       for (int j = 0; j < localHsqlArrayList3.size(); j++)
       {
         Expression localExpression = (Expression)localHsqlArrayList3.get(j);
-        if (localExpression.isColumnEqual)
+        if (localExpression.isColumnEqual) {
           localHsqlArrayList1.add(localExpression);
-        else if (localExpression.isSingleColumnCondition)
+        } else if (localExpression.isSingleColumnCondition) {
           localHsqlArrayList2.add(localExpression);
+        }
       }
     }
     reorderRanges(localHsqlArrayList2, localHsqlArrayList1);
   }
-
+  
   void reorderRanges(HsqlArrayList paramHsqlArrayList1, HsqlArrayList paramHsqlArrayList2)
   {
-    if (paramHsqlArrayList1.size() == 0)
+    if (paramHsqlArrayList1.size() == 0) {
       return;
+    }
     int i = -1;
     Object localObject1 = null;
     double d1 = 1024.0D;
@@ -446,8 +484,9 @@ public class RangeVariableResolver
             if (localObject2 != null)
             {
               d1 = localTable.getRowStore(this.session).elementCount() / 2L;
-              if (this.colIndexSetOther.get(i2, 0) <= 1)
+              if (this.colIndexSetOther.get(i2, 0) <= 1) {
                 break;
+              }
               d1 /= 2.0D;
               break;
             }
@@ -460,10 +499,12 @@ public class RangeVariableResolver
         }
       }
     }
-    if (i < 0)
+    if (i < 0) {
       return;
-    if ((i == 0) && (this.firstLeftJoinIndex == 2))
+    }
+    if ((i == 0) && (this.firstLeftJoinIndex == 2)) {
       return;
+    }
     RangeVariable[] arrayOfRangeVariable = new RangeVariable[this.rangeVariables.length];
     ArrayUtil.copyArray(this.rangeVariables, arrayOfRangeVariable, this.rangeVariables.length);
     localObject1 = arrayOfRangeVariable[i];
@@ -502,12 +543,14 @@ public class RangeVariableResolver
             break;
           }
         }
-        if (k == 0)
+        if (k == 0) {
           break;
+        }
       }
     }
-    if (i != this.firstLeftJoinIndex)
+    if (i != this.firstLeftJoinIndex) {
       return;
+    }
     ArrayUtil.copyArray(arrayOfRangeVariable, this.rangeVariables, this.rangeVariables.length);
     paramHsqlArrayList2.clear();
     for (int k = 0; k < this.firstLeftJoinIndex; k++)
@@ -518,34 +561,40 @@ public class RangeVariableResolver
     }
     this.tempJoinExpressions[(this.firstLeftJoinIndex - 1)].addAll(paramHsqlArrayList2);
     this.rangeVarSet.clear();
-    for (k = 0; k < this.rangeVariables.length; k++)
+    for (k = 0; k < this.rangeVariables.length; k++) {
       this.rangeVarSet.add(this.rangeVariables[k]);
+    }
   }
-
+  
   int getJoinedRangePosition(Expression paramExpression, int paramInt, RangeVariable[] paramArrayOfRangeVariable)
   {
     int i = -1;
     RangeVariable[] arrayOfRangeVariable = paramExpression.getJoinRangeVariables(paramArrayOfRangeVariable);
-    for (int j = 0; j < arrayOfRangeVariable.length; j++)
-      for (int k = 0; k < paramArrayOfRangeVariable.length; k++)
+    for (int j = 0; j < arrayOfRangeVariable.length; j++) {
+      for (int k = 0; k < paramArrayOfRangeVariable.length; k++) {
         if ((arrayOfRangeVariable[j] == paramArrayOfRangeVariable[k]) && (k >= paramInt))
         {
-          if (i > 0)
+          if (i > 0) {
             return -1;
+          }
           i = k;
         }
+      }
+    }
     return i;
   }
-
+  
   void assignToLists()
   {
     int i = -1;
     for (int j = 0; j < this.rangeVariables.length; j++)
     {
-      if (this.rangeVariables[j].isLeftJoin)
+      if (this.rangeVariables[j].isLeftJoin) {
         i = j;
-      if (this.rangeVariables[j].isRightJoin)
+      }
+      if (this.rangeVariables[j].isRightJoin) {
         i = j;
+      }
       if (i == j)
       {
         this.joinExpressions[j].addAll(this.tempJoinExpressions[j]);
@@ -560,26 +609,31 @@ public class RangeVariableResolver
         }
       }
     }
-    for (j = 0; j < this.queryConditions.size(); j++)
+    for (j = 0; j < this.queryConditions.size(); j++) {
       assignToJoinLists((Expression)this.queryConditions.get(j), this.whereExpressions, this.lastRightJoinIndex);
+    }
   }
-
+  
   void assignToJoinLists(Expression paramExpression, HsqlList[] paramArrayOfHsqlList, int paramInt)
   {
-    if (paramExpression == null)
+    if (paramExpression == null) {
       return;
+    }
     this.tempSet.clear();
     paramExpression.collectRangeVariables(this.rangeVariables, this.tempSet);
     int i = this.rangeVarSet.getLargestIndex(this.tempSet);
-    if (i == -1)
+    if (i == -1) {
       i = 0;
-    if (i < paramInt)
+    }
+    if (i < paramInt) {
       i = paramInt;
-    if (((paramExpression instanceof ExpressionLogical)) && (((ExpressionLogical)paramExpression).isTerminal))
+    }
+    if (((paramExpression instanceof ExpressionLogical)) && (((ExpressionLogical)paramExpression).isTerminal)) {
       i = paramArrayOfHsqlList.length - 1;
+    }
     paramArrayOfHsqlList[i].add(paramExpression);
   }
-
+  
   void assignToRangeVariables()
   {
     for (int i = 0; i < this.rangeVariables.length; i++)
@@ -598,20 +652,24 @@ public class RangeVariableResolver
         localRangeVariableConditions = this.rangeVariables[i].joinConditions[0];
         assignToRangeVariable(this.rangeVariables[i], localRangeVariableConditions, i, this.joinExpressions[i]);
         localRangeVariableConditions = this.rangeVariables[i].joinConditions[0];
-        if (localRangeVariableConditions.hasIndex())
+        if (localRangeVariableConditions.hasIndex()) {
           j = 1;
+        }
         assignToRangeVariable(localRangeVariableConditions, this.joinExpressions[i]);
         localRangeVariableConditions = this.rangeVariables[i].whereConditions[0];
-        for (int k = i + 1; k < this.rangeVariables.length; k++)
-          if (this.rangeVariables[k].isRightJoin)
+        for (int k = i + 1; k < this.rangeVariables.length; k++) {
+          if (this.rangeVariables[k].isRightJoin) {
             assignToRangeVariable(this.rangeVariables[k].whereConditions[0], this.whereExpressions[i]);
-        if (j == 0)
+          }
+        }
+        if (j == 0) {
           assignToRangeVariable(this.rangeVariables[i], localRangeVariableConditions, i, this.whereExpressions[i]);
+        }
         assignToRangeVariable(localRangeVariableConditions, this.whereExpressions[i]);
       }
     }
   }
-
+  
   void assignToRangeVariable(RangeVariable.RangeVariableConditions paramRangeVariableConditions, HsqlList paramHsqlList)
   {
     int i = 0;
@@ -623,7 +681,7 @@ public class RangeVariableResolver
       i++;
     }
   }
-
+  
   private void collectIndexableColumns(RangeVariable paramRangeVariable, HsqlList paramHsqlList)
   {
     this.colIndexSetEqual.clear();
@@ -642,8 +700,9 @@ public class RangeVariableResolver
         }
         else
         {
-          if (localExpression.getRightNode().getRangeVariable() != paramRangeVariable)
+          if (localExpression.getRightNode().getRangeVariable() != paramRangeVariable) {
             break label147;
+          }
           k = localExpression.getRightNode().getColumnIndex();
         }
         if (localExpression.isSingleColumnEqual)
@@ -656,17 +715,19 @@ public class RangeVariableResolver
           this.colIndexSetOther.put(k, m + 1);
         }
       }
-      label147: i++;
+      label147:
+      i++;
     }
   }
-
+  
   void assignToRangeVariable(RangeVariable paramRangeVariable, RangeVariable.RangeVariableConditions paramRangeVariableConditions, int paramInt, HsqlList paramHsqlList)
   {
-    if (paramHsqlList.isEmpty())
+    if (paramHsqlList.isEmpty()) {
       return;
+    }
     setIndexConditions(paramRangeVariableConditions, paramHsqlList, paramInt, true);
   }
-
+  
   private void setIndexConditions(RangeVariable.RangeVariableConditions paramRangeVariableConditions, HsqlList paramHsqlList, int paramInt, boolean paramBoolean)
   {
     this.colIndexSetEqual.clear();
@@ -683,25 +744,25 @@ public class RangeVariableResolver
         int i2;
         switch (m)
         {
-        case 50:
+        case 50: 
           break;
-        case 2:
+        case 2: 
           break;
-        case 41:
+        case 41: 
           if ((localExpression1.exprSubType != 52) && (localExpression1.exprSubType != 51) && (localExpression1.getLeftNode().getRangeVariable() == paramRangeVariableConditions.rangeVar))
           {
             n = localExpression1.getLeftNode().getColumnIndex();
             this.colIndexSetEqual.add(n);
           }
           break;
-        case 47:
+        case 47: 
           if ((localExpression1.getLeftNode().getRangeVariable() == paramRangeVariableConditions.rangeVar) && (!paramRangeVariableConditions.rangeVar.isLeftJoin))
           {
             n = localExpression1.getLeftNode().getColumnIndex();
             this.colIndexSetEqual.add(n);
           }
           break;
-        case 48:
+        case 48: 
           if ((localExpression1.getLeftNode().getLeftNode().getRangeVariable() == paramRangeVariableConditions.rangeVar) && (!paramRangeVariableConditions.rangeVar.isLeftJoin))
           {
             n = localExpression1.getLeftNode().getLeftNode().getColumnIndex();
@@ -709,10 +770,10 @@ public class RangeVariableResolver
             this.colIndexSetOther.put(n, i2 + 1);
           }
           break;
-        case 42:
-        case 43:
-        case 44:
-        case 45:
+        case 42: 
+        case 43: 
+        case 44: 
+        case 45: 
           if (localExpression1.getLeftNode().getRangeVariable() == paramRangeVariableConditions.rangeVar)
           {
             n = localExpression1.getLeftNode().getColumnIndex();
@@ -720,7 +781,7 @@ public class RangeVariableResolver
             this.colIndexSetOther.put(n, i2 + 1);
           }
           break;
-        default:
+        default: 
           Error.runtimeError(201, "RangeVariableResolver");
         }
       }
@@ -728,12 +789,14 @@ public class RangeVariableResolver
     }
     setEqualityConditions(paramRangeVariableConditions, paramHsqlList, paramInt);
     boolean bool = paramRangeVariableConditions.hasIndex();
-    if (!bool)
+    if (!bool) {
       setNonEqualityConditions(paramRangeVariableConditions, paramHsqlList, paramInt);
-    if ((paramInt == 0) && (this.sortAndSlice.usingIndex))
+    }
+    if ((paramInt == 0) && (this.sortAndSlice.usingIndex)) {
       bool = true;
-    else
+    } else {
       bool = paramRangeVariableConditions.hasIndex();
+    }
     i = 0;
     Expression localExpression2;
     if ((!bool) && (paramBoolean))
@@ -743,12 +806,13 @@ public class RangeVariableResolver
       while (j < k)
       {
         localExpression2 = (Expression)paramHsqlList.get(j);
-        if (localExpression2 != null)
+        if (localExpression2 != null) {
           if (localExpression2.getType() == 50)
           {
             bool = ((ExpressionLogical)localExpression2).isIndexable(paramRangeVariableConditions.rangeVar);
-            if (bool)
+            if (bool) {
               bool = setOrConditions(paramRangeVariableConditions, (ExpressionLogical)localExpression2, paramInt);
+            }
             if (bool)
             {
               paramHsqlList.set(j, null);
@@ -770,6 +834,7 @@ public class RangeVariableResolver
               break;
             }
           }
+        }
         j++;
       }
     }
@@ -778,19 +843,23 @@ public class RangeVariableResolver
     while (j < k)
     {
       localExpression2 = (Expression)paramHsqlList.get(j);
-      if (localExpression2 != null)
-        if (i != 0)
-          for (int i1 = 0; i1 < paramRangeVariableConditions.rangeVar.joinConditions.length; i1++)
-            if (paramRangeVariableConditions.isJoin)
+      if (localExpression2 != null) {
+        if (i != 0) {
+          for (int i1 = 0; i1 < paramRangeVariableConditions.rangeVar.joinConditions.length; i1++) {
+            if (paramRangeVariableConditions.isJoin) {
               paramRangeVariableConditions.rangeVar.joinConditions[i1].nonIndexCondition = ExpressionLogical.andExpressions(localExpression2, paramRangeVariableConditions.rangeVar.joinConditions[i1].nonIndexCondition);
-            else
+            } else {
               paramRangeVariableConditions.rangeVar.whereConditions[i1].nonIndexCondition = ExpressionLogical.andExpressions(localExpression2, paramRangeVariableConditions.rangeVar.whereConditions[i1].nonIndexCondition);
-        else
+            }
+          }
+        } else {
           paramRangeVariableConditions.addCondition(localExpression2);
+        }
+      }
       j++;
     }
   }
-
+  
   private boolean setOrConditions(RangeVariable.RangeVariableConditions paramRangeVariableConditions, ExpressionLogical paramExpressionLogical, int paramInt)
   {
     HsqlArrayList localHsqlArrayList1 = new HsqlArrayList();
@@ -806,20 +875,24 @@ public class RangeVariableResolver
       localObject2 = new RangeVariable.RangeVariableConditions(paramRangeVariableConditions);
       setIndexConditions((RangeVariable.RangeVariableConditions)localObject2, localHsqlArrayList2, paramInt, false);
       arrayOfRangeVariableConditions[i] = localObject2;
-      if (!((RangeVariable.RangeVariableConditions)localObject2).hasIndex())
+      if (!((RangeVariable.RangeVariableConditions)localObject2).hasIndex()) {
         return false;
+      }
     }
     Expression localExpression = null;
     for (int j = 0; j < arrayOfRangeVariableConditions.length; j++)
     {
       localObject1 = arrayOfRangeVariableConditions[j];
       arrayOfRangeVariableConditions[j].excludeConditions = localExpression;
-      if (j == arrayOfRangeVariableConditions.length - 1)
+      if (j == arrayOfRangeVariableConditions.length - 1) {
         break;
+      }
       localObject2 = null;
-      if (((RangeVariable.RangeVariableConditions)localObject1).indexCond != null)
-        for (int k = 0; k < ((RangeVariable.RangeVariableConditions)localObject1).indexedColumnCount; k++)
+      if (((RangeVariable.RangeVariableConditions)localObject1).indexCond != null) {
+        for (int k = 0; k < ((RangeVariable.RangeVariableConditions)localObject1).indexedColumnCount; k++) {
           localObject2 = ExpressionLogical.andExpressions((Expression)localObject2, localObject1.indexCond[k]);
+        }
+      }
       localObject2 = ExpressionLogical.andExpressions((Expression)localObject2, ((RangeVariable.RangeVariableConditions)localObject1).indexEndCondition);
       localObject2 = ExpressionLogical.andExpressions((Expression)localObject2, ((RangeVariable.RangeVariableConditions)localObject1).nonIndexCondition);
       localExpression = ExpressionLogical.orExpressions((Expression)localObject2, localExpression);
@@ -840,25 +913,27 @@ public class RangeVariableResolver
     }
     return true;
   }
-
+  
   private void setEqualityConditions(RangeVariable.RangeVariableConditions paramRangeVariableConditions, HsqlList paramHsqlList, int paramInt)
   {
     Index localIndex = null;
     if ((paramInt == 0) && (this.sortAndSlice.usingIndex))
     {
       localIndex = this.sortAndSlice.primaryTableIndex;
-      if (localIndex != null)
+      if (localIndex != null) {
         paramRangeVariableConditions.rangeIndex = localIndex;
+      }
     }
     Object localObject2;
     if (localIndex == null)
     {
       localObject1 = paramRangeVariableConditions.rangeVar.rangeTable.getIndexForColumns(this.session, this.colIndexSetEqual, 41, false);
-      if (localObject1.length == 0)
+      if (localObject1.length == 0) {
         return;
+      }
       localIndex = localObject1[0].index;
       double d1 = 1.7976931348623157E+308D;
-      if (localObject1.length > 1)
+      if (localObject1.length > 1) {
         for (j = 0; j < localObject1.length; j++)
         {
           localObject2 = paramRangeVariableConditions.rangeVar.rangeTable.getRowStore(this.session);
@@ -869,6 +944,7 @@ public class RangeVariableResolver
             localIndex = localObject1[j].index;
           }
         }
+      }
     }
     Object localObject1 = localIndex.getColumns();
     int i = localObject1.length;
@@ -896,8 +972,9 @@ public class RangeVariableResolver
       Object localObject3 = arrayOfExpression[k];
       if (localObject3 == null)
       {
-        if (i == localObject1.length)
+        if (i == localObject1.length) {
           i = k;
+        }
         j = 1;
       }
       else if (j != 0)
@@ -906,18 +983,21 @@ public class RangeVariableResolver
         arrayOfExpression[k] = null;
       }
     }
-    if (i > 0)
+    if (i > 0) {
       paramRangeVariableConditions.addIndexCondition(arrayOfExpression, localIndex, i);
+    }
   }
-
+  
   private void setNonEqualityConditions(RangeVariable.RangeVariableConditions paramRangeVariableConditions, HsqlList paramHsqlList, int paramInt)
   {
-    if (this.colIndexSetOther.isEmpty())
+    if (this.colIndexSetOther.isEmpty()) {
       return;
+    }
     int i = 0;
     Object localObject1 = null;
-    if ((paramInt == 0) && (this.sortAndSlice.usingIndex))
+    if ((paramInt == 0) && (this.sortAndSlice.usingIndex)) {
       localObject1 = this.sortAndSlice.primaryTableIndex;
+    }
     Object localObject2;
     if (localObject1 == null)
     {
@@ -937,8 +1017,9 @@ public class RangeVariableResolver
         }
       }
     }
-    if (localObject1 == null)
+    if (localObject1 == null) {
       return;
+    }
     int[] arrayOfInt = ((Index)localObject1).getColumns();
     for (int k = 0; k < paramHsqlList.size(); k++)
     {
@@ -948,19 +1029,19 @@ public class RangeVariableResolver
         int m = 0;
         switch (((Expression)localObject2).getType())
         {
-        case 48:
-          if ((((Expression)localObject2).getLeftNode().getType() == 47) && (arrayOfInt[0] == ((Expression)localObject2).getLeftNode().getLeftNode().getColumnIndex()))
+        case 48: 
+          if ((((Expression)localObject2).getLeftNode().getType() == 47) && (arrayOfInt[0] == ((Expression)localObject2).getLeftNode().getLeftNode().getColumnIndex())) {
             m = 1;
+          }
           break;
-        case 42:
-        case 43:
-        case 44:
-        case 45:
-          if ((arrayOfInt[0] == ((Expression)localObject2).getLeftNode().getColumnIndex()) && (((Expression)localObject2).getRightNode() != null) && (!((Expression)localObject2).getRightNode().isCorrelated()))
+        case 42: 
+        case 43: 
+        case 44: 
+        case 45: 
+          if ((arrayOfInt[0] == ((Expression)localObject2).getLeftNode().getColumnIndex()) && (((Expression)localObject2).getRightNode() != null) && (!((Expression)localObject2).getRightNode().isCorrelated())) {
             m = 1;
+          }
           break;
-        case 46:
-        case 47:
         }
         if (m != 0)
         {
@@ -973,7 +1054,7 @@ public class RangeVariableResolver
       }
     }
   }
-
+  
   void setInConditionsAsTables()
   {
     for (int i = this.rangeVariables.length - 1; i >= 0; i--)
@@ -987,8 +1068,9 @@ public class RangeVariableResolver
         Index.IndexUse[] arrayOfIndexUse = localRangeVariable1.rangeTable.getIndexForColumns(this.session, localOrderedIntHashSet, 41, false);
         Index localIndex = arrayOfIndexUse[0].index;
         int j = 0;
-        for (int k = 0; (k < localIndex.getColumnCount()) && (localOrderedIntHashSet.contains(localIndex.getColumns()[k])); k++)
+        for (int k = 0; (k < localIndex.getColumnCount()) && (localOrderedIntHashSet.contains(localIndex.getColumns()[k])); k++) {
           j++;
+        }
         RangeVariable localRangeVariable2 = new RangeVariable(localExpressionLogical1.getRightNode().getTable(), null, null, null, this.compileContext);
         localRangeVariable2.isGenerated = true;
         RangeVariable[] arrayOfRangeVariable = new RangeVariable[this.rangeVariables.length + 1];
@@ -1017,7 +1099,8 @@ public class RangeVariableResolver
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.RangeVariableResolver
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

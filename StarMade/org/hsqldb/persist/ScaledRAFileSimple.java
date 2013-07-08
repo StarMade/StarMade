@@ -12,7 +12,7 @@ final class ScaledRAFileSimple
   final RandomAccessFile file;
   final boolean readOnly;
   final Database database;
-
+  
   ScaledRAFileSimple(Database paramDatabase, String paramString1, String paramString2)
     throws FileNotFoundException, IOException
   {
@@ -20,83 +20,83 @@ final class ScaledRAFileSimple
     this.database = paramDatabase;
     this.readOnly = paramString2.equals("r");
   }
-
+  
   public long length()
     throws IOException
   {
     return this.file.length();
   }
-
+  
   public void seek(long paramLong)
     throws IOException
   {
     this.file.seek(paramLong);
   }
-
+  
   public long getFilePointer()
     throws IOException
   {
     return this.file.getFilePointer();
   }
-
+  
   public int read()
     throws IOException
   {
     return this.file.read();
   }
-
+  
   public long readLong()
     throws IOException
   {
     return this.file.readLong();
   }
-
+  
   public int readInt()
     throws IOException
   {
     return this.file.readInt();
   }
-
+  
   public void read(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
     throws IOException
   {
     this.file.readFully(paramArrayOfByte, paramInt1, paramInt2);
   }
-
+  
   public void write(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
     throws IOException
   {
     this.file.write(paramArrayOfByte, paramInt1, paramInt2);
   }
-
+  
   public void writeInt(int paramInt)
     throws IOException
   {
     this.file.writeInt(paramInt);
   }
-
+  
   public void writeLong(long paramLong)
     throws IOException
   {
     this.file.writeLong(paramLong);
   }
-
+  
   public void close()
     throws IOException
   {
     this.file.close();
   }
-
+  
   public boolean isReadOnly()
   {
     return this.readOnly;
   }
-
+  
   public boolean ensureLength(long paramLong)
   {
     return true;
   }
-
+  
   public boolean setLength(long paramLong)
   {
     try
@@ -104,17 +104,15 @@ final class ScaledRAFileSimple
       this.file.setLength(paramLong);
       return true;
     }
-    catch (Throwable localThrowable)
-    {
-    }
+    catch (Throwable localThrowable) {}
     return false;
   }
-
+  
   public Database getDatabase()
   {
     return null;
   }
-
+  
   public void synch()
   {
     try
@@ -128,7 +126,8 @@ final class ScaledRAFileSimple
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.persist.ScaledRAFileSimple
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

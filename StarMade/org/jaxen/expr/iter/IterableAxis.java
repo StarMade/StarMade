@@ -1,41 +1,42 @@
-/*     */ package org.jaxen.expr.iter;
-/*     */ 
-/*     */ import java.io.Serializable;
-/*     */ import java.util.Iterator;
-/*     */ import org.jaxen.ContextSupport;
-/*     */ import org.jaxen.UnsupportedAxisException;
-/*     */ 
-/*     */ public abstract class IterableAxis
-/*     */   implements Serializable
-/*     */ {
-/*     */   private int value;
-/*     */ 
-/*     */   public IterableAxis(int axisValue)
-/*     */   {
-/*  60 */     this.value = axisValue;
-/*     */   }
-/*     */ 
-/*     */   public int value()
-/*     */   {
-/*  69 */     return this.value;
-/*     */   }
-/*     */ 
-/*     */   public abstract Iterator iterator(Object paramObject, ContextSupport paramContextSupport)
-/*     */     throws UnsupportedAxisException;
-/*     */ 
-/*     */   public Iterator namedAccessIterator(Object contextNode, ContextSupport support, String localName, String namespacePrefix, String namespaceURI)
-/*     */     throws UnsupportedAxisException
-/*     */   {
-/*  99 */     throw new UnsupportedOperationException("Named access unsupported");
-/*     */   }
-/*     */ 
-/*     */   public boolean supportsNamedAccess(ContextSupport support)
-/*     */   {
-/* 109 */     return false;
-/*     */   }
-/*     */ }
+/*   1:    */package org.jaxen.expr.iter;
+/*   2:    */
+/*   3:    */import java.io.Serializable;
+/*   4:    */import java.util.Iterator;
+/*   5:    */import org.jaxen.ContextSupport;
+/*   6:    */import org.jaxen.UnsupportedAxisException;
+/*   7:    */
+/*  53:    */public abstract class IterableAxis
+/*  54:    */  implements Serializable
+/*  55:    */{
+/*  56:    */  private int value;
+/*  57:    */  
+/*  58:    */  public IterableAxis(int axisValue)
+/*  59:    */  {
+/*  60: 60 */    this.value = axisValue;
+/*  61:    */  }
+/*  62:    */  
+/*  67:    */  public int value()
+/*  68:    */  {
+/*  69: 69 */    return this.value;
+/*  70:    */  }
+/*  71:    */  
+/*  83:    */  public abstract Iterator iterator(Object paramObject, ContextSupport paramContextSupport)
+/*  84:    */    throws UnsupportedAxisException;
+/*  85:    */  
+/*  96:    */  public Iterator namedAccessIterator(Object contextNode, ContextSupport support, String localName, String namespacePrefix, String namespaceURI)
+/*  97:    */    throws UnsupportedAxisException
+/*  98:    */  {
+/*  99: 99 */    throw new UnsupportedOperationException("Named access unsupported");
+/* 100:    */  }
+/* 101:    */  
+/* 107:    */  public boolean supportsNamedAccess(ContextSupport support)
+/* 108:    */  {
+/* 109:109 */    return false;
+/* 110:    */  }
+/* 111:    */}
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.jaxen.expr.iter.IterableAxis
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

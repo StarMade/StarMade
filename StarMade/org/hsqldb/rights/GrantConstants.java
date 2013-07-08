@@ -13,7 +13,8 @@ public abstract interface GrantConstants
   public static final int ALL = 63;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.rights.GrantConstants
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

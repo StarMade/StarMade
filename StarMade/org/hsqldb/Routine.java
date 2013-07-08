@@ -63,14 +63,14 @@ public class Routine
   Table triggerTable;
   int triggerType;
   int triggerOperation;
-
+  
   public Routine(int paramInt)
   {
     this.routineType = paramInt;
     this.returnType = Type.SQL_ALL_TYPES;
     this.ranges = new RangeVariable[] { new RangeVariable(this.parameterList, null, false, 3) };
   }
-
+  
   public Routine(Table paramTable, RangeVariable[] paramArrayOfRangeVariable, int paramInt1, int paramInt2, int paramInt3)
   {
     this.routineType = 8;
@@ -81,44 +81,45 @@ public class Routine
     this.triggerType = paramInt2;
     this.triggerOperation = paramInt3;
   }
-
+  
   public int getType()
   {
     return this.routineType;
   }
-
+  
   public HsqlNameManager.HsqlName getName()
   {
     return this.name;
   }
-
+  
   public HsqlNameManager.HsqlName getSchemaName()
   {
-    if (this.routineType == 8)
+    if (this.routineType == 8) {
       return this.triggerTable.getSchemaName();
+    }
     return this.name.schema;
   }
-
+  
   public HsqlNameManager.HsqlName getCatalogName()
   {
     return this.name.schema.schema;
   }
-
+  
   public Grantee getOwner()
   {
     return this.name.schema.owner;
   }
-
+  
   public OrderedHashSet getReferences()
   {
     return this.references;
   }
-
+  
   public OrderedHashSet getComponents()
   {
     return null;
   }
-
+  
   public void compile(Session paramSession, SchemaObject paramSchemaObject)
   {
     ParserRoutine localParserRoutine = new ParserRoutine(paramSession, new Scanner(this.statement.getSQL()));
@@ -132,12 +133,12 @@ public class Routine
     localStatement.resolve(paramSession);
     setReferences();
   }
-
+  
   public String getSQL()
   {
     return getDefinitionSQL(true);
   }
-
+  
   public String getSQLAlter()
   {
     StringBuffer localStringBuffer = new StringBuffer();
@@ -148,29 +149,32 @@ public class Routine
     localStringBuffer.append(' ').append(this.statement.getSQL());
     return localStringBuffer.toString();
   }
-
+  
   public String getSQLDeclaration()
   {
     return getDefinitionSQL(false);
   }
-
+  
   private String getDefinitionSQL(boolean paramBoolean)
   {
     StringBuffer localStringBuffer = new StringBuffer();
     localStringBuffer.append("CREATE").append(' ');
-    if (this.isAggregate)
+    if (this.isAggregate) {
       localStringBuffer.append("AGGREGATE").append(' ');
-    if (this.routineType == 17)
+    }
+    if (this.routineType == 17) {
       localStringBuffer.append("PROCEDURE");
-    else
+    } else {
       localStringBuffer.append("FUNCTION");
+    }
     localStringBuffer.append(' ');
     localStringBuffer.append(this.name.getSchemaQualifiedStatementName());
     localStringBuffer.append('(');
     for (int i = 0; i < this.parameterList.size(); i++)
     {
-      if (i > 0)
+      if (i > 0) {
         localStringBuffer.append(',');
+      }
       ColumnSchema localColumnSchema = (ColumnSchema)this.parameterList.get(i);
       localStringBuffer.append(localColumnSchema.getSQL());
     }
@@ -200,10 +204,11 @@ public class Routine
     }
     localStringBuffer.append("LANGUAGE");
     localStringBuffer.append(' ');
-    if (this.language == 1)
+    if (this.language == 1) {
       localStringBuffer.append("JAVA");
-    else
+    } else {
       localStringBuffer.append("SQL");
+    }
     localStringBuffer.append(' ');
     if (!this.isDeterministic)
     {
@@ -216,20 +221,22 @@ public class Routine
     localStringBuffer.append(' ');
     if (this.routineType == 16)
     {
-      if (this.isNullInputOutput)
+      if (this.isNullInputOutput) {
         localStringBuffer.append("RETURNS").append(' ').append("NULL");
-      else
+      } else {
         localStringBuffer.append("CALLED");
+      }
       localStringBuffer.append(' ').append("ON").append(' ');
       localStringBuffer.append("NULL").append(' ').append("INPUT");
       localStringBuffer.append(' ');
     }
     else
     {
-      if (this.isNewSavepointLevel)
+      if (this.isNewSavepointLevel) {
         localStringBuffer.append("NEW");
-      else
+      } else {
         localStringBuffer.append("OLD");
+      }
       localStringBuffer.append(' ').append("SAVEPOINT").append(' ');
       localStringBuffer.append("LEVEL").append(' ');
       if (this.maxDynamicResults != 0)
@@ -256,7 +263,7 @@ public class Routine
     }
     return localStringBuffer.toString();
   }
-
+  
   public String getSQLBodyDefinition()
   {
     StringBuffer localStringBuffer = new StringBuffer();
@@ -271,176 +278,177 @@ public class Routine
     }
     return localStringBuffer.toString();
   }
-
+  
   public String getExternalName()
   {
-    if (this.language == 1)
+    if (this.language == 1) {
       return this.methodName;
+    }
     return null;
   }
-
+  
   public long getChangeTimestamp()
   {
     return 0L;
   }
-
+  
   public void addParameter(ColumnSchema paramColumnSchema)
   {
     HsqlNameManager.HsqlName localHsqlName = paramColumnSchema.getName();
     String str = localHsqlName == null ? HsqlNameManager.getAutoNoNameColumnString(this.parameterList.size()) : localHsqlName.name;
     this.parameterList.add(str, paramColumnSchema);
   }
-
+  
   public void setLanguage(int paramInt)
   {
     this.language = paramInt;
   }
-
+  
   public int getLanguage()
   {
     return this.language;
   }
-
+  
   boolean isPSM()
   {
     return this.language == 2;
   }
-
+  
   public void setDataImpact(int paramInt)
   {
     this.dataImpact = paramInt;
   }
-
+  
   public int getDataImpact()
   {
     return this.dataImpact;
   }
-
+  
   public String getDataImpactString()
   {
     StringBuffer localStringBuffer = new StringBuffer();
     switch (this.dataImpact)
     {
-    case 1:
+    case 1: 
       localStringBuffer.append("NO").append(' ').append("SQL");
       break;
-    case 2:
+    case 2: 
       localStringBuffer.append("CONTAINS").append(' ').append("SQL");
       break;
-    case 3:
+    case 3: 
       localStringBuffer.append("READS").append(' ').append("SQL").append(' ').append("DATA");
       break;
-    case 4:
+    case 4: 
       localStringBuffer.append("MODIFIES").append(' ').append("SQL").append(' ').append("DATA");
     }
     return localStringBuffer.toString();
   }
-
+  
   public void setReturnType(Type paramType)
   {
     this.returnType = paramType;
   }
-
+  
   public Type getReturnType()
   {
     return this.returnType;
   }
-
+  
   public void setTableType(Type[] paramArrayOfType)
   {
     this.tableType = paramArrayOfType;
   }
-
+  
   public Type[] getTableType()
   {
     return this.tableType;
   }
-
+  
   public Table getTable()
   {
     return this.returnTable;
   }
-
+  
   public void setProcedure(Statement paramStatement)
   {
     this.statement = paramStatement;
   }
-
+  
   public Statement getProcedure()
   {
     return this.statement;
   }
-
+  
   public void setSpecificName(HsqlNameManager.HsqlName paramHsqlName)
   {
     this.specificName = paramHsqlName;
   }
-
+  
   public int getMaxDynamicResults()
   {
     return this.maxDynamicResults;
   }
-
+  
   public void setName(HsqlNameManager.HsqlName paramHsqlName)
   {
     this.name = paramHsqlName;
   }
-
+  
   public HsqlNameManager.HsqlName getSpecificName()
   {
     return this.specificName;
   }
-
+  
   public void setDeterministic(boolean paramBoolean)
   {
     this.isDeterministic = paramBoolean;
   }
-
+  
   public boolean isDeterministic()
   {
     return this.isDeterministic;
   }
-
+  
   public void setNullInputOutput(boolean paramBoolean)
   {
     this.isNullInputOutput = paramBoolean;
   }
-
+  
   public boolean isNullInputOutput()
   {
     return this.isNullInputOutput;
   }
-
+  
   public void setNewSavepointLevel(boolean paramBoolean)
   {
     this.isNewSavepointLevel = paramBoolean;
   }
-
+  
   public void setMaxDynamicResults(int paramInt)
   {
     this.maxDynamicResults = paramInt;
   }
-
+  
   public void setParameterStyle(int paramInt)
   {
     this.parameterStyle = paramInt;
   }
-
+  
   public void setMethodURL(String paramString)
   {
     this.methodName = paramString;
   }
-
+  
   public Method getMethod()
   {
     return this.javaMethod;
   }
-
+  
   public void setMethod(Method paramMethod)
   {
     this.javaMethod = paramMethod;
   }
-
+  
   public void setReturnTable(TableDerived paramTableDerived)
   {
     this.returnTable = paramTableDerived;
@@ -449,34 +457,37 @@ public class Routine
     Type[] arrayOfType = paramTableDerived.getColumnTypes();
     this.returnType = new RowType(arrayOfType);
   }
-
+  
   public boolean returnsTable()
   {
     return this.returnsTable;
   }
-
+  
   public void setAggregate(boolean paramBoolean)
   {
     this.isAggregate = paramBoolean;
   }
-
+  
   public boolean isAggregate()
   {
     return this.isAggregate;
   }
-
+  
   public void resolve(Session paramSession)
   {
     setLanguage(this.language);
     if (this.language == 2)
     {
-      if (this.dataImpact == 1)
+      if (this.dataImpact == 1) {
         throw Error.error(5604, "CONTAINS SQL");
-      if (this.parameterStyle == 1)
+      }
+      if (this.parameterStyle == 1) {
         throw Error.error(5604, "PARAMETER STYLE");
+      }
     }
-    if ((this.language == 2) && (this.parameterStyle != 0) && (this.parameterStyle != 2))
+    if ((this.language == 2) && (this.parameterStyle != 0) && (this.parameterStyle != 2)) {
       throw Error.error(5604, "PARAMETER STYLE");
+    }
     this.parameterTypes = new Type[this.parameterList.size()];
     this.typeGroups = 0;
     ColumnSchema localColumnSchema;
@@ -484,13 +495,15 @@ public class Routine
     {
       localColumnSchema = (ColumnSchema)this.parameterList.get(i);
       this.parameterTypes[i] = localColumnSchema.dataType;
-      if (i < 4)
+      if (i < 4) {
         BitMap.setByte(this.typeGroups, (byte)localColumnSchema.dataType.typeComparisonGroup, i * 8);
+      }
     }
     if (this.isAggregate)
     {
-      if (this.parameterTypes.length != 4)
+      if (this.parameterTypes.length != 4) {
         throw Error.error(5610);
+      }
       i = this.parameterTypes[1].typeCode == 16 ? 1 : 0;
       localColumnSchema = (ColumnSchema)this.parameterList.get(0);
       i &= (localColumnSchema.getParameterMode() == 1 ? 1 : 0);
@@ -500,12 +513,13 @@ public class Routine
       i &= (localColumnSchema.getParameterMode() == 2 ? 1 : 0);
       localColumnSchema = (ColumnSchema)this.parameterList.get(3);
       i &= (localColumnSchema.getParameterMode() == 2 ? 1 : 0);
-      if (i == 0)
+      if (i == 0) {
         throw Error.error(5610);
+      }
     }
     resolveReferences(paramSession);
   }
-
+  
   void resolveReferences(Session paramSession)
   {
     if (this.statement != null)
@@ -517,16 +531,18 @@ public class Routine
     {
       boolean[] arrayOfBoolean = new boolean[1];
       this.javaMethod = getMethod(this.methodName, this, arrayOfBoolean, this.returnsTable);
-      if (this.javaMethod == null)
+      if (this.javaMethod == null) {
         throw Error.error(6013);
+      }
       this.javaMethodWithConnection = arrayOfBoolean[0];
       String str = this.javaMethod.getDeclaringClass().getName();
-      if (str.equals("java.lang.Math"))
+      if (str.equals("java.lang.Math")) {
         this.isLibraryRoutine = true;
+      }
     }
     setReferences();
   }
-
+  
   private void setReferences()
   {
     OrderedHashSet localOrderedHashSet1 = new OrderedHashSet();
@@ -534,11 +550,13 @@ public class Routine
     {
       ColumnSchema localColumnSchema = (ColumnSchema)this.parameterList.get(i);
       OrderedHashSet localOrderedHashSet2 = localColumnSchema.getReferences();
-      if (localOrderedHashSet2 != null)
+      if (localOrderedHashSet2 != null) {
         localOrderedHashSet1.addAll(localOrderedHashSet2);
+      }
     }
-    if (this.statement != null)
+    if (this.statement != null) {
       localOrderedHashSet1.addAll(this.statement.getReferences());
+    }
     this.isRecursive = false;
     if (localOrderedHashSet1.contains(getSpecificName()))
     {
@@ -547,7 +565,7 @@ public class Routine
     }
     this.references = localOrderedHashSet1;
   }
-
+  
   void checkSQLData(Session paramSession)
   {
     OrderedHashSet localOrderedHashSet = this.statement.getReferences();
@@ -559,11 +577,13 @@ public class Routine
         Routine localRoutine = (Routine)paramSession.database.schemaManager.getSchemaObject(localHsqlName);
         if (localRoutine.dataImpact == 3)
         {
-          if (this.dataImpact == 2)
+          if (this.dataImpact == 2) {
             throw Error.error(5608, "READS SQL");
+          }
         }
-        else if ((localRoutine.dataImpact == 4) && ((this.dataImpact == 2) || (this.dataImpact == 3)))
+        else if ((localRoutine.dataImpact == 4) && ((this.dataImpact == 2) || (this.dataImpact == 3))) {
           throw Error.error(5608, "MODIFIES SQL");
+        }
       }
     }
     HsqlNameManager.HsqlName[] arrayOfHsqlName;
@@ -571,104 +591,109 @@ public class Routine
     if ((this.dataImpact == 2) || (this.dataImpact == 3))
     {
       arrayOfHsqlName = this.statement.getTableNamesForWrite();
-      for (j = 0; j < arrayOfHsqlName.length; j++)
-        if (arrayOfHsqlName[j].schema != SqlInvariants.MODULE_HSQLNAME)
+      for (j = 0; j < arrayOfHsqlName.length; j++) {
+        if (arrayOfHsqlName[j].schema != SqlInvariants.MODULE_HSQLNAME) {
           throw Error.error(5608, "MODIFIES SQL");
+        }
+      }
     }
     if (this.dataImpact == 2)
     {
       arrayOfHsqlName = this.statement.getTableNamesForRead();
-      for (j = 0; j < arrayOfHsqlName.length; j++)
-        if (arrayOfHsqlName[j].schema != SqlInvariants.MODULE_HSQLNAME)
+      for (j = 0; j < arrayOfHsqlName.length; j++) {
+        if (arrayOfHsqlName[j].schema != SqlInvariants.MODULE_HSQLNAME) {
           throw Error.error(5608, "READS SQL");
+        }
+      }
     }
   }
-
+  
   public boolean isTrigger()
   {
     return this.routineType == 8;
   }
-
+  
   public boolean isProcedure()
   {
     return this.routineType == 17;
   }
-
+  
   public boolean isFunction()
   {
     return this.routineType == 16;
   }
-
+  
   public ColumnSchema getParameter(int paramInt)
   {
     return (ColumnSchema)this.parameterList.get(paramInt);
   }
-
+  
   Type[] getParameterTypes()
   {
     return this.parameterTypes;
   }
-
+  
   int getParameterSignature()
   {
     return this.typeGroups;
   }
-
+  
   public int getParameterCount()
   {
     return this.parameterTypes.length;
   }
-
+  
   public int getParameterCount(int paramInt)
   {
     int i = 0;
     for (int j = 0; j < this.parameterList.size(); j++)
     {
       ColumnSchema localColumnSchema = (ColumnSchema)this.parameterList.get(j);
-      if (localColumnSchema.getParameterMode() == paramInt)
+      if (localColumnSchema.getParameterMode() == paramInt) {
         i++;
+      }
     }
     return i;
   }
-
+  
   public int getParameterIndex(String paramString)
   {
     return this.parameterList.getIndex(paramString);
   }
-
+  
   public RangeVariable[] getRangeVariables()
   {
     return this.ranges;
   }
-
-  public void setCorrelated()
-  {
-  }
-
+  
+  public void setCorrelated() {}
+  
   public int getVariableCount()
   {
     return this.variableCount;
   }
-
+  
   public boolean isLibraryRoutine()
   {
     return this.isLibraryRoutine;
   }
-
+  
   public HsqlNameManager.HsqlName[] getTableNamesForRead()
   {
-    if (this.statement == null)
+    if (this.statement == null) {
       return HsqlNameManager.HsqlName.emptyArray;
+    }
     return this.statement.getTableNamesForRead();
   }
-
+  
   public HsqlNameManager.HsqlName[] getTableNamesForWrite()
   {
-    if (this.statement == null)
+    if (this.statement == null) {
       return HsqlNameManager.HsqlName.emptyArray;
+    }
     return this.statement.getTableNamesForWrite();
   }
-
+  
   public void resetAlteredRoutineSettings()
   {
     if (isPSM())
@@ -677,8 +702,9 @@ public class Routine
       this.javaMethod = null;
       this.javaMethodWithConnection = false;
       this.parameterStyle = 2;
-      if (this.dataImpact == 1)
+      if (this.dataImpact == 1) {
         this.dataImpact = 2;
+      }
     }
     else
     {
@@ -688,7 +714,7 @@ public class Routine
       this.ranges = RangeVariable.emptyArray;
     }
   }
-
+  
   public void setAsAlteredRoutine(Routine paramRoutine)
   {
     this.language = paramRoutine.language;
@@ -707,7 +733,7 @@ public class Routine
     this.variableCount = paramRoutine.variableCount;
     this.ranges = paramRoutine.ranges;
   }
-
+  
   Object[] convertArgsToJava(Session paramSession, Object[] paramArrayOfObject)
   {
     int i = this.javaMethodWithConnection ? 1 : 0;
@@ -737,7 +763,7 @@ public class Routine
     }
     return arrayOfObject;
   }
-
+  
   void convertArgsToSQL(Session paramSession, Object[] paramArrayOfObject1, Object[] paramArrayOfObject2)
   {
     int i = this.javaMethodWithConnection ? 1 : 0;
@@ -747,15 +773,16 @@ public class Routine
     {
       localObject1 = paramArrayOfObject2[(j + i)];
       localObject2 = getParameter(j);
-      if (((ColumnSchema)localObject2).parameterMode != 1)
+      if (((ColumnSchema)localObject2).parameterMode != 1) {
         localObject1 = Array.get(localObject1, 0);
+      }
       paramArrayOfObject1[j] = arrayOfType[j].convertJavaToSQL(paramSession, localObject1);
     }
     Object localObject1 = null;
     while (j + i < paramArrayOfObject2.length)
     {
       localObject2 = ((ResultSet[])(ResultSet[])paramArrayOfObject2[(j + i)])[0];
-      if (localObject2 != null)
+      if (localObject2 != null) {
         if ((localObject2 instanceof JDBCResultSet))
         {
           Result localResult = ((JDBCResultSet)localObject2).result;
@@ -773,10 +800,11 @@ public class Routine
         {
           Error.error(6000, "ResultSet not native");
         }
+      }
       j++;
     }
   }
-
+  
   public Result invokeJavaMethodDirect(Object[] paramArrayOfObject)
   {
     Result localResult;
@@ -792,7 +820,7 @@ public class Routine
     }
     return localResult;
   }
-
+  
   Result invokeJavaMethod(Session paramSession, Object[] paramArrayOfObject)
   {
     HsqlNameManager.HsqlName localHsqlName = paramSession.getCurrentSchemaHsqlName();
@@ -816,10 +844,11 @@ public class Routine
       Object localObject = this.javaMethod.invoke(null, paramArrayOfObject);
       if (returnsTable())
       {
-        if ((localObject instanceof JDBCResultSet))
+        if ((localObject instanceof JDBCResultSet)) {
           localResult = ((JDBCResultSet)localObject).result;
-        else
+        } else {
           throw Error.runtimeError(201, "FunctionSQLInvoked");
+        }
       }
       else
       {
@@ -842,11 +871,12 @@ public class Routine
     paramSession.setCurrentSchemaHsqlName(localHsqlName);
     return localResult;
   }
-
+  
   public Result invoke(Session paramSession, Object[] paramArrayOfObject1, Object[] paramArrayOfObject2, boolean paramBoolean)
   {
-    if (paramBoolean)
+    if (paramBoolean) {
       paramSession.sessionContext.push();
+    }
     Result localResult;
     if (isPSM())
     {
@@ -854,12 +884,15 @@ public class Routine
       {
         paramSession.sessionContext.routineArguments = paramArrayOfObject1;
         paramSession.sessionContext.routineVariables = ValuePool.emptyObjectArray;
-        if (this.variableCount > 0)
+        if (this.variableCount > 0) {
           paramSession.sessionContext.routineVariables = new Object[this.variableCount];
+        }
         localResult = this.statement.execute(paramSession);
-        if (paramArrayOfObject2 != null)
-          for (int i = 0; i < paramArrayOfObject2.length; i++)
+        if (paramArrayOfObject2 != null) {
+          for (int i = 0; i < paramArrayOfObject2.length; i++) {
             paramArrayOfObject2[i] = paramArrayOfObject1[(i + 1)];
+          }
+        }
       }
       catch (Throwable localThrowable)
       {
@@ -868,22 +901,25 @@ public class Routine
     }
     else
     {
-      if (this.isAggregate)
+      if (this.isAggregate) {
         paramArrayOfObject1 = convertArgsToJava(paramSession, paramArrayOfObject1);
+      }
       localResult = invokeJavaMethod(paramSession, paramArrayOfObject1);
       if (this.isAggregate)
       {
         Object[] arrayOfObject = new Object[paramArrayOfObject1.length];
         convertArgsToSQL(paramSession, arrayOfObject, paramArrayOfObject1);
-        for (int j = 0; j < paramArrayOfObject2.length; j++)
+        for (int j = 0; j < paramArrayOfObject2.length; j++) {
           paramArrayOfObject2[j] = arrayOfObject[(j + 1)];
+        }
       }
     }
-    if (paramBoolean)
+    if (paramBoolean) {
       paramSession.sessionContext.pop();
+    }
     return localResult;
   }
-
+  
   public Routine duplicate()
   {
     try
@@ -892,17 +928,18 @@ public class Routine
     }
     catch (CloneNotSupportedException localCloneNotSupportedException)
     {
+      throw Error.runtimeError(201, "Type");
     }
-    throw Error.runtimeError(201, "Type");
   }
-
+  
   static Method getMethod(String paramString, Routine paramRoutine, boolean[] paramArrayOfBoolean, boolean paramBoolean)
   {
     int i = paramString.indexOf(':');
     if (i != -1)
     {
-      if (!paramString.substring(0, i).equals("CLASSPATH"))
+      if (!paramString.substring(0, i).equals("CLASSPATH")) {
         throw Error.error(6012, paramString);
+      }
       paramString = paramString.substring(i + 1);
     }
     Method[] arrayOfMethod = getMethods(paramString);
@@ -919,25 +956,29 @@ public class Routine
         paramArrayOfBoolean[0] = true;
       }
       int m = arrayOfClass.length - k;
-      if (paramRoutine.isProcedure())
-        for (int n = k; n < arrayOfClass.length; n++)
+      if (paramRoutine.isProcedure()) {
+        for (int n = k; n < arrayOfClass.length; n++) {
           if ((arrayOfClass[n].isArray()) && (ResultSet.class.isAssignableFrom(arrayOfClass[n].getComponentType())))
           {
             m = n - k;
             break;
           }
+        }
+      }
       if (m == paramRoutine.parameterTypes.length)
       {
         if (paramBoolean)
         {
-          if (!ResultSet.class.isAssignableFrom(localMethod.getReturnType()))
+          if (!ResultSet.class.isAssignableFrom(localMethod.getReturnType())) {
             continue;
+          }
         }
         else
         {
           Type localType1 = Types.getParameterSQLType(localMethod.getReturnType());
-          if ((localType1 == null) || (!paramRoutine.returnType.canBeAssignedFrom(localType1)) || (((localType1.isLobType()) || ((!localType1.isBinaryType()) && (!localType1.isCharacterType()))) && (localType1.typeCode != paramRoutine.returnType.typeCode)))
+          if ((localType1 == null) || (!paramRoutine.returnType.canBeAssignedFrom(localType1)) || (((localType1.isLobType()) || ((!localType1.isBinaryType()) && (!localType1.isCharacterType()))) && (localType1.typeCode != paramRoutine.returnType.typeCode))) {
             continue;
+          }
         }
         for (int i1 = 0; i1 < paramRoutine.parameterTypes.length; i1++)
         {
@@ -960,23 +1001,27 @@ public class Routine
             break;
           }
           int i3 = paramRoutine.parameterTypes[i1].typeComparisonGroup == localType2.typeComparisonGroup ? 1 : 0;
-          if ((i3 != 0) && (paramRoutine.parameterTypes[i1].isNumberType()))
+          if ((i3 != 0) && (paramRoutine.parameterTypes[i1].isNumberType())) {
             i3 = paramRoutine.parameterTypes[i1].typeCode == localType2.typeCode ? 1 : 0;
-          if ((i2 != 0) && (paramRoutine.getParameter(i1).parameterMode == 1))
+          }
+          if ((i2 != 0) && (paramRoutine.getParameter(i1).parameterMode == 1)) {
             i3 = 0;
+          }
           if (i3 == 0)
           {
             localMethod = null;
-            if (i1 + k <= j)
+            if (i1 + k <= j) {
               break;
+            }
             j = i1 + k;
             break;
           }
         }
         if (localMethod != null)
         {
-          for (i1 = 0; i1 < paramRoutine.parameterTypes.length; i1++)
+          for (i1 = 0; i1 < paramRoutine.parameterTypes.length; i1++) {
             paramRoutine.getParameter(i1).setNullable(!arrayOfClass[(i1 + k)].isPrimitive());
+          }
           return localMethod;
         }
       }
@@ -988,17 +1033,19 @@ public class Routine
     }
     return null;
   }
-
+  
   static Method[] getMethods(String paramString)
   {
     int i = paramString.lastIndexOf('.');
-    if (i == -1)
+    if (i == -1) {
       throw Error.error(5501, paramString);
+    }
     String str1 = paramString.substring(0, i);
     String str2 = paramString.substring(i + 1);
     Method[] arrayOfMethod = null;
-    if (!HsqlDatabaseProperties.supportsJavaMethod(paramString))
+    if (!HsqlDatabaseProperties.supportsJavaMethod(paramString)) {
       throw Error.error(5501, str1);
+    }
     Class localClass1;
     try
     {
@@ -1033,8 +1080,9 @@ public class Routine
       if ((localMethod.getName().equals(str2)) && (Modifier.isStatic(m)) && (Modifier.isPublic(m)))
       {
         Class[] arrayOfClass = arrayOfMethod[i].getParameterTypes();
-        if ((arrayOfClass.length > 0) && (arrayOfClass[0].equals(Connection.class)))
+        if ((arrayOfClass.length > 0) && (arrayOfClass[0].equals(Connection.class))) {
           j = 1;
+        }
         for (int n = j; n < arrayOfClass.length; n++)
         {
           Class localClass2 = arrayOfClass[n];
@@ -1048,13 +1096,15 @@ public class Routine
                 localMethod = null;
                 break;
               }
-              if ((ResultSet.class.isAssignableFrom(localClass2)) && (k > n))
+              if ((ResultSet.class.isAssignableFrom(localClass2)) && (k > n)) {
                 k = n;
+              }
             }
             if (n >= k)
             {
-              if (ResultSet.class.isAssignableFrom(localClass2))
+              if (ResultSet.class.isAssignableFrom(localClass2)) {
                 continue;
+              }
               localMethod = null;
               break;
             }
@@ -1071,7 +1121,7 @@ public class Routine
             break;
           }
         }
-        if (localMethod != null)
+        if (localMethod != null) {
           if (ResultSet.class.isAssignableFrom(localMethod.getReturnType()))
           {
             localHsqlArrayList.add(arrayOfMethod[i]);
@@ -1079,16 +1129,18 @@ public class Routine
           else
           {
             Type localType1 = Types.getParameterSQLType(localMethod.getReturnType());
-            if (localType1 != null)
+            if (localType1 != null) {
               localHsqlArrayList.add(arrayOfMethod[i]);
+            }
           }
+        }
       }
     }
     arrayOfMethod = new Method[localHsqlArrayList.size()];
     localHsqlArrayList.toArray(arrayOfMethod);
     return arrayOfMethod;
   }
-
+  
   public static Routine[] newRoutines(Session paramSession, Method[] paramArrayOfMethod)
   {
     Routine[] arrayOfRoutine = new Routine[paramArrayOfMethod.length];
@@ -1099,7 +1151,7 @@ public class Routine
     }
     return arrayOfRoutine;
   }
-
+  
   public static Routine newRoutine(Session paramSession, Method paramMethod)
   {
     Routine localRoutine = new Routine(16);
@@ -1110,11 +1162,13 @@ public class Routine
     localStringBuffer.append("CLASSPATH:");
     localStringBuffer.append(paramMethod.getDeclaringClass().getName()).append('.');
     localStringBuffer.append(paramMethod.getName());
-    if ((arrayOfClass.length > 0) && (arrayOfClass[0].equals(Connection.class)))
+    if ((arrayOfClass.length > 0) && (arrayOfClass[0].equals(Connection.class))) {
       i = 1;
+    }
     String str2 = localStringBuffer.toString();
-    if (str1.equals("java.lang.Math"))
+    if (str1.equals("java.lang.Math")) {
       localRoutine.isLibraryRoutine = true;
+    }
     for (int j = i; j < arrayOfClass.length; j++)
     {
       Type localType2 = Types.getParameterSQLType(arrayOfClass[j]);
@@ -1131,7 +1185,7 @@ public class Routine
     localRoutine.resolve(paramSession);
     return localRoutine;
   }
-
+  
   public static void createRoutines(Session paramSession, HsqlNameManager.HsqlName paramHsqlName, String paramString)
   {
     Method[] arrayOfMethod = getMethods(paramString);
@@ -1145,7 +1199,8 @@ public class Routine
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.Routine
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

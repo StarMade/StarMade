@@ -33,7 +33,7 @@ public class Grantee
   private MultiValueHashMap grantedRightsMap = new MultiValueHashMap();
   protected GranteeManager granteeManager;
   protected Right ownerRights;
-
+  
   Grantee(HsqlNameManager.HsqlName paramHsqlName, GranteeManager paramGranteeManager)
   {
     this.granteeName = paramHsqlName;
@@ -44,46 +44,44 @@ public class Grantee
     this.ownerRights.grantor = GranteeManager.systemAuthorisation;
     this.ownerRights.grantee = this;
   }
-
+  
   public int getType()
   {
     return 11;
   }
-
+  
   public HsqlNameManager.HsqlName getName()
   {
     return this.granteeName;
   }
-
+  
   public HsqlNameManager.HsqlName getSchemaName()
   {
     return null;
   }
-
+  
   public HsqlNameManager.HsqlName getCatalogName()
   {
     return null;
   }
-
+  
   public Grantee getOwner()
   {
     return null;
   }
-
+  
   public OrderedHashSet getReferences()
   {
     return new OrderedHashSet();
   }
-
+  
   public OrderedHashSet getComponents()
   {
     return null;
   }
-
-  public void compile(Session paramSession, SchemaObject paramSchemaObject)
-  {
-  }
-
+  
+  public void compile(Session paramSession, SchemaObject paramSchemaObject) {}
+  
   public String getSQL()
   {
     StringBuffer localStringBuffer = new StringBuffer();
@@ -91,41 +89,41 @@ public class Grantee
     localStringBuffer.append(' ').append(this.granteeName.statementName);
     return localStringBuffer.toString();
   }
-
+  
   public long getChangeTimestamp()
   {
     return 0L;
   }
-
+  
   public boolean isRole()
   {
     return this.isRole;
   }
-
+  
   public boolean isSystem()
   {
     return this.isSystem;
   }
-
+  
   public OrderedHashSet getDirectRoles()
   {
     return this.roles;
   }
-
+  
   public OrderedHashSet getAllRoles()
   {
     OrderedHashSet localOrderedHashSet = getGranteeAndAllRoles();
     localOrderedHashSet.remove(this);
     return localOrderedHashSet;
   }
-
+  
   public OrderedHashSet getGranteeAndAllRoles()
   {
     OrderedHashSet localOrderedHashSet = new OrderedHashSet();
     addGranteeAndRoles(localOrderedHashSet);
     return localOrderedHashSet;
   }
-
+  
   public OrderedHashSet getGranteeAndAllRolesWithPublic()
   {
     OrderedHashSet localOrderedHashSet = new OrderedHashSet();
@@ -133,64 +131,71 @@ public class Grantee
     localOrderedHashSet.add(this.granteeManager.publicRole);
     return localOrderedHashSet;
   }
-
+  
   public boolean isAccessible(HsqlNameManager.HsqlName paramHsqlName, int paramInt)
   {
-    if (isFullyAccessibleByRole(paramHsqlName))
+    if (isFullyAccessibleByRole(paramHsqlName)) {
       return true;
+    }
     Right localRight = (Right)this.fullRightsMap.get(paramHsqlName);
-    if (localRight == null)
+    if (localRight == null) {
       return false;
+    }
     return localRight.canAccess(paramInt);
   }
-
+  
   public boolean isAccessible(SchemaObject paramSchemaObject)
   {
     return isAccessible(paramSchemaObject.getName());
   }
-
+  
   public boolean isAccessible(HsqlNameManager.HsqlName paramHsqlName)
   {
-    if (isFullyAccessibleByRole(paramHsqlName))
+    if (isFullyAccessibleByRole(paramHsqlName)) {
       return true;
+    }
     Right localRight = (Right)this.fullRightsMap.get(paramHsqlName);
-    if ((localRight != null) && (!localRight.isEmpty()))
+    if ((localRight != null) && (!localRight.isEmpty())) {
       return true;
-    if (!this.isPublic)
+    }
+    if (!this.isPublic) {
       return this.granteeManager.publicRole.isAccessible(paramHsqlName);
+    }
     return false;
   }
-
+  
   private OrderedHashSet addGranteeAndRoles(OrderedHashSet paramOrderedHashSet)
   {
     paramOrderedHashSet.add(this);
     for (int i = 0; i < this.roles.size(); i++)
     {
       Grantee localGrantee = (Grantee)this.roles.get(i);
-      if (!paramOrderedHashSet.contains(localGrantee))
+      if (!paramOrderedHashSet.contains(localGrantee)) {
         localGrantee.addGranteeAndRoles(paramOrderedHashSet);
+      }
     }
     return paramOrderedHashSet;
   }
-
+  
   private boolean hasRoleDirect(Grantee paramGrantee)
   {
     return this.roles.contains(paramGrantee);
   }
-
+  
   public boolean hasRole(Grantee paramGrantee)
   {
     return getAllRoles().contains(paramGrantee);
   }
-
+  
   void grant(HsqlNameManager.HsqlName paramHsqlName, Right paramRight, Grantee paramGrantee, boolean paramBoolean)
   {
     Right localRight1 = paramGrantee.getAllGrantableRights(paramHsqlName);
     Object localObject = null;
     if (paramRight == Right.fullRights)
     {
-      if (localRight1.isEmpty())
+      if (localRight1.isEmpty()) {
         return;
+      }
       paramRight = localRight1;
     }
     else if (!localRight1.contains(paramRight))
@@ -215,35 +220,43 @@ public class Grantee
       ((Right)localObject).grantee = this;
       this.directRightsMap.put(paramHsqlName, localObject);
     }
-    if (paramBoolean)
-      if (((Right)localObject).grantableRights == null)
+    if (paramBoolean) {
+      if (((Right)localObject).grantableRights == null) {
         ((Right)localObject).grantableRights = paramRight.duplicate();
-      else
+      } else {
         ((Right)localObject).grantableRights.add(paramRight);
-    if (!paramGrantee.isSystem())
+      }
+    }
+    if (!paramGrantee.isSystem()) {
       paramGrantee.grantedRightsMap.put(paramHsqlName, localObject);
+    }
     updateAllRights();
   }
-
+  
   void revoke(SchemaObject paramSchemaObject, Right paramRight, Grantee paramGrantee, boolean paramBoolean)
   {
     HsqlNameManager.HsqlName localHsqlName = paramSchemaObject.getName();
-    if ((paramSchemaObject instanceof Routine))
+    if ((paramSchemaObject instanceof Routine)) {
       localHsqlName = ((Routine)paramSchemaObject).getSpecificName();
+    }
     Iterator localIterator = this.directRightsMap.get(localHsqlName);
     Right localRight = null;
     while (localIterator.hasNext())
     {
       localRight = (Right)localIterator.next();
-      if (localRight.grantor == paramGrantee)
+      if (localRight.grantor == paramGrantee) {
         break;
+      }
     }
-    if (localRight == null)
+    if (localRight == null) {
       return;
-    if (localRight.grantableRights != null)
+    }
+    if (localRight.grantableRights != null) {
       localRight.grantableRights.remove(paramSchemaObject, paramRight);
-    if (paramBoolean)
+    }
+    if (paramBoolean) {
       return;
+    }
     if (paramRight.isFull)
     {
       this.directRightsMap.remove(localHsqlName, localRight);
@@ -259,14 +272,14 @@ public class Grantee
     }
     updateAllRights();
   }
-
+  
   void revokeDbObject(HsqlNameManager.HsqlName paramHsqlName)
   {
     this.directRightsMap.remove(paramHsqlName);
     this.grantedRightsMap.remove(paramHsqlName);
     this.fullRightsMap.remove(paramHsqlName);
   }
-
+  
   void clearPrivileges()
   {
     this.roles.clear();
@@ -275,20 +288,21 @@ public class Grantee
     this.fullRightsMap.clear();
     this.isAdmin = false;
   }
-
+  
   public OrderedHashSet getColumnsForAllPrivileges(SchemaObject paramSchemaObject)
   {
     if ((paramSchemaObject instanceof Table))
     {
       Table localTable = (Table)paramSchemaObject;
-      if (isFullyAccessibleByRole(localTable.getName()))
+      if (isFullyAccessibleByRole(localTable.getName())) {
         return localTable.getColumnNameSet();
+      }
       Right localRight = (Right)this.fullRightsMap.get(localTable.getName());
       return localRight == null ? Right.emptySet : localRight.getColumnsForAllRights(localTable);
     }
     return Right.emptySet;
   }
-
+  
   public OrderedHashSet getAllDirectPrivileges(SchemaObject paramSchemaObject)
   {
     if (paramSchemaObject.getOwner() == this)
@@ -298,165 +312,189 @@ public class Grantee
       return localObject;
     }
     Object localObject = paramSchemaObject.getName();
-    if ((paramSchemaObject instanceof Routine))
+    if ((paramSchemaObject instanceof Routine)) {
       localObject = ((Routine)paramSchemaObject).getSpecificName();
+    }
     Iterator localIterator = this.directRightsMap.get(localObject);
     if (localIterator.hasNext())
     {
       OrderedHashSet localOrderedHashSet = new OrderedHashSet();
-      while (localIterator.hasNext())
+      while (localIterator.hasNext()) {
         localOrderedHashSet.add(localIterator.next());
+      }
       return localOrderedHashSet;
     }
     return Right.emptySet;
   }
-
+  
   public OrderedHashSet getAllGrantedPrivileges(SchemaObject paramSchemaObject)
   {
     HsqlNameManager.HsqlName localHsqlName = paramSchemaObject.getName();
-    if ((paramSchemaObject instanceof Routine))
+    if ((paramSchemaObject instanceof Routine)) {
       localHsqlName = ((Routine)paramSchemaObject).getSpecificName();
+    }
     Iterator localIterator = this.grantedRightsMap.get(localHsqlName);
     if (localIterator.hasNext())
     {
       OrderedHashSet localOrderedHashSet = new OrderedHashSet();
-      while (localIterator.hasNext())
+      while (localIterator.hasNext()) {
         localOrderedHashSet.add(localIterator.next());
+      }
       return localOrderedHashSet;
     }
     return Right.emptySet;
   }
-
+  
   public void checkSelect(SchemaObject paramSchemaObject, boolean[] paramArrayOfBoolean)
   {
     if ((paramSchemaObject instanceof Table))
     {
       Table localTable = (Table)paramSchemaObject;
-      if (isFullyAccessibleByRole(localTable.getName()))
+      if (isFullyAccessibleByRole(localTable.getName())) {
         return;
+      }
       Right localRight = (Right)this.fullRightsMap.get(localTable.getName());
-      if ((localRight != null) && (localRight.canSelect(localTable, paramArrayOfBoolean)))
+      if ((localRight != null) && (localRight.canSelect(localTable, paramArrayOfBoolean))) {
         return;
+      }
     }
     throw Error.error(5501, paramSchemaObject.getName().name);
   }
-
+  
   public void checkInsert(SchemaObject paramSchemaObject, boolean[] paramArrayOfBoolean)
   {
     if ((paramSchemaObject instanceof Table))
     {
       Table localTable = (Table)paramSchemaObject;
-      if (isFullyAccessibleByRole(localTable.getName()))
+      if (isFullyAccessibleByRole(localTable.getName())) {
         return;
+      }
       Right localRight = (Right)this.fullRightsMap.get(localTable.getName());
-      if ((localRight != null) && (localRight.canInsert(localTable, paramArrayOfBoolean)))
+      if ((localRight != null) && (localRight.canInsert(localTable, paramArrayOfBoolean))) {
         return;
+      }
     }
     throw Error.error(5501, paramSchemaObject.getName().name);
   }
-
+  
   public void checkUpdate(SchemaObject paramSchemaObject, boolean[] paramArrayOfBoolean)
   {
     if ((paramSchemaObject instanceof Table))
     {
       Table localTable = (Table)paramSchemaObject;
-      if (isFullyAccessibleByRole(localTable.getName()))
+      if (isFullyAccessibleByRole(localTable.getName())) {
         return;
+      }
       Right localRight = (Right)this.fullRightsMap.get(localTable.getName());
-      if ((localRight != null) && (localRight.canUpdate(localTable, paramArrayOfBoolean)))
+      if ((localRight != null) && (localRight.canUpdate(localTable, paramArrayOfBoolean))) {
         return;
+      }
     }
     throw Error.error(5501, paramSchemaObject.getName().name);
   }
-
+  
   public void checkReferences(SchemaObject paramSchemaObject, boolean[] paramArrayOfBoolean)
   {
     if ((paramSchemaObject instanceof Table))
     {
       Table localTable = (Table)paramSchemaObject;
-      if (isFullyAccessibleByRole(localTable.getName()))
+      if (isFullyAccessibleByRole(localTable.getName())) {
         return;
+      }
       Right localRight = (Right)this.fullRightsMap.get(localTable.getName());
-      if ((localRight != null) && (localRight.canReference(localTable, paramArrayOfBoolean)))
+      if ((localRight != null) && (localRight.canReference(localTable, paramArrayOfBoolean))) {
         return;
+      }
     }
     throw Error.error(5501, paramSchemaObject.getName().name);
   }
-
+  
   public void checkTrigger(SchemaObject paramSchemaObject, boolean[] paramArrayOfBoolean)
   {
     if ((paramSchemaObject instanceof Table))
     {
       Table localTable = (Table)paramSchemaObject;
-      if (isFullyAccessibleByRole(localTable.getName()))
+      if (isFullyAccessibleByRole(localTable.getName())) {
         return;
+      }
       Right localRight = (Right)this.fullRightsMap.get(localTable.getName());
-      if ((localRight != null) && (localRight.canReference(localTable, paramArrayOfBoolean)))
+      if ((localRight != null) && (localRight.canReference(localTable, paramArrayOfBoolean))) {
         return;
+      }
     }
     throw Error.error(5501, paramSchemaObject.getName().name);
   }
-
+  
   public void checkDelete(SchemaObject paramSchemaObject)
   {
     if ((paramSchemaObject instanceof Table))
     {
       Table localTable = (Table)paramSchemaObject;
-      if (isFullyAccessibleByRole(localTable.getName()))
+      if (isFullyAccessibleByRole(localTable.getName())) {
         return;
+      }
       Right localRight = (Right)this.fullRightsMap.get(localTable.getName());
-      if ((localRight != null) && (localRight.canDelete()))
+      if ((localRight != null) && (localRight.canDelete())) {
         return;
+      }
     }
     throw Error.error(5501, paramSchemaObject.getName().name);
   }
-
+  
   public void checkAccess(SchemaObject paramSchemaObject)
   {
-    if (isFullyAccessibleByRole(paramSchemaObject.getName()))
+    if (isFullyAccessibleByRole(paramSchemaObject.getName())) {
       return;
+    }
     HsqlNameManager.HsqlName localHsqlName = paramSchemaObject.getName();
-    if ((paramSchemaObject instanceof Routine))
+    if ((paramSchemaObject instanceof Routine)) {
       localHsqlName = ((Routine)paramSchemaObject).getSpecificName();
+    }
     Right localRight = (Right)this.fullRightsMap.get(localHsqlName);
-    if ((localRight != null) && (!localRight.isEmpty()))
+    if ((localRight != null) && (!localRight.isEmpty())) {
       return;
+    }
     throw Error.error(5501, paramSchemaObject.getName().name);
   }
-
+  
   public void checkSchemaUpdateOrGrantRights(String paramString)
   {
-    if (!hasSchemaUpdateOrGrantRights(paramString))
+    if (!hasSchemaUpdateOrGrantRights(paramString)) {
       throw Error.error(5501, paramString);
+    }
   }
-
+  
   public boolean hasSchemaUpdateOrGrantRights(String paramString)
   {
-    if (isAdmin())
+    if (isAdmin()) {
       return true;
+    }
     Grantee localGrantee = this.granteeManager.database.schemaManager.toSchemaOwner(paramString);
-    if (localGrantee == this)
+    if (localGrantee == this) {
       return true;
+    }
     return hasRole(localGrantee);
   }
-
+  
   public boolean isGrantable(SchemaObject paramSchemaObject, Right paramRight)
   {
-    if (isFullyAccessibleByRole(paramSchemaObject.getName()))
+    if (isFullyAccessibleByRole(paramSchemaObject.getName())) {
       return true;
+    }
     Right localRight = getAllGrantableRights(paramSchemaObject.getName());
     return localRight.contains(paramRight);
   }
-
+  
   public boolean isGrantable(Grantee paramGrantee)
   {
     return this.isAdmin;
   }
-
+  
   public boolean isFullyAccessibleByRole(HsqlNameManager.HsqlName paramHsqlName)
   {
-    if (this.isAdmin)
+    if (this.isAdmin) {
       return true;
+    }
     Grantee localGrantee;
     if (paramHsqlName.type == 2)
     {
@@ -464,41 +502,44 @@ public class Grantee
     }
     else
     {
-      if (paramHsqlName.schema == null)
+      if (paramHsqlName.schema == null) {
         return false;
+      }
       localGrantee = paramHsqlName.schema.owner;
     }
-    if (localGrantee == this)
+    if (localGrantee == this) {
       return true;
+    }
     return hasRole(localGrantee);
   }
-
+  
   public void checkAdmin()
   {
-    if (!isAdmin())
+    if (!isAdmin()) {
       throw Error.error(5507);
+    }
   }
-
+  
   public boolean isAdmin()
   {
     return this.isAdmin;
   }
-
+  
   public boolean isSchemaCreator()
   {
     return (this.isAdmin) || (hasRole(this.granteeManager.schemaRole));
   }
-
+  
   public boolean canChangeAuthorisation()
   {
     return (this.isAdmin) || (hasRole(this.granteeManager.changeAuthRole));
   }
-
+  
   public boolean isPublic()
   {
     return this.isPublic;
   }
-
+  
   public OrderedHashSet visibleGrantees()
   {
     OrderedHashSet localOrderedHashSet = new OrderedHashSet();
@@ -511,51 +552,58 @@ public class Grantee
     {
       localOrderedHashSet.add(this);
       Iterator localIterator = getAllRoles().iterator();
-      while (localIterator.hasNext())
+      while (localIterator.hasNext()) {
         localOrderedHashSet.add(localIterator.next());
+      }
     }
     return localOrderedHashSet;
   }
-
+  
   public boolean hasNonSelectTableRight(SchemaObject paramSchemaObject)
   {
-    if (isFullyAccessibleByRole(paramSchemaObject.getName()))
+    if (isFullyAccessibleByRole(paramSchemaObject.getName())) {
       return true;
+    }
     Right localRight = (Right)this.fullRightsMap.get(paramSchemaObject.getName());
-    if (localRight == null)
+    if (localRight == null) {
       return false;
+    }
     return localRight.canAcesssNonSelect();
   }
-
+  
   public boolean hasColumnRights(SchemaObject paramSchemaObject, int[] paramArrayOfInt)
   {
-    if (isFullyAccessibleByRole(paramSchemaObject.getName()))
+    if (isFullyAccessibleByRole(paramSchemaObject.getName())) {
       return true;
+    }
     Right localRight = (Right)this.fullRightsMap.get(paramSchemaObject.getName());
-    if (localRight == null)
+    if (localRight == null) {
       return false;
+    }
     return localRight.canAccess((Table)paramSchemaObject, paramArrayOfInt);
   }
-
+  
   void setAdminDirect()
   {
     this.isAdmin = (this.isAdminDirect = 1);
   }
-
+  
   boolean updateNestedRoles(Grantee paramGrantee)
   {
     boolean bool = false;
-    if (paramGrantee != this)
+    if (paramGrantee != this) {
       for (int i = 0; i < this.roles.size(); i++)
       {
         Grantee localGrantee = (Grantee)this.roles.get(i);
         bool |= localGrantee.updateNestedRoles(paramGrantee);
       }
-    if (bool)
+    }
+    if (bool) {
       updateAllRights();
+    }
     return (bool) || (paramGrantee == this);
   }
-
+  
   void updateAllRights()
   {
     this.fullRightsMap.clear();
@@ -567,10 +615,11 @@ public class Grantee
       this.isAdmin |= localGrantee.isAdmin();
     }
     addToFullRights(this.directRightsMap);
-    if ((!this.isRole) && (!this.isPublic) && (!this.isSystem))
+    if ((!this.isRole) && (!this.isPublic) && (!this.isSystem)) {
       addToFullRights(this.granteeManager.publicRole.fullRightsMap);
+    }
   }
-
+  
   void addToFullRights(HashMap paramHashMap)
   {
     Iterator localIterator = paramHashMap.keySet().iterator();
@@ -588,14 +637,16 @@ public class Grantee
       {
         localRight2.add(localRight1);
       }
-      if (localRight1.grantableRights != null)
-        if (localRight2.grantableRights == null)
+      if (localRight1.grantableRights != null) {
+        if (localRight2.grantableRights == null) {
           localRight2.grantableRights = localRight1.grantableRights.duplicate();
-        else
+        } else {
           localRight2.grantableRights.add(localRight1.grantableRights);
+        }
+      }
     }
   }
-
+  
   private void addToFullRights(MultiValueHashMap paramMultiValueHashMap)
   {
     Iterator localIterator1 = paramMultiValueHashMap.keySet().iterator();
@@ -616,64 +667,72 @@ public class Grantee
         {
           localRight1.add(localRight2);
         }
-        if (localRight2.grantableRights != null)
-          if (localRight1.grantableRights == null)
+        if (localRight2.grantableRights != null) {
+          if (localRight1.grantableRights == null) {
             localRight1.grantableRights = localRight2.grantableRights.duplicate();
-          else
+          } else {
             localRight1.grantableRights.add(localRight2.grantableRights);
+          }
+        }
       }
     }
   }
-
+  
   Right getAllGrantableRights(HsqlNameManager.HsqlName paramHsqlName)
   {
-    if (this.isAdmin)
+    if (this.isAdmin) {
       return paramHsqlName.schema.owner.ownerRights;
-    if (paramHsqlName.schema.owner == this)
+    }
+    if (paramHsqlName.schema.owner == this) {
       return this.ownerRights;
-    if (this.roles.contains(paramHsqlName.schema.owner))
+    }
+    if (this.roles.contains(paramHsqlName.schema.owner)) {
       return paramHsqlName.schema.owner.ownerRights;
+    }
     OrderedHashSet localOrderedHashSet = getAllRoles();
     for (int i = 0; i < localOrderedHashSet.size(); i++)
     {
       Grantee localGrantee = (Grantee)localOrderedHashSet.get(i);
-      if (paramHsqlName.schema.owner == localGrantee)
+      if (paramHsqlName.schema.owner == localGrantee) {
         return localGrantee.ownerRights;
+      }
     }
     Right localRight = (Right)this.fullRightsMap.get(paramHsqlName);
     return (localRight == null) || (localRight.grantableRights == null) ? Right.noRights : localRight.grantableRights;
   }
-
+  
   private MultiValueHashMap getRights()
   {
     return this.directRightsMap;
   }
-
+  
   void grant(Grantee paramGrantee)
   {
     this.roles.add(paramGrantee);
   }
-
+  
   void revoke(Grantee paramGrantee)
   {
-    if (!hasRoleDirect(paramGrantee))
+    if (!hasRoleDirect(paramGrantee)) {
       throw Error.error(2253, paramGrantee.getName().getNameString());
+    }
     this.roles.remove(paramGrantee);
   }
-
+  
   private String roleMapToString(OrderedHashSet paramOrderedHashSet)
   {
     StringBuffer localStringBuffer = new StringBuffer();
     for (int i = 0; i < paramOrderedHashSet.size(); i++)
     {
-      if (localStringBuffer.length() > 0)
+      if (localStringBuffer.length() > 0) {
         localStringBuffer.append(',');
+      }
       Grantee localGrantee = (Grantee)paramOrderedHashSet.get(i);
       localStringBuffer.append(localGrantee.getName().getStatementName());
     }
     return localStringBuffer.toString();
   }
-
+  
   HsqlArrayList getRightsSQL()
   {
     HsqlArrayList localHsqlArrayList = new HsqlArrayList();
@@ -699,8 +758,8 @@ public class Grantee
         HsqlNameManager.HsqlName localHsqlName = (HsqlNameManager.HsqlName)localObject2;
         switch (localHsqlName.type)
         {
-        case 3:
-        case 4:
+        case 3: 
+        case 4: 
           Table localTable = this.granteeManager.database.schemaManager.findUserTable(null, localHsqlName.name, localHsqlName.schema.name);
           if (localTable != null)
           {
@@ -711,7 +770,7 @@ public class Grantee
             localStringBuffer.append(localHsqlName.getSchemaQualifiedStatementName());
           }
           break;
-        case 7:
+        case 7: 
           NumberSequence localNumberSequence = (NumberSequence)this.granteeManager.database.schemaManager.findSchemaObject(localHsqlName.name, localHsqlName.schema.name, 7);
           if (localNumberSequence != null)
           {
@@ -722,7 +781,7 @@ public class Grantee
             localStringBuffer.append(localHsqlName.getSchemaQualifiedStatementName());
           }
           break;
-        case 13:
+        case 13: 
           Type localType1 = (Type)this.granteeManager.database.schemaManager.findSchemaObject(localHsqlName.name, localHsqlName.schema.name, 13);
           if (localType1 != null)
           {
@@ -733,7 +792,7 @@ public class Grantee
             localStringBuffer.append(localHsqlName.getSchemaQualifiedStatementName());
           }
           break;
-        case 12:
+        case 12: 
           Type localType2 = (Type)this.granteeManager.database.schemaManager.findSchemaObject(localHsqlName.name, localHsqlName.schema.name, 13);
           if (localType2 != null)
           {
@@ -744,9 +803,9 @@ public class Grantee
             localStringBuffer.append(localHsqlName.getSchemaQualifiedStatementName());
           }
           break;
-        case 16:
-        case 17:
-        case 24:
+        case 16: 
+        case 17: 
+        case 24: 
           SchemaObject localSchemaObject = this.granteeManager.database.schemaManager.findSchemaObject(localHsqlName.name, localHsqlName.schema.name, localHsqlName.type);
           if (localSchemaObject != null)
           {
@@ -754,28 +813,15 @@ public class Grantee
             localStringBuffer.append("EXECUTE").append(' ');
             localStringBuffer.append("ON").append(' ');
             localStringBuffer.append("SPECIFIC").append(' ');
-            if (localSchemaObject.getType() == 17)
+            if (localSchemaObject.getType() == 17) {
               localStringBuffer.append("PROCEDURE");
-            else
+            } else {
               localStringBuffer.append("FUNCTION");
+            }
             localStringBuffer.append(' ');
             localStringBuffer.append(localHsqlName.getSchemaQualifiedStatementName());
           }
           break;
-        case 5:
-        case 6:
-        case 8:
-        case 9:
-        case 10:
-        case 11:
-        case 14:
-        case 15:
-        case 18:
-        case 19:
-        case 20:
-        case 21:
-        case 22:
-        case 23:
         }
         if (localStringBuffer.length() != 0)
         {
@@ -789,7 +835,8 @@ public class Grantee
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.rights.Grantee
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

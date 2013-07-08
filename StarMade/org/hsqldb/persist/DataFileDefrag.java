@@ -31,7 +31,7 @@ final class DataFileDefrag
   DataFileCache dataCache;
   int scale;
   DoubleIntIndex pointerLookup;
-
+  
   DataFileDefrag(Database paramDatabase, DataFileCache paramDataFileCache, String paramString)
   {
     this.database = paramDatabase;
@@ -39,7 +39,7 @@ final class DataFileDefrag
     this.scale = paramDataFileCache.dataFileScale;
     this.dataFileName = paramString;
   }
-
+  
   void process()
   {
     Object localObject1 = null;
@@ -58,20 +58,23 @@ final class DataFileDefrag
       {
         localObject2 = this.database.persistentStoreCollection.getStore(localTable);
         long l2 = ((PersistentStore)localObject2).elementCount();
-        if (l2 > l1)
+        if (l2 > l1) {
           l1 = l2;
+        }
       }
       i++;
     }
-    if (l1 > 1073741823L)
+    if (l1 > 1073741823L) {
       throw Error.error(3426);
+    }
     try
     {
       this.pointerLookup = new DoubleIntIndex((int)l1, false);
-      if (this.database.logger.isStoredFileAccess())
+      if (this.database.logger.isStoredFileAccess()) {
         this.randomAccessOut = ScaledRAFile.newScaledRAFile(this.database, this.dataFileName + ".new", false, 3);
-      else
+      } else {
         this.randomAccessOut = new ScaledRAFileSimple(this.database, this.dataFileName + ".new", "rw");
+      }
       this.randomAccessOut.write(new byte[this.dataCache.initialFreePos], 0, this.dataCache.initialFreePos);
       this.fileOffset = this.dataCache.initialFreePos;
       i = 0;
@@ -95,8 +98,9 @@ final class DataFileDefrag
       this.randomAccessOut.seek(12L);
       this.randomAccessOut.writeLong(this.fileOffset);
       i = 0;
-      if (this.database.logger.propIncrementBackup)
+      if (this.database.logger.propIncrementBackup) {
         i = BitMap.set(i, 1);
+      }
       i = BitMap.set(i, 4);
       i = BitMap.set(i, 2);
       this.randomAccessOut.seek(28L);
@@ -109,8 +113,9 @@ final class DataFileDefrag
       while (j < k)
       {
         localObject2 = this.rootsList[j];
-        if (localObject2 != null)
+        if (localObject2 != null) {
           this.database.logger.logDetailEvent("roots: " + StringUtil.getList((long[])localObject2, ",", ""));
+        }
         j++;
       }
     }
@@ -133,14 +138,14 @@ final class DataFileDefrag
     {
       try
       {
-        if (this.randomAccessOut != null)
+        if (this.randomAccessOut != null) {
           this.randomAccessOut.close();
+        }
       }
-      catch (Throwable localThrowable3)
-      {
-      }
-      if ((localObject1 instanceof OutOfMemoryError))
+      catch (Throwable localThrowable3) {}
+      if ((localObject1 instanceof OutOfMemoryError)) {
         this.database.logger.logInfoEvent("defrag failed - out of memory - required: " + l1 * 8L);
+      }
       if (localObject1 == null)
       {
         this.database.logger.logDetailEvent("Defrag transfer complete: " + this.stopw.elapsedTime());
@@ -152,7 +157,7 @@ final class DataFileDefrag
       }
     }
   }
-
+  
   void updateTableIndexRoots()
   {
     HsqlArrayList localHsqlArrayList = this.database.schemaManager.getAllTables(true);
@@ -169,7 +174,7 @@ final class DataFileDefrag
       i++;
     }
   }
-
+  
   long[] writeTableToDataFile(Table paramTable)
     throws IOException
   {
@@ -188,8 +193,9 @@ final class DataFileDefrag
     {
       localRow = localRowIterator.getNextRow();
       this.pointerLookup.addUnsorted((int)localRow.getPos(), (int)(l1 / this.scale));
-      if ((l2 != 0L) && (l2 % 100000L == 0L))
+      if ((l2 != 0L) && (l2 % 100000L == 0L)) {
         this.database.logger.logDetailEvent("pointer pair for row " + l2 + " " + localRow.getPos() + " " + l1);
+      }
       l1 += localRow.getStorageSize();
       l2 += 1L;
     }
@@ -203,27 +209,30 @@ final class DataFileDefrag
       localRow.write(localRowOutputInterface, this.pointerLookup);
       this.randomAccessOut.write(localRowOutputInterface.getOutputStream().getBuffer(), 0, localRowOutputInterface.size());
       this.fileOffset += localRow.getStorageSize();
-      if ((l2 != 0L) && (l2 % 100000L == 0L))
+      if ((l2 != 0L) && (l2 % 100000L == 0L)) {
         this.database.logger.logDetailEvent("rows count " + l2 + " " + this.stopw.elapsedTime());
+      }
       l2 += 1L;
     }
-    for (int i = 0; i < paramTable.getIndexCount(); i++)
+    for (int i = 0; i < paramTable.getIndexCount(); i++) {
       if (arrayOfLong[i] != -1L)
       {
         int j = this.pointerLookup.findFirstEqualKeyIndex((int)arrayOfLong[i]);
-        if (j == -1)
+        if (j == -1) {
           throw Error.error(466);
+        }
         arrayOfLong[i] = this.pointerLookup.getValue(j);
       }
+    }
     this.database.logger.logDetailEvent("table written " + paramTable.getName().name);
     return arrayOfLong;
   }
-
+  
   public long[][] getIndexRoots()
   {
     return this.rootsList;
   }
-
+  
   static boolean checkAllTables(Database paramDatabase)
   {
     Session localSession = paramDatabase.getSessionManager().getSysSession();
@@ -250,7 +259,8 @@ final class DataFileDefrag
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.persist.DataFileDefrag
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

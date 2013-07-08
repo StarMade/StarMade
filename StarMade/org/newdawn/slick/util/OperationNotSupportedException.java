@@ -1,14 +1,16 @@
-/*    */ package org.newdawn.slick.util;
-/*    */ 
-/*    */ public class OperationNotSupportedException extends RuntimeException
-/*    */ {
-/*    */   public OperationNotSupportedException(String msg)
-/*    */   {
-/* 16 */     super(msg);
-/*    */   }
-/*    */ }
+/*  1:   */package org.newdawn.slick.util;
+/*  2:   */
+/* 11:   */public class OperationNotSupportedException
+/* 12:   */  extends RuntimeException
+/* 13:   */{
+/* 14:   */  public OperationNotSupportedException(String msg)
+/* 15:   */  {
+/* 16:16 */    super(msg);
+/* 17:   */  }
+/* 18:   */}
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.newdawn.slick.util.OperationNotSupportedException
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

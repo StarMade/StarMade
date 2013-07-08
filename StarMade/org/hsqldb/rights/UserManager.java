@@ -19,52 +19,58 @@ public final class UserManager
   private GranteeManager granteeManager;
   Routine pwCheckFunction;
   Routine extAuthenticationFunction;
-
+  
   public UserManager(Database paramDatabase)
   {
     this.granteeManager = paramDatabase.getGranteeManager();
     this.userList = new HashMappedList();
   }
-
+  
   public User createUser(HsqlNameManager.HsqlName paramHsqlName, String paramString, boolean paramBoolean)
   {
     User localUser = this.granteeManager.addUser(paramHsqlName);
     localUser.setPassword(paramString, paramBoolean);
     boolean bool = this.userList.add(paramHsqlName.name, localUser);
-    if (!bool)
+    if (!bool) {
       throw Error.error(4003, paramHsqlName.statementName);
+    }
     return localUser;
   }
-
+  
   public void setPassword(Session paramSession, User paramUser, String paramString, boolean paramBoolean)
   {
-    if ((!paramBoolean) && (!checkComplexity(paramSession, paramString)))
+    if ((!paramBoolean) && (!checkComplexity(paramSession, paramString))) {
       throw Error.error(391);
+    }
     paramUser.setPassword(paramString, paramBoolean);
   }
-
+  
   public boolean checkComplexity(Session paramSession, String paramString)
   {
-    if ((paramSession == null) || (this.pwCheckFunction == null))
+    if ((paramSession == null) || (this.pwCheckFunction == null)) {
       return true;
+    }
     Result localResult = this.pwCheckFunction.invoke(paramSession, new Object[] { paramString }, null, false);
     Boolean localBoolean = (Boolean)localResult.getValueObject();
     return (localBoolean != null) && (localBoolean.booleanValue());
   }
-
+  
   public void dropUser(String paramString)
   {
     boolean bool1 = GranteeManager.isReserved(paramString);
-    if (bool1)
+    if (bool1) {
       throw Error.error(4002, paramString);
+    }
     boolean bool2 = this.granteeManager.removeGrantee(paramString);
-    if (!bool2)
+    if (!bool2) {
       throw Error.error(4001, paramString);
+    }
     User localUser = (User)this.userList.remove(paramString);
-    if (localUser == null)
+    if (localUser == null) {
       throw Error.error(4001, paramString);
+    }
   }
-
+  
   public void createFirstUser(String paramString1, String paramString2)
   {
     boolean bool = true;
@@ -78,13 +84,15 @@ public final class UserManager
     localUser.isLocalOnly = true;
     this.granteeManager.grant(localHsqlName.name, "DBA", this.granteeManager.getDBARole());
   }
-
+  
   public User getUser(String paramString1, String paramString2)
   {
-    if (paramString1 == null)
+    if (paramString1 == null) {
       paramString1 = "";
-    if (paramString2 == null)
+    }
+    if (paramString2 == null) {
       paramString2 = "";
+    }
     User localUser = (User)this.userList.get(paramString1);
     int i = (localUser != null) && (localUser.isLocalOnly) ? 1 : 0;
     if ((this.extAuthenticationFunction == null) || (i != 0))
@@ -94,8 +102,9 @@ public final class UserManager
       return localUser;
     }
     Result localResult = this.extAuthenticationFunction.invokeJavaMethodDirect(new String[] { this.granteeManager.database.getUniqueName(), paramString1, paramString2 });
-    if (localResult.isError())
+    if (localResult.isError()) {
       throw Error.error(4001, localResult.getMainString());
+    }
     Object[] arrayOfObject = (Object[])localResult.getValueObject();
     if (localUser == null)
     {
@@ -109,15 +118,14 @@ public final class UserManager
       return localUser;
     }
     localUser.clearPrivileges();
-    for (int j = 0; j < arrayOfObject.length; j++)
+    for (int j = 0; j < arrayOfObject.length; j++) {
       try
       {
         Grantee localGrantee = this.granteeManager.getRole((String)arrayOfObject[j]);
         localUser.grant(localGrantee);
       }
-      catch (HsqlException localHsqlException)
-      {
-      }
+      catch (HsqlException localHsqlException) {}
+    }
     localUser.updateAllRights();
     for (j = 0; j < arrayOfObject.length; j++)
     {
@@ -130,73 +138,77 @@ public final class UserManager
     }
     return localUser;
   }
-
+  
   public HashMappedList getUsers()
   {
     return this.userList;
   }
-
+  
   public boolean exists(String paramString)
   {
     return this.userList.get(paramString) != null;
   }
-
+  
   public User get(String paramString)
   {
     User localUser = (User)this.userList.get(paramString);
-    if (localUser == null)
+    if (localUser == null) {
       throw Error.error(4001, paramString);
+    }
     return localUser;
   }
-
+  
   public HsqlArrayList listVisibleUsers(Session paramSession)
   {
     HsqlArrayList localHsqlArrayList = new HsqlArrayList();
     boolean bool = paramSession.isAdmin();
     String str1 = paramSession.getUsername();
-    if ((this.userList == null) || (this.userList.size() == 0))
+    if ((this.userList == null) || (this.userList.size() == 0)) {
       return localHsqlArrayList;
+    }
     for (int i = 0; i < this.userList.size(); i++)
     {
       User localUser = (User)this.userList.get(i);
       if (localUser != null)
       {
         String str2 = localUser.getName().getNameString();
-        if (bool)
+        if (bool) {
           localHsqlArrayList.add(localUser);
-        else if (str1.equals(str2))
+        } else if (str1.equals(str2)) {
           localHsqlArrayList.add(localUser);
+        }
       }
     }
     return localHsqlArrayList;
   }
-
+  
   public User getSysUser()
   {
     return GranteeManager.systemAuthorisation;
   }
-
+  
   public synchronized void removeSchemaReference(String paramString)
   {
     for (int i = 0; i < this.userList.size(); i++)
     {
       User localUser = (User)this.userList.get(i);
       HsqlNameManager.HsqlName localHsqlName = localUser.getInitialSchema();
-      if ((localHsqlName != null) && (paramString.equals(localHsqlName.name)))
+      if ((localHsqlName != null) && (paramString.equals(localHsqlName.name))) {
         localUser.setInitialSchema(null);
+      }
     }
   }
-
+  
   public void setPasswordCheckFunction(Routine paramRoutine)
   {
     this.pwCheckFunction = paramRoutine;
   }
-
+  
   public void setExtAuthenticationFunction(Routine paramRoutine)
   {
     this.extAuthenticationFunction = paramRoutine;
   }
-
+  
   public String[] getInitialSchemaSQL()
   {
     HsqlArrayList localHsqlArrayList = new HsqlArrayList(this.userList.size());
@@ -206,15 +218,16 @@ public final class UserManager
       if (!localUser.isSystem)
       {
         HsqlNameManager.HsqlName localHsqlName = localUser.getInitialSchema();
-        if (localHsqlName != null)
+        if (localHsqlName != null) {
           localHsqlArrayList.add(localUser.getInitialSchemaSQL());
+        }
       }
     }
     String[] arrayOfString = new String[localHsqlArrayList.size()];
     localHsqlArrayList.toArray(arrayOfString);
     return arrayOfString;
   }
-
+  
   public String[] getAuthenticationSQL()
   {
     HsqlArrayList localHsqlArrayList = new HsqlArrayList();
@@ -244,7 +257,8 @@ public final class UserManager
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.rights.UserManager
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

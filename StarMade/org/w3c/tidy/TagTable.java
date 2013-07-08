@@ -78,11 +78,12 @@ public final class TagTable
   protected Anchor anchorList;
   private Configuration configuration;
   private Map tagHashtable = new Hashtable();
-
+  
   protected TagTable()
   {
-    for (int i = 0; i < TAGS.length; i++)
+    for (int i = 0; i < TAGS.length; i++) {
       install(TAGS[i]);
+    }
     this.tagHtml = lookup("html");
     this.tagHead = lookup("head");
     this.tagBody = lookup("body");
@@ -148,17 +149,17 @@ public final class TagTable
     this.tagQ = lookup("q");
     this.tagBlink = lookup("blink");
   }
-
+  
   public void setConfiguration(Configuration paramConfiguration)
   {
     this.configuration = paramConfiguration;
   }
-
+  
   public Dict lookup(String paramString)
   {
     return (Dict)this.tagHashtable.get(paramString);
   }
-
+  
   public Dict install(Dict paramDict)
   {
     Dict localDict = (Dict)this.tagHashtable.get(paramDict.name);
@@ -173,7 +174,7 @@ public final class TagTable
     this.tagHashtable.put(paramDict.name, paramDict);
     return paramDict;
   }
-
+  
   public boolean findTag(Node paramNode)
   {
     if ((this.configuration != null) && (this.configuration.xmlTags))
@@ -192,53 +193,54 @@ public final class TagTable
     }
     return false;
   }
-
+  
   public Parser findParser(Node paramNode)
   {
     if (paramNode.element != null)
     {
       Dict localDict = lookup(paramNode.element);
-      if (localDict != null)
+      if (localDict != null) {
         return localDict.getParser();
+      }
     }
     return null;
   }
-
+  
   boolean isAnchorElement(Node paramNode)
   {
     return (paramNode.tag == this.tagA) || (paramNode.tag == this.tagApplet) || (paramNode.tag == this.tagForm) || (paramNode.tag == this.tagFrame) || (paramNode.tag == this.tagIframe) || (paramNode.tag == this.tagImg) || (paramNode.tag == this.tagMap);
   }
-
+  
   public void defineTag(short paramShort, String paramString)
   {
     int i;
     Parser localParser;
     switch (paramShort)
     {
-    case 4:
+    case 4: 
       i = 8;
       localParser = ParserImpl.BLOCK;
       break;
-    case 1:
+    case 1: 
       i = 1;
       localParser = ParserImpl.BLOCK;
       break;
-    case 8:
+    case 8: 
       i = 8;
       localParser = ParserImpl.PRE;
       break;
-    case 2:
-    case 3:
-    case 5:
-    case 6:
-    case 7:
-    default:
+    case 2: 
+    case 3: 
+    case 5: 
+    case 6: 
+    case 7: 
+    default: 
       i = 16;
       localParser = ParserImpl.INLINE;
     }
     install(new Dict(paramString, (short)448, i, localParser, null));
   }
-
+  
   List findAllDefinedTag(short paramShort)
   {
     ArrayList localArrayList = new ArrayList();
@@ -246,45 +248,47 @@ public final class TagTable
     while (localIterator.hasNext())
     {
       Dict localDict = (Dict)localIterator.next();
-      if (localDict != null)
+      if (localDict != null) {
         switch (paramShort)
         {
-        case 1:
-          if ((localDict.versions == 448) && ((localDict.model & 0x1) == 1) && (localDict != this.tagWbr))
+        case 1: 
+          if ((localDict.versions == 448) && ((localDict.model & 0x1) == 1) && (localDict != this.tagWbr)) {
             localArrayList.add(localDict.name);
+          }
           break;
-        case 2:
-          if ((localDict.versions == 448) && ((localDict.model & 0x10) == 16) && (localDict != this.tagBlink) && (localDict != this.tagNobr) && (localDict != this.tagWbr))
+        case 2: 
+          if ((localDict.versions == 448) && ((localDict.model & 0x10) == 16) && (localDict != this.tagBlink) && (localDict != this.tagNobr) && (localDict != this.tagWbr)) {
             localArrayList.add(localDict.name);
+          }
           break;
-        case 4:
-          if ((localDict.versions == 448) && ((localDict.model & 0x8) == 8) && (localDict.getParser() == ParserImpl.BLOCK))
+        case 4: 
+          if ((localDict.versions == 448) && ((localDict.model & 0x8) == 8) && (localDict.getParser() == ParserImpl.BLOCK)) {
             localArrayList.add(localDict.name);
+          }
           break;
-        case 8:
-          if ((localDict.versions == 448) && ((localDict.model & 0x8) == 8) && (localDict.getParser() == ParserImpl.PRE))
+        case 8: 
+          if ((localDict.versions == 448) && ((localDict.model & 0x8) == 8) && (localDict.getParser() == ParserImpl.PRE)) {
             localArrayList.add(localDict.name);
+          }
           break;
-        case 3:
-        case 5:
-        case 6:
-        case 7:
         }
+      }
     }
     return localArrayList;
   }
-
+  
   public void freeAttrs(Node paramNode)
   {
     while (paramNode.attributes != null)
     {
       AttVal localAttVal = paramNode.attributes;
-      if (("id".equalsIgnoreCase(localAttVal.attribute)) || (("name".equalsIgnoreCase(localAttVal.attribute)) && (isAnchorElement(paramNode))))
+      if (("id".equalsIgnoreCase(localAttVal.attribute)) || (("name".equalsIgnoreCase(localAttVal.attribute)) && (isAnchorElement(paramNode)))) {
         removeAnchorByNode(paramNode);
+      }
       paramNode.attributes = localAttVal.next;
     }
   }
-
+  
   void removeAnchorByNode(Node paramNode)
   {
     Object localObject = null;
@@ -296,10 +300,11 @@ public final class TagTable
       localAnchor3 = localAnchor1.next;
       if (localAnchor1.node == paramNode)
       {
-        if (localAnchor2 != null)
+        if (localAnchor2 != null) {
           localAnchor2.next = localAnchor3;
-        else
+        } else {
           this.anchorList = localAnchor3;
+        }
         localObject = localAnchor1;
       }
       else
@@ -307,16 +312,17 @@ public final class TagTable
         localAnchor2 = localAnchor1;
       }
     }
-    if (localObject != null)
+    if (localObject != null) {
       localObject = null;
+    }
   }
-
+  
   Anchor newAnchor()
   {
     Anchor localAnchor = new Anchor();
     return localAnchor;
   }
-
+  
   Anchor addAnchor(String paramString, Node paramNode)
   {
     Anchor localAnchor1 = newAnchor();
@@ -328,27 +334,29 @@ public final class TagTable
     }
     else
     {
-      for (Anchor localAnchor2 = this.anchorList; localAnchor2.next != null; localAnchor2 = localAnchor2.next);
+      for (Anchor localAnchor2 = this.anchorList; localAnchor2.next != null; localAnchor2 = localAnchor2.next) {}
       localAnchor2.next = localAnchor1;
     }
     return this.anchorList;
   }
-
+  
   Node getNodeByAnchor(String paramString)
   {
-    for (Anchor localAnchor = this.anchorList; (localAnchor != null) && (!paramString.equalsIgnoreCase(localAnchor.name)); localAnchor = localAnchor.next);
-    if (localAnchor != null)
+    for (Anchor localAnchor = this.anchorList; (localAnchor != null) && (!paramString.equalsIgnoreCase(localAnchor.name)); localAnchor = localAnchor.next) {}
+    if (localAnchor != null) {
       return localAnchor.node;
+    }
     return null;
   }
-
+  
   void freeAnchors()
   {
     this.anchorList = null;
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.w3c.tidy.TagTable
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

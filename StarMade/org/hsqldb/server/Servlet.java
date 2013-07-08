@@ -21,7 +21,8 @@ import org.hsqldb.result.Result;
 import org.hsqldb.rowio.RowInputBinary;
 import org.hsqldb.rowio.RowOutputBinary;
 
-public class Servlet extends HttpServlet
+public class Servlet
+  extends HttpServlet
 {
   private static final int BUFFER_SIZE = 256;
   private String dbType;
@@ -31,7 +32,7 @@ public class Servlet extends HttpServlet
   private RowInputBinary rowIn;
   private int iQueries;
   private static long lModified = 0L;
-
+  
   public void init(ServletConfig paramServletConfig)
   {
     try
@@ -45,11 +46,13 @@ public class Servlet extends HttpServlet
       log(localServletException.toString());
     }
     String str1 = getInitParameter("hsqldb.server.database");
-    if (str1 == null)
+    if (str1 == null) {
       str1 = ".";
+    }
     String str2 = getInitParameter("hsqldb.server.use_web-inf_path");
-    if ((!str1.equals(".")) && ("true".equalsIgnoreCase(str2)))
+    if ((!str1.equals(".")) && ("true".equalsIgnoreCase(str2))) {
       str1 = getServletContext().getRealPath("/") + "WEB-INF/" + str1;
+    }
     HsqlProperties localHsqlProperties = DatabaseURL.parseURL(str1, false, false);
     log("Database filename = " + str1);
     if (localHsqlProperties == null)
@@ -79,12 +82,12 @@ public class Servlet extends HttpServlet
       log(this.errorStr);
     }
   }
-
+  
   protected long getLastModified(HttpServletRequest paramHttpServletRequest)
   {
     return lModified++;
   }
-
+  
   public void doGet(HttpServletRequest paramHttpServletRequest, HttpServletResponse paramHttpServletResponse)
     throws IOException, ServletException
   {
@@ -112,7 +115,7 @@ public class Servlet extends HttpServlet
       localPrintWriter.println("</body></html>");
     }
   }
-
+  
   public void doPost(HttpServletRequest paramHttpServletRequest, HttpServletResponse paramHttpServletResponse)
     throws IOException, ServletException
   {
@@ -157,10 +160,12 @@ public class Servlet extends HttpServlet
             localDataOutputStream1.writeInt(4);
             localDataOutputStream1.writeByte(0);
             localDataOutputStream1.close();
-            if (localDataOutputStream1 != null)
+            if (localDataOutputStream1 != null) {
               localDataOutputStream1.close();
-            if (localDataInputStream != null)
+            }
+            if (localDataInputStream != null) {
               localDataInputStream.close();
+            }
             return;
           }
           int m = localResult1.getDatabaseId();
@@ -179,21 +184,21 @@ public class Servlet extends HttpServlet
         localHsqlByteArrayOutputStream.writeTo(localDataOutputStream1);
         this.iQueries += 1;
       }
-      catch (HsqlException localHsqlException1)
+      catch (HsqlException localHsqlException1) {}finally
       {
-      }
-      finally
-      {
-        if (localDataOutputStream1 != null)
+        if (localDataOutputStream1 != null) {
           localDataOutputStream1.close();
-        if (localDataInputStream != null)
+        }
+        if (localDataInputStream != null) {
           localDataInputStream.close();
+        }
       }
     }
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.server.Servlet
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

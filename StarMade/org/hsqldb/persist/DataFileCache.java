@@ -62,13 +62,13 @@ public class DataFileCache
   ReadWriteLock lock = new ReentrantReadWriteLock();
   Lock readLock = this.lock.readLock();
   Lock writeLock = this.lock.writeLock();
-
+  
   public DataFileCache(Database paramDatabase, String paramString)
   {
     initParams(paramDatabase, paramString);
     this.cache = new Cache(this);
   }
-
+  
   protected void initParams(Database paramDatabase, String paramString)
   {
     this.dataFileName = (paramString + ".data");
@@ -77,11 +77,13 @@ public class DataFileCache
     this.fa = paramDatabase.logger.getFileAccess();
     this.dataFileScale = paramDatabase.logger.getDataFileScale();
     this.cachedRowPadding = 8;
-    if (this.dataFileScale > 8)
+    if (this.dataFileScale > 8) {
       this.cachedRowPadding = this.dataFileScale;
+    }
     this.initialFreePos = 32;
-    if (this.initialFreePos < this.dataFileScale)
+    if (this.initialFreePos < this.dataFileScale) {
       this.initialFreePos = this.dataFileScale;
+    }
     this.cacheReadonly = paramDatabase.logger.propFilesReadOnly;
     this.maxCacheRows = paramDatabase.logger.propCacheMaxRows;
     this.maxCacheBytes = paramDatabase.logger.propCacheMaxSize;
@@ -89,7 +91,7 @@ public class DataFileCache
     this.dataFile = null;
     this.shadowFile = null;
   }
-
+  
   public void open(boolean paramBoolean)
   {
     if (this.database.logger.isStoredFileAccess())
@@ -103,20 +105,22 @@ public class DataFileCache
     {
       boolean bool1 = this.database.logger.propNioDataFile;
       int i;
-      if (this.database.isFilesInJar())
+      if (this.database.isFilesInJar()) {
         i = 2;
-      else if (bool1)
+      } else if (bool1) {
         i = 1;
-      else
+      } else {
         i = 0;
+      }
       if ((paramBoolean) || (this.database.isFilesInJar()))
       {
         this.dataFile = ScaledRAFile.newScaledRAFile(this.database, this.dataFileName, paramBoolean, i);
         this.dataFile.seek(28L);
         int j = this.dataFile.readInt();
         this.is180 = (!BitMap.isSet(j, 4));
-        if (BitMap.isSet(j, 5))
+        if (BitMap.isSet(j, 5)) {
           throw Error.error(453);
+        }
         this.dataFile.seek(12L);
         this.fileFreePosition = this.dataFile.readLong();
         initBuffers();
@@ -138,19 +142,23 @@ public class DataFileCache
           bool4 = BitMap.isSet(n, 2);
           bool3 = BitMap.isSet(n, 1);
           this.is180 = (!BitMap.isSet(n, 4));
-          if (BitMap.isSet(n, 5))
+          if (BitMap.isSet(n, 5)) {
             m = 1;
+          }
         }
         this.dataFile.close();
-        if (l2 > this.maxDataFileSize)
+        if (l2 > this.maxDataFileSize) {
           throw Error.error(453, "requires large database support");
-        if (m != 0)
+        }
+        if (m != 0) {
           throw Error.error(453);
+        }
         if ((bool4) && (bool3))
         {
           boolean bool6 = this.fa.isStreamElement(this.backupFileName);
-          if (bool6)
+          if (bool6) {
             bool4 = false;
+          }
         }
       }
       if (bool4)
@@ -162,14 +170,16 @@ public class DataFileCache
         else
         {
           boolean bool5 = this.fa.isStreamElement(this.backupFileName);
-          if (!bool5)
+          if (!bool5) {
             backupFile(false);
+          }
         }
       }
-      else if (bool3)
+      else if (bool3) {
         bool2 = restoreBackupIncremental();
-      else
+      } else {
         bool2 = restoreBackup();
+      }
       this.dataFile = ScaledRAFile.newScaledRAFile(this.database, this.dataFileName, paramBoolean, i);
       if (bool2)
       {
@@ -200,7 +210,7 @@ public class DataFileCache
       throw Error.error(localThrowable, 452, 52, new Object[] { localThrowable.toString(), this.dataFileName });
     }
   }
-
+  
   void openStoredFileAccess(boolean paramBoolean)
   {
     this.fileFreePosition = this.initialFreePos;
@@ -223,11 +233,13 @@ public class DataFileCache
       boolean bool1 = this.fa.isStreamElement(this.dataFileName);
       boolean bool2 = this.database.logger.propIncrementBackup;
       int k = this.database.getProperties().getDBModified() == 1 ? 1 : 0;
-      if ((bool1) && (k != 0))
-        if (bool2)
+      if ((bool1) && (k != 0)) {
+        if (bool2) {
           bool1 = restoreBackupIncremental();
-        else
+        } else {
           bool1 = restoreBackup();
+        }
+      }
       this.dataFile = ScaledRAFile.newScaledRAFile(this.database, this.dataFileName, paramBoolean, i);
       if (bool1)
       {
@@ -258,7 +270,7 @@ public class DataFileCache
       throw Error.error(localThrowable, 452, 52, new Object[] { localThrowable.toString(), this.dataFileName });
     }
   }
-
+  
   void initNewFile()
     throws IOException
   {
@@ -267,8 +279,9 @@ public class DataFileCache
     this.dataFile.seek(12L);
     this.dataFile.writeLong(this.fileFreePosition);
     int i = 0;
-    if (this.database.logger.propIncrementBackup)
+    if (this.database.logger.propIncrementBackup) {
       i = BitMap.set(i, 1);
+    }
     i = BitMap.set(i, 2);
     i = BitMap.set(i, 4);
     this.dataFile.seek(28L);
@@ -276,13 +289,14 @@ public class DataFileCache
     this.dataFile.synch();
     this.is180 = false;
   }
-
+  
   void openShadowFile()
   {
-    if ((this.database.logger.propIncrementBackup) && (this.fileFreePosition != this.initialFreePos))
+    if ((this.database.logger.propIncrementBackup) && (this.fileFreePosition != this.initialFreePos)) {
       this.shadowFile = new RAShadowFile(this.database, this.dataFile, this.backupFileName, this.fileFreePosition, 16384);
+    }
   }
-
+  
   void setIncrementBackup(boolean paramBoolean)
   {
     this.writeLock.lock();
@@ -290,10 +304,11 @@ public class DataFileCache
     {
       this.dataFile.seek(28L);
       int i = this.dataFile.readInt();
-      if (paramBoolean)
+      if (paramBoolean) {
         i = BitMap.set(i, 1);
-      else
+      } else {
         i = BitMap.unset(i, 1);
+      }
       this.dataFile.seek(28L);
       this.dataFile.writeInt(i);
       this.dataFile.synch();
@@ -308,7 +323,7 @@ public class DataFileCache
       this.writeLock.unlock();
     }
   }
-
+  
   private boolean restoreBackup()
   {
     deleteFile();
@@ -327,7 +342,7 @@ public class DataFileCache
       throw Error.error(localThrowable, 452, 26, new Object[] { localThrowable.toString(), this.backupFileName });
     }
   }
-
+  
   private boolean restoreBackupIncremental()
   {
     try
@@ -345,14 +360,15 @@ public class DataFileCache
       throw Error.error(452, localIOException);
     }
   }
-
+  
   public void close(boolean paramBoolean)
   {
     this.writeLock.lock();
     try
     {
-      if (this.dataFile == null)
+      if (this.dataFile == null) {
         return;
+      }
       if (paramBoolean)
       {
         commitChanges();
@@ -365,8 +381,9 @@ public class DataFileCache
       this.dataFile.close();
       logDetailEvent("dataFileCache file close");
       this.dataFile = null;
-      if (!paramBoolean)
+      if (!paramBoolean) {
         return;
+      }
       int i = this.fileFreePosition == this.initialFreePos ? 1 : 0;
       if (i != 0)
       {
@@ -388,7 +405,7 @@ public class DataFileCache
       this.writeLock.unlock();
     }
   }
-
+  
   protected void clear()
   {
     this.writeLock.lock();
@@ -401,29 +418,31 @@ public class DataFileCache
       this.writeLock.unlock();
     }
   }
-
+  
   public void adjustStoreCount(int paramInt)
   {
     this.writeLock.lock();
     try
     {
       this.storeCount += paramInt;
-      if (this.storeCount == 0)
+      if (this.storeCount == 0) {
         clear();
+      }
     }
     finally
     {
       this.writeLock.unlock();
     }
   }
-
+  
   public void commitChanges()
   {
     this.writeLock.lock();
     try
     {
-      if (this.cacheReadonly)
+      if (this.cacheReadonly) {
         return;
+      }
       logInfoEvent("dataFileCache commit start");
       this.cache.saveAll();
       if ((this.fileModified) || (this.freeBlocks.isModified()))
@@ -460,21 +479,25 @@ public class DataFileCache
       this.writeLock.unlock();
     }
   }
-
+  
   protected void initBuffers()
   {
-    if (this.rowOut == null)
-      if (this.is180)
+    if (this.rowOut == null) {
+      if (this.is180) {
         this.rowOut = new RowOutputBinary180(4096, this.cachedRowPadding);
-      else
+      } else {
         this.rowOut = new RowOutputBinaryEncode(this.database.logger.getCrypto(), 4096, this.cachedRowPadding);
-    if (this.rowIn == null)
-      if (this.is180)
+      }
+    }
+    if (this.rowIn == null) {
+      if (this.is180) {
         this.rowIn = new RowInputBinary180(new byte[4096]);
-      else
+      } else {
         this.rowIn = new RowInputBinaryDecode(this.database.logger.getCrypto(), new byte[4096]);
+      }
+    }
   }
-
+  
   DataFileDefrag defrag()
   {
     this.writeLock.lock();
@@ -485,8 +508,9 @@ public class DataFileCache
       localDataFileDefrag1.process();
       close(true);
       this.cache.clear();
-      if (!this.database.logger.propIncrementBackup)
+      if (!this.database.logger.propIncrementBackup) {
         backupFile(true);
+      }
       this.database.schemaManager.setTempIndexRoots(localDataFileDefrag1.getIndexRoots());
       try
       {
@@ -506,8 +530,9 @@ public class DataFileCache
       this.database.getProperties().setDBModified(0);
       open(false);
       this.database.schemaManager.setIndexRoots(localDataFileDefrag1.getIndexRoots());
-      if (this.database.logger.log.dbLogWriter != null)
+      if (this.database.logger.log.dbLogWriter != null) {
         this.database.logger.log.openLog();
+      }
       this.database.getProperties().setDBModified(1);
       DataFileDefrag localDataFileDefrag2 = localDataFileDefrag1;
       return localDataFileDefrag2;
@@ -517,7 +542,7 @@ public class DataFileCache
       this.writeLock.unlock();
     }
   }
-
+  
   public void remove(long paramLong, PersistentStore paramPersistentStore)
   {
     this.writeLock.lock();
@@ -535,11 +560,9 @@ public class DataFileCache
       this.writeLock.unlock();
     }
   }
-
-  public void removePersistence(CachedObject paramCachedObject)
-  {
-  }
-
+  
+  public void removePersistence(CachedObject paramCachedObject) {}
+  
   long setFilePos(CachedObject paramCachedObject)
   {
     int i = paramCachedObject.getStorageSize();
@@ -564,7 +587,7 @@ public class DataFileCache
     paramCachedObject.setPos(l1);
     return l1;
   }
-
+  
   public void add(CachedObject paramCachedObject)
   {
     this.writeLock.lock();
@@ -573,15 +596,16 @@ public class DataFileCache
       this.cacheModified = true;
       long l = setFilePos(paramCachedObject);
       this.cache.put(l, paramCachedObject);
-      if (paramCachedObject.getStorageSize() > 4096)
+      if (paramCachedObject.getStorageSize() > 4096) {
         this.rowOut.reset(paramCachedObject.getStorageSize());
+      }
     }
     finally
     {
       this.writeLock.unlock();
     }
   }
-
+  
   public int getStorageSize(long paramLong)
   {
     this.readLock.lock();
@@ -600,7 +624,7 @@ public class DataFileCache
     }
     return readSize(paramLong);
   }
-
+  
   public void replace(CachedObject paramCachedObject)
   {
     this.writeLock.lock();
@@ -614,7 +638,7 @@ public class DataFileCache
       this.writeLock.unlock();
     }
   }
-
+  
   public CachedObject get(CachedObject paramCachedObject, PersistentStore paramPersistentStore, boolean paramBoolean)
   {
     this.readLock.lock();
@@ -624,8 +648,9 @@ public class DataFileCache
       CachedObject localCachedObject;
       if (paramCachedObject.isInMemory())
       {
-        if (paramBoolean)
+        if (paramBoolean) {
           paramCachedObject.keepInMemory(true);
+        }
         localCachedObject = paramCachedObject;
         return localCachedObject;
       }
@@ -638,8 +663,9 @@ public class DataFileCache
       paramCachedObject = this.cache.get(l);
       if (paramCachedObject != null)
       {
-        if (paramBoolean)
+        if (paramBoolean) {
           paramCachedObject.keepInMemory(true);
+        }
         localCachedObject = paramCachedObject;
         return localCachedObject;
       }
@@ -650,19 +676,21 @@ public class DataFileCache
     }
     return getFromFile(l, paramPersistentStore, paramBoolean);
   }
-
+  
   public CachedObject get(long paramLong, PersistentStore paramPersistentStore, boolean paramBoolean)
   {
-    if (paramLong < 0L)
+    if (paramLong < 0L) {
       return null;
+    }
     this.readLock.lock();
     try
     {
       CachedObject localCachedObject1 = this.cache.get(paramLong);
       if (localCachedObject1 != null)
       {
-        if (paramBoolean)
+        if (paramBoolean) {
           localCachedObject1.keepInMemory(true);
+        }
         CachedObject localCachedObject2 = localCachedObject1;
         return localCachedObject2;
       }
@@ -673,7 +701,7 @@ public class DataFileCache
     }
     return getFromFile(paramLong, paramPersistentStore, paramBoolean);
   }
-
+  
   private CachedObject getFromFile(long paramLong, PersistentStore paramPersistentStore, boolean paramBoolean)
   {
     CachedObject localCachedObject1 = null;
@@ -683,13 +711,14 @@ public class DataFileCache
       localCachedObject1 = this.cache.get(paramLong);
       if (localCachedObject1 != null)
       {
-        if (paramBoolean)
+        if (paramBoolean) {
           localCachedObject1.keepInMemory(true);
+        }
         CachedObject localCachedObject2 = localCachedObject1;
         return localCachedObject2;
       }
       int i = 0;
-      while (i < 2)
+      while (i < 2) {
         try
         {
           RowInputInterface localRowInputInterface = readObject(paramLong);
@@ -705,14 +734,17 @@ public class DataFileCache
           this.cache.forceCleanUp();
           System.gc();
           logSevereEvent(this.dataFileName + " getFromFile out of mem " + paramLong, localOutOfMemoryError);
-          if (i > 0)
+          if (i > 0) {
             throw localOutOfMemoryError;
+          }
           i++;
         }
+      }
       paramLong = localCachedObject1.getPos();
       this.cache.put(paramLong, localCachedObject1);
-      if (paramBoolean)
+      if (paramBoolean) {
         localCachedObject1.keepInMemory(true);
+      }
       paramPersistentStore.set(localCachedObject1);
       CachedObject localCachedObject3 = localCachedObject1;
       return localCachedObject3;
@@ -727,7 +759,7 @@ public class DataFileCache
       this.writeLock.unlock();
     }
   }
-
+  
   RowInputInterface getRaw(int paramInt)
   {
     this.writeLock.lock();
@@ -741,7 +773,7 @@ public class DataFileCache
       this.writeLock.unlock();
     }
   }
-
+  
   protected int readSize(long paramLong)
   {
     this.writeLock.lock();
@@ -761,7 +793,7 @@ public class DataFileCache
       this.writeLock.unlock();
     }
   }
-
+  
   protected RowInputInterface readObject(long paramLong)
   {
     try
@@ -778,7 +810,7 @@ public class DataFileCache
       throw Error.error(466, localIOException);
     }
   }
-
+  
   public CachedObject release(long paramLong)
   {
     this.writeLock.lock();
@@ -792,11 +824,12 @@ public class DataFileCache
       this.writeLock.unlock();
     }
   }
-
+  
   protected void saveRows(CachedObject[] paramArrayOfCachedObject, int paramInt1, int paramInt2)
   {
-    if (paramInt2 == 0)
+    if (paramInt2 == 0) {
       return;
+    }
     try
     {
       copyShadow(paramArrayOfCachedObject, paramInt1, paramInt2);
@@ -821,7 +854,7 @@ public class DataFileCache
       initBuffers();
     }
   }
-
+  
   public void saveRow(CachedObject paramCachedObject)
   {
     this.writeLock.lock();
@@ -841,7 +874,7 @@ public class DataFileCache
       this.writeLock.unlock();
     }
   }
-
+  
   protected void saveRowNoLock(CachedObject paramCachedObject)
   {
     try
@@ -857,7 +890,7 @@ public class DataFileCache
       throw Error.error(466, localIOException);
     }
   }
-
+  
   protected void copyShadow(CachedObject[] paramArrayOfCachedObject, int paramInt1, int paramInt2)
     throws IOException
   {
@@ -875,7 +908,7 @@ public class DataFileCache
       logDetailEvent("shadow copy [time, size] " + l1 + " " + this.shadowFile.getSavedLength());
     }
   }
-
+  
   protected void copyShadow(CachedObject paramCachedObject)
     throws IOException
   {
@@ -886,7 +919,7 @@ public class DataFileCache
       this.shadowFile.synch();
     }
   }
-
+  
   void backupFile(boolean paramBoolean)
   {
     this.writeLock.lock();
@@ -894,8 +927,9 @@ public class DataFileCache
     {
       if (this.database.logger.propIncrementBackup)
       {
-        if (this.fa.isStreamElement(this.backupFileName))
+        if (this.fa.isStreamElement(this.backupFileName)) {
           deleteBackup();
+        }
         return;
       }
       if (this.fa.isStreamElement(this.dataFileName))
@@ -914,7 +948,7 @@ public class DataFileCache
       this.writeLock.unlock();
     }
   }
-
+  
   void renameBackupFile()
   {
     this.writeLock.lock();
@@ -936,7 +970,7 @@ public class DataFileCache
       this.writeLock.unlock();
     }
   }
-
+  
   void renameDataFile()
   {
     this.writeLock.lock();
@@ -953,15 +987,16 @@ public class DataFileCache
       this.writeLock.unlock();
     }
   }
-
+  
   void deleteFile()
   {
     this.writeLock.lock();
     try
     {
       this.fa.removeElement(this.dataFileName);
-      if (this.database.logger.isStoredFileAccess())
+      if (this.database.logger.isStoredFileAccess()) {
         return;
+      }
       if (this.fa.isStreamElement(this.dataFileName))
       {
         this.database.logger.log.deleteOldDataFiles();
@@ -978,86 +1013,87 @@ public class DataFileCache
       this.writeLock.unlock();
     }
   }
-
+  
   void deleteBackup()
   {
     this.writeLock.lock();
     try
     {
-      if (this.fa.isStreamElement(this.backupFileName))
+      if (this.fa.isStreamElement(this.backupFileName)) {
         this.fa.removeElement(this.backupFileName);
+      }
     }
     finally
     {
       this.writeLock.unlock();
     }
   }
-
+  
   public int capacity()
   {
     return this.maxCacheRows;
   }
-
+  
   public long bytesCapacity()
   {
     return this.maxCacheBytes;
   }
-
+  
   public long getTotalCachedBlockSize()
   {
     return this.cache.getTotalCachedBlockSize();
   }
-
+  
   public int getFreeBlockCount()
   {
     return this.freeBlocks.size();
   }
-
+  
   public int getTotalFreeBlockSize()
   {
     return 0;
   }
-
+  
   public long getFileFreePos()
   {
     return this.fileFreePosition;
   }
-
+  
   public int getCachedObjectCount()
   {
     return this.cache.size();
   }
-
+  
   public int getAccessCount()
   {
     return this.cache.incrementAccessCount();
   }
-
+  
   public String getFileName()
   {
     return this.dataFileName;
   }
-
+  
   public boolean hasRowInfo()
   {
     return this.hasRowInfo;
   }
-
+  
   public boolean isFileModified()
   {
     return this.fileModified;
   }
-
+  
   public boolean isModified()
   {
     return this.cacheModified;
   }
-
+  
   public boolean isFileOpen()
   {
     return this.dataFile != null;
   }
-
+  
   protected void setFileModified()
   {
     this.writeLock.lock();
@@ -1078,15 +1114,12 @@ public class DataFileCache
         this.fileModified = true;
       }
     }
-    catch (Throwable localThrowable)
-    {
-    }
-    finally
+    catch (Throwable localThrowable) {}finally
     {
       this.writeLock.unlock();
     }
   }
-
+  
   public int getFlags()
   {
     try
@@ -1095,22 +1128,20 @@ public class DataFileCache
       int i = this.dataFile.readInt();
       return i;
     }
-    catch (Throwable localThrowable)
-    {
-    }
+    catch (Throwable localThrowable) {}
     return 0;
   }
-
+  
   public boolean isDataReadOnly()
   {
     return this.cacheReadonly;
   }
-
+  
   public RAShadowFile getShadowFile()
   {
     return this.shadowFile;
   }
-
+  
   private void logSevereEvent(String paramString, Throwable paramThrowable, long paramLong)
   {
     if (this.logEvents)
@@ -1121,27 +1152,31 @@ public class DataFileCache
       this.database.logger.logSevereEvent(paramString, paramThrowable);
     }
   }
-
+  
   private void logSevereEvent(String paramString, Throwable paramThrowable)
   {
-    if (this.logEvents)
+    if (this.logEvents) {
       this.database.logger.logSevereEvent(paramString, paramThrowable);
+    }
   }
-
+  
   public void logInfoEvent(String paramString)
   {
-    if (this.logEvents)
+    if (this.logEvents) {
       this.database.logger.logInfoEvent(paramString);
+    }
   }
-
+  
   public void logDetailEvent(String paramString)
   {
-    if (this.logEvents)
+    if (this.logEvents) {
       this.database.logger.logDetailEvent(paramString);
+    }
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.persist.DataFileCache
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

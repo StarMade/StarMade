@@ -19,41 +19,53 @@ import java.util.Set;
 public class Configuration
   implements Serializable
 {
-
-  /** @deprecated */
+  /**
+   * @deprecated
+   */
   public static final int RAW = 0;
-
-  /** @deprecated */
+  /**
+   * @deprecated
+   */
   public static final int ASCII = 1;
-
-  /** @deprecated */
+  /**
+   * @deprecated
+   */
   public static final int LATIN1 = 2;
-
-  /** @deprecated */
+  /**
+   * @deprecated
+   */
   public static final int UTF8 = 3;
-
-  /** @deprecated */
+  /**
+   * @deprecated
+   */
   public static final int ISO2022 = 4;
-
-  /** @deprecated */
+  /**
+   * @deprecated
+   */
   public static final int MACROMAN = 5;
-
-  /** @deprecated */
+  /**
+   * @deprecated
+   */
   public static final int UTF16LE = 6;
-
-  /** @deprecated */
+  /**
+   * @deprecated
+   */
   public static final int UTF16BE = 7;
-
-  /** @deprecated */
+  /**
+   * @deprecated
+   */
   public static final int UTF16 = 8;
-
-  /** @deprecated */
+  /**
+   * @deprecated
+   */
   public static final int WIN1252 = 9;
-
-  /** @deprecated */
+  /**
+   * @deprecated
+   */
   public static final int BIG5 = 10;
-
-  /** @deprecated */
+  /**
+   * @deprecated
+   */
   public static final int SHIFTJIS = 11;
   private final String[] ENCODING_NAMES = { "raw", "ASCII", "ISO8859_1", "UTF8", "JIS", "MacRoman", "UnicodeLittle", "UnicodeBig", "Unicode", "Cp1252", "Big5", "SJIS" };
   public static final int DOCTYPE_OMIT = 0;
@@ -71,8 +83,9 @@ public class Configuration
   protected int docTypeMode = 1;
   protected int duplicateAttrs = 0;
   protected String altText;
-
-  /** @deprecated */
+  /**
+   * @deprecated
+   */
   protected String slidestyle;
   protected String language;
   protected String docTypeStr;
@@ -145,17 +158,17 @@ public class Configuration
   private String outCharEncoding = "ASCII";
   protected boolean rawOut;
   private transient Properties properties = new Properties();
-
+  
   protected Configuration(Report paramReport)
   {
     this.report = paramReport;
   }
-
+  
   private static void addConfigOption(Flag paramFlag)
   {
     OPTIONS.put(paramFlag.getName(), paramFlag);
   }
-
+  
   public void addProps(Properties paramProperties)
   {
     Enumeration localEnumeration = paramProperties.propertyNames();
@@ -167,7 +180,7 @@ public class Configuration
     }
     parseProps();
   }
-
+  
   public void parseFile(String paramString)
   {
     try
@@ -181,12 +194,12 @@ public class Configuration
     }
     parseProps();
   }
-
+  
   public static boolean isKnownOption(String paramString)
   {
     return (paramString != null) && (OPTIONS.containsKey(paramString));
   }
-
+  
   private void parseProps()
   {
     Iterator localIterator = this.properties.keySet().iterator();
@@ -202,7 +215,7 @@ public class Configuration
       {
         String str2 = this.properties.getProperty(str1);
         Object localObject = localFlag.getParser().parse(str2, str1, this);
-        if (localFlag.getLocation() != null)
+        if (localFlag.getLocation() != null) {
           try
           {
             localFlag.getLocation().set(this, localObject);
@@ -215,25 +228,30 @@ public class Configuration
           {
             throw new RuntimeException("IllegalArgumentException during config initialization for field " + str1 + "with value [" + localObject + "]: " + localIllegalAccessException.getMessage());
           }
+        }
       }
     }
   }
-
+  
   public void adjust()
   {
-    if (this.encloseBlockText)
+    if (this.encloseBlockText) {
       this.encloseBodyText = true;
-    if (this.smartIndent)
+    }
+    if (this.smartIndent) {
       this.indentContent = true;
-    if (this.wraplen == 0)
+    }
+    if (this.wraplen == 0) {
       this.wraplen = 2147483647;
+    }
     if (this.word2000)
     {
       this.definedTags |= 2;
       this.tt.defineTag((short)2, "o:p");
     }
-    if (this.xmlTags)
+    if (this.xmlTags) {
       this.xHTML = false;
+    }
     if (this.xHTML)
     {
       this.xmlOut = true;
@@ -245,25 +263,27 @@ public class Configuration
       this.xmlOut = true;
       this.xmlPIs = true;
     }
-    if ((!"UTF8".equals(getOutCharEncodingName())) && (!"ASCII".equals(getOutCharEncodingName())) && (this.xmlOut))
+    if ((!"UTF8".equals(getOutCharEncodingName())) && (!"ASCII".equals(getOutCharEncodingName())) && (this.xmlOut)) {
       this.xmlPi = true;
+    }
     if (this.xmlOut)
     {
       this.quoteAmpersand = true;
       this.hideEndTags = false;
     }
   }
-
+  
   public void printConfigOptions(Writer paramWriter, boolean paramBoolean)
   {
     String str = "                                                                               ";
     try
     {
       paramWriter.write("\nConfiguration File Settings:\n\n");
-      if (paramBoolean)
+      if (paramBoolean) {
         paramWriter.write("Name                        Type       Current Value\n");
-      else
+      } else {
         paramWriter.write("Name                        Type       Allowable values\n");
+      }
       paramWriter.write("=========================== =========  ========================================\n");
       ArrayList localArrayList = new ArrayList(OPTIONS.values());
       Collections.sort(localArrayList);
@@ -279,7 +299,7 @@ public class Configuration
         {
           Field localField = localFlag.getLocation();
           Object localObject = null;
-          if (localField != null)
+          if (localField != null) {
             try
             {
               localObject = localField.get(this);
@@ -292,6 +312,7 @@ public class Configuration
             {
               throw new RuntimeException("IllegalAccess when reading field " + localField.getName());
             }
+          }
           paramWriter.write(localFlag.getParser().getFriendlyName(localFlag.getName(), localObject, this));
         }
         else
@@ -307,56 +328,63 @@ public class Configuration
       throw new RuntimeException(localIOException.getMessage());
     }
   }
-
+  
   protected String getInCharEncodingName()
   {
     return this.inCharEncoding;
   }
-
+  
   protected void setInCharEncodingName(String paramString)
   {
     String str = EncodingNameMapper.toJava(paramString);
-    if (str != null)
+    if (str != null) {
       this.inCharEncoding = str;
+    }
   }
-
+  
   protected String getOutCharEncodingName()
   {
     return this.outCharEncoding;
   }
-
+  
   protected void setOutCharEncodingName(String paramString)
   {
     String str = EncodingNameMapper.toJava(paramString);
-    if (str != null)
+    if (str != null) {
       this.outCharEncoding = str;
+    }
   }
-
+  
   protected void setInOutEncodingName(String paramString)
   {
     setInCharEncodingName(paramString);
     setOutCharEncodingName(paramString);
   }
-
-  /** @deprecated */
+  
+  /**
+   * @deprecated
+   */
   protected void setOutCharEncoding(int paramInt)
   {
     setOutCharEncodingName(convertCharEncoding(paramInt));
   }
-
-  /** @deprecated */
+  
+  /**
+   * @deprecated
+   */
   protected void setInCharEncoding(int paramInt)
   {
     setInCharEncodingName(convertCharEncoding(paramInt));
   }
-
+  
   protected String convertCharEncoding(int paramInt)
   {
-    if ((paramInt != 0) && (paramInt < this.ENCODING_NAMES.length))
+    if ((paramInt != 0) && (paramInt < this.ENCODING_NAMES.length)) {
       return this.ENCODING_NAMES[paramInt];
+    }
     return null;
   }
-
+  
   static
   {
     addConfigOption(new Flag("indent-spaces", "spaces", ParsePropertyImpl.INT));
@@ -438,7 +466,7 @@ public class Configuration
     addConfigOption(new Flag("css-prefix", "cssPrefix", ParsePropertyImpl.CSS1SELECTOR));
     addConfigOption(new Flag("newline", null, ParsePropertyImpl.NEWLINE));
   }
-
+  
   static class Flag
     implements Comparable
   {
@@ -446,17 +474,17 @@ public class Configuration
     private String fieldName;
     private Field location;
     private ParseProperty parser;
-
+    
     Flag(String paramString1, String paramString2, ParseProperty paramParseProperty)
     {
       this.fieldName = paramString2;
       this.name = paramString1;
       this.parser = paramParseProperty;
     }
-
+    
     public Field getLocation()
     {
-      if ((this.fieldName != null) && (this.location == null))
+      if ((this.fieldName != null) && (this.location == null)) {
         try
         {
           this.location = Configuration.class.getDeclaredField(this.fieldName);
@@ -469,29 +497,30 @@ public class Configuration
         {
           throw new RuntimeException("Security exception during config initialization for field " + this.fieldName + ": " + localSecurityException.getMessage());
         }
+      }
       return this.location;
     }
-
+    
     public String getName()
     {
       return this.name;
     }
-
+    
     public ParseProperty getParser()
     {
       return this.parser;
     }
-
+    
     public boolean equals(Object paramObject)
     {
       return this.name.equals(((Flag)paramObject).name);
     }
-
+    
     public int hashCode()
     {
       return this.name.hashCode();
     }
-
+    
     public int compareTo(Object paramObject)
     {
       return this.name.compareTo(((Flag)paramObject).name);
@@ -499,7 +528,8 @@ public class Configuration
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.w3c.tidy.Configuration
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

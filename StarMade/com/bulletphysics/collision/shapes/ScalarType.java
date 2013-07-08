@@ -1,15 +1,14 @@
-/*    */ package com.bulletphysics.collision.shapes;
-/*    */ 
-/*    */ public enum ScalarType
-/*    */ {
-/* 32 */   FLOAT, 
-/* 33 */   DOUBLE, 
-/* 34 */   INTEGER, 
-/* 35 */   SHORT, 
-/* 36 */   FIXEDPOINT88;
-/*    */ }
+package com.bulletphysics.collision.shapes;
+
+public enum ScalarType
+{
+  FLOAT,  DOUBLE,  INTEGER,  SHORT,  FIXEDPOINT88;
+  
+  private ScalarType() {}
+}
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     com.bulletphysics.collision.shapes.ScalarType
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

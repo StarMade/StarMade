@@ -43,114 +43,124 @@ public class LdapAuthBean
   private String rolesSchemaAttribute;
   private String accessAttribute;
   protected String[] attributeUnion;
-
+  
   public void setStartTls(boolean paramBoolean)
   {
     this.tls = paramBoolean;
   }
-
+  
   public void setLdapPort(int paramInt)
   {
     this.ldapPort = Integer.valueOf(paramInt);
   }
-
+  
   public void init()
   {
-    if (this.ldapHost == null)
+    if (this.ldapHost == null) {
       throw new IllegalStateException("Required property 'ldapHost' not set");
-    if (this.parentDn == null)
+    }
+    if (this.parentDn == null) {
       throw new IllegalStateException("Required property 'parentDn' not set");
-    if (this.initialContextFactory == null)
+    }
+    if (this.initialContextFactory == null) {
       throw new IllegalStateException("Required property 'initialContextFactory' not set");
-    if (this.mechanism == null)
+    }
+    if (this.mechanism == null) {
       throw new IllegalStateException("Required property 'mechanism' not set");
-    if (this.rdnAttribute == null)
+    }
+    if (this.rdnAttribute == null) {
       throw new IllegalStateException("Required property 'rdnAttribute' not set");
-    if ((this.rolesSchemaAttribute == null) && (this.accessAttribute == null))
+    }
+    if ((this.rolesSchemaAttribute == null) && (this.accessAttribute == null)) {
       throw new IllegalStateException("You must set property 'rolesSchemaAttribute' and/or property 'accessAttribute'");
-    if ((this.roleSchemaValuePattern != null) && (this.rolesSchemaAttribute == null))
+    }
+    if ((this.roleSchemaValuePattern != null) && (this.rolesSchemaAttribute == null)) {
       throw new IllegalStateException("If property 'roleSchemaValuePattern' is set, then you must also set property 'rolesSchemaAttribute' to indicate which attribute to evalueate");
-    if ((this.accessValuePattern != null) && (this.accessAttribute == null))
+    }
+    if ((this.accessValuePattern != null) && (this.accessAttribute == null)) {
       throw new IllegalStateException("If property 'accessValuePattern' is set, then you must also set property 'accessAttribute' to indicate which attribute to evalueate");
-    if ((this.rolesSchemaAttribute != null) && (this.accessAttribute != null))
+    }
+    if ((this.rolesSchemaAttribute != null) && (this.accessAttribute != null)) {
       this.attributeUnion = new String[] { this.rolesSchemaAttribute, this.accessAttribute };
-    else if (this.rolesSchemaAttribute != null)
+    } else if (this.rolesSchemaAttribute != null) {
       this.attributeUnion = new String[] { this.rolesSchemaAttribute };
-    else
+    } else {
       this.attributeUnion = new String[] { this.accessAttribute };
+    }
     this.initialized = true;
   }
-
+  
   public void setAccessValuePattern(Pattern paramPattern)
   {
     this.accessValuePattern = paramPattern;
   }
-
+  
   public void setAccessValuePatternString(String paramString)
   {
     setAccessValuePattern(Pattern.compile(paramString));
   }
-
+  
   public void setRoleSchemaValuePattern(Pattern paramPattern)
   {
     this.roleSchemaValuePattern = paramPattern;
   }
-
+  
   public void setRoleSchemaValuePatternString(String paramString)
   {
     setRoleSchemaValuePattern(Pattern.compile(paramString));
   }
-
+  
   public void setSecurityMechanism(String paramString)
   {
     this.mechanism = paramString;
   }
-
+  
   public void setLdapHost(String paramString)
   {
     this.ldapHost = paramString;
   }
-
+  
   public void setPrincipalTemplate(String paramString)
   {
     this.principalTemplate = paramString;
   }
-
+  
   public void setInitialContextFactory(String paramString)
   {
     this.initialContextFactory = paramString;
   }
-
+  
   public void setSaslRealm(String paramString)
   {
     this.saslRealm = paramString;
   }
-
+  
   public void setParentDn(String paramString)
   {
     this.parentDn = paramString;
   }
-
+  
   public void setRdnAttribute(String paramString)
   {
     this.rdnAttribute = paramString;
   }
-
+  
   public void setRolesSchemaAttribute(String paramString)
   {
     this.rolesSchemaAttribute = paramString;
   }
-
+  
   public void setAccessAttribute(String paramString)
   {
     this.accessAttribute = paramString;
   }
-
+  
   public String[] authenticate(String paramString1, String paramString2)
     throws DenyException
   {
-    if (!this.initialized)
+    if (!this.initialized) {
       throw new IllegalStateException(new StringBuilder().append("You must invoke the 'init' method to initialize the ").append(LdapAuthBean.class.getName()).append(" instance.").toString());
+    }
     Hashtable localHashtable = new Hashtable(5, 0.75F);
     localHashtable.put("java.naming.factory.initial", this.initialContextFactory);
     localHashtable.put("java.naming.provider.url", new StringBuilder().append("ldap://").append(this.ldapHost).append(this.ldapPort == null ? "" : new StringBuilder().append(":").append(this.ldapPort).toString()).toString());
@@ -167,8 +177,9 @@ public class LdapAuthBean
       localInitialLdapContext.addToEnvironment("java.naming.security.authentication", this.mechanism);
       localInitialLdapContext.addToEnvironment("java.naming.security.principal", this.principalTemplate == null ? paramString1 : this.principalTemplate.replace("${username}", paramString1));
       localInitialLdapContext.addToEnvironment("java.naming.security.credentials", paramString2);
-      if (this.saslRealm != null)
+      if (this.saslRealm != null) {
         localHashtable.put("java.naming.security.sasl.realm", this.saslRealm);
+      }
       NamingEnumeration localNamingEnumeration = null;
       try
       {
@@ -182,28 +193,35 @@ public class LdapAuthBean
       {
         throw new RuntimeException(localException);
       }
-      if (!localNamingEnumeration.hasMore())
+      if (!localNamingEnumeration.hasMore()) {
         throw new DenyException();
+      }
       SearchResult localSearchResult = (SearchResult)localNamingEnumeration.next();
-      if (localNamingEnumeration.hasMore())
+      if (localNamingEnumeration.hasMore()) {
         throw new RuntimeException("> 1 result");
+      }
       Attributes localAttributes = localSearchResult.getAttributes();
       if (this.accessAttribute != null)
       {
         localObject1 = localAttributes.get(this.accessAttribute);
-        if (localObject1 == null)
+        if (localObject1 == null) {
           throw new DenyException();
-        if (((Attribute)localObject1).size() != 1)
+        }
+        if (((Attribute)localObject1).size() != 1) {
           throw new RuntimeException(new StringBuilder().append("Access attribute '").append(this.accessAttribute).append("' has unexpected value count: ").append(((Attribute)localObject1).size()).toString());
+        }
         if (this.accessValuePattern != null)
         {
           Object localObject2 = ((Attribute)localObject1).get(0);
-          if (localObject2 == null)
+          if (localObject2 == null) {
             throw new RuntimeException("Access Attr. value is null");
-          if (!(localObject2 instanceof String))
+          }
+          if (!(localObject2 instanceof String)) {
             throw new RuntimeException(new StringBuilder().append("Access Attr. value not a String: ").append(localObject2.getClass().getName()).toString());
-          if (!this.accessValuePattern.matcher((String)localObject2).matches())
+          }
+          if (!this.accessValuePattern.matcher((String)localObject2).matches()) {
             throw new DenyException();
+          }
         }
       }
       if (this.rolesSchemaAttribute == null)
@@ -219,10 +237,12 @@ public class LdapAuthBean
         for (int j = 0; j < i; j++)
         {
           Object localObject3 = localAttribute.get(j);
-          if (localObject3 == null)
+          if (localObject3 == null) {
             throw new RuntimeException(new StringBuilder().append("R/S Attr value #").append(j).append(" is null").toString());
-          if (!(localObject3 instanceof String))
+          }
+          if (!(localObject3 instanceof String)) {
             throw new RuntimeException(new StringBuilder().append("R/S Attr value #").append(j).append(" not a String: ").append(localObject3.getClass().getName()).toString());
+          }
           if (this.roleSchemaValuePattern == null)
           {
             ((List)localObject1).add((String)localObject3);
@@ -230,15 +250,17 @@ public class LdapAuthBean
           else
           {
             Matcher localMatcher = this.roleSchemaValuePattern.matcher((String)localObject3);
-            if (localMatcher.matches())
+            if (localMatcher.matches()) {
               ((List)localObject1).add(localMatcher.groupCount() > 0 ? localMatcher.group(1) : (String)localObject3);
+            }
           }
         }
       }
       if (((List)localObject1).size() < 1)
       {
-        if (this.accessAttribute == null)
+        if (this.accessAttribute == null) {
           throw new DenyException();
+        }
         arrayOfString = new String[0];
         return arrayOfString;
       }
@@ -263,7 +285,7 @@ public class LdapAuthBean
     }
     finally
     {
-      if (localStartTlsResponse != null)
+      if (localStartTlsResponse != null) {
         try
         {
           localStartTlsResponse.close();
@@ -272,7 +294,8 @@ public class LdapAuthBean
         {
           logger.error("Failed to close TLS Response", localIOException5);
         }
-      if (localInitialLdapContext != null)
+      }
+      if (localInitialLdapContext != null) {
         try
         {
           localInitialLdapContext.close();
@@ -281,17 +304,20 @@ public class LdapAuthBean
         {
           logger.error("Failed to close LDAP Context", localNamingException5);
         }
+      }
     }
   }
-
+  
   public static void main(String[] paramArrayOfString)
     throws IOException
   {
-    if (paramArrayOfString.length != 3)
+    if (paramArrayOfString.length != 3) {
       throw new IllegalArgumentException(new StringBuilder().append("SYNTAX:  java ").append(AuthBeanMultiplexer.class.getName()).append(" path/to/file.properties <USERNAME> <PASSWORD>").toString());
+    }
     File localFile = new File(paramArrayOfString[0]);
-    if (!localFile.isFile())
+    if (!localFile.isFile()) {
       throw new IllegalArgumentException(new StringBuilder().append("Not a file: ").append(localFile.getAbsolutePath()).toString());
+    }
     Properties localProperties = new Properties();
     localProperties.load(new FileInputStream(localFile));
     String str1 = localProperties.getProperty("trustStore");
@@ -310,37 +336,51 @@ public class LdapAuthBean
     String str14 = localProperties.getProperty("accessAttribute");
     if (str1 != null)
     {
-      if (!new File(str1).isFile())
+      if (!new File(str1).isFile()) {
         throw new IllegalArgumentException(new StringBuilder().append("Specified trust store is not a file: ").append(str1).toString());
+      }
       System.setProperty("javax.net.ssl.trustStore", str1);
     }
     LdapAuthBean localLdapAuthBean = new LdapAuthBean();
-    if (str2 != null)
+    if (str2 != null) {
       localLdapAuthBean.setStartTls(Boolean.parseBoolean(str2));
-    if (str3 != null)
+    }
+    if (str3 != null) {
       localLdapAuthBean.setLdapPort(Integer.parseInt(str3));
-    if (str4 != null)
+    }
+    if (str4 != null) {
       localLdapAuthBean.setRoleSchemaValuePatternString(str4);
-    if (str5 != null)
+    }
+    if (str5 != null) {
       localLdapAuthBean.setAccessValuePatternString(str5);
-    if (str6 != null)
+    }
+    if (str6 != null) {
       localLdapAuthBean.setSecurityMechanism(str6);
-    if (str7 != null)
+    }
+    if (str7 != null) {
       localLdapAuthBean.setLdapHost(str7);
-    if (str8 != null)
+    }
+    if (str8 != null) {
       localLdapAuthBean.setPrincipalTemplate(str8);
-    if (str9 != null)
+    }
+    if (str9 != null) {
       localLdapAuthBean.setInitialContextFactory(str9);
-    if (str10 != null)
+    }
+    if (str10 != null) {
       localLdapAuthBean.setSaslRealm(str10);
-    if (str11 != null)
+    }
+    if (str11 != null) {
       localLdapAuthBean.setParentDn(str11);
-    if (str12 != null)
+    }
+    if (str12 != null) {
       localLdapAuthBean.setRdnAttribute(str12);
-    if (str13 != null)
+    }
+    if (str13 != null) {
       localLdapAuthBean.setRolesSchemaAttribute(str13);
-    if (str14 != null)
+    }
+    if (str14 != null) {
       localLdapAuthBean.setAccessAttribute(str14);
+    }
     localLdapAuthBean.init();
     String[] arrayOfString = null;
     try
@@ -352,14 +392,16 @@ public class LdapAuthBean
       System.out.println("<DENY ACCESS>");
       return;
     }
-    if (arrayOfString == null)
+    if (arrayOfString == null) {
       System.out.println("<ALLOW ACCESS w/ local Roles+Schema>");
-    else
+    } else {
       System.out.println(new StringBuilder().append(Integer.toString(arrayOfString.length)).append(" Roles/Schema: ").append(Arrays.toString(arrayOfString)).toString());
+    }
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.auth.LdapAuthBean
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

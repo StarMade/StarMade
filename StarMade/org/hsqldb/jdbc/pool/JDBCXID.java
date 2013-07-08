@@ -17,29 +17,29 @@ public class JDBCXID
   private static byte[] s_localIp = null;
   private static int s_txnSequenceNumber = 0;
   private static final int UXID_FORMAT_ID = 65261;
-
+  
   public int getFormatId()
   {
     return this.formatID;
   }
-
+  
   public byte[] getGlobalTransactionId()
   {
     return this.txID;
   }
-
+  
   public byte[] getBranchQualifier()
   {
     return this.txBranch;
   }
-
+  
   public JDBCXID(int paramInt, byte[] paramArrayOfByte1, byte[] paramArrayOfByte2)
   {
     this.formatID = paramInt;
     this.txID = paramArrayOfByte1;
     this.txBranch = paramArrayOfByte2;
   }
-
+  
   public int hashCode()
   {
     if (!this.hashComputed)
@@ -52,7 +52,7 @@ public class JDBCXID
     }
     return this.hash;
   }
-
+  
   public boolean equals(Object paramObject)
   {
     if ((paramObject instanceof Xid))
@@ -62,7 +62,7 @@ public class JDBCXID
     }
     return false;
   }
-
+  
   public String toString()
   {
     StringBuffer localStringBuffer = new StringBuffer(512);
@@ -72,31 +72,33 @@ public class JDBCXID
     for (int i = 0; i < this.txID.length; i++)
     {
       j = this.txID[i] & 0xFF;
-      if (j < 16)
+      if (j < 16) {
         localStringBuffer.append("0").append(Integer.toHexString(this.txID[i] & 0xFF));
+      }
       localStringBuffer.append(Integer.toHexString(this.txID[i] & 0xFF));
     }
     localStringBuffer.append("} branchQualifier(").append(this.txBranch.length).append("))={0x");
     for (i = 0; i < this.txBranch.length; i++)
     {
       j = this.txBranch[i] & 0xFF;
-      if (j < 16)
+      if (j < 16) {
         localStringBuffer.append("0");
+      }
       localStringBuffer.append(Integer.toHexString(this.txBranch[i] & 0xFF));
     }
     localStringBuffer.append("}");
     return localStringBuffer.toString();
   }
-
+  
   private static int nextTxnSequenceNumber()
   {
     s_txnSequenceNumber += 1;
     return s_txnSequenceNumber;
   }
-
+  
   private static byte[] getLocalIp()
   {
-    if (null == s_localIp)
+    if (null == s_localIp) {
       try
       {
         s_localIp = Inet4Address.getLocalHost().getAddress();
@@ -105,9 +107,10 @@ public class JDBCXID
       {
         s_localIp = new byte[] { 127, 0, 0, 1 };
       }
+    }
     return s_localIp;
   }
-
+  
   public static Xid getUniqueXid(int paramInt)
   {
     Random localRandom = new Random(System.currentTimeMillis());
@@ -135,7 +138,8 @@ public class JDBCXID
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.jdbc.pool.JDBCXID
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

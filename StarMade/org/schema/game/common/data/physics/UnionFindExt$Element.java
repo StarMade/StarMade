@@ -6,7 +6,8 @@ public class UnionFindExt$Element
   public int sz;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.schema.game.common.data.physics.UnionFindExt.Element
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

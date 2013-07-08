@@ -20,7 +20,7 @@ public class DbBackup
   InputStreamInterface[] componentStreams;
   boolean[] existList;
   boolean[] ignoreList;
-
+  
   public static void main(String[] paramArrayOfString)
     throws IOException, TarMalformatException
   {
@@ -36,8 +36,9 @@ public class DbBackup
       if (paramArrayOfString[0].equals("--save"))
       {
         boolean bool = (paramArrayOfString.length > 1) && (paramArrayOfString[1].equals("--overwrite"));
-        if (paramArrayOfString.length != (bool ? 4 : 3))
+        if (paramArrayOfString.length != (bool ? 4 : 3)) {
           throw new IllegalArgumentException();
+        }
         DbBackup localDbBackup = new DbBackup(new File(paramArrayOfString[(paramArrayOfString.length - 2)]), paramArrayOfString[(paramArrayOfString.length - 1)]);
         localDbBackup.setOverWrite(bool);
         localDbBackup.write();
@@ -47,14 +48,16 @@ public class DbBackup
         int j;
         if (paramArrayOfString[0].equals("--list"))
         {
-          if (paramArrayOfString.length < 2)
+          if (paramArrayOfString.length < 2) {
             throw new IllegalArgumentException();
+          }
           String[] arrayOfString1 = null;
           if (paramArrayOfString.length > 2)
           {
             arrayOfString1 = new String[paramArrayOfString.length - 2];
-            for (j = 2; j < paramArrayOfString.length; j++)
+            for (j = 2; j < paramArrayOfString.length; j++) {
               arrayOfString1[(j - 2)] = paramArrayOfString[j];
+            }
           }
           new TarReader(new File(paramArrayOfString[1]), 0, arrayOfString1, new Integer(generateBufferBlockValue(new File(paramArrayOfString[1]))), null).read();
         }
@@ -62,14 +65,16 @@ public class DbBackup
         {
           int i = (paramArrayOfString.length > 1) && (paramArrayOfString[1].equals("--overwrite")) ? 1 : 0;
           j = i != 0 ? 4 : 3;
-          if (paramArrayOfString.length < j)
+          if (paramArrayOfString.length < j) {
             throw new IllegalArgumentException();
+          }
           String[] arrayOfString2 = null;
           if (paramArrayOfString.length > j)
           {
             arrayOfString2 = new String[paramArrayOfString.length - j];
-            for (int k = j; k < paramArrayOfString.length; k++)
+            for (int k = j; k < paramArrayOfString.length; k++) {
               arrayOfString2[(k - j)] = paramArrayOfString[k];
+            }
           }
           File localFile = new File(paramArrayOfString[1]);
           int m = i != 0 ? 2 : 1;
@@ -87,7 +92,7 @@ public class DbBackup
       System.exit(2);
     }
   }
-
+  
   public DbBackup(File paramFile, String paramString)
   {
     this.archiveFile = paramFile;
@@ -99,7 +104,7 @@ public class DbBackup
     this.existList = new boolean[this.componentFiles.length];
     this.ignoreList = new boolean[this.componentFiles.length];
   }
-
+  
   public DbBackup(File paramFile, String paramString, boolean paramBoolean)
   {
     this.archiveFile = paramFile;
@@ -111,47 +116,49 @@ public class DbBackup
     this.existList = new boolean[this.componentFiles.length];
     this.abortUponModify = false;
   }
-
+  
   public void setStream(String paramString, InputStreamInterface paramInputStreamInterface)
   {
-    for (int i = 0; i < this.componentFiles.length; i++)
+    for (int i = 0; i < this.componentFiles.length; i++) {
       if (this.componentFiles[i].getName().endsWith(paramString))
       {
         this.componentStreams[i] = paramInputStreamInterface;
         break;
       }
+    }
   }
-
+  
   public void setFileIgnore(String paramString)
   {
-    for (int i = 0; i < this.componentFiles.length; i++)
+    for (int i = 0; i < this.componentFiles.length; i++) {
       if (this.componentFiles[i].getName().endsWith(paramString))
       {
         this.ignoreList[i] = true;
         break;
       }
+    }
   }
-
+  
   public void setOverWrite(boolean paramBoolean)
   {
     this.overWrite = paramBoolean;
   }
-
+  
   public void setAbortUponModify(boolean paramBoolean)
   {
     this.abortUponModify = paramBoolean;
   }
-
+  
   public boolean getOverWrite()
   {
     return this.overWrite;
   }
-
+  
   public boolean getAbortUponModify()
   {
     return this.abortUponModify;
   }
-
+  
   public void write()
     throws IOException, TarMalformatException
   {
@@ -161,7 +168,7 @@ public class DbBackup
     for (int i = 0; i < this.componentFiles.length; i++)
     {
       int j = (this.componentStreams[i] != null) || (this.componentFiles[i].exists()) ? 1 : 0;
-      if ((j != 0) && (this.ignoreList[i] == 0))
+      if ((j != 0) && (this.ignoreList[i] == 0)) {
         if (this.componentStreams[i] == null)
         {
           localTarGenerator.queueEntry(this.componentFiles[i].getName(), this.componentFiles[i]);
@@ -171,24 +178,28 @@ public class DbBackup
         {
           localTarGenerator.queueEntry(this.componentFiles[i].getName(), this.componentStreams[i]);
         }
+      }
     }
     localTarGenerator.write();
     checkFilesNotChanged(l);
   }
-
+  
   void checkEssentialFiles()
     throws FileNotFoundException, IllegalStateException
   {
-    if (!this.componentFiles[0].getName().endsWith(".properties"))
+    if (!this.componentFiles[0].getName().endsWith(".properties")) {
       return;
+    }
     for (int i = 0; i < 2; i++)
     {
       int j = (this.componentStreams[i] != null) || (this.componentFiles[i].exists()) ? 1 : 0;
-      if (j == 0)
+      if (j == 0) {
         throw new FileNotFoundException(RB.file_missing.getString(new String[] { this.componentFiles[i].getAbsolutePath() }));
+      }
     }
-    if (!this.abortUponModify)
+    if (!this.abortUponModify) {
       return;
+    }
     Properties localProperties = new Properties();
     FileInputStream localFileInputStream = null;
     try
@@ -197,78 +208,84 @@ public class DbBackup
       localFileInputStream = new FileInputStream(localFile);
       localProperties.load(localFileInputStream);
     }
-    catch (IOException localIOException2)
-    {
-    }
-    finally
+    catch (IOException localIOException2) {}finally
     {
       try
       {
-        if (localFileInputStream != null)
+        if (localFileInputStream != null) {
           localFileInputStream.close();
+        }
       }
-      catch (IOException localIOException4)
-      {
-      }
-      finally
+      catch (IOException localIOException4) {}finally
       {
         localFileInputStream = null;
       }
     }
     String str = localProperties.getProperty("modified");
-    if ((str != null) && ((str.equalsIgnoreCase("yes")) || (str.equalsIgnoreCase("true"))))
+    if ((str != null) && ((str.equalsIgnoreCase("yes")) || (str.equalsIgnoreCase("true")))) {
       throw new IllegalStateException(RB.modified_property.getString(new String[] { str }));
+    }
   }
-
+  
   void checkFilesNotChanged(long paramLong)
     throws FileNotFoundException
   {
-    if (!this.abortUponModify)
+    if (!this.abortUponModify) {
       return;
+    }
     try
     {
-      for (int i = 0; i < this.componentFiles.length; i++)
+      for (int i = 0; i < this.componentFiles.length; i++) {
         if (this.componentFiles[i].exists())
         {
-          if (this.existList[i] == 0)
+          if (this.existList[i] == 0) {
             throw new FileNotFoundException(RB.file_disappeared.getString(new String[] { this.componentFiles[i].getAbsolutePath() }));
-          if (this.componentFiles[i].lastModified() > paramLong)
+          }
+          if (this.componentFiles[i].lastModified() > paramLong) {
             throw new FileNotFoundException(RB.file_changed.getString(new String[] { this.componentFiles[i].getAbsolutePath() }));
+          }
         }
         else if (this.existList[i] != 0)
         {
           throw new FileNotFoundException(RB.file_appeared.getString(new String[] { this.componentFiles[i].getAbsolutePath() }));
         }
+      }
     }
     catch (IllegalStateException localIllegalStateException)
     {
-      if (!this.archiveFile.delete())
+      if (!this.archiveFile.delete()) {
         System.out.println(RB.cleanup_rmfail.getString(new String[] { this.archiveFile.getAbsolutePath() }));
+      }
       throw localIllegalStateException;
     }
   }
-
+  
   protected static int generateBufferBlockValue(File[] paramArrayOfFile)
   {
     long l = 0L;
-    for (int i = 0; i < paramArrayOfFile.length; i++)
-      if ((paramArrayOfFile[i] != null) && (paramArrayOfFile[i].length() > l))
+    for (int i = 0; i < paramArrayOfFile.length; i++) {
+      if ((paramArrayOfFile[i] != null) && (paramArrayOfFile[i].length() > l)) {
         l = paramArrayOfFile[i].length();
+      }
+    }
     i = (int)(l / 5120L);
-    if (i < 1)
+    if (i < 1) {
       return 1;
-    if (i > 40960)
+    }
+    if (i > 40960) {
       return 40960;
+    }
     return i;
   }
-
+  
   protected static int generateBufferBlockValue(File paramFile)
   {
     return generateBufferBlockValue(new File[] { paramFile });
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.lib.tar.DbBackup
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

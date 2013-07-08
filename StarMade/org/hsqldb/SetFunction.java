@@ -42,7 +42,7 @@ public class SetFunction
   private long n;
   private boolean initialized;
   private boolean sample;
-
+  
   SetFunction(Session paramSession, int paramInt, Type paramType1, Type paramType2, boolean paramBoolean, ArrayType paramArrayType)
   {
     this.setType = paramInt;
@@ -63,16 +63,18 @@ public class SetFunction
         this.distinctValues.setComparator(localTypedComparator);
       }
     }
-    if ((paramInt == 81) || (paramInt == 79))
+    if ((paramInt == 81) || (paramInt == 79)) {
       this.sample = true;
+    }
     if (paramType1 != null)
     {
       this.typeCode = paramType1.typeCode;
-      if (paramType1.isIntervalType())
+      if (paramType1.isIntervalType()) {
         this.typeCode = 10;
+      }
     }
   }
-
+  
   void add(Session paramSession, Object paramObject)
   {
     if (paramObject == null)
@@ -80,23 +82,24 @@ public class SetFunction
       this.hasNull = true;
       return;
     }
-    if ((this.isDistinct) && (!this.distinctValues.add(paramObject)))
+    if ((this.isDistinct) && (!this.distinctValues.add(paramObject))) {
       return;
+    }
     this.count += 1L;
     switch (this.setType)
     {
-    case 71:
+    case 71: 
       return;
-    case 72:
-    case 75:
+    case 72: 
+    case 75: 
       switch (this.typeCode)
       {
-      case -6:
-      case 4:
-      case 5:
+      case -6: 
+      case 4: 
+      case 5: 
         this.currentLong += ((Number)paramObject).intValue();
         return;
-      case 10:
+      case 10: 
         if ((paramObject instanceof IntervalSecondData))
         {
           addLong(((IntervalSecondData)paramObject).getSeconds());
@@ -112,9 +115,9 @@ public class SetFunction
           addLong(((IntervalMonthData)paramObject).units);
         }
         return;
-      case 91:
-      case 93:
-      case 95:
+      case 91: 
+      case 93: 
+      case 95: 
         addLong(((TimestampData)paramObject).getSeconds());
         this.currentLong += ((TimestampData)paramObject).getNanos();
         if (Math.abs(this.currentLong) >= org.hsqldb.types.DTIType.nanoScaleFactors[0])
@@ -124,84 +127,74 @@ public class SetFunction
         }
         this.currentDouble = ((TimestampData)paramObject).getZone();
         return;
-      case 25:
+      case 25: 
         addLong(((Number)paramObject).longValue());
         return;
-      case 6:
-      case 7:
-      case 8:
+      case 6: 
+      case 7: 
+      case 8: 
         this.currentDouble += ((Number)paramObject).doubleValue();
         return;
-      case 2:
-      case 3:
-        if (this.currentBigDecimal == null)
+      case 2: 
+      case 3: 
+        if (this.currentBigDecimal == null) {
           this.currentBigDecimal = ((BigDecimal)paramObject);
-        else
+        } else {
           this.currentBigDecimal = this.currentBigDecimal.add((BigDecimal)paramObject);
+        }
         return;
       }
       throw Error.error(5563);
-    case 73:
+    case 73: 
       if (this.currentValue == null)
       {
         this.currentValue = paramObject;
         return;
       }
-      if (this.type.compare(paramSession, this.currentValue, paramObject) > 0)
+      if (this.type.compare(paramSession, this.currentValue, paramObject) > 0) {
         this.currentValue = paramObject;
+      }
       return;
-    case 74:
+    case 74: 
       if (this.currentValue == null)
       {
         this.currentValue = paramObject;
         return;
       }
-      if (this.type.compare(paramSession, this.currentValue, paramObject) < 0)
+      if (this.type.compare(paramSession, this.currentValue, paramObject) < 0) {
         this.currentValue = paramObject;
+      }
       return;
-    case 76:
-      if (!(paramObject instanceof Boolean))
+    case 76: 
+      if (!(paramObject instanceof Boolean)) {
         throw Error.error(5563);
+      }
       this.every = ((this.every) && (((Boolean)paramObject).booleanValue()));
       return;
-    case 77:
-      if (!(paramObject instanceof Boolean))
+    case 77: 
+      if (!(paramObject instanceof Boolean)) {
         throw Error.error(5563);
+      }
       this.some = ((this.some) || (((Boolean)paramObject).booleanValue()));
       return;
-    case 78:
-    case 79:
-    case 80:
-    case 81:
+    case 78: 
+    case 79: 
+    case 80: 
+    case 81: 
       addDataPoint((Number)paramObject);
       return;
-    case 98:
+    case 98: 
       this.currentValue = paramObject;
       return;
-    case 82:
-    case 83:
-    case 84:
-    case 85:
-    case 86:
-    case 87:
-    case 88:
-    case 89:
-    case 90:
-    case 91:
-    case 92:
-    case 93:
-    case 94:
-    case 95:
-    case 96:
-    case 97:
     }
     throw Error.runtimeError(201, "SetFunction");
   }
-
+  
   Object getValue(Session paramSession)
   {
-    if (this.hasNull)
+    if (this.hasNull) {
       paramSession.addWarning(Error.error(1003));
+    }
     if (this.setType == 71)
     {
       if ((this.count > 0L) && (this.isDistinct) && (this.type.isCharacterType()))
@@ -215,247 +208,200 @@ public class SetFunction
       }
       return ValuePool.getLong(this.count);
     }
-    if (this.count == 0L)
+    if (this.count == 0L) {
       return null;
+    }
     BigInteger localBigInteger;
     switch (this.setType)
     {
-    case 75:
+    case 75: 
       switch (this.typeCode)
       {
-      case -6:
-      case 4:
-      case 5:
-        if (this.returnType.scale != 0)
+      case -6: 
+      case 4: 
+      case 5: 
+        if (this.returnType.scale != 0) {
           return this.returnType.divide(paramSession, Long.valueOf(this.currentLong), Long.valueOf(this.count));
+        }
         return new Long(this.currentLong / this.count);
-      case 25:
+      case 25: 
         long l = getLongSum().divide(BigInteger.valueOf(this.count)).longValue();
         return new Long(l);
-      case 6:
-      case 7:
-      case 8:
+      case 6: 
+      case 7: 
+      case 8: 
         return new Double(this.currentDouble / this.count);
-      case 2:
-      case 3:
-        if (this.returnType.scale == this.type.scale)
+      case 2: 
+      case 3: 
+        if (this.returnType.scale == this.type.scale) {
           return this.currentBigDecimal.divide(new BigDecimal(this.count), 1);
+        }
         return this.returnType.divide(paramSession, this.currentBigDecimal, Long.valueOf(this.count));
-      case 10:
+      case 10: 
         localBigInteger = getLongSum().divide(BigInteger.valueOf(this.count));
-        if (!NumberType.isInLongLimits(localBigInteger))
+        if (!NumberType.isInLongLimits(localBigInteger)) {
           throw Error.error(3435);
-        if (((IntervalType)this.type).isDaySecondIntervalType())
+        }
+        if (((IntervalType)this.type).isDaySecondIntervalType()) {
           return new IntervalSecondData(localBigInteger.longValue(), this.currentLong, (IntervalType)this.type, true);
+        }
         return IntervalMonthData.newIntervalMonth(localBigInteger.longValue(), (IntervalType)this.type);
-      case 91:
-      case 93:
-      case 95:
+      case 91: 
+      case 93: 
+      case 95: 
         localBigInteger = getLongSum().divide(BigInteger.valueOf(this.count));
-        if (!NumberType.isInLongLimits(localBigInteger))
+        if (!NumberType.isInLongLimits(localBigInteger)) {
           throw Error.error(3435);
+        }
         return new TimestampData(localBigInteger.longValue(), (int)this.currentLong, (int)this.currentDouble);
       }
       throw Error.runtimeError(201, "SetFunction");
-    case 72:
+    case 72: 
       switch (this.typeCode)
       {
-      case -6:
-      case 4:
-      case 5:
+      case -6: 
+      case 4: 
+      case 5: 
         return new Long(this.currentLong);
-      case 25:
+      case 25: 
         return new BigDecimal(getLongSum());
-      case 6:
-      case 7:
-      case 8:
+      case 6: 
+      case 7: 
+      case 8: 
         return new Double(this.currentDouble);
-      case 2:
-      case 3:
+      case 2: 
+      case 3: 
         return this.currentBigDecimal;
-      case 10:
+      case 10: 
         localBigInteger = getLongSum();
-        if (!NumberType.isInLongLimits(localBigInteger))
+        if (!NumberType.isInLongLimits(localBigInteger)) {
           throw Error.error(3435);
-        if (((IntervalType)this.type).isDaySecondIntervalType())
+        }
+        if (((IntervalType)this.type).isDaySecondIntervalType()) {
           return new IntervalSecondData(localBigInteger.longValue(), this.currentLong, (IntervalType)this.type, true);
+        }
         return IntervalMonthData.newIntervalMonth(localBigInteger.longValue(), (IntervalType)this.type);
-      case -5:
-      case -4:
-      case -3:
-      case -2:
-      case -1:
-      case 0:
-      case 1:
-      case 9:
-      case 11:
-      case 12:
-      case 13:
-      case 14:
-      case 15:
-      case 16:
-      case 17:
-      case 18:
-      case 19:
-      case 20:
-      case 21:
-      case 22:
-      case 23:
-      case 24:
       }
       throw Error.runtimeError(201, "SetFunction");
-    case 73:
-    case 74:
+    case 73: 
+    case 74: 
       return this.currentValue;
-    case 76:
+    case 76: 
       return this.every ? Boolean.TRUE : Boolean.FALSE;
-    case 77:
+    case 77: 
       return this.some ? Boolean.TRUE : Boolean.FALSE;
-    case 78:
-    case 79:
+    case 78: 
+    case 79: 
       return getStdDev();
-    case 80:
-    case 81:
+    case 80: 
+    case 81: 
       return getVariance();
-    case 98:
+    case 98: 
       return this.currentValue;
-    case 82:
-    case 83:
-    case 84:
-    case 85:
-    case 86:
-    case 87:
-    case 88:
-    case 89:
-    case 90:
-    case 91:
-    case 92:
-    case 93:
-    case 94:
-    case 95:
-    case 96:
-    case 97:
     }
     throw Error.runtimeError(201, "SetFunction");
   }
-
+  
   static Type getType(Session paramSession, int paramInt, Type paramType)
   {
-    if (paramInt == 71)
+    if (paramInt == 71) {
       return Type.SQL_BIGINT;
+    }
     int i = paramType.isIntervalType() ? 10 : paramType.typeCode;
     switch (paramInt)
     {
-    case 75:
-    case 85:
+    case 75: 
+    case 85: 
       switch (i)
       {
-      case -6:
-      case 2:
-      case 3:
-      case 4:
-      case 5:
-      case 25:
+      case -6: 
+      case 2: 
+      case 3: 
+      case 4: 
+      case 5: 
+      case 25: 
         int j = paramSession.database.sqlAvgScale;
-        if (j <= paramType.scale)
+        if (j <= paramType.scale) {
           return paramType;
+        }
         int k = ((NumberType)paramType).getDecimalPrecision();
         return NumberType.getNumberType(3, k + j, j);
-      case 6:
-      case 7:
-      case 8:
-      case 10:
-      case 91:
-      case 93:
-      case 95:
+      case 6: 
+      case 7: 
+      case 8: 
+      case 10: 
+      case 91: 
+      case 93: 
+      case 95: 
         return paramType;
       }
       throw Error.error(5563);
-    case 72:
+    case 72: 
       switch (i)
       {
-      case -6:
-      case 4:
-      case 5:
+      case -6: 
+      case 4: 
+      case 5: 
         return Type.SQL_BIGINT;
-      case 25:
+      case 25: 
         return Type.SQL_DECIMAL_BIGINT_SQR;
-      case 6:
-      case 7:
-      case 8:
+      case 6: 
+      case 7: 
+      case 8: 
         return Type.SQL_DOUBLE;
-      case 2:
-      case 3:
+      case 2: 
+      case 3: 
         return Type.getType(paramType.typeCode, null, null, paramType.precision * 2L, paramType.scale);
-      case 10:
+      case 10: 
         return IntervalType.newIntervalType(paramType.typeCode, 9L, paramType.scale);
-      case -5:
-      case -4:
-      case -3:
-      case -2:
-      case -1:
-      case 0:
-      case 1:
-      case 9:
-      case 11:
-      case 12:
-      case 13:
-      case 14:
-      case 15:
-      case 16:
-      case 17:
-      case 18:
-      case 19:
-      case 20:
-      case 21:
-      case 22:
-      case 23:
-      case 24:
       }
       throw Error.error(5563);
-    case 73:
-    case 74:
-      if ((paramType.isArrayType()) || (paramType.isLobType()))
+    case 73: 
+    case 74: 
+      if ((paramType.isArrayType()) || (paramType.isLobType())) {
         throw Error.error(5563);
+      }
       return paramType;
-    case 76:
-    case 77:
-      if (paramType.isBooleanType())
+    case 76: 
+    case 77: 
+      if (paramType.isBooleanType()) {
         return Type.SQL_BOOLEAN;
+      }
       break;
-    case 78:
-    case 79:
-    case 80:
-    case 81:
-      if (paramType.isNumberType())
+    case 78: 
+    case 79: 
+    case 80: 
+    case 81: 
+      if (paramType.isNumberType()) {
         return Type.SQL_DOUBLE;
+      }
       break;
-    case 98:
+    case 98: 
       return paramType;
-    case 82:
-    case 83:
-    case 84:
-    case 86:
-    case 87:
-    case 88:
-    case 89:
-    case 90:
-    case 91:
-    case 92:
-    case 93:
-    case 94:
-    case 95:
-    case 96:
-    case 97:
-    default:
+    case 82: 
+    case 83: 
+    case 84: 
+    case 86: 
+    case 87: 
+    case 88: 
+    case 89: 
+    case 90: 
+    case 91: 
+    case 92: 
+    case 93: 
+    case 94: 
+    case 95: 
+    case 96: 
+    case 97: 
+    default: 
       throw Error.runtimeError(201, "SetFunction");
     }
     throw Error.error(5563);
   }
-
+  
   void addLong(long paramLong)
   {
-    if (paramLong != 0L)
+    if (paramLong != 0L) {
       if (paramLong > 0L)
       {
         this.hi += (paramLong >> 32);
@@ -471,8 +417,9 @@ public class SetFunction
         this.hi -= (l >> 32);
         this.lo -= (l & 0xFFFFFFFF);
       }
+    }
   }
-
+  
   BigInteger getLongSum()
   {
     BigInteger localBigInteger1 = BigInteger.valueOf(this.lo);
@@ -480,11 +427,12 @@ public class SetFunction
     BigInteger localBigInteger3 = localBigInteger2.multiply(multiplier).add(localBigInteger1);
     return localBigInteger3;
   }
-
+  
   private void addDataPoint(Number paramNumber)
   {
-    if (paramNumber == null)
+    if (paramNumber == null) {
       return;
+    }
     double d1 = paramNumber.doubleValue();
     if (!this.initialized)
     {
@@ -500,23 +448,26 @@ public class SetFunction
     this.vk += d2 * d2 / this.n / l;
     this.sk += d1;
   }
-
+  
   private Number getVariance()
   {
-    if (!this.initialized)
+    if (!this.initialized) {
       return null;
+    }
     return this.sample ? new Double(this.vk / (this.n - 1L)) : this.n == 1L ? null : new Double(this.vk / this.n);
   }
-
+  
   private Number getStdDev()
   {
-    if (!this.initialized)
+    if (!this.initialized) {
       return null;
+    }
     return this.sample ? new Double(Math.sqrt(this.vk / (this.n - 1L))) : this.n == 1L ? null : new Double(Math.sqrt(this.vk / this.n));
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.SetFunction
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

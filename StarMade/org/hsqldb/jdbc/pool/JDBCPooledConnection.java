@@ -17,17 +17,18 @@ public class JDBCPooledConnection
   protected JDBCConnection connection;
   protected JDBCConnection userConnection;
   protected boolean isInUse;
-
+  
   public synchronized Connection getConnection()
     throws SQLException
   {
-    if (this.isInUse)
+    if (this.isInUse) {
       throw new SQLException("Connection in use");
+    }
     this.isInUse = true;
     this.userConnection = new JDBCConnection(this.connection, this);
     return this.userConnection;
   }
-
+  
   public void close()
     throws SQLException
   {
@@ -37,25 +38,21 @@ public class JDBCPooledConnection
       this.connection = null;
     }
   }
-
+  
   public void addConnectionEventListener(ConnectionEventListener paramConnectionEventListener)
   {
     this.listeners.add(paramConnectionEventListener);
   }
-
+  
   public void removeConnectionEventListener(ConnectionEventListener paramConnectionEventListener)
   {
     this.listeners.remove(paramConnectionEventListener);
   }
-
-  public void addStatementEventListener(StatementEventListener paramStatementEventListener)
-  {
-  }
-
-  public void removeStatementEventListener(StatementEventListener paramStatementEventListener)
-  {
-  }
-
+  
+  public void addStatementEventListener(StatementEventListener paramStatementEventListener) {}
+  
+  public void removeStatementEventListener(StatementEventListener paramStatementEventListener) {}
+  
   public synchronized void connectionClosed()
   {
     ConnectionEvent localConnectionEvent = new ConnectionEvent(this);
@@ -67,7 +64,7 @@ public class JDBCPooledConnection
       localConnectionEventListener.connectionClosed(localConnectionEvent);
     }
   }
-
+  
   public synchronized void connectionErrorOccured(SQLException paramSQLException)
   {
     ConnectionEvent localConnectionEvent = new ConnectionEvent(this, paramSQLException);
@@ -78,59 +75,54 @@ public class JDBCPooledConnection
       localConnectionEventListener.connectionErrorOccurred(localConnectionEvent);
     }
   }
-
+  
   public synchronized boolean isInUse()
   {
     return this.isInUse;
   }
-
+  
   public synchronized void reset()
   {
-    if (this.userConnection != null)
+    if (this.userConnection != null) {
       try
       {
         this.userConnection.close();
       }
-      catch (SQLException localSQLException1)
-      {
-      }
+      catch (SQLException localSQLException1) {}
+    }
     try
     {
       this.connection.reset();
     }
-    catch (SQLException localSQLException2)
-    {
-    }
+    catch (SQLException localSQLException2) {}
     this.isInUse = false;
   }
-
+  
   public synchronized void release()
   {
-    if (this.userConnection != null)
+    if (this.userConnection != null) {
       try
       {
         this.userConnection.close();
       }
-      catch (SQLException localSQLException1)
-      {
-      }
+      catch (SQLException localSQLException1) {}
+    }
     try
     {
       this.connection.close();
     }
-    catch (SQLException localSQLException2)
-    {
-    }
+    catch (SQLException localSQLException2) {}
     this.isInUse = false;
   }
-
+  
   public JDBCPooledConnection(JDBCConnection paramJDBCConnection)
   {
     this.connection = paramJDBCConnection;
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.jdbc.pool.JDBCPooledConnection
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

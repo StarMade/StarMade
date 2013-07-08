@@ -16,7 +16,8 @@ import org.hsqldb.result.ResultMetaData;
 import org.hsqldb.types.DateTimeType;
 import org.hsqldb.types.Type;
 
-public class StatementDML extends StatementDMQL
+public class StatementDML
+  extends StatementDMQL
 {
   Expression[] targets;
   boolean isTruncate;
@@ -25,12 +26,12 @@ public class StatementDML extends StatementDMQL
   ResultMetaData generatedInputMetaData;
   int[] generatedIndexes;
   ResultMetaData generatedResultMetaData;
-
+  
   public StatementDML(int paramInt1, int paramInt2, HsqlNameManager.HsqlName paramHsqlName)
   {
     super(paramInt1, paramInt2, paramHsqlName);
   }
-
+  
   StatementDML(Session paramSession, Table paramTable, RangeVariable[] paramArrayOfRangeVariable, ParserDQL.CompileContext paramCompileContext, boolean paramBoolean, int paramInt)
   {
     super(19, 2004, paramSession.getCurrentSchemaHsqlName());
@@ -40,11 +41,12 @@ public class StatementDML extends StatementDMQL
     this.restartIdentity = paramBoolean;
     setDatabseObjects(paramSession, paramCompileContext);
     checkAccessRights(paramSession);
-    if (paramInt == 1205)
+    if (paramInt == 1205) {
       this.isTruncate = true;
+    }
     this.targetRangeVariables[0].addAllColumns();
   }
-
+  
   StatementDML(Session paramSession, Expression[] paramArrayOfExpression1, Table paramTable, RangeVariable[] paramArrayOfRangeVariable, int[] paramArrayOfInt, Expression[] paramArrayOfExpression2, boolean[] paramArrayOfBoolean, ParserDQL.CompileContext paramCompileContext)
   {
     super(82, 2004, paramSession.getCurrentSchemaHsqlName());
@@ -60,7 +62,7 @@ public class StatementDML extends StatementDMQL
     checkAccessRights(paramSession);
     this.targetRangeVariables[0].addAllColumns();
   }
-
+  
   StatementDML(Session paramSession, Expression[] paramArrayOfExpression1, RangeVariable[] paramArrayOfRangeVariable, int[] paramArrayOfInt1, int[] paramArrayOfInt2, boolean[] paramArrayOfBoolean, Expression paramExpression1, Expression paramExpression2, Expression[] paramArrayOfExpression2, ParserDQL.CompileContext paramCompileContext)
   {
     super(128, 2004, paramSession.getCurrentSchemaHsqlName());
@@ -79,12 +81,12 @@ public class StatementDML extends StatementDMQL
     setDatabseObjects(paramSession, paramCompileContext);
     checkAccessRights(paramSession);
   }
-
+  
   StatementDML()
   {
     super(81, 2004, null);
   }
-
+  
   void setupChecks()
   {
     if (this.targetTable != this.baseTable)
@@ -94,31 +96,32 @@ public class StatementDML extends StatementDMQL
       this.checkRangeVariable = localQuerySpecification.rangeVariables[(localQuerySpecification.rangeVariables.length - 1)];
     }
   }
-
+  
   Result getResult(Session paramSession)
   {
     Result localResult = null;
     switch (this.type)
     {
-    case 82:
+    case 82: 
       localResult = executeUpdateStatement(paramSession);
       break;
-    case 128:
+    case 128: 
       localResult = executeMergeStatement(paramSession);
       break;
-    case 19:
-      if (this.isTruncate)
+    case 19: 
+      if (this.isTruncate) {
         localResult = executeDeleteTruncateStatement(paramSession);
-      else
+      } else {
         localResult = executeDeleteStatement(paramSession);
+      }
       break;
-    default:
+    default: 
       throw Error.runtimeError(201, "StatementDML");
     }
     paramSession.sessionContext.diagnosticsVariables[2] = Integer.valueOf(localResult.getUpdateCount());
     return localResult;
   }
-
+  
   void collectTableNamesForRead(OrderedHashSet paramOrderedHashSet)
   {
     Object localObject;
@@ -133,41 +136,49 @@ public class StatementDML extends StatementDMQL
         localObject = this.baseTable.fkConstraints[i];
         switch (this.type)
         {
-        case 82:
-          if (ArrayUtil.haveCommonElement(((Constraint)localObject).getRefColumns(), this.updateColumnMap))
+        case 82: 
+          if (ArrayUtil.haveCommonElement(((Constraint)localObject).getRefColumns(), this.updateColumnMap)) {
             paramOrderedHashSet.add(this.baseTable.fkConstraints[i].getMain().getName());
+          }
           break;
-        case 50:
+        case 50: 
           paramOrderedHashSet.add(this.baseTable.fkConstraints[i].getMain().getName());
           break;
-        case 128:
-          if ((this.updateColumnMap != null) && (ArrayUtil.haveCommonElement(((Constraint)localObject).getRefColumns(), this.updateColumnMap)))
+        case 128: 
+          if ((this.updateColumnMap != null) && (ArrayUtil.haveCommonElement(((Constraint)localObject).getRefColumns(), this.updateColumnMap))) {
             paramOrderedHashSet.add(this.baseTable.fkConstraints[i].getMain().getName());
-          if (this.insertExpression != null)
+          }
+          if (this.insertExpression != null) {
             paramOrderedHashSet.add(this.baseTable.fkConstraints[i].getMain().getName());
+          }
           break;
         }
       }
-      if ((this.type == 82) || (this.type == 128))
+      if ((this.type == 82) || (this.type == 128)) {
         this.baseTable.collectFKReadLocks(this.updateColumnMap, paramOrderedHashSet);
-      else if (this.type == 19)
+      } else if (this.type == 19) {
         this.baseTable.collectFKReadLocks(null, paramOrderedHashSet);
+      }
       getTriggerTableNames(paramOrderedHashSet, false);
     }
     for (int i = 0; i < this.rangeVariables.length; i++)
     {
       localObject = this.rangeVariables[i].rangeTable;
       HsqlNameManager.HsqlName localHsqlName = ((Table)localObject).getName();
-      if ((!((Table)localObject).isReadOnly()) && (!((Table)localObject).isTemp()) && (localHsqlName.schema != SqlInvariants.SYSTEM_SCHEMA_HSQLNAME))
+      if ((!((Table)localObject).isReadOnly()) && (!((Table)localObject).isTemp()) && (localHsqlName.schema != SqlInvariants.SYSTEM_SCHEMA_HSQLNAME)) {
         paramOrderedHashSet.add(localHsqlName);
+      }
     }
-    for (i = 0; i < this.subqueries.length; i++)
-      if (this.subqueries[i].queryExpression != null)
+    for (i = 0; i < this.subqueries.length; i++) {
+      if (this.subqueries[i].queryExpression != null) {
         this.subqueries[i].queryExpression.getBaseTableNames(paramOrderedHashSet);
-    for (i = 0; i < this.routines.length; i++)
+      }
+    }
+    for (i = 0; i < this.routines.length; i++) {
       paramOrderedHashSet.addAll(this.routines[i].getTableNamesForRead());
+    }
   }
-
+  
   void collectTableNamesForWrite(OrderedHashSet paramOrderedHashSet)
   {
     if (this.baseTable.isView())
@@ -179,19 +190,22 @@ public class StatementDML extends StatementDMQL
       paramOrderedHashSet.add(this.baseTable.getName());
       if ((this.type == 82) || (this.type == 128))
       {
-        if (this.updateExpressions.length != 0)
+        if (this.updateExpressions.length != 0) {
           this.baseTable.collectFKWriteLocks(this.updateColumnMap, paramOrderedHashSet);
+        }
       }
-      else if (this.type == 19)
+      else if (this.type == 19) {
         this.baseTable.collectFKWriteLocks(null, paramOrderedHashSet);
+      }
       getTriggerTableNames(paramOrderedHashSet, true);
     }
   }
-
+  
   public void setGeneratedColumnInfo(int paramInt, ResultMetaData paramResultMetaData)
   {
-    if (this.type != 50)
+    if (this.type != 50) {
       return;
+    }
     int i = this.baseTable.getIdentityColumnIndex();
     this.generatedType = paramInt;
     this.generatedInputMetaData = paramResultMetaData;
@@ -199,15 +213,17 @@ public class StatementDML extends StatementDMQL
     int m;
     switch (paramInt)
     {
-    case 2:
+    case 2: 
       return;
-    case 21:
+    case 21: 
       this.generatedIndexes = paramResultMetaData.getGeneratedColumnIndexes();
-      for (j = 0; j < this.generatedIndexes.length; j++)
-        if ((this.generatedIndexes[j] < 0) || (this.generatedIndexes[j] >= this.baseTable.getColumnCount()))
+      for (j = 0; j < this.generatedIndexes.length; j++) {
+        if ((this.generatedIndexes[j] < 0) || (this.generatedIndexes[j] >= this.baseTable.getColumnCount())) {
           throw Error.error(5501);
+        }
+      }
       break;
-    case 1:
+    case 1: 
       if (this.baseTable.hasGeneratedColumn())
       {
         if (i >= 0)
@@ -218,8 +234,9 @@ public class StatementDML extends StatementDMQL
           int n = 0;
           while (m < this.baseTable.colGenerated.length)
           {
-            if ((this.baseTable.colGenerated[m] != 0) || (m == i))
+            if ((this.baseTable.colGenerated[m] != 0) || (m == i)) {
               this.generatedIndexes[(n++)] = m;
+            }
             m++;
           }
         }
@@ -228,17 +245,20 @@ public class StatementDML extends StatementDMQL
           this.generatedIndexes = ArrayUtil.booleanArrayToIntIndexes(this.baseTable.colGenerated);
         }
       }
-      else if (i >= 0)
+      else if (i >= 0) {
         this.generatedIndexes = new int[] { i };
-      else
+      } else {
         return;
+      }
       break;
-    case 11:
+    case 11: 
       String[] arrayOfString = paramResultMetaData.getGeneratedColumnNames();
       this.generatedIndexes = this.baseTable.getColumnIndexes(arrayOfString);
-      for (m = 0; m < this.generatedIndexes.length; m++)
-        if (this.generatedIndexes[m] < 0)
+      for (m = 0; m < this.generatedIndexes.length; m++) {
+        if (this.generatedIndexes[m] < 0) {
           throw Error.error(5501, arrayOfString[0]);
+        }
+      }
     }
     this.generatedResultMetaData = ResultMetaData.newResultMetaData(this.generatedIndexes.length);
     for (int k = 0; k < this.generatedIndexes.length; k++)
@@ -249,27 +269,29 @@ public class StatementDML extends StatementDMQL
     this.generatedResultMetaData.prepareData();
     this.isSimpleInsert = false;
   }
-
+  
   Object[] getGeneratedColumns(Object[] paramArrayOfObject)
   {
-    if (this.generatedIndexes == null)
+    if (this.generatedIndexes == null) {
       return null;
+    }
     Object[] arrayOfObject = new Object[this.generatedIndexes.length];
-    for (int i = 0; i < this.generatedIndexes.length; i++)
+    for (int i = 0; i < this.generatedIndexes.length; i++) {
       arrayOfObject[i] = paramArrayOfObject[this.generatedIndexes[i]];
+    }
     return arrayOfObject;
   }
-
+  
   public boolean hasGeneratedColumns()
   {
     return this.generatedIndexes != null;
   }
-
+  
   public ResultMetaData generatedResultMetaData()
   {
     return this.generatedResultMetaData;
   }
-
+  
   void getTriggerTableNames(OrderedHashSet paramOrderedHashSet, boolean paramBoolean)
   {
     for (int i = 0; i < this.baseTable.triggerList.length; i++)
@@ -277,33 +299,40 @@ public class StatementDML extends StatementDMQL
       TriggerDef localTriggerDef = this.baseTable.triggerList[i];
       switch (this.type)
       {
-      case 50:
-        if (localTriggerDef.getStatementType() != 50)
+      case 50: 
+        if (localTriggerDef.getStatementType() != 50) {
           continue;
+        }
         break;
-      case 82:
-        if (localTriggerDef.getStatementType() != 82)
+      case 82: 
+        if (localTriggerDef.getStatementType() != 82) {
           continue;
+        }
         break;
-      case 19:
-        if (localTriggerDef.getStatementType() != 19)
+      case 19: 
+        if (localTriggerDef.getStatementType() != 19) {
           continue;
-      case 128:
-        if ((goto 143) && (localTriggerDef.getStatementType() != 50))
-          if (localTriggerDef.getStatementType() != 82)
+        }
+      case 128: 
+        if ((goto 143) && (localTriggerDef.getStatementType() != 50)) {
+          if (localTriggerDef.getStatementType() != 82) {
             continue;
+          }
+        }
         break;
-      default:
+      default: 
         throw Error.runtimeError(201, "StatementDML");
       }
-      if (localTriggerDef.routine != null)
-        if (paramBoolean)
+      if (localTriggerDef.routine != null) {
+        if (paramBoolean) {
           paramOrderedHashSet.addAll(localTriggerDef.routine.getTableNamesForWrite());
-        else
+        } else {
           paramOrderedHashSet.addAll(localTriggerDef.routine.getTableNamesForRead());
+        }
+      }
     }
   }
-
+  
   Result executeUpdateStatement(Session paramSession)
   {
     int i = 0;
@@ -342,8 +371,9 @@ public class StatementDML extends StatementDMQL
     i = update(paramSession, this.baseTable, localRowSetNavigatorDataChange, localRowSetNavigator);
     if (localResult == null)
     {
-      if (i == 1)
+      if (i == 1) {
         return Result.updateOneResult;
+      }
       if (i == 0)
       {
         paramSession.addWarning(HsqlException.noDataCondition);
@@ -352,11 +382,12 @@ public class StatementDML extends StatementDMQL
       return new Result(1, i);
     }
     localResult.setUpdateCount(i);
-    if (i == 0)
+    if (i == 0) {
       paramSession.addWarning(HsqlException.noDataCondition);
+    }
     return localResult;
   }
-
+  
   static Object[] getUpdatedData(Session paramSession, Expression[] paramArrayOfExpression1, Table paramTable, int[] paramArrayOfInt, Expression[] paramArrayOfExpression2, Type[] paramArrayOfType, Object[] paramArrayOfObject)
   {
     Object[] arrayOfObject1 = paramTable.getEmptyRowData();
@@ -378,14 +409,17 @@ public class StatementDML extends StatementDMQL
         {
           n = paramArrayOfInt[i];
           localObject2 = localExpression.nodes[m];
-          if ((paramTable.identityColumn != n) || (((Expression)localObject2).getType() != 1) || (((Expression)localObject2).valueData != null))
+          if ((paramTable.identityColumn != n) || (((Expression)localObject2).getType() != 1) || (((Expression)localObject2).valueData != null)) {
             if (((Expression)localObject2).getType() == 4)
             {
-              if (paramTable.identityColumn != n)
+              if (paramTable.identityColumn != n) {
                 arrayOfObject1[n] = paramTable.colDefaults[n].getValue(paramSession);
+              }
             }
-            else
+            else {
               arrayOfObject1[n] = paramArrayOfType[n].convertToType(paramSession, arrayOfObject2[m], ((Expression)localObject2).dataType);
+            }
+          }
           m++;
           i++;
         }
@@ -421,17 +455,18 @@ public class StatementDML extends StatementDMQL
         else
         {
           Object localObject1 = localExpression.getValue(paramSession);
-          if (paramArrayOfExpression1[i].getType() == 99)
+          if (paramArrayOfExpression1[i].getType() == 99) {
             arrayOfObject1[k] = ((ExpressionAccessor)paramArrayOfExpression1[i]).getUpdatedArray(paramSession, (Object[])(Object[])arrayOfObject1[k], localObject1, true);
-          else
+          } else {
             arrayOfObject1[k] = paramArrayOfType[k].convertToType(paramSession, localObject1, localExpression.dataType);
+          }
           i++;
         }
       }
     }
     return arrayOfObject1;
   }
-
+  
   Result executeMergeStatement(Session paramSession)
   {
     Type[] arrayOfType = this.baseTable.getColumnTypes();
@@ -447,8 +482,9 @@ public class StatementDML extends StatementDMQL
     RowSetNavigatorDataChange localRowSetNavigatorDataChange = paramSession.sessionContext.getRowSetDataChange();
     RangeVariable[] arrayOfRangeVariable = this.targetRangeVariables;
     RangeIterator[] arrayOfRangeIterator = new RangeIterator[arrayOfRangeVariable.length];
-    for (int j = 0; j < arrayOfRangeVariable.length; j++)
+    for (int j = 0; j < arrayOfRangeVariable.length; j++) {
       arrayOfRangeIterator[j] = arrayOfRangeVariable[j].getIterator(paramSession);
+    }
     j = 0;
     while (j >= 0)
     {
@@ -456,8 +492,9 @@ public class StatementDML extends StatementDMQL
       boolean bool = localRangeIterator.isBeforeFirst();
       if (localRangeIterator.next())
       {
-        if (j < arrayOfRangeVariable.length - 1)
+        if (j < arrayOfRangeVariable.length - 1) {
           j++;
+        }
       }
       else
       {
@@ -465,8 +502,9 @@ public class StatementDML extends StatementDMQL
         if ((j == 1) && (bool) && (this.insertExpression != null))
         {
           localObject = getInsertData(paramSession, arrayOfType, this.insertExpression.nodes[0].nodes);
-          if (localObject != null)
+          if (localObject != null) {
             localRowSetNavigatorClient.add((Object[])localObject);
+          }
         }
         localRangeIterator.reset();
         j--;
@@ -482,29 +520,34 @@ public class StatementDML extends StatementDMQL
           }
           catch (HsqlException localHsqlException)
           {
-            for (int k = 0; k < arrayOfRangeVariable.length; k++)
+            for (int k = 0; k < arrayOfRangeVariable.length; k++) {
               arrayOfRangeIterator[k].reset();
+            }
             throw Error.error(3201);
           }
         }
       }
     }
     localRowSetNavigatorDataChange.endMainDataSet();
-    for (j = 0; j < arrayOfRangeVariable.length; j++)
+    for (j = 0; j < arrayOfRangeVariable.length; j++) {
       arrayOfRangeIterator[j].reset();
-    if (this.updateExpressions.length != 0)
+    }
+    if (this.updateExpressions.length != 0) {
       i = update(paramSession, this.baseTable, localRowSetNavigatorDataChange, localRowSetNavigator);
+    }
     if (localRowSetNavigatorClient.getSize() > 0)
     {
       insertRowSet(paramSession, localRowSetNavigator, localRowSetNavigatorClient);
       i += localRowSetNavigatorClient.getSize();
     }
-    if ((this.insertExpression != null) && (this.baseTable.triggerLists[0].length > 0))
+    if ((this.insertExpression != null) && (this.baseTable.triggerLists[0].length > 0)) {
       this.baseTable.fireTriggers(paramSession, 0, localRowSetNavigatorClient);
+    }
     if (localResult == null)
     {
-      if (i == 1)
+      if (i == 1) {
         return Result.updateOneResult;
+      }
       if (i == 0)
       {
         paramSession.addWarning(HsqlException.noDataCondition);
@@ -513,17 +556,19 @@ public class StatementDML extends StatementDMQL
       return new Result(1, i);
     }
     localResult.setUpdateCount(i);
-    if (i == 0)
+    if (i == 0) {
       paramSession.addWarning(HsqlException.noDataCondition);
+    }
     return localResult;
   }
-
+  
   void insertRowSet(Session paramSession, RowSetNavigator paramRowSetNavigator1, RowSetNavigator paramRowSetNavigator2)
   {
     PersistentStore localPersistentStore = this.baseTable.getRowStore(paramSession);
     RangeVariable.RangeIteratorMain localRangeIteratorMain = null;
-    if (this.updatableTableCheck != null)
+    if (this.updatableTableCheck != null) {
       localRangeIteratorMain = this.checkRangeVariable.getIterator(paramSession);
+    }
     paramRowSetNavigator2.beforeFirst();
     Object[] arrayOfObject1;
     if (this.baseTable.triggerLists[6].length > 0)
@@ -544,8 +589,9 @@ public class StatementDML extends StatementDMQL
       {
         localRangeIteratorMain.setCurrent(arrayOfObject1);
         boolean bool = this.updatableTableCheck.testCondition(paramSession);
-        if (!bool)
+        if (!bool) {
           throw Error.error(5700);
+        }
       }
       if (paramRowSetNavigator1 != null)
       {
@@ -570,11 +616,12 @@ public class StatementDML extends StatementDMQL
       paramRowSetNavigator2.beforeFirst();
     }
   }
-
+  
   Result insertSingleRow(Session paramSession, PersistentStore paramPersistentStore, Object[] paramArrayOfObject)
   {
-    if (this.baseTable.triggerLists[6].length > 0)
+    if (this.baseTable.triggerLists[6].length > 0) {
       this.baseTable.fireTriggers(paramSession, 6, null, paramArrayOfObject, null);
+    }
     this.baseTable.insertSingleRow(paramSession, paramPersistentStore, paramArrayOfObject, null);
     performIntegrityChecks(paramSession, this.baseTable, null, paramArrayOfObject, null);
     if (paramSession.database.isReferentialIntegrity())
@@ -587,13 +634,15 @@ public class StatementDML extends StatementDMQL
         i++;
       }
     }
-    if (this.baseTable.triggerLists[3].length > 0)
+    if (this.baseTable.triggerLists[3].length > 0) {
       this.baseTable.fireTriggers(paramSession, 3, null, paramArrayOfObject, null);
-    if (this.baseTable.triggerLists[0].length > 0)
+    }
+    if (this.baseTable.triggerLists[0].length > 0) {
       this.baseTable.fireTriggers(paramSession, 0, (RowSetNavigator)null);
+    }
     return Result.updateOneResult;
   }
-
+  
   Object[] getInsertData(Session paramSession, Type[] paramArrayOfType, Expression[] paramArrayOfExpression)
   {
     Object[] arrayOfObject = this.baseTable.getNewRowData(paramSession);
@@ -604,14 +653,15 @@ public class StatementDML extends StatementDMQL
       int j = this.insertColumnMap[i];
       if (localExpression.opType == 4)
       {
-        if ((this.baseTable.identityColumn != j) && (this.baseTable.colDefaults[j] != null))
+        if ((this.baseTable.identityColumn != j) && (this.baseTable.colDefaults[j] != null)) {
           arrayOfObject[j] = this.baseTable.colDefaults[j].getValue(paramSession);
+        }
       }
       else
       {
         Object localObject = localExpression.getValue(paramSession);
         Type localType = paramArrayOfType[j];
-        if ((paramSession.database.sqlSyntaxMys) || (paramSession.database.sqlSyntaxPgs))
+        if ((paramSession.database.sqlSyntaxMys) || (paramSession.database.sqlSyntaxPgs)) {
           try
           {
             localObject = localType.convertToType(paramSession, localObject, localExpression.dataType);
@@ -633,14 +683,15 @@ public class StatementDML extends StatementDMQL
               throw localHsqlException;
             }
           }
-        else
+        } else {
           localObject = localType.convertToType(paramSession, localObject, localExpression.dataType);
+        }
         arrayOfObject[j] = localObject;
       }
     }
     return arrayOfObject;
   }
-
+  
   int update(Session paramSession, Table paramTable, RowSetNavigatorDataChange paramRowSetNavigatorDataChange, RowSetNavigator paramRowSetNavigator)
   {
     int i = paramRowSetNavigatorDataChange.getSize();
@@ -675,16 +726,18 @@ public class StatementDML extends StatementDMQL
       localObject2 = paramRowSetNavigatorDataChange.getCurrentChangedData();
       localObject3 = paramRowSetNavigatorDataChange.getCurrentChangedColumns();
       localObject4 = (Table)((Row)localObject1).getTable();
-      if ((localObject4 instanceof TableDerived))
+      if ((localObject4 instanceof TableDerived)) {
         localObject4 = ((TableDerived)localObject4).view;
+      }
       if (localObject4.triggerLists[8].length > 0)
       {
         ((Table)localObject4).fireTriggers(paramSession, 8, ((Row)localObject1).getData(), (Object[])localObject2, (int[])localObject3);
         ((Table)localObject4).enforceRowConstraints(paramSession, (Object[])localObject2);
       }
     }
-    if (paramTable.isView)
+    if (paramTable.isView) {
       return i;
+    }
     paramRowSetNavigatorDataChange.beforeFirst();
     while (paramRowSetNavigatorDataChange.next())
     {
@@ -725,11 +778,13 @@ public class StatementDML extends StatementDMQL
       performIntegrityChecks(paramSession, (Table)localObject4, ((Row)localObject3).getData(), (Object[])localObject5, (int[])localObject6);
       if (localObject4 != paramTable)
       {
-        if (localObject1 == null)
+        if (localObject1 == null) {
           localObject1 = new OrderedHashSet();
+        }
         ((OrderedHashSet)localObject1).add(localObject4);
-        if (localObject4.triggerLists[5].length > 0)
+        if (localObject4.triggerLists[5].length > 0) {
           m = 1;
+        }
       }
     }
     paramRowSetNavigatorDataChange.beforeFirst();
@@ -746,15 +801,16 @@ public class StatementDML extends StatementDMQL
       paramRowSetNavigatorDataChange.beforeFirst();
     }
     this.baseTable.fireTriggers(paramSession, 2, paramRowSetNavigatorDataChange);
-    if (localObject1 != null)
+    if (localObject1 != null) {
       for (int n = 0; n < ((OrderedHashSet)localObject1).size(); n++)
       {
         localObject4 = (Table)((OrderedHashSet)localObject1).get(n);
         ((Table)localObject4).fireTriggers(paramSession, 2, paramRowSetNavigatorDataChange);
       }
+    }
     return i;
   }
-
+  
   Result executeDeleteStatement(Session paramSession)
   {
     int i = 0;
@@ -776,24 +832,27 @@ public class StatementDML extends StatementDMQL
       paramSession.addWarning(HsqlException.noDataCondition);
       return Result.updateZeroResult;
     }
-    if (i == 1)
+    if (i == 1) {
       return Result.updateOneResult;
+    }
     return new Result(1, i);
   }
-
+  
   Result executeDeleteTruncateStatement(Session paramSession)
   {
     PersistentStore localPersistentStore = this.targetTable.getRowStore(paramSession);
     RowIterator localRowIterator = this.targetTable.getPrimaryIndex().firstRow(localPersistentStore);
     boolean bool = localRowIterator.hasNext();
-    for (int i = 0; i < this.targetTable.fkMainConstraints.length; i++)
+    for (int i = 0; i < this.targetTable.fkMainConstraints.length; i++) {
       if (this.targetTable.fkMainConstraints[i].getRef() != this.targetTable)
       {
         HsqlNameManager.HsqlName localHsqlName = this.targetTable.fkMainConstraints[i].getRef().getName();
         Table localTable = paramSession.database.schemaManager.getUserTable(paramSession, localHsqlName);
-        if (!localTable.isEmpty(paramSession))
+        if (!localTable.isEmpty(paramSession)) {
           throw Error.error(8, localTable.getName().name);
+        }
       }
+    }
     try
     {
       while (localRowIterator.hasNext())
@@ -801,18 +860,20 @@ public class StatementDML extends StatementDMQL
         Row localRow = localRowIterator.getNextRow();
         paramSession.addDeleteAction((Table)localRow.getTable(), localRow, null);
       }
-      if ((this.restartIdentity) && (this.targetTable.identitySequence != null))
+      if ((this.restartIdentity) && (this.targetTable.identitySequence != null)) {
         this.targetTable.identitySequence.reset();
+      }
     }
     finally
     {
       localRowIterator.release();
     }
-    if (!bool)
+    if (!bool) {
       paramSession.addWarning(HsqlException.noDataCondition);
+    }
     return Result.updateOneResult;
   }
-
+  
   int delete(Session paramSession, Table paramTable, RowSetNavigatorDataChange paramRowSetNavigatorDataChange)
   {
     int i = paramRowSetNavigatorDataChange.getSize();
@@ -837,15 +898,18 @@ public class StatementDML extends StatementDMQL
       localObject2 = paramRowSetNavigatorDataChange.getCurrentChangedData();
       localObject3 = paramRowSetNavigatorDataChange.getCurrentChangedColumns();
       localObject4 = (Table)((Row)localObject1).getTable();
-      if ((localObject4 instanceof TableDerived))
+      if ((localObject4 instanceof TableDerived)) {
         localObject4 = ((TableDerived)localObject4).view;
-      if (localObject2 == null)
+      }
+      if (localObject2 == null) {
         ((Table)localObject4).fireTriggers(paramSession, 7, ((Row)localObject1).getData(), null, null);
-      else
+      } else {
         ((Table)localObject4).fireTriggers(paramSession, 8, ((Row)localObject1).getData(), (Object[])localObject2, (int[])localObject3);
+      }
     }
-    if (paramTable.isView)
+    if (paramTable.isView) {
       return i;
+    }
     paramRowSetNavigatorDataChange.beforeFirst();
     int j = 0;
     while (paramRowSetNavigatorDataChange.next())
@@ -854,8 +918,9 @@ public class StatementDML extends StatementDMQL
       localObject3 = paramRowSetNavigatorDataChange.getCurrentChangedData();
       localObject4 = (Table)((Row)localObject2).getTable();
       paramSession.addDeleteAction((Table)localObject4, (Row)localObject2, null);
-      if (localObject3 != null)
+      if (localObject3 != null) {
         j = 1;
+      }
     }
     paramRowSetNavigatorDataChange.beforeFirst();
     Object localObject5;
@@ -870,8 +935,9 @@ public class StatementDML extends StatementDMQL
         localObject4 = (Table)((Row)localObject2).getTable();
         localObject5 = paramRowSetNavigatorDataChange.getCurrentChangedColumns();
         localObject6 = ((Table)localObject4).getRowStore(paramSession);
-        if (localObject3 != null)
+        if (localObject3 != null) {
           localObject7 = ((Table)localObject4).insertSingleRow(paramSession, (PersistentStore)localObject6, (Object[])localObject3, (int[])localObject5);
+        }
       }
       paramRowSetNavigatorDataChange.beforeFirst();
     }
@@ -886,25 +952,31 @@ public class StatementDML extends StatementDMQL
         localObject6 = paramRowSetNavigatorDataChange.getCurrentChangedData();
         localObject7 = paramRowSetNavigatorDataChange.getCurrentChangedColumns();
         Table localTable = (Table)((Row)localObject5).getTable();
-        if (localObject6 != null)
+        if (localObject6 != null) {
           performIntegrityChecks(paramSession, localTable, ((Row)localObject5).getData(), (Object[])localObject6, (int[])localObject7);
-        if (localTable != paramTable)
+        }
+        if (localTable != paramTable) {
           if (localObject6 == null)
           {
-            if (localTable.triggerLists[4].length > 0)
+            if (localTable.triggerLists[4].length > 0) {
               m = 1;
-            if (localObject3 == null)
+            }
+            if (localObject3 == null) {
               localObject3 = new OrderedHashSet();
+            }
             ((OrderedHashSet)localObject3).add(localTable);
           }
           else
           {
-            if (localTable.triggerLists[5].length > 0)
+            if (localTable.triggerLists[5].length > 0) {
               m = 1;
-            if (localObject2 == null)
+            }
+            if (localObject2 == null) {
               localObject2 = new OrderedHashSet();
+            }
             ((OrderedHashSet)localObject2).add(localTable);
           }
+        }
       }
       paramRowSetNavigatorDataChange.beforeFirst();
     }
@@ -915,34 +987,38 @@ public class StatementDML extends StatementDMQL
         localObject5 = paramRowSetNavigatorDataChange.getCurrentRow();
         localObject6 = paramRowSetNavigatorDataChange.getCurrentChangedData();
         localObject7 = (Table)((Row)localObject5).getTable();
-        if (localObject6 == null)
+        if (localObject6 == null) {
           ((Table)localObject7).fireTriggers(paramSession, 4, ((Row)localObject5).getData(), null, null);
-        else
+        } else {
           ((Table)localObject7).fireTriggers(paramSession, 5, ((Row)localObject5).getData(), (Object[])localObject6, null);
+        }
       }
       paramRowSetNavigatorDataChange.beforeFirst();
     }
     paramTable.fireTriggers(paramSession, 1, paramRowSetNavigatorDataChange);
     int n;
-    if (localObject2 != null)
+    if (localObject2 != null) {
       for (n = 0; n < ((OrderedHashSet)localObject2).size(); n++)
       {
         localObject6 = (Table)((OrderedHashSet)localObject2).get(n);
         ((Table)localObject6).fireTriggers(paramSession, 2, paramRowSetNavigatorDataChange);
       }
-    if (localObject3 != null)
+    }
+    if (localObject3 != null) {
       for (n = 0; n < ((OrderedHashSet)localObject3).size(); n++)
       {
         localObject6 = (Table)((OrderedHashSet)localObject3).get(n);
         ((Table)localObject6).fireTriggers(paramSession, 1, paramRowSetNavigatorDataChange);
       }
+    }
     return i;
   }
-
+  
   static void performIntegrityChecks(Session paramSession, Table paramTable, Object[] paramArrayOfObject1, Object[] paramArrayOfObject2, int[] paramArrayOfInt)
   {
-    if (paramArrayOfObject2 == null)
+    if (paramArrayOfObject2 == null) {
       return;
+    }
     int i = 0;
     int j = paramTable.checkConstraints.length;
     while (i < j)
@@ -950,26 +1026,30 @@ public class StatementDML extends StatementDMQL
       paramTable.checkConstraints[i].checkInsert(paramSession, paramTable, paramArrayOfObject2, paramArrayOfObject1 == null);
       i++;
     }
-    if (!paramSession.database.isReferentialIntegrity())
+    if (!paramSession.database.isReferentialIntegrity()) {
       return;
+    }
     i = 0;
     j = paramTable.fkConstraints.length;
     while (i < j)
     {
       boolean bool = paramArrayOfObject1 == null;
       Constraint localConstraint = paramTable.fkConstraints[i];
-      if (!bool)
+      if (!bool) {
         bool = ArrayUtil.haveCommonElement(localConstraint.getRefColumns(), paramArrayOfInt);
-      if (bool)
+      }
+      if (bool) {
         localConstraint.checkInsert(paramSession, paramTable, paramArrayOfObject2, paramArrayOfObject1 == null);
+      }
       i++;
     }
   }
-
+  
   static void performReferentialActions(Session paramSession, Table paramTable, RowSetNavigatorDataChange paramRowSetNavigatorDataChange, Row paramRow, Object[] paramArrayOfObject, int[] paramArrayOfInt, HashSet paramHashSet)
   {
-    if (!paramSession.database.isReferentialIntegrity())
+    if (!paramSession.database.isReferentialIntegrity()) {
       return;
+    }
     int i = paramArrayOfObject == null ? 1 : 0;
     int j = 0;
     int k = paramTable.fkMainConstraints.length;
@@ -990,15 +1070,16 @@ public class StatementDML extends StatementDMQL
           {
             Row localRow = localRowIterator.getNextRow();
             Object[] arrayOfObject = null;
-            if (localConstraint.core.refIndex.compareRowNonUnique(paramSession, localRow.getData(), paramRow.getData(), localConstraint.core.mainCols) != 0)
+            if (localConstraint.core.refIndex.compareRowNonUnique(paramSession, localRow.getData(), paramRow.getData(), localConstraint.core.mainCols) != 0) {
               break;
+            }
             if ((i == 0) || (localRow.getId() != paramRow.getId()))
             {
               int i1;
               Object localObject;
               switch (m)
               {
-              case 0:
+              case 0: 
                 int n;
                 if (i != 0)
                 {
@@ -1012,24 +1093,27 @@ public class StatementDML extends StatementDMQL
                     localRowIterator.release();
                     throw Error.error(null, 3900, 2, arrayOfString);
                   }
-                  if (n != 0)
+                  if (n != 0) {
                     performReferentialActions(paramSession, localConstraint.core.refTable, paramRowSetNavigatorDataChange, localRow, null, null, paramHashSet);
+                  }
                 }
                 else
                 {
                   arrayOfObject = localConstraint.core.refTable.getEmptyRowData();
                   System.arraycopy(localRow.getData(), 0, arrayOfObject, 0, arrayOfObject.length);
-                  for (n = 0; n < localConstraint.core.refCols.length; n++)
+                  for (n = 0; n < localConstraint.core.refCols.length; n++) {
                     arrayOfObject[localConstraint.core.refCols[n]] = paramArrayOfObject[localConstraint.core.mainCols[n]];
+                  }
                 }
                 break;
-              case 2:
+              case 2: 
                 arrayOfObject = localConstraint.core.refTable.getEmptyRowData();
                 System.arraycopy(localRow.getData(), 0, arrayOfObject, 0, arrayOfObject.length);
-                for (i1 = 0; i1 < localConstraint.core.refCols.length; i1++)
+                for (i1 = 0; i1 < localConstraint.core.refCols.length; i1++) {
                   arrayOfObject[localConstraint.core.refCols[i1]] = null;
+                }
                 break;
-              case 4:
+              case 4: 
                 arrayOfObject = localConstraint.core.refTable.getEmptyRowData();
                 System.arraycopy(localRow.getData(), 0, arrayOfObject, 0, arrayOfObject.length);
                 for (i1 = 0; i1 < localConstraint.core.refCols.length; i1++)
@@ -1038,15 +1122,15 @@ public class StatementDML extends StatementDMQL
                   arrayOfObject[localConstraint.core.refCols[i1]] = ((ColumnSchema)localObject).getDefaultValue(paramSession);
                 }
                 break;
-              case 3:
-                if (paramRowSetNavigatorDataChange.containsDeletedRow(localRow));
+              case 3: 
+                if (paramRowSetNavigatorDataChange.containsDeletedRow(localRow)) {}
                 break;
-              case 1:
+              case 1: 
                 i1 = localConstraint.core.deleteAction == 3 ? 8 : 3501;
                 localObject = getConstraintInfo(localConstraint);
                 localRowIterator.release();
                 throw Error.error(null, i1, 2, (Object[])localObject);
-              default:
+              default: 
                 continue;
                 try
                 {
@@ -1073,19 +1157,20 @@ public class StatementDML extends StatementDMQL
       j++;
     }
   }
-
+  
   static String[] getConstraintInfo(Constraint paramConstraint)
   {
     return new String[] { paramConstraint.core.refName.name, paramConstraint.core.refTable.getName().name };
   }
-
+  
   public void clearStructures(Session paramSession)
   {
     paramSession.sessionContext.clearStructures(this);
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.StatementDML
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

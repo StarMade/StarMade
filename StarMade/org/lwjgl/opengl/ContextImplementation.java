@@ -8,31 +8,32 @@ abstract interface ContextImplementation
 {
   public abstract ByteBuffer create(PeerInfo paramPeerInfo, IntBuffer paramIntBuffer, ByteBuffer paramByteBuffer)
     throws LWJGLException;
-
+  
   public abstract void swapBuffers()
     throws LWJGLException;
-
+  
   public abstract void releaseDrawable(ByteBuffer paramByteBuffer)
     throws LWJGLException;
-
+  
   public abstract void releaseCurrentContext()
     throws LWJGLException;
-
+  
   public abstract void update(ByteBuffer paramByteBuffer);
-
+  
   public abstract void makeCurrent(PeerInfo paramPeerInfo, ByteBuffer paramByteBuffer)
     throws LWJGLException;
-
+  
   public abstract boolean isCurrent(ByteBuffer paramByteBuffer)
     throws LWJGLException;
-
+  
   public abstract void setSwapInterval(int paramInt);
-
+  
   public abstract void destroy(PeerInfo paramPeerInfo, ByteBuffer paramByteBuffer)
     throws LWJGLException;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.opengl.ContextImplementation
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

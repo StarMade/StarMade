@@ -32,7 +32,8 @@ public final class KHRTextureCompressionAstcLdr
   public static final int GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR = 37853;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.lwjgl.opengl.KHRTextureCompressionAstcLdr
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

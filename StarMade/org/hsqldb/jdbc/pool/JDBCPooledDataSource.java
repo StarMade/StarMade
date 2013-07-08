@@ -14,7 +14,8 @@ import org.hsqldb.jdbc.JDBCCommonDataSource;
 import org.hsqldb.jdbc.JDBCConnection;
 import org.hsqldb.jdbc.JDBCDriver;
 
-public class JDBCPooledDataSource extends JDBCCommonDataSource
+public class JDBCPooledDataSource
+  extends JDBCCommonDataSource
   implements ConnectionPoolDataSource, Serializable, Referenceable, CommonDataSource
 {
   public PooledConnection getPooledConnection()
@@ -23,7 +24,7 @@ public class JDBCPooledDataSource extends JDBCCommonDataSource
     JDBCConnection localJDBCConnection = (JDBCConnection)JDBCDriver.getConnection(this.url, this.connectionProps);
     return new JDBCPooledConnection(localJDBCConnection);
   }
-
+  
   public PooledConnection getPooledConnection(String paramString1, String paramString2)
     throws SQLException
   {
@@ -33,7 +34,7 @@ public class JDBCPooledDataSource extends JDBCCommonDataSource
     JDBCConnection localJDBCConnection = (JDBCConnection)JDBCDriver.getConnection(this.url, localProperties);
     return new JDBCPooledConnection(localJDBCConnection);
   }
-
+  
   public Reference getReference()
     throws NamingException
   {
@@ -47,7 +48,8 @@ public class JDBCPooledDataSource extends JDBCCommonDataSource
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.jdbc.pool.JDBCPooledDataSource
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

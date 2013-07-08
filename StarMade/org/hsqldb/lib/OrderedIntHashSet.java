@@ -2,32 +2,33 @@ package org.hsqldb.lib;
 
 import org.hsqldb.store.BaseHashMap;
 
-public class OrderedIntHashSet extends BaseHashMap
+public class OrderedIntHashSet
+  extends BaseHashMap
 {
   public OrderedIntHashSet()
   {
     this(8);
   }
-
+  
   public OrderedIntHashSet(int paramInt)
     throws IllegalArgumentException
   {
     super(paramInt, 1, 0, false);
     this.isList = true;
   }
-
+  
   public boolean contains(int paramInt)
   {
     return super.containsKey(paramInt);
   }
-
+  
   public boolean add(int paramInt)
   {
     int i = size();
     super.addOrRemove(paramInt, 0L, null, null, false);
     return i != size();
   }
-
+  
   public boolean remove(int paramInt)
   {
     int i = size();
@@ -37,44 +38,46 @@ public class OrderedIntHashSet extends BaseHashMap
     {
       int[] arrayOfInt = toArray();
       super.clear();
-      for (int j = 0; j < arrayOfInt.length; j++)
+      for (int j = 0; j < arrayOfInt.length; j++) {
         add(arrayOfInt[j]);
+      }
     }
     return bool;
   }
-
+  
   public int get(int paramInt)
   {
     checkRange(paramInt);
     return this.intKeyTable[paramInt];
   }
-
+  
   public int getIndex(int paramInt)
   {
     return getLookup(paramInt);
   }
-
+  
   public int getStartMatchCount(int[] paramArrayOfInt)
   {
-    for (int i = 0; (i < paramArrayOfInt.length) && (super.containsKey(paramArrayOfInt[i])); i++);
+    for (int i = 0; (i < paramArrayOfInt.length) && (super.containsKey(paramArrayOfInt[i])); i++) {}
     return i;
   }
-
+  
   public int getOrderedStartMatchCount(int[] paramArrayOfInt)
   {
-    for (int i = 0; (i < paramArrayOfInt.length) && (i < size()) && (get(i) == paramArrayOfInt[i]); i++);
+    for (int i = 0; (i < paramArrayOfInt.length) && (i < size()) && (get(i) == paramArrayOfInt[i]); i++) {}
     return i;
   }
-
+  
   public boolean addAll(Collection paramCollection)
   {
     int i = size();
     Iterator localIterator = paramCollection.iterator();
-    while (localIterator.hasNext())
+    while (localIterator.hasNext()) {
       add(localIterator.nextInt());
+    }
     return i != size();
   }
-
+  
   public int[] toArray()
   {
     int i = -1;
@@ -87,15 +90,17 @@ public class OrderedIntHashSet extends BaseHashMap
     }
     return arrayOfInt;
   }
-
+  
   private void checkRange(int paramInt)
   {
-    if ((paramInt < 0) || (paramInt >= size()))
+    if ((paramInt < 0) || (paramInt >= size())) {
       throw new IndexOutOfBoundsException();
+    }
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.lib.OrderedIntHashSet
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

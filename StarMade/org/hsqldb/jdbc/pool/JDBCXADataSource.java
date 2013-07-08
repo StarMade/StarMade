@@ -20,11 +20,12 @@ import org.hsqldb.lib.HashSet;
 import org.hsqldb.lib.Iterator;
 import org.hsqldb.lib.Set;
 
-public class JDBCXADataSource extends JDBCCommonDataSource
+public class JDBCXADataSource
+  extends JDBCCommonDataSource
   implements XADataSource, Serializable, Referenceable, CommonDataSource
 {
   private HashMap resources = new HashMap();
-
+  
   public XAConnection getXAConnection()
     throws SQLException
   {
@@ -32,17 +33,19 @@ public class JDBCXADataSource extends JDBCCommonDataSource
     JDBCXAConnection localJDBCXAConnection = new JDBCXAConnection(this, localJDBCConnection);
     return localJDBCXAConnection;
   }
-
+  
   public XAConnection getXAConnection(String paramString1, String paramString2)
     throws SQLException
   {
-    if ((paramString1 == null) || (paramString2 == null))
+    if ((paramString1 == null) || (paramString2 == null)) {
       throw Util.nullArgument();
-    if ((paramString1.equals(this.user)) && (paramString2.equals(this.password)))
+    }
+    if ((paramString1.equals(this.user)) && (paramString2.equals(this.password))) {
       return getXAConnection();
+    }
     throw Util.sqlException(Error.error(4000));
   }
-
+  
   public Reference getReference()
     throws NamingException
   {
@@ -54,22 +57,21 @@ public class JDBCXADataSource extends JDBCCommonDataSource
     localReference.add(new StringRefAddr("loginTimeout", Integer.toString(this.loginTimeout)));
     return localReference;
   }
-
+  
   public void addResource(Xid paramXid, JDBCXAResource paramJDBCXAResource)
   {
     this.resources.put(paramXid, paramJDBCXAResource);
   }
-
+  
   public JDBCXADataSource()
     throws SQLException
-  {
-  }
-
+  {}
+  
   public JDBCXAResource removeResource(Xid paramXid)
   {
     return (JDBCXAResource)this.resources.remove(paramXid);
   }
-
+  
   Xid[] getPreparedXids()
   {
     Iterator localIterator = this.resources.keySet().iterator();
@@ -77,21 +79,23 @@ public class JDBCXADataSource extends JDBCCommonDataSource
     while (localIterator.hasNext())
     {
       Xid localXid = (Xid)localIterator.next();
-      if (((JDBCXAResource)this.resources.get(localXid)).state == JDBCXAResource.XA_STATE_PREPARED)
+      if (((JDBCXAResource)this.resources.get(localXid)).state == JDBCXAResource.XA_STATE_PREPARED) {
         localHashSet.add(localXid);
+      }
     }
     Xid[] arrayOfXid = new Xid[localHashSet.size()];
     localHashSet.toArray(arrayOfXid);
     return arrayOfXid;
   }
-
+  
   JDBCXAResource getResource(Xid paramXid)
   {
     return (JDBCXAResource)this.resources.get(paramXid);
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.jdbc.pool.JDBCXADataSource
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

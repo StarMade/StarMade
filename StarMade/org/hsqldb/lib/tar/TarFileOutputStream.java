@@ -17,47 +17,51 @@ public class TarFileOutputStream
   private File writeFile;
   public byte[] writeBuffer;
   public static final byte[] ZERO_BLOCK = new byte[512];
-
+  
   public TarFileOutputStream(File paramFile)
     throws IOException
   {
     this(paramFile, 0);
   }
-
+  
   public TarFileOutputStream(File paramFile, int paramInt)
     throws IOException
   {
     this(paramFile, paramInt, 20);
   }
-
+  
   public TarFileOutputStream(File paramFile, int paramInt1, int paramInt2)
     throws IOException
   {
     this.blocksPerRecord = paramInt2;
     this.targetFile = paramFile;
     this.writeFile = new File(paramFile.getParentFile(), paramFile.getName() + "-partial");
-    if (this.writeFile.exists())
+    if (this.writeFile.exists()) {
       throw new IOException(RB.move_work_file.getString(new String[] { this.writeFile.getAbsolutePath() }));
-    if ((paramFile.exists()) && (!paramFile.canWrite()))
+    }
+    if ((paramFile.exists()) && (!paramFile.canWrite())) {
       throw new IOException(RB.cant_overwrite.getString(new String[] { paramFile.getAbsolutePath() }));
+    }
     File localFile = paramFile.getAbsoluteFile().getParentFile();
     if ((localFile.exists()) && (localFile.isDirectory()))
     {
-      if (!localFile.canWrite())
+      if (!localFile.canWrite()) {
         throw new IOException(RB.cant_write_dir.getString(new String[] { localFile.getAbsolutePath() }));
+      }
     }
-    else
+    else {
       throw new IOException(RB.no_parent_dir.getString(new String[] { localFile.getAbsolutePath() }));
+    }
     this.writeBuffer = new byte[paramInt2 * 512];
     switch (paramInt1)
     {
-    case 0:
+    case 0: 
       this.writeStream = new FileOutputStream(this.writeFile);
       break;
-    case 1:
+    case 1: 
       this.writeStream = new GZIPOutputStream(new FileOutputStream(this.writeFile), this.writeBuffer.length);
       break;
-    default:
+    default: 
       throw new IllegalArgumentException(RB.compression_unknown.getString(paramInt1));
     }
     this.writeFile.setExecutable(false, true);
@@ -67,104 +71,113 @@ public class TarFileOutputStream
     this.writeFile.setWritable(false, false);
     this.writeFile.setWritable(true, true);
   }
-
+  
   public void write(byte[] paramArrayOfByte, int paramInt)
     throws IOException
   {
     this.writeStream.write(paramArrayOfByte, 0, paramInt);
     this.bytesWritten += paramInt;
   }
-
+  
   public void write(int paramInt)
     throws IOException
   {
     write(this.writeBuffer, paramInt);
   }
-
+  
   public void writeBlock(byte[] paramArrayOfByte)
     throws IOException
   {
-    if (paramArrayOfByte.length != 512)
+    if (paramArrayOfByte.length != 512) {
       throw new IllegalArgumentException(RB.bad_block_write_len.getString(paramArrayOfByte.length));
+    }
     write(paramArrayOfByte, paramArrayOfByte.length);
   }
-
+  
   public void writePadBlocks(int paramInt)
     throws IOException
   {
-    for (int i = 0; i < paramInt; i++)
+    for (int i = 0; i < paramInt; i++) {
       write(ZERO_BLOCK, ZERO_BLOCK.length);
+    }
   }
-
+  
   public void writePadBlock()
     throws IOException
   {
     writePadBlocks(1);
   }
-
+  
   public int bytesLeftInBlock()
   {
     int i = (int)(this.bytesWritten % 512L);
-    if (i == 0)
+    if (i == 0) {
       return 0;
+    }
     return 512 - i;
   }
-
+  
   public void assertAtBlockBoundary()
   {
-    if (bytesLeftInBlock() != 0)
+    if (bytesLeftInBlock() != 0) {
       throw new IllegalArgumentException(RB.illegal_block_boundary.getString(new String[] { Long.toString(this.bytesWritten) }));
+    }
   }
-
+  
   public void padCurrentBlock()
     throws IOException
   {
     int i = bytesLeftInBlock();
-    if (i == 0)
+    if (i == 0) {
       return;
+    }
     write(ZERO_BLOCK, i);
     assertAtBlockBoundary();
   }
-
+  
   public void flush()
     throws IOException
   {
     this.writeStream.flush();
   }
-
+  
   public void close()
     throws IOException
   {
-    if (this.writeStream == null)
+    if (this.writeStream == null) {
       return;
+    }
     try
     {
       this.writeStream.close();
-      if (!this.writeFile.delete())
+      if (!this.writeFile.delete()) {
         throw new IOException(RB.workfile_delete_fail.getString(new String[] { this.writeFile.getAbsolutePath() }));
+      }
     }
     finally
     {
       this.writeStream = null;
     }
   }
-
+  
   public long getBytesWritten()
   {
     return this.bytesWritten;
   }
-
+  
   public void finish()
     throws IOException
   {
     try
     {
       long l = this.bytesWritten / 512L + 2L;
-      if (l % this.blocksPerRecord != 0L)
+      if (l % this.blocksPerRecord != 0L) {
         l = (l / this.blocksPerRecord + 1L) * this.blocksPerRecord;
+      }
       int i = (int)(l - this.bytesWritten / 512L);
-      if (debug)
+      if (debug) {
         System.out.println(RB.pad_block_write.getString(i));
+      }
       writePadBlocks(i);
     }
     catch (IOException localIOException1)
@@ -173,15 +186,13 @@ public class TarFileOutputStream
       {
         close();
       }
-      catch (IOException localIOException2)
-      {
-      }
+      catch (IOException localIOException2) {}
       throw localIOException1;
     }
     this.writeStream.close();
     this.writeFile.renameTo(this.targetFile);
   }
-
+  
   public static abstract interface Compression
   {
     public static final int NO_COMPRESSION = 0;
@@ -191,7 +202,8 @@ public class TarFileOutputStream
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.lib.tar.TarFileOutputStream
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

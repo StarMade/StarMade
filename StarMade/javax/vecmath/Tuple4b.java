@@ -10,7 +10,7 @@ public abstract class Tuple4b
   public byte y;
   public byte z;
   public byte w;
-
+  
   public Tuple4b(byte paramByte1, byte paramByte2, byte paramByte3, byte paramByte4)
   {
     this.x = paramByte1;
@@ -18,7 +18,7 @@ public abstract class Tuple4b
     this.z = paramByte3;
     this.w = paramByte4;
   }
-
+  
   public Tuple4b(byte[] paramArrayOfByte)
   {
     this.x = paramArrayOfByte[0];
@@ -26,7 +26,7 @@ public abstract class Tuple4b
     this.z = paramArrayOfByte[2];
     this.w = paramArrayOfByte[3];
   }
-
+  
   public Tuple4b(Tuple4b paramTuple4b)
   {
     this.x = paramTuple4b.x;
@@ -34,7 +34,7 @@ public abstract class Tuple4b
     this.z = paramTuple4b.z;
     this.w = paramTuple4b.w;
   }
-
+  
   public Tuple4b()
   {
     this.x = 0;
@@ -42,12 +42,12 @@ public abstract class Tuple4b
     this.z = 0;
     this.w = 0;
   }
-
+  
   public String toString()
   {
     return "(" + (this.x & 0xFF) + ", " + (this.y & 0xFF) + ", " + (this.z & 0xFF) + ", " + (this.w & 0xFF) + ")";
   }
-
+  
   public final void get(byte[] paramArrayOfByte)
   {
     paramArrayOfByte[0] = this.x;
@@ -55,7 +55,7 @@ public abstract class Tuple4b
     paramArrayOfByte[2] = this.z;
     paramArrayOfByte[3] = this.w;
   }
-
+  
   public final void get(Tuple4b paramTuple4b)
   {
     paramTuple4b.x = this.x;
@@ -63,7 +63,7 @@ public abstract class Tuple4b
     paramTuple4b.z = this.z;
     paramTuple4b.w = this.w;
   }
-
+  
   public final void set(Tuple4b paramTuple4b)
   {
     this.x = paramTuple4b.x;
@@ -71,7 +71,7 @@ public abstract class Tuple4b
     this.z = paramTuple4b.z;
     this.w = paramTuple4b.w;
   }
-
+  
   public final void set(byte[] paramArrayOfByte)
   {
     this.x = paramArrayOfByte[0];
@@ -79,19 +79,17 @@ public abstract class Tuple4b
     this.z = paramArrayOfByte[2];
     this.w = paramArrayOfByte[3];
   }
-
+  
   public boolean equals(Tuple4b paramTuple4b)
   {
     try
     {
       return (this.x == paramTuple4b.x) && (this.y == paramTuple4b.y) && (this.z == paramTuple4b.z) && (this.w == paramTuple4b.w);
     }
-    catch (NullPointerException localNullPointerException)
-    {
-    }
+    catch (NullPointerException localNullPointerException) {}
     return false;
   }
-
+  
   public boolean equals(Object paramObject)
   {
     try
@@ -103,17 +101,15 @@ public abstract class Tuple4b
     {
       return false;
     }
-    catch (ClassCastException localClassCastException)
-    {
-    }
+    catch (ClassCastException localClassCastException) {}
     return false;
   }
-
+  
   public int hashCode()
   {
     return (this.x & 0xFF) << 0 | (this.y & 0xFF) << 8 | (this.z & 0xFF) << 16 | (this.w & 0xFF) << 24;
   }
-
+  
   public Object clone()
   {
     try
@@ -122,12 +118,13 @@ public abstract class Tuple4b
     }
     catch (CloneNotSupportedException localCloneNotSupportedException)
     {
+      throw new InternalError();
     }
-    throw new InternalError();
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     javax.vecmath.Tuple4b
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

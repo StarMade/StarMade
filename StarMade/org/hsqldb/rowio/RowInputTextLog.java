@@ -28,7 +28,8 @@ import org.hsqldb.types.TimeData;
 import org.hsqldb.types.TimestampData;
 import org.hsqldb.types.Type;
 
-public class RowInputTextLog extends RowInputBase
+public class RowInputTextLog
+  extends RowInputBase
   implements RowInputInterface
 {
   Scanner scanner = new Scanner();
@@ -39,18 +40,18 @@ public class RowInputTextLog extends RowInputBase
   boolean version18;
   boolean noSeparators;
   Calendar tempCalDefault = new GregorianCalendar();
-
+  
   public RowInputTextLog()
   {
     super(new byte[0]);
   }
-
+  
   public RowInputTextLog(boolean paramBoolean)
   {
     super(new byte[0]);
     this.version18 = paramBoolean;
   }
-
+  
   public void setSource(String paramString)
   {
     this.scanner.reset(paramString);
@@ -87,47 +88,47 @@ public class RowInputTextLog extends RowInputBase
       }
     }
   }
-
+  
   public int getStatementType()
   {
     return this.statementType;
   }
-
+  
   public String getTableName()
   {
     return this.tableName;
   }
-
+  
   public String getSchemaName()
   {
     return this.schemaName;
   }
-
+  
   protected void readField()
   {
     readFieldPrefix();
     this.scanner.scanNext();
     this.value = this.scanner.getValue();
   }
-
+  
   protected void readNumberField(Type paramType)
   {
     readFieldPrefix();
     this.scanner.scanNext();
     int i = this.scanner.getTokenType() == 784 ? 1 : 0;
-    if (i != 0)
+    if (i != 0) {
       this.scanner.scanNext();
+    }
     this.value = this.scanner.getValue();
-    if (i != 0)
+    if (i != 0) {
       try
       {
         this.value = ((NumberType)this.scanner.getDataType()).negate(this.value);
       }
-      catch (HsqlException localHsqlException)
-      {
-      }
+      catch (HsqlException localHsqlException) {}
+    }
   }
-
+  
   protected void readFieldPrefix()
   {
     if (!this.noSeparators)
@@ -140,83 +141,87 @@ public class RowInputTextLog extends RowInputBase
       }
     }
   }
-
+  
   public String readString()
     throws IOException
   {
     readField();
     return (String)this.value;
   }
-
+  
   public short readShort()
     throws IOException
   {
     throw Error.runtimeError(201, "");
   }
-
+  
   public int readInt()
     throws IOException
   {
     throw Error.runtimeError(201, "");
   }
-
+  
   public long readLong()
     throws IOException
   {
     throw Error.runtimeError(201, "");
   }
-
+  
   public int readType()
     throws IOException
   {
     return 0;
   }
-
+  
   protected boolean readNull()
   {
     return false;
   }
-
+  
   protected String readChar(Type paramType)
     throws IOException
   {
     readField();
     return (String)this.value;
   }
-
+  
   protected Integer readSmallint()
     throws IOException
   {
     readNumberField(Type.SQL_SMALLINT);
     return (Integer)this.value;
   }
-
+  
   protected Integer readInteger()
     throws IOException
   {
     readNumberField(Type.SQL_INTEGER);
-    if ((this.value instanceof Long))
+    if ((this.value instanceof Long)) {
       this.value = Type.SQL_INTEGER.convertToDefaultType(null, this.value);
+    }
     return (Integer)this.value;
   }
-
+  
   protected Long readBigint()
     throws IOException
   {
     readNumberField(Type.SQL_BIGINT);
-    if (this.value == null)
+    if (this.value == null) {
       return null;
-    if ((this.value instanceof BigDecimal))
+    }
+    if ((this.value instanceof BigDecimal)) {
       return (Long)Type.SQL_BIGINT.convertToDefaultType(null, this.value);
+    }
     return ValuePool.getLong(((Number)this.value).longValue());
   }
-
+  
   protected Double readReal()
     throws IOException
   {
     readNumberField(Type.SQL_DOUBLE);
-    if (this.value == null)
+    if (this.value == null) {
       return null;
+    }
     if (this.scanner.scanSpecialIdentifier("/"))
     {
       this.scanner.scanNext();
@@ -224,38 +229,42 @@ public class RowInputTextLog extends RowInputBase
       double d = ((Number)localObject).doubleValue();
       if (d == 0.0D)
       {
-        if (((Number)this.value).doubleValue() == 1.0D)
+        if (((Number)this.value).doubleValue() == 1.0D) {
           d = (-1.0D / 0.0D);
-        else if (((Number)this.value).doubleValue() == -1.0D)
+        } else if (((Number)this.value).doubleValue() == -1.0D) {
           d = (1.0D / 0.0D);
-        else if (((Number)this.value).doubleValue() == 0.0D)
+        } else if (((Number)this.value).doubleValue() == 0.0D) {
           d = (0.0D / 0.0D);
-        else
+        } else {
           throw Error.error(5584);
+        }
       }
-      else
+      else {
         throw Error.error(5584);
+      }
       this.value = Double.valueOf(d);
     }
     return (Double)this.value;
   }
-
+  
   protected BigDecimal readDecimal(Type paramType)
     throws IOException
   {
     readNumberField(paramType);
-    if (this.value == null)
+    if (this.value == null) {
       return null;
+    }
     BigDecimal localBigDecimal = (BigDecimal)paramType.convertToDefaultType(null, this.value);
     return (BigDecimal)paramType.convertToTypeLimits(null, localBigDecimal);
   }
-
+  
   protected TimeData readTime(Type paramType)
     throws IOException
   {
     readField();
-    if (this.value == null)
+    if (this.value == null) {
       return null;
+    }
     if (this.version18)
     {
       Time localTime = Time.valueOf((String)this.value);
@@ -265,13 +274,14 @@ public class RowInputTextLog extends RowInputBase
     }
     return this.scanner.newTime((String)this.value);
   }
-
+  
   protected TimestampData readDate(Type paramType)
     throws IOException
   {
     readField();
-    if (this.value == null)
+    if (this.value == null) {
       return null;
+    }
     if (this.version18)
     {
       Date localDate = Date.valueOf((String)this.value);
@@ -281,13 +291,14 @@ public class RowInputTextLog extends RowInputBase
     }
     return this.scanner.newDate((String)this.value);
   }
-
+  
   protected TimestampData readTimestamp(Type paramType)
     throws IOException
   {
     readField();
-    if (this.value == null)
+    if (this.value == null) {
       return null;
+    }
     if (this.version18)
     {
       Timestamp localTimestamp = Timestamp.valueOf((String)this.value);
@@ -299,25 +310,27 @@ public class RowInputTextLog extends RowInputBase
     }
     return this.scanner.newTimestamp((String)this.value);
   }
-
+  
   protected IntervalMonthData readYearMonthInterval(Type paramType)
     throws IOException
   {
     readField();
-    if (this.value == null)
+    if (this.value == null) {
       return null;
+    }
     return (IntervalMonthData)this.scanner.newInterval((String)this.value, (IntervalType)paramType);
   }
-
+  
   protected IntervalSecondData readDaySecondInterval(Type paramType)
     throws IOException
   {
     readField();
-    if (this.value == null)
+    if (this.value == null) {
       return null;
+    }
     return (IntervalSecondData)this.scanner.newInterval((String)this.value, (IntervalType)paramType);
   }
-
+  
   protected Boolean readBoole()
     throws IOException
   {
@@ -325,72 +338,81 @@ public class RowInputTextLog extends RowInputBase
     this.scanner.scanNext();
     String str = this.scanner.getString();
     this.value = null;
-    if (str.equalsIgnoreCase("TRUE"))
+    if (str.equalsIgnoreCase("TRUE")) {
       this.value = Boolean.TRUE;
-    else if (str.equalsIgnoreCase("FALSE"))
+    } else if (str.equalsIgnoreCase("FALSE")) {
       this.value = Boolean.FALSE;
+    }
     return (Boolean)this.value;
   }
-
+  
   protected Object readOther()
     throws IOException
   {
     readFieldPrefix();
-    if (this.scanner.scanNull())
+    if (this.scanner.scanNull()) {
       return null;
+    }
     this.scanner.scanBinaryStringWithQuote();
-    if (this.scanner.getTokenType() == 856)
+    if (this.scanner.getTokenType() == 856) {
       throw Error.error(5587);
+    }
     this.value = this.scanner.getValue();
     return new JavaObjectData(((BinaryData)this.value).getBytes());
   }
-
+  
   protected BinaryData readBit()
     throws IOException
   {
     readFieldPrefix();
-    if (this.scanner.scanNull())
+    if (this.scanner.scanNull()) {
       return null;
+    }
     this.scanner.scanBitStringWithQuote();
-    if (this.scanner.getTokenType() == 855)
+    if (this.scanner.getTokenType() == 855) {
       throw Error.error(5587);
+    }
     this.value = this.scanner.getValue();
     return (BinaryData)this.value;
   }
-
+  
   protected BinaryData readBinary()
     throws IOException
   {
     readFieldPrefix();
-    if (this.scanner.scanNull())
+    if (this.scanner.scanNull()) {
       return null;
+    }
     this.scanner.scanBinaryStringWithQuote();
-    if (this.scanner.getTokenType() == 856)
+    if (this.scanner.getTokenType() == 856) {
       throw Error.error(5587);
+    }
     this.value = this.scanner.getValue();
     return (BinaryData)this.value;
   }
-
+  
   protected ClobData readClob()
     throws IOException
   {
     readNumberField(Type.SQL_BIGINT);
-    if (this.value == null)
+    if (this.value == null) {
       return null;
+    }
     long l = ((Number)this.value).longValue();
     return new ClobDataID(l);
   }
-
+  
   protected BlobData readBlob()
     throws IOException
   {
     readNumberField(Type.SQL_BIGINT);
-    if (this.value == null)
+    if (this.value == null) {
       return null;
+    }
     long l = ((Number)this.value).longValue();
     return new BlobDataID(l);
   }
-
+  
   protected Object[] readArray(Type paramType)
     throws IOException
   {
@@ -399,20 +421,24 @@ public class RowInputTextLog extends RowInputBase
     this.scanner.scanNext();
     String str = this.scanner.getString();
     this.value = null;
-    if (str.equalsIgnoreCase("NULL"))
+    if (str.equalsIgnoreCase("NULL")) {
       return null;
-    if (!str.equalsIgnoreCase("ARRAY"))
+    }
+    if (!str.equalsIgnoreCase("ARRAY")) {
       throw Error.error(5584);
+    }
     this.scanner.scanNext();
     str = this.scanner.getString();
-    if (!str.equalsIgnoreCase("["))
+    if (!str.equalsIgnoreCase("[")) {
       throw Error.error(5584);
+    }
     HsqlArrayList localHsqlArrayList = new HsqlArrayList();
     this.noSeparators = true;
     for (int i = 0; !this.scanner.scanSpecialIdentifier("]"); i++)
     {
-      if ((i > 0) && (!this.scanner.scanSpecialIdentifier(",")))
+      if ((i > 0) && (!this.scanner.scanSpecialIdentifier(","))) {
         throw Error.error(5584);
+      }
       Object localObject = readData(paramType);
       localHsqlArrayList.add(localObject);
     }
@@ -423,7 +449,8 @@ public class RowInputTextLog extends RowInputBase
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.rowio.RowInputTextLog
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

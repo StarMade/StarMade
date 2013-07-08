@@ -15,7 +15,7 @@ class LookFloor1
   int phrasebits;
   int postbits;
   int frames;
-
+  
   void free()
   {
     this.sorted_index = null;
@@ -26,7 +26,8 @@ class LookFloor1
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     com.jcraft.jorbis.LookFloor1
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

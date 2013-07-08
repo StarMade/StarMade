@@ -58,11 +58,9 @@ public class TableBase
   private boolean isTransactional = true;
   boolean hasLobColumn;
   long dataTimestamp;
-
-  TableBase()
-  {
-  }
-
+  
+  TableBase() {}
+  
   public TableBase(Session paramSession, Database paramDatabase, int paramInt1, int paramInt2, Type[] paramArrayOfType)
   {
     this.tableType = paramInt2;
@@ -77,7 +75,7 @@ public class TableBase
     this.indexList = new Index[0];
     createPrimaryIndex(this.primaryKeyCols, this.primaryKeyTypes, null);
   }
-
+  
   public TableBase duplicate()
   {
     TableBase localTableBase = new TableBase();
@@ -93,116 +91,117 @@ public class TableBase
     localTableBase.indexList = this.indexList;
     return localTableBase;
   }
-
+  
   public final int getTableType()
   {
     return this.tableType;
   }
-
+  
   public long getPersistenceId()
   {
     return this.persistenceId;
   }
-
+  
   int getId()
   {
     return 0;
   }
-
+  
   public final boolean onCommitPreserve()
   {
     return this.persistenceScope == 23;
   }
-
+  
   public final RowIterator rowIterator(Session paramSession)
   {
     PersistentStore localPersistentStore = getRowStore(paramSession);
     return getPrimaryIndex().firstRow(paramSession, localPersistentStore);
   }
-
+  
   public final RowIterator rowIterator(PersistentStore paramPersistentStore)
   {
     return getPrimaryIndex().firstRow(paramPersistentStore);
   }
-
+  
   public final int getIndexCount()
   {
     return this.indexList.length;
   }
-
+  
   public final Index getPrimaryIndex()
   {
     return this.indexList.length > 0 ? this.indexList[0] : null;
   }
-
+  
   public final Type[] getPrimaryKeyTypes()
   {
     return this.primaryKeyTypes;
   }
-
+  
   public final boolean hasPrimaryKey()
   {
     return this.primaryKeyCols.length != 0;
   }
-
+  
   public final int[] getPrimaryKey()
   {
     return this.primaryKeyCols;
   }
-
+  
   public final Type[] getColumnTypes()
   {
     return this.colTypes;
   }
-
+  
   public Index getFullIndex()
   {
     return this.fullIndex;
   }
-
+  
   public final Index getIndex(int paramInt)
   {
     return this.indexList[paramInt];
   }
-
+  
   public final Index[] getIndexList()
   {
     return this.indexList;
   }
-
+  
   public final boolean[] getNewColumnCheckList()
   {
     return new boolean[getColumnCount()];
   }
-
+  
   public int getColumnCount()
   {
     return this.columnCount;
   }
-
+  
   public final int getDataColumnCount()
   {
     return this.colTypes.length;
   }
-
+  
   public boolean isTransactional()
   {
     return this.isTransactional;
   }
-
+  
   public void setTransactional(boolean paramBoolean)
   {
     this.isTransactional = paramBoolean;
   }
-
+  
   public final void setBestRowIdentifiers()
   {
     Object localObject = null;
     int i = 0;
     boolean bool = false;
     int j = 0;
-    if (this.colNotNull == null)
+    if (this.colNotNull == null) {
       return;
+    }
     this.bestIndex = null;
     this.bestIndexForColumn = new int[this.colTypes.length];
     ArrayUtil.fillArray(this.bestIndexForColumn, -1);
@@ -213,8 +212,9 @@ public class TableBase
       int m = localIndex1.getColumnCount();
       if (m != 0)
       {
-        if (k == 0)
+        if (k == 0) {
           bool = true;
+        }
         if (this.bestIndexForColumn[arrayOfInt[0]] == -1)
         {
           this.bestIndexForColumn[arrayOfInt[0]] = k;
@@ -222,22 +222,27 @@ public class TableBase
         else
         {
           Index localIndex2 = this.indexList[this.bestIndexForColumn[arrayOfInt[0]]];
-          if (m > localIndex2.getColumns().length)
+          if (m > localIndex2.getColumns().length) {
             this.bestIndexForColumn[arrayOfInt[0]] = k;
+          }
         }
         if (!localIndex1.isUnique())
         {
-          if (this.bestIndex == null)
+          if (this.bestIndex == null) {
             this.bestIndex = localIndex1;
+          }
         }
         else
         {
           int n = 0;
-          for (int i1 = 0; i1 < m; i1++)
-            if (this.colNotNull[arrayOfInt[i1]] != 0)
+          for (int i1 = 0; i1 < m; i1++) {
+            if (this.colNotNull[arrayOfInt[i1]] != 0) {
               n++;
-          if (this.bestIndex != null)
+            }
+          }
+          if (this.bestIndex != null) {
             this.bestIndex = localIndex1;
+          }
           if (n == m)
           {
             if ((localObject == null) || (i != j) || (m < i))
@@ -257,15 +262,17 @@ public class TableBase
         }
       }
     }
-    if ((localObject == null) || (i == localObject.length))
+    if ((localObject == null) || (i == localObject.length)) {
       this.bestRowIdentifierCols = localObject;
-    else
+    } else {
       this.bestRowIdentifierCols = ArrayUtil.arraySlice(localObject, 0, i);
+    }
     this.bestRowIdentifierStrict = bool;
-    if (this.indexList[0].getColumnCount() > 0)
+    if (this.indexList[0].getColumnCount() > 0) {
       this.bestIndex = this.indexList[0];
+    }
   }
-
+  
   public final void createPrimaryIndex(int[] paramArrayOfInt, Type[] paramArrayOfType, HsqlNameManager.HsqlName paramHsqlName)
   {
     long l = this.database.persistentStoreCollection.getNextId();
@@ -274,22 +281,21 @@ public class TableBase
     {
       addIndex(localIndex);
     }
-    catch (HsqlException localHsqlException)
-    {
-    }
+    catch (HsqlException localHsqlException) {}
   }
-
+  
   public final Index createAndAddIndexStructure(HsqlNameManager.HsqlName paramHsqlName, int[] paramArrayOfInt, boolean[] paramArrayOfBoolean1, boolean[] paramArrayOfBoolean2, boolean paramBoolean1, boolean paramBoolean2, boolean paramBoolean3)
   {
     Index localIndex = createIndexStructure(paramHsqlName, paramArrayOfInt, paramArrayOfBoolean1, paramArrayOfBoolean2, paramBoolean1, paramBoolean2, paramBoolean3);
     addIndex(localIndex);
     return localIndex;
   }
-
+  
   final Index createIndexStructure(HsqlNameManager.HsqlName paramHsqlName, int[] paramArrayOfInt, boolean[] paramArrayOfBoolean1, boolean[] paramArrayOfBoolean2, boolean paramBoolean1, boolean paramBoolean2, boolean paramBoolean3)
   {
-    if (this.primaryKeyCols == null)
+    if (this.primaryKeyCols == null) {
       throw Error.runtimeError(201, "createIndex");
+    }
     int i = paramArrayOfInt.length;
     int[] arrayOfInt = new int[i];
     Type[] arrayOfType = new Type[i];
@@ -302,30 +308,34 @@ public class TableBase
     Index localIndex = this.database.logger.newIndex(paramHsqlName, l, this, arrayOfInt, paramArrayOfBoolean1, paramArrayOfBoolean2, arrayOfType, false, paramBoolean1, paramBoolean2, paramBoolean3);
     return localIndex;
   }
-
+  
   public void dropIndex(int paramInt)
   {
     this.indexList = ((Index[])ArrayUtil.toAdjustedArray(this.indexList, null, paramInt, -1));
-    for (int i = 0; i < this.indexList.length; i++)
+    for (int i = 0; i < this.indexList.length; i++) {
       this.indexList[i].setPosition(i);
+    }
     setBestRowIdentifiers();
-    if (this.store != null)
+    if (this.store != null) {
       this.store.resetAccessorKeys(this.indexList);
+    }
   }
-
+  
   final void addIndex(Index paramIndex)
   {
     for (int i = 0; i < this.indexList.length; i++)
     {
       Index localIndex = this.indexList[i];
       int j = paramIndex.getIndexOrderValue() - localIndex.getIndexOrderValue();
-      if (j < 0)
+      if (j < 0) {
         break;
+      }
     }
     this.indexList = ((Index[])ArrayUtil.toAdjustedArray(this.indexList, paramIndex, i, 1));
-    for (i = 0; i < this.indexList.length; i++)
+    for (i = 0; i < this.indexList.length; i++) {
       this.indexList[i].setPosition(i);
-    if (this.store != null)
+    }
+    if (this.store != null) {
       try
       {
         this.store.resetAccessorKeys(this.indexList);
@@ -333,64 +343,66 @@ public class TableBase
       catch (HsqlException localHsqlException)
       {
         this.indexList = ((Index[])ArrayUtil.toAdjustedArray(this.indexList, null, paramIndex.getPosition(), -1));
-        for (i = 0; i < this.indexList.length; i++)
+        for (i = 0; i < this.indexList.length; i++) {
           this.indexList[i].setPosition(i);
+        }
         throw localHsqlException;
       }
+    }
     setBestRowIdentifiers();
   }
-
+  
   final void removeIndex(int paramInt)
   {
     setBestRowIdentifiers();
   }
-
+  
   public final void setIndexes(Index[] paramArrayOfIndex)
   {
     this.indexList = paramArrayOfIndex;
   }
-
+  
   public final Object[] getEmptyRowData()
   {
     return new Object[getDataColumnCount()];
   }
-
+  
   public final Index createIndex(Session paramSession, HsqlNameManager.HsqlName paramHsqlName, int[] paramArrayOfInt, boolean[] paramArrayOfBoolean1, boolean[] paramArrayOfBoolean2, boolean paramBoolean1, boolean paramBoolean2, boolean paramBoolean3)
   {
     Index localIndex = createAndAddIndexStructure(paramHsqlName, paramArrayOfInt, paramArrayOfBoolean1, paramArrayOfBoolean2, paramBoolean1, paramBoolean2, paramBoolean3);
     return localIndex;
   }
-
+  
   public void clearAllData(Session paramSession)
   {
     PersistentStore localPersistentStore = getRowStore(paramSession);
     localPersistentStore.removeAll();
   }
-
+  
   public void clearAllData(PersistentStore paramPersistentStore)
   {
     paramPersistentStore.removeAll();
   }
-
+  
   public final boolean isEmpty(Session paramSession)
   {
-    if (getIndexCount() == 0)
+    if (getIndexCount() == 0) {
       return true;
+    }
     PersistentStore localPersistentStore = getRowStore(paramSession);
     return getIndex(0).isEmpty(localPersistentStore);
   }
-
+  
   public PersistentStore getRowStore(Session paramSession)
   {
     return this.store == null ? paramSession.sessionData.persistentStoreCollection.getStore(this) : this.store;
   }
-
-  public void setDataTimestamp(long paramLong)
-  {
-  }
+  
+  public void setDataTimestamp(long paramLong) {}
 }
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.TableBase
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

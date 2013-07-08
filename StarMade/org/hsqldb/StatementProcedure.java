@@ -12,13 +12,14 @@ import org.hsqldb.rights.Grantee;
 import org.hsqldb.store.ValuePool;
 import org.hsqldb.types.Type;
 
-public class StatementProcedure extends StatementDMQL
+public class StatementProcedure
+  extends StatementDMQL
 {
   Expression expression;
   Routine procedure;
   Expression[] arguments = Expression.emptyArray;
   ResultMetaData resultMetaData;
-
+  
   StatementProcedure(Session paramSession, Expression paramExpression, ParserDQL.CompileContext paramCompileContext)
   {
     super(7, 2003, paramSession.getCurrentSchemaHsqlName());
@@ -42,29 +43,31 @@ public class StatementProcedure extends StatementDMQL
     }
     setDatabseObjects(paramSession, paramCompileContext);
     checkAccessRights(paramSession);
-    if (this.procedure != null)
+    if (this.procedure != null) {
       paramSession.getGrantee().checkAccess(this.procedure);
+    }
   }
-
+  
   StatementProcedure(Session paramSession, Routine paramRoutine, Expression[] paramArrayOfExpression, ParserDQL.CompileContext paramCompileContext)
   {
     super(7, 2003, paramSession.getCurrentSchemaHsqlName());
-    if (paramRoutine.maxDynamicResults > 0)
+    if (paramRoutine.maxDynamicResults > 0) {
       this.statementReturnType = 0;
+    }
     this.procedure = paramRoutine;
     this.arguments = paramArrayOfExpression;
     setDatabseObjects(paramSession, paramCompileContext);
     checkAccessRights(paramSession);
     paramSession.getGrantee().checkAccess(paramRoutine);
   }
-
+  
   Result getResult(Session paramSession)
   {
     Result localResult = this.expression == null ? getProcedureResult(paramSession) : getExpressionResult(paramSession);
     localResult.setStatementType(this.statementReturnType);
     return localResult;
   }
-
+  
   Result getProcedureResult(Session paramSession)
   {
     Object[] arrayOfObject = ValuePool.emptyObjectArray;
@@ -72,17 +75,20 @@ public class StatementProcedure extends StatementDMQL
     if (this.procedure.isPSM())
     {
       i = this.arguments.length;
-      if (this.procedure.getMaxDynamicResults() > 0)
+      if (this.procedure.getMaxDynamicResults() > 0) {
         i++;
+      }
     }
     else
     {
       i = this.procedure.javaMethod.getParameterTypes().length;
-      if (this.procedure.javaMethodWithConnection)
+      if (this.procedure.javaMethodWithConnection) {
         i--;
+      }
     }
-    if (i > 0)
+    if (i > 0) {
       arrayOfObject = new Object[i];
+    }
     Object localObject3;
     for (int j = 0; j < this.arguments.length; j++)
     {
@@ -109,10 +115,12 @@ public class StatementProcedure extends StatementDMQL
     }
     Object localObject1 = paramSession.sessionContext.routineArguments;
     paramSession.sessionContext.pop();
-    if (!this.procedure.isPSM())
+    if (!this.procedure.isPSM()) {
       paramSession.releaseInternalConnection();
-    if (localResult1.isError())
+    }
+    if (localResult1.isError()) {
       return localResult1;
+    }
     for (int k = 0; k < this.procedure.getParameterCount(); k++)
     {
       localObject3 = this.procedure.getParameter(k);
@@ -145,35 +153,38 @@ public class StatementProcedure extends StatementDMQL
     }
     return localResult1;
   }
-
+  
   Result executePSMProcedure(Session paramSession)
   {
     int i = this.procedure.getVariableCount();
     paramSession.sessionContext.routineVariables = new Object[i];
     Result localResult = this.procedure.statement.execute(paramSession);
-    if (localResult.isError())
+    if (localResult.isError()) {
       return localResult;
+    }
     return localResult;
   }
-
+  
   Result executeJavaProcedure(Session paramSession, Connection paramConnection)
   {
     Result localResult = Result.updateZeroResult;
     Object[] arrayOfObject1 = paramSession.sessionContext.routineArguments;
     Object[] arrayOfObject2 = this.procedure.convertArgsToJava(paramSession, arrayOfObject1);
-    if (this.procedure.javaMethodWithConnection)
+    if (this.procedure.javaMethodWithConnection) {
       arrayOfObject2[0] = paramConnection;
+    }
     localResult = this.procedure.invokeJavaMethod(paramSession, arrayOfObject2);
     this.procedure.convertArgsToSQL(paramSession, arrayOfObject1, arrayOfObject2);
     return localResult;
   }
-
+  
   Result getExpressionResult(Session paramSession)
   {
     paramSession.sessionData.startRowProcessing();
     Object localObject = this.expression.getValue(paramSession);
-    if (this.resultMetaData == null)
+    if (this.resultMetaData == null) {
       getResultMetaData();
+    }
     Result localResult = Result.newSingleColumnResult(this.resultMetaData);
     Object[] arrayOfObject;
     if (this.expression.getDataType().isArrayType())
@@ -193,33 +204,39 @@ public class StatementProcedure extends StatementDMQL
     localResult.getNavigator().add(arrayOfObject);
     return localResult;
   }
-
+  
   TableDerived[] getSubqueries(Session paramSession)
   {
     OrderedHashSet localOrderedHashSet = null;
-    if (this.expression != null)
+    if (this.expression != null) {
       localOrderedHashSet = this.expression.collectAllSubqueries(localOrderedHashSet);
-    for (int i = 0; i < this.arguments.length; i++)
+    }
+    for (int i = 0; i < this.arguments.length; i++) {
       localOrderedHashSet = this.arguments[i].collectAllSubqueries(localOrderedHashSet);
-    if ((localOrderedHashSet == null) || (localOrderedHashSet.size() == 0))
+    }
+    if ((localOrderedHashSet == null) || (localOrderedHashSet.size() == 0)) {
       return TableDerived.emptyArray;
+    }
     TableDerived[] arrayOfTableDerived = new TableDerived[localOrderedHashSet.size()];
     localOrderedHashSet.toArray(arrayOfTableDerived);
     ArraySort.sort(arrayOfTableDerived, 0, arrayOfTableDerived.length, arrayOfTableDerived[0]);
-    for (int j = 0; j < this.subqueries.length; j++)
+    for (int j = 0; j < this.subqueries.length; j++) {
       arrayOfTableDerived[j].prepareTable();
+    }
     return arrayOfTableDerived;
   }
-
+  
   public ResultMetaData getResultMetaData()
   {
-    if (this.resultMetaData != null)
+    if (this.resultMetaData != null) {
       return this.resultMetaData;
+    }
     switch (this.type)
     {
-    case 7:
-      if (this.expression == null)
+    case 7: 
+      if (this.expression == null) {
         return ResultMetaData.emptyResultMetaData;
+      }
       ResultMetaData localResultMetaData = ResultMetaData.newResultMetaData(1);
       ColumnBase localColumnBase = new ColumnBase(null, null, null, "@p0");
       localColumnBase.setType(this.expression.getDataType());
@@ -230,12 +247,12 @@ public class StatementProcedure extends StatementDMQL
     }
     throw Error.runtimeError(201, "StatementProcedure");
   }
-
+  
   public ResultMetaData getParametersMetaData()
   {
     return super.getParametersMetaData();
   }
-
+  
   void collectTableNamesForRead(OrderedHashSet paramOrderedHashSet)
   {
     if (this.expression == null)
@@ -244,22 +261,27 @@ public class StatementProcedure extends StatementDMQL
     }
     else
     {
-      for (int i = 0; i < this.subqueries.length; i++)
-        if (this.subqueries[i].queryExpression != null)
+      for (int i = 0; i < this.subqueries.length; i++) {
+        if (this.subqueries[i].queryExpression != null) {
           this.subqueries[i].queryExpression.getBaseTableNames(paramOrderedHashSet);
-      for (i = 0; i < this.routines.length; i++)
+        }
+      }
+      for (i = 0; i < this.routines.length; i++) {
         paramOrderedHashSet.addAll(this.routines[i].getTableNamesForRead());
+      }
     }
   }
-
+  
   void collectTableNamesForWrite(OrderedHashSet paramOrderedHashSet)
   {
-    if (this.expression == null)
+    if (this.expression == null) {
       paramOrderedHashSet.addAll(this.procedure.getTableNamesForWrite());
+    }
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.StatementProcedure
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

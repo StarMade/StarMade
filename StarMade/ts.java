@@ -1,9 +1,11 @@
-public final class ts extends wv
+public final class ts
+  extends wv
 {
   private static final long serialVersionUID = 2351991772531474435L;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     ts
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

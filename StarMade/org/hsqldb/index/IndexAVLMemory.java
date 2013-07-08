@@ -15,13 +15,14 @@ import org.hsqldb.error.Error;
 import org.hsqldb.persist.PersistentStore;
 import org.hsqldb.types.Type;
 
-public class IndexAVLMemory extends IndexAVL
+public class IndexAVLMemory
+  extends IndexAVL
 {
   public IndexAVLMemory(HsqlNameManager.HsqlName paramHsqlName, long paramLong, TableBase paramTableBase, int[] paramArrayOfInt, boolean[] paramArrayOfBoolean1, boolean[] paramArrayOfBoolean2, Type[] paramArrayOfType, boolean paramBoolean1, boolean paramBoolean2, boolean paramBoolean3, boolean paramBoolean4)
   {
     super(paramHsqlName, paramLong, paramTableBase, paramArrayOfInt, paramArrayOfBoolean1, paramArrayOfBoolean2, paramArrayOfType, paramBoolean1, paramBoolean2, paramBoolean3, paramBoolean4);
   }
-
+  
   public void checkIndex(PersistentStore paramPersistentStore)
   {
     this.readLock.lock();
@@ -47,21 +48,25 @@ public class IndexAVLMemory extends IndexAVL
       this.readLock.unlock();
     }
   }
-
+  
   void checkNodes(PersistentStore paramPersistentStore, NodeAVL paramNodeAVL)
   {
     NodeAVL localNodeAVL1 = paramNodeAVL.nLeft;
     NodeAVL localNodeAVL2 = paramNodeAVL.nRight;
-    if ((localNodeAVL1 != null) && (localNodeAVL1.getBalance(paramPersistentStore) == -2))
+    if ((localNodeAVL1 != null) && (localNodeAVL1.getBalance(paramPersistentStore) == -2)) {
       System.out.print("broken index - deleted");
-    if ((localNodeAVL2 != null) && (localNodeAVL2.getBalance(paramPersistentStore) == -2))
+    }
+    if ((localNodeAVL2 != null) && (localNodeAVL2.getBalance(paramPersistentStore) == -2)) {
       System.out.print("broken index -deleted");
-    if ((localNodeAVL1 != null) && (!paramNodeAVL.equals(localNodeAVL1.getParent(paramPersistentStore))))
+    }
+    if ((localNodeAVL1 != null) && (!paramNodeAVL.equals(localNodeAVL1.getParent(paramPersistentStore)))) {
       System.out.print("broken index - no parent");
-    if ((localNodeAVL2 != null) && (!paramNodeAVL.equals(localNodeAVL2.getParent(paramPersistentStore))))
+    }
+    if ((localNodeAVL2 != null) && (!paramNodeAVL.equals(localNodeAVL2.getParent(paramPersistentStore)))) {
       System.out.print("broken index - no parent");
+    }
   }
-
+  
   public void insert(Session paramSession, PersistentStore paramPersistentStore, Row paramRow)
   {
     boolean bool1 = true;
@@ -79,15 +84,16 @@ public class IndexAVLMemory extends IndexAVL
         paramPersistentStore.setAccessor(this, ((RowAVL)paramRow).getNode(this.position));
         return;
       }
-      while (true)
+      for (;;)
       {
         Row localRow = localNodeAVL1.row;
         i = 0;
         if (bool3)
         {
           i = this.colTypes[0].compare(paramSession, arrayOfObject[this.colIndex[0]], localRow.getData()[this.colIndex[0]]);
-          if ((i == 0) && (bool2))
+          if ((i == 0) && (bool2)) {
             i = compareRowForInsertOrDelete(paramSession, paramRow, localRow, bool2, 1);
+          }
         }
         else
         {
@@ -110,8 +116,9 @@ public class IndexAVLMemory extends IndexAVL
         bool1 = i < 0;
         localNodeAVL2 = localNodeAVL1;
         localNodeAVL1 = bool1 ? localNodeAVL2.nLeft : localNodeAVL2.nRight;
-        if (localNodeAVL1 == null)
+        if (localNodeAVL1 == null) {
           break;
+        }
       }
       localNodeAVL2 = localNodeAVL2.set(paramPersistentStore, bool1, ((RowAVL)paramRow).getNode(this.position));
       balance(paramPersistentStore, localNodeAVL2, bool1);
@@ -121,11 +128,12 @@ public class IndexAVLMemory extends IndexAVL
       this.writeLock.unlock();
     }
   }
-
+  
   void delete(PersistentStore paramPersistentStore, NodeAVL paramNodeAVL)
   {
-    if (paramNodeAVL == null)
+    if (paramNodeAVL == null) {
       return;
+    }
     this.writeLock.lock();
     try
     {
@@ -144,11 +152,12 @@ public class IndexAVLMemory extends IndexAVL
       {
         NodeAVL localNodeAVL2 = paramNodeAVL;
         NodeAVL localNodeAVL3;
-        for (paramNodeAVL = paramNodeAVL.nLeft; ; paramNodeAVL = localNodeAVL3)
+        for (paramNodeAVL = paramNodeAVL.nLeft;; paramNodeAVL = localNodeAVL3)
         {
           localNodeAVL3 = paramNodeAVL.nRight;
-          if (localNodeAVL3 == null)
+          if (localNodeAVL3 == null) {
             break;
+          }
         }
         localNodeAVL1 = paramNodeAVL.nLeft;
         i = paramNodeAVL.iBalance;
@@ -156,14 +165,17 @@ public class IndexAVLMemory extends IndexAVL
         localNodeAVL2.iBalance = i;
         localNodeAVL4 = paramNodeAVL.nParent;
         NodeAVL localNodeAVL5 = localNodeAVL2.nParent;
-        if (localNodeAVL2.isRoot(paramPersistentStore))
+        if (localNodeAVL2.isRoot(paramPersistentStore)) {
           paramPersistentStore.setAccessor(this, paramNodeAVL);
+        }
         paramNodeAVL.nParent = localNodeAVL5;
-        if (localNodeAVL5 != null)
-          if (localNodeAVL5.nRight == localNodeAVL2)
+        if (localNodeAVL5 != null) {
+          if (localNodeAVL5.nRight == localNodeAVL2) {
             localNodeAVL5.nRight = paramNodeAVL;
-          else
+          } else {
             localNodeAVL5.nLeft = paramNodeAVL;
+          }
+        }
         if (localNodeAVL2 == localNodeAVL4)
         {
           localNodeAVL2.nParent = paramNodeAVL;
@@ -192,8 +204,9 @@ public class IndexAVLMemory extends IndexAVL
         paramNodeAVL.nRight.nParent = paramNodeAVL;
         paramNodeAVL.nLeft.nParent = paramNodeAVL;
         localNodeAVL2.nLeft = localNodeAVL1;
-        if (localNodeAVL1 != null)
+        if (localNodeAVL1 != null) {
           localNodeAVL1.nParent = localNodeAVL2;
+        }
         localNodeAVL2.nRight = null;
         paramNodeAVL = localNodeAVL2;
       }
@@ -207,13 +220,13 @@ public class IndexAVLMemory extends IndexAVL
         i = bool ? 1 : -1;
         switch (paramNodeAVL.iBalance * i)
         {
-        case -1:
+        case -1: 
           paramNodeAVL.iBalance = 0;
           break;
-        case 0:
+        case 0: 
           paramNodeAVL.iBalance = i;
           return;
-        case 1:
+        case 1: 
           localNodeAVL4 = paramNodeAVL.child(paramPersistentStore, !bool);
           int j = localNodeAVL4.iBalance;
           if (j * i >= 0)
@@ -257,55 +270,60 @@ public class IndexAVLMemory extends IndexAVL
       this.writeLock.unlock();
     }
   }
-
+  
   NodeAVL next(PersistentStore paramPersistentStore, NodeAVL paramNodeAVL)
   {
     NodeAVL localNodeAVL1 = paramNodeAVL.nRight;
     if (localNodeAVL1 != null)
     {
       paramNodeAVL = localNodeAVL1;
-      for (localNodeAVL2 = paramNodeAVL.nLeft; localNodeAVL2 != null; localNodeAVL2 = paramNodeAVL.nLeft)
+      for (localNodeAVL2 = paramNodeAVL.nLeft; localNodeAVL2 != null; localNodeAVL2 = paramNodeAVL.nLeft) {
         paramNodeAVL = localNodeAVL2;
+      }
       return paramNodeAVL;
     }
     NodeAVL localNodeAVL2 = paramNodeAVL;
-    for (paramNodeAVL = paramNodeAVL.nParent; (paramNodeAVL != null) && (localNodeAVL2 == paramNodeAVL.nRight); paramNodeAVL = paramNodeAVL.nParent)
+    for (paramNodeAVL = paramNodeAVL.nParent; (paramNodeAVL != null) && (localNodeAVL2 == paramNodeAVL.nRight); paramNodeAVL = paramNodeAVL.nParent) {
       localNodeAVL2 = paramNodeAVL;
+    }
     return paramNodeAVL;
   }
-
+  
   NodeAVL last(PersistentStore paramPersistentStore, NodeAVL paramNodeAVL)
   {
-    if (paramNodeAVL == null)
+    if (paramNodeAVL == null) {
       return null;
+    }
     NodeAVL localNodeAVL1 = paramNodeAVL.nLeft;
     if (localNodeAVL1 != null)
     {
       paramNodeAVL = localNodeAVL1;
-      for (localNodeAVL2 = paramNodeAVL.nRight; localNodeAVL2 != null; localNodeAVL2 = paramNodeAVL.nRight)
+      for (localNodeAVL2 = paramNodeAVL.nRight; localNodeAVL2 != null; localNodeAVL2 = paramNodeAVL.nRight) {
         paramNodeAVL = localNodeAVL2;
+      }
       return paramNodeAVL;
     }
     NodeAVL localNodeAVL2 = paramNodeAVL;
-    for (paramNodeAVL = paramNodeAVL.nParent; (paramNodeAVL != null) && (localNodeAVL2.equals(paramNodeAVL.nLeft)); paramNodeAVL = paramNodeAVL.nParent)
+    for (paramNodeAVL = paramNodeAVL.nParent; (paramNodeAVL != null) && (localNodeAVL2.equals(paramNodeAVL.nLeft)); paramNodeAVL = paramNodeAVL.nParent) {
       localNodeAVL2 = paramNodeAVL;
+    }
     return paramNodeAVL;
   }
-
+  
   void balance(PersistentStore paramPersistentStore, NodeAVL paramNodeAVL, boolean paramBoolean)
   {
-    while (true)
+    for (;;)
     {
       int i = paramBoolean ? 1 : -1;
       switch (paramNodeAVL.iBalance * i)
       {
-      case 1:
+      case 1: 
         paramNodeAVL.iBalance = 0;
         return;
-      case 0:
+      case 0: 
         paramNodeAVL.iBalance = (-i);
         break;
-      case -1:
+      case -1: 
         NodeAVL localNodeAVL1 = paramBoolean ? paramNodeAVL.nLeft : paramNodeAVL.nRight;
         if (localNodeAVL1.iBalance == -i)
         {
@@ -330,15 +348,17 @@ public class IndexAVLMemory extends IndexAVL
         }
         return;
       }
-      if (paramNodeAVL.nParent == null)
+      if (paramNodeAVL.nParent == null) {
         return;
+      }
       paramBoolean = (paramNodeAVL.nParent == null) || (paramNodeAVL == paramNodeAVL.nParent.nLeft);
       paramNodeAVL = paramNodeAVL.nParent;
     }
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.index.IndexAVLMemory
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

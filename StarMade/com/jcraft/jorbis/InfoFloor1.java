@@ -23,13 +23,14 @@ class InfoFloor1
   int unusedminsize;
   int unusedmin_n;
   int n;
-
+  
   InfoFloor1()
   {
-    for (int i = 0; i < this.class_subbook.length; i++)
+    for (int i = 0; i < this.class_subbook.length; i++) {
       this.class_subbook[i] = new int[8];
+    }
   }
-
+  
   void free()
   {
     this.partitionclass = null;
@@ -39,7 +40,7 @@ class InfoFloor1
     this.class_subbook = null;
     this.postlist = null;
   }
-
+  
   Object copy_info()
   {
     InfoFloor1 localInfoFloor11 = this;
@@ -49,8 +50,9 @@ class InfoFloor1
     System.arraycopy(localInfoFloor11.class_dim, 0, localInfoFloor12.class_dim, 0, 16);
     System.arraycopy(localInfoFloor11.class_subs, 0, localInfoFloor12.class_subs, 0, 16);
     System.arraycopy(localInfoFloor11.class_book, 0, localInfoFloor12.class_book, 0, 16);
-    for (int i = 0; i < 16; i++)
+    for (int i = 0; i < 16; i++) {
       System.arraycopy(localInfoFloor11.class_subbook[i], 0, localInfoFloor12.class_subbook[i], 0, 8);
+    }
     localInfoFloor12.mult = localInfoFloor11.mult;
     System.arraycopy(localInfoFloor11.postlist, 0, localInfoFloor12.postlist, 0, 65);
     localInfoFloor12.maxover = localInfoFloor11.maxover;
@@ -67,7 +69,8 @@ class InfoFloor1
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     com.jcraft.jorbis.InfoFloor1
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

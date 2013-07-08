@@ -9,7 +9,8 @@ import org.hsqldb.persist.PersistentStore;
 import org.hsqldb.rowio.RowInputInterface;
 import org.hsqldb.rowio.RowOutputInterface;
 
-public class RowAVLDisk extends RowAVL
+public class RowAVLDisk
+  extends RowAVL
 {
   public static final int NO_POS = -1;
   int storageSize;
@@ -19,14 +20,14 @@ public class RowAVLDisk extends RowAVL
   boolean isNew;
   boolean hasDataChanged;
   private boolean hasNodesChanged;
-
+  
   public RowAVLDisk(TableBase paramTableBase, Object[] paramArrayOfObject, PersistentStore paramPersistentStore)
   {
     super(paramTableBase, paramArrayOfObject);
     setNewNodes(paramPersistentStore);
     this.hasDataChanged = (this.hasNodesChanged = this.isNew = 1);
   }
-
+  
   public RowAVLDisk(TableBase paramTableBase, RowInputInterface paramRowInputInterface)
     throws IOException
   {
@@ -43,90 +44,89 @@ public class RowAVLDisk extends RowAVL
     }
     this.rowData = paramRowInputInterface.readData(this.table.getColumnTypes());
   }
-
+  
   RowAVLDisk(TableBase paramTableBase)
   {
     super(paramTableBase, (Object[])null);
   }
-
+  
   public NodeAVL insertNode(int paramInt)
   {
     return null;
   }
-
-  private void readRowInfo(RowInputInterface paramRowInputInterface)
-  {
-  }
-
+  
+  private void readRowInfo(RowInputInterface paramRowInputInterface) {}
+  
   public synchronized void setNodesChanged()
   {
     this.hasNodesChanged = true;
   }
-
+  
   public void updateAccessCount(int paramInt)
   {
     this.accessCount = paramInt;
   }
-
+  
   public int getAccessCount()
   {
     return this.accessCount;
   }
-
+  
   public int getStorageSize()
   {
     return this.storageSize;
   }
-
+  
   public boolean isMemory()
   {
     return false;
   }
-
+  
   public void setPos(long paramLong)
   {
     this.position = paramLong;
   }
-
+  
   public synchronized void setChanged(boolean paramBoolean)
   {
     this.hasDataChanged = paramBoolean;
   }
-
+  
   public boolean isNew()
   {
     return this.isNew;
   }
-
+  
   public synchronized boolean hasChanged()
   {
     return (this.hasNodesChanged) || (this.hasDataChanged);
   }
-
+  
   public TableBase getTable()
   {
     return this.table;
   }
-
+  
   public void setStorageSize(int paramInt)
   {
     this.storageSize = paramInt;
   }
-
+  
   public synchronized boolean isKeepInMemory()
   {
     return this.keepCount > 0;
   }
-
+  
   public void delete(PersistentStore paramPersistentStore)
   {
     RowAVLDisk localRowAVLDisk = this;
-    if (!localRowAVLDisk.keepInMemory(true))
+    if (!localRowAVLDisk.keepInMemory(true)) {
       localRowAVLDisk = (RowAVLDisk)paramPersistentStore.get(localRowAVLDisk, true);
+    }
     super.delete(paramPersistentStore);
     localRowAVLDisk.keepInMemory(false);
   }
-
+  
   public void destroy()
   {
     NodeAVL localNodeAVL1 = this.nPrimaryNode;
@@ -138,11 +138,12 @@ public class RowAVLDisk extends RowAVL
     }
     this.nPrimaryNode = null;
   }
-
+  
   public synchronized boolean keepInMemory(boolean paramBoolean)
   {
-    if (!this.isInMemory)
+    if (!this.isInMemory) {
       return false;
+    }
     if (paramBoolean)
     {
       this.keepCount += 1;
@@ -150,26 +151,29 @@ public class RowAVLDisk extends RowAVL
     else
     {
       this.keepCount -= 1;
-      if (this.keepCount < 0)
+      if (this.keepCount < 0) {
         throw Error.runtimeError(201, "RowAVLDisk - keep count");
+      }
     }
     return true;
   }
-
+  
   public synchronized boolean isInMemory()
   {
     return this.isInMemory;
   }
-
+  
   public synchronized void setInMemory(boolean paramBoolean)
   {
     this.isInMemory = paramBoolean;
-    if (paramBoolean)
+    if (paramBoolean) {
       return;
-    for (NodeAVL localNodeAVL = this.nPrimaryNode; localNodeAVL != null; localNodeAVL = localNodeAVL.nNext)
+    }
+    for (NodeAVL localNodeAVL = this.nPrimaryNode; localNodeAVL != null; localNodeAVL = localNodeAVL.nNext) {
       localNodeAVL.setInMemory(paramBoolean);
+    }
   }
-
+  
   public void setNewNodes(PersistentStore paramPersistentStore)
   {
     int i = paramPersistentStore.getAccessorKeys().length;
@@ -181,12 +185,12 @@ public class RowAVLDisk extends RowAVL
       localNodeAVL = localNodeAVL.nNext;
     }
   }
-
+  
   public int getRealSize(RowOutputInterface paramRowOutputInterface)
   {
     return paramRowOutputInterface.getSize(this);
   }
-
+  
   public void write(RowOutputInterface paramRowOutputInterface)
   {
     writeNodes(paramRowOutputInterface);
@@ -198,26 +202,29 @@ public class RowAVLDisk extends RowAVL
       this.isNew = false;
     }
   }
-
+  
   public void write(RowOutputInterface paramRowOutputInterface, LongLookup paramLongLookup)
   {
     paramRowOutputInterface.writeSize(this.storageSize);
-    for (NodeAVL localNodeAVL = this.nPrimaryNode; localNodeAVL != null; localNodeAVL = localNodeAVL.nNext)
+    for (NodeAVL localNodeAVL = this.nPrimaryNode; localNodeAVL != null; localNodeAVL = localNodeAVL.nNext) {
       localNodeAVL.write(paramRowOutputInterface, paramLongLookup);
+    }
     paramRowOutputInterface.writeData(this, this.table.colTypes);
     paramRowOutputInterface.writeEnd();
   }
-
+  
   void writeNodes(RowOutputInterface paramRowOutputInterface)
   {
     paramRowOutputInterface.writeSize(this.storageSize);
-    for (NodeAVL localNodeAVL = this.nPrimaryNode; localNodeAVL != null; localNodeAVL = localNodeAVL.nNext)
+    for (NodeAVL localNodeAVL = this.nPrimaryNode; localNodeAVL != null; localNodeAVL = localNodeAVL.nNext) {
       localNodeAVL.write(paramRowOutputInterface);
+    }
     this.hasNodesChanged = false;
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.RowAVLDisk
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -1,11 +1,13 @@
 package org.schema.game.common.api.exceptions;
 
-public class AlreadyLoggedInException extends Exception
+public class AlreadyLoggedInException
+  extends Exception
 {
   private static final long serialVersionUID = -2926037463139588809L;
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.schema.game.common.api.exceptions.AlreadyLoggedInException
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

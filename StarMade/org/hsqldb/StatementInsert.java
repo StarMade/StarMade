@@ -7,10 +7,11 @@ import org.hsqldb.result.Result;
 import org.hsqldb.result.ResultMetaData;
 import org.hsqldb.types.Type;
 
-public class StatementInsert extends StatementDML
+public class StatementInsert
+  extends StatementDML
 {
   int overrideUserValue = -1;
-
+  
   StatementInsert(Session paramSession, Table paramTable, int[] paramArrayOfInt, Expression paramExpression, boolean[] paramArrayOfBoolean, ParserDQL.CompileContext paramCompileContext)
   {
     super(50, 2004, paramSession.getCurrentSchemaHsqlName());
@@ -24,7 +25,7 @@ public class StatementInsert extends StatementDML
     checkAccessRights(paramSession);
     this.isSimpleInsert = ((paramExpression != null) && (paramExpression.nodes.length == 1) && (this.updatableTableCheck == null));
   }
-
+  
   StatementInsert(Session paramSession, Table paramTable, int[] paramArrayOfInt, boolean[] paramArrayOfBoolean, QueryExpression paramQueryExpression, ParserDQL.CompileContext paramCompileContext, int paramInt)
   {
     super(50, 2004, paramSession.getCurrentSchemaHsqlName());
@@ -38,7 +39,7 @@ public class StatementInsert extends StatementDML
     setDatabseObjects(paramSession, paramCompileContext);
     checkAccessRights(paramSession);
   }
-
+  
   Result getResult(Session paramSession)
   {
     Result localResult = null;
@@ -57,19 +58,23 @@ public class StatementInsert extends StatementDML
     }
     Object localObject = this.queryExpression == null ? getInsertValuesNavigator(paramSession) : getInsertSelectNavigator(paramSession);
     int i = ((RowSetNavigator)localObject).getSize();
-    if (i > 0)
+    if (i > 0) {
       insertRowSet(paramSession, localRowSetNavigator, (RowSetNavigator)localObject);
-    if (this.baseTable.triggerLists[0].length > 0)
+    }
+    if (this.baseTable.triggerLists[0].length > 0) {
       this.baseTable.fireTriggers(paramSession, 0, (RowSetNavigator)localObject);
-    if (localResult == null)
+    }
+    if (localResult == null) {
       localResult = new Result(1, i);
-    else
+    } else {
       localResult.setUpdateCount(i);
-    if (i == 0)
+    }
+    if (i == 0) {
       paramSession.addWarning(HsqlException.noDataCondition);
+    }
     return localResult;
   }
-
+  
   RowSetNavigator getInsertSelectNavigator(Session paramSession)
   {
     Type[] arrayOfType1 = this.baseTable.getColumnTypes();
@@ -95,7 +100,7 @@ public class StatementInsert extends StatementDML
     }
     return localRowSetNavigatorClient;
   }
-
+  
   RowSetNavigator getInsertValuesNavigator(Session paramSession)
   {
     Type[] arrayOfType = this.baseTable.getColumnTypes();
@@ -111,7 +116,8 @@ public class StatementInsert extends StatementDML
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.StatementInsert
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

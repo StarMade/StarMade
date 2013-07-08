@@ -83,7 +83,7 @@ public abstract class Type
   public static final IntValueHashMap typeAliases;
   public static final IntValueHashMap typeNames = new IntValueHashMap(37);
   public static final IntKeyHashMap jdbcConvertTypes;
-
+  
   Type(int paramInt1, int paramInt2, long paramLong, int paramInt3)
   {
     this.typeComparisonGroup = paramInt1;
@@ -91,75 +91,84 @@ public abstract class Type
     this.precision = paramLong;
     this.scale = paramInt3;
   }
-
+  
   public final int getType()
   {
-    if (this.userTypeModifier == null)
+    if (this.userTypeModifier == null) {
       throw Error.runtimeError(201, "Type");
+    }
     return this.userTypeModifier.getType();
   }
-
+  
   public final HsqlNameManager.HsqlName getName()
   {
-    if (this.userTypeModifier == null)
+    if (this.userTypeModifier == null) {
       throw Error.runtimeError(201, "Type");
+    }
     return this.userTypeModifier.getName();
   }
-
+  
   public final HsqlNameManager.HsqlName getCatalogName()
   {
-    if (this.userTypeModifier == null)
+    if (this.userTypeModifier == null) {
       throw Error.runtimeError(201, "Type");
+    }
     return this.userTypeModifier.getSchemaName().schema;
   }
-
+  
   public final HsqlNameManager.HsqlName getSchemaName()
   {
-    if (this.userTypeModifier == null)
+    if (this.userTypeModifier == null) {
       throw Error.runtimeError(201, "Type");
+    }
     return this.userTypeModifier.getSchemaName();
   }
-
+  
   public final Grantee getOwner()
   {
-    if (this.userTypeModifier == null)
+    if (this.userTypeModifier == null) {
       throw Error.runtimeError(201, "Type");
+    }
     return this.userTypeModifier.getOwner();
   }
-
+  
   public final OrderedHashSet getReferences()
   {
-    if (this.userTypeModifier == null)
+    if (this.userTypeModifier == null) {
       throw Error.runtimeError(201, "Type");
+    }
     return this.userTypeModifier.getReferences();
   }
-
+  
   public final OrderedHashSet getComponents()
   {
-    if (this.userTypeModifier == null)
+    if (this.userTypeModifier == null) {
       throw Error.runtimeError(201, "Type");
+    }
     return this.userTypeModifier.getComponents();
   }
-
+  
   public final void compile(Session paramSession, SchemaObject paramSchemaObject)
   {
-    if (this.userTypeModifier == null)
+    if (this.userTypeModifier == null) {
       throw Error.runtimeError(201, "Type");
+    }
     this.userTypeModifier.compile(paramSession);
   }
-
+  
   public String getSQL()
   {
-    if (this.userTypeModifier == null)
+    if (this.userTypeModifier == null) {
       throw Error.runtimeError(201, "Type");
+    }
     return this.userTypeModifier.getSQL();
   }
-
+  
   public long getChangeTimestamp()
   {
     return 0L;
   }
-
+  
   public Type duplicate()
   {
     try
@@ -168,614 +177,631 @@ public abstract class Type
     }
     catch (CloneNotSupportedException localCloneNotSupportedException)
     {
+      throw Error.runtimeError(201, "Type");
     }
-    throw Error.runtimeError(201, "Type");
   }
-
+  
   public abstract int displaySize();
-
+  
   public abstract int getJDBCTypeCode();
-
+  
   public abstract String getJDBCClassName();
-
+  
   public abstract Class getJDBCClass();
-
+  
   public int getJDBCScale()
   {
     return this.scale;
   }
-
+  
   public int getJDBCPrecision()
   {
     return this.precision > 2147483647L ? 2147483647 : (int)this.precision;
   }
-
+  
   public int getSQLGenericTypeCode()
   {
     return this.typeCode;
   }
-
+  
   public abstract String getNameString();
-
+  
   public String getFullNameString()
   {
     return getNameString();
   }
-
+  
   public abstract String getDefinition();
-
+  
   public boolean hasCollation()
   {
     return false;
   }
-
+  
   public String getCollationDefinition()
   {
     return "";
   }
-
+  
   public Collation getCollation()
   {
     return null;
   }
-
+  
   public Charset getCharacterSet()
   {
     return null;
   }
-
+  
   public final String getTypeDefinition()
   {
-    if (this.userTypeModifier == null)
+    if (this.userTypeModifier == null) {
       return getDefinition();
+    }
     return getName().getSchemaQualifiedStatementName();
   }
-
+  
   public abstract int compare(Session paramSession, Object paramObject1, Object paramObject2);
-
+  
   public int compare(Session paramSession, Object paramObject1, Object paramObject2, SortAndSlice paramSortAndSlice)
   {
-    if (paramObject1 == paramObject2)
+    if (paramObject1 == paramObject2) {
       return 0;
-    if (paramObject1 == null)
+    }
+    if (paramObject1 == null) {
       return paramSortAndSlice.sortNullsLast[0] != 0 ? 1 : -1;
-    if (paramObject2 == null)
+    }
+    if (paramObject2 == null) {
       return paramSortAndSlice.sortNullsLast[0] != 0 ? -1 : 1;
+    }
     int i = compare(paramSession, paramObject1, paramObject2);
     return paramSortAndSlice.sortDescending[0] != 0 ? -i : i;
   }
-
+  
   public abstract Object convertToTypeLimits(SessionInterface paramSessionInterface, Object paramObject);
-
+  
   public Object castToType(SessionInterface paramSessionInterface, Object paramObject, Type paramType)
   {
     return convertToType(paramSessionInterface, paramObject, paramType);
   }
-
+  
   public abstract Object convertToType(SessionInterface paramSessionInterface, Object paramObject, Type paramType);
-
+  
   public Object convertToTypeJDBC(SessionInterface paramSessionInterface, Object paramObject, Type paramType)
   {
-    if (paramType.isLobType())
+    if (paramType.isLobType()) {
       throw Error.error(5561);
+    }
     return convertToType(paramSessionInterface, paramObject, paramType);
   }
-
+  
   public Object convertJavaToSQL(SessionInterface paramSessionInterface, Object paramObject)
   {
     return paramObject;
   }
-
+  
   public Object convertSQLToJava(SessionInterface paramSessionInterface, Object paramObject)
   {
     return paramObject;
   }
-
+  
   public abstract Object convertToDefaultType(SessionInterface paramSessionInterface, Object paramObject);
-
+  
   public abstract String convertToString(Object paramObject);
-
+  
   public abstract String convertToSQLString(Object paramObject);
-
+  
   public abstract boolean canConvertFrom(Type paramType);
-
+  
   public int canMoveFrom(Type paramType)
   {
-    if (paramType == this)
+    if (paramType == this) {
       return 0;
+    }
     return -1;
   }
-
+  
   public boolean canBeAssignedFrom(Type paramType)
   {
-    if (paramType == null)
+    if (paramType == null) {
       return true;
+    }
     return (paramType.typeCode == 0) || (this.typeComparisonGroup == paramType.typeComparisonGroup);
   }
-
+  
   public int arrayLimitCardinality()
   {
     return 0;
   }
-
+  
   public Type collectionBaseType()
   {
     return null;
   }
-
+  
   public boolean isArrayType()
   {
     return false;
   }
-
+  
   public boolean isMultisetType()
   {
     return false;
   }
-
+  
   public boolean isRowType()
   {
     return false;
   }
-
+  
   public boolean isStructuredType()
   {
     return false;
   }
-
+  
   public boolean isCharacterType()
   {
     return false;
   }
-
+  
   public boolean isNumberType()
   {
     return false;
   }
-
+  
   public boolean isIntegralType()
   {
     return false;
   }
-
+  
   public boolean isExactNumberType()
   {
     return false;
   }
-
+  
   public boolean isDecimalType()
   {
     return false;
   }
-
+  
   public boolean isDateTimeType()
   {
     return false;
   }
-
+  
   public boolean isDateTimeTypeWithZone()
   {
     return false;
   }
-
+  
   public boolean isIntervalType()
   {
     return false;
   }
-
+  
   public boolean isBinaryType()
   {
     return false;
   }
-
+  
   public boolean isBooleanType()
   {
     return false;
   }
-
+  
   public boolean isLobType()
   {
     return false;
   }
-
+  
   public boolean isBitType()
   {
     return false;
   }
-
+  
   public boolean isObjectType()
   {
     return false;
   }
-
+  
   public boolean isDistinctType()
   {
     return this.userTypeModifier != null;
   }
-
+  
   public boolean isDomainType()
   {
     return this.userTypeModifier != null;
   }
-
+  
   public boolean acceptsPrecision()
   {
     return false;
   }
-
+  
   public boolean requiresPrecision()
   {
     return false;
   }
-
+  
   public long getMaxPrecision()
   {
     return 0L;
   }
-
+  
   public int getMaxScale()
   {
     return 0;
   }
-
+  
   public int getPrecisionRadix()
   {
     return 0;
   }
-
+  
   public boolean acceptsFractionalPrecision()
   {
     return false;
   }
-
+  
   public boolean acceptsScale()
   {
     return false;
   }
-
+  
   public int precedenceDegree(Type paramType)
   {
     if (paramType.typeCode == this.typeCode)
     {
-      if (this.typeCode == 50)
+      if (this.typeCode == 50) {
         return collectionBaseType().precedenceDegree(paramType.collectionBaseType());
+      }
       return 0;
     }
     return -2147483648;
   }
-
+  
   public abstract Type getAggregateType(Type paramType);
-
+  
   public abstract Type getCombinedType(Session paramSession, Type paramType, int paramInt);
-
+  
   public int compareToTypeRange(Object paramObject)
   {
     return 0;
   }
-
+  
   public Object absolute(Object paramObject)
   {
     throw Error.runtimeError(201, "Type");
   }
-
+  
   public Object negate(Object paramObject)
   {
     throw Error.runtimeError(201, "Type");
   }
-
+  
   public Object add(Object paramObject1, Object paramObject2, Type paramType)
   {
     throw Error.runtimeError(201, "Type");
   }
-
+  
   public Object subtract(Object paramObject1, Object paramObject2, Type paramType)
   {
     throw Error.runtimeError(201, "Type");
   }
-
+  
   public Object multiply(Object paramObject1, Object paramObject2)
   {
     throw Error.runtimeError(201, "Type");
   }
-
+  
   public Object divide(Session paramSession, Object paramObject1, Object paramObject2)
   {
     throw Error.runtimeError(201, "Type");
   }
-
+  
   public Object concat(Session paramSession, Object paramObject1, Object paramObject2)
   {
     throw Error.runtimeError(201, "Type");
   }
-
+  
   public int cardinality(Session paramSession, Object paramObject)
   {
     return 0;
   }
-
+  
   int hashCode(Object paramObject)
   {
-    if (paramObject == null)
+    if (paramObject == null) {
       return 0;
+    }
     return paramObject.hashCode();
   }
-
+  
   public boolean equals(Object paramObject)
   {
-    if (paramObject == this)
+    if (paramObject == this) {
       return true;
+    }
     if ((paramObject instanceof Type))
     {
-      if (((Type)paramObject).typeCode == 50)
+      if (((Type)paramObject).typeCode == 50) {
         return false;
-      if (((Type)paramObject).typeCode == 19)
+      }
+      if (((Type)paramObject).typeCode == 19) {
         return false;
+      }
       return (((Type)paramObject).typeCode == this.typeCode) && (((Type)paramObject).precision == this.precision) && (((Type)paramObject).scale == this.scale) && (((Type)paramObject).userTypeModifier == this.userTypeModifier);
     }
     return false;
   }
-
+  
   public int hashCode()
   {
     return this.typeCode + (int)this.precision << 8 + this.scale << 16;
   }
-
+  
   public static TypedComparator newComparator(Session paramSession)
   {
     return new TypedComparator(paramSession);
   }
-
+  
   public static ArrayType getDefaultArrayType(int paramInt)
   {
     return new ArrayType(getDefaultType(paramInt), 1024);
   }
-
+  
   public static Type getDefaultType(int paramInt)
   {
     try
     {
       return getType(paramInt, SQL_VARCHAR.getCharacterSet(), SQL_VARCHAR.getCollation(), 0L, 0);
     }
-    catch (Exception localException)
-    {
-    }
+    catch (Exception localException) {}
     return null;
   }
-
+  
   public static Type getDefaultTypeWithSize(int paramInt)
   {
     switch (paramInt)
     {
-    case 0:
+    case 0: 
       return SQL_ALL_TYPES;
-    case 50:
+    case 50: 
       return SQL_ARRAY_ALL_TYPES;
-    case 1:
+    case 1: 
       return SQL_CHAR_DEFAULT;
-    case 12:
+    case 12: 
       return SQL_VARCHAR_DEFAULT;
-    case 100:
+    case 100: 
       return VARCHAR_IGNORECASE_DEFAULT;
-    case 40:
+    case 40: 
       return SQL_CLOB;
-    case 4:
+    case 4: 
       return SQL_INTEGER;
-    case 5:
+    case 5: 
       return SQL_SMALLINT;
-    case 25:
+    case 25: 
       return SQL_BIGINT;
-    case -6:
+    case -6: 
       return TINYINT;
-    case 6:
-    case 7:
-    case 8:
+    case 6: 
+    case 7: 
+    case 8: 
       return SQL_DOUBLE;
-    case 2:
+    case 2: 
       return SQL_NUMERIC;
-    case 3:
+    case 3: 
       return SQL_DECIMAL;
-    case 16:
+    case 16: 
       return SQL_BOOLEAN;
-    case 60:
+    case 60: 
       return SQL_BINARY_DEFAULT;
-    case 61:
+    case 61: 
       return SQL_VARBINARY_DEFAULT;
-    case 30:
+    case 30: 
       return SQL_BLOB;
-    case 14:
+    case 14: 
       return SQL_BIT;
-    case 15:
+    case 15: 
       return SQL_BIT_VARYING;
-    case 91:
+    case 91: 
       return SQL_DATE;
-    case 92:
+    case 92: 
       return SQL_TIME;
-    case 94:
+    case 94: 
       return SQL_TIME_WITH_TIME_ZONE;
-    case 93:
+    case 93: 
       return SQL_TIMESTAMP;
-    case 95:
+    case 95: 
       return SQL_TIMESTAMP_WITH_TIME_ZONE;
-    case 101:
+    case 101: 
       return SQL_INTERVAL_YEAR;
-    case 107:
+    case 107: 
       return SQL_INTERVAL_YEAR_TO_MONTH;
-    case 102:
+    case 102: 
       return SQL_INTERVAL_MONTH;
-    case 103:
+    case 103: 
       return SQL_INTERVAL_DAY;
-    case 108:
+    case 108: 
       return SQL_INTERVAL_DAY_TO_HOUR;
-    case 109:
+    case 109: 
       return SQL_INTERVAL_DAY_TO_MINUTE;
-    case 110:
+    case 110: 
       return SQL_INTERVAL_DAY_TO_SECOND;
-    case 104:
+    case 104: 
       return SQL_INTERVAL_HOUR;
-    case 111:
+    case 111: 
       return SQL_INTERVAL_HOUR_TO_MINUTE;
-    case 112:
+    case 112: 
       return SQL_INTERVAL_HOUR_TO_SECOND;
-    case 105:
+    case 105: 
       return SQL_INTERVAL_MINUTE;
-    case 113:
+    case 113: 
       return SQL_INTERVAL_MINUTE_TO_SECOND;
-    case 106:
+    case 106: 
       return SQL_INTERVAL_SECOND;
-    case 1111:
+    case 1111: 
       return OTHER;
     }
     return null;
   }
-
+  
   public static int getHSQLDBTypeCode(int paramInt)
   {
     switch (paramInt)
     {
-    case -5:
+    case -5: 
       return 25;
-    case -1:
+    case -1: 
       return 12;
-    case 2005:
+    case 2005: 
       return 40;
-    case -2:
+    case -2: 
       return 60;
-    case -7:
+    case -7: 
       return 15;
-    case -4:
-    case -3:
+    case -4: 
+    case -3: 
       return 61;
-    case 2004:
+    case 2004: 
       return 30;
-    case 2003:
+    case 2003: 
       return 50;
     }
     return paramInt;
   }
-
+  
   public static int getJDBCTypeCode(int paramInt)
   {
     switch (paramInt)
     {
-    case 30:
+    case 30: 
       return 2004;
-    case 40:
+    case 40: 
       return 2005;
-    case 25:
+    case 25: 
       return -5;
-    case 60:
+    case 60: 
       return -2;
-    case 61:
+    case 61: 
       return -3;
-    case 14:
-    case 15:
+    case 14: 
+    case 15: 
       return -7;
-    case 50:
+    case 50: 
       return 2003;
     }
     return paramInt;
   }
-
+  
   public static Type getType(int paramInt1, Charset paramCharset, Collation paramCollation, long paramLong, int paramInt2)
   {
     switch (paramInt1)
     {
-    case 0:
+    case 0: 
       return SQL_ALL_TYPES;
-    case 1:
-    case 12:
-    case 40:
-    case 100:
+    case 1: 
+    case 12: 
+    case 40: 
+    case 100: 
       return CharacterType.getCharacterType(paramInt1, paramLong, paramCollation);
-    case 4:
+    case 4: 
       return SQL_INTEGER;
-    case 5:
+    case 5: 
       return SQL_SMALLINT;
-    case 25:
+    case 25: 
       return SQL_BIGINT;
-    case -6:
+    case -6: 
       return TINYINT;
-    case 6:
-      if (paramLong > 53L)
+    case 6: 
+      if (paramLong > 53L) {
         throw Error.error(5592, "" + paramLong);
-    case 7:
-    case 8:
+      }
+    case 7: 
+    case 8: 
       return SQL_DOUBLE;
-    case 2:
-    case 3:
-      if (paramLong == 0L)
+    case 2: 
+    case 3: 
+      if (paramLong == 0L) {
         paramLong = 128L;
+      }
       return NumberType.getNumberType(paramInt1, paramLong, paramInt2);
-    case 16:
+    case 16: 
       return SQL_BOOLEAN;
-    case 30:
-    case 60:
-    case 61:
+    case 30: 
+    case 60: 
+    case 61: 
       return BinaryType.getBinaryType(paramInt1, paramLong);
-    case 14:
-    case 15:
+    case 14: 
+    case 15: 
       return BitType.getBitType(paramInt1, paramLong);
-    case 91:
-    case 92:
-    case 93:
-    case 94:
-    case 95:
+    case 91: 
+    case 92: 
+    case 93: 
+    case 94: 
+    case 95: 
       return DateTimeType.getDateTimeType(paramInt1, paramInt2);
-    case 101:
-    case 102:
-    case 103:
-    case 104:
-    case 105:
-    case 106:
-    case 107:
-    case 108:
-    case 109:
-    case 110:
-    case 111:
-    case 112:
-    case 113:
+    case 101: 
+    case 102: 
+    case 103: 
+    case 104: 
+    case 105: 
+    case 106: 
+    case 107: 
+    case 108: 
+    case 109: 
+    case 110: 
+    case 111: 
+    case 112: 
+    case 113: 
       return IntervalType.getIntervalType(paramInt1, paramLong, paramInt2);
-    case 1111:
+    case 1111: 
       return OTHER;
     }
     throw Error.runtimeError(201, "Type");
   }
-
+  
   public static Type getAggregateType(Type paramType1, Type paramType2)
   {
-    if ((paramType2 == null) || (paramType2.typeCode == 0))
+    if ((paramType2 == null) || (paramType2.typeCode == 0)) {
       return paramType1;
-    if ((paramType1 == null) || (paramType1.typeCode == 0))
+    }
+    if ((paramType1 == null) || (paramType1.typeCode == 0)) {
       return paramType2;
+    }
     return paramType2.getAggregateType(paramType1);
   }
-
+  
   public static int getTypeNr(String paramString)
   {
     int i = typeNames.get(paramString, -2147483648);
-    if (i == -2147483648)
+    if (i == -2147483648) {
       i = typeAliases.get(paramString, -2147483648);
+    }
     return i;
   }
-
+  
   public static Type getTypeForJDBCConvertToken(int paramInt)
   {
     return (Type)jdbcConvertTypes.get(paramInt);
   }
-
+  
   public static boolean isSupportedSQLType(int paramInt)
   {
     return getDefaultType(paramInt) != null;
   }
-
+  
   public static boolean matches(Type[] paramArrayOfType1, Type[] paramArrayOfType2)
   {
-    for (int i = 0; i < paramArrayOfType1.length; i++)
-      if (paramArrayOfType1[i].typeCode != paramArrayOfType2[i].typeCode)
+    for (int i = 0; i < paramArrayOfType1.length; i++) {
+      if (paramArrayOfType1[i].typeCode != paramArrayOfType2[i].typeCode) {
         return false;
+      }
+    }
     return true;
   }
-
+  
   static
   {
     typeNames.put("CHARACTER", 1);
@@ -835,35 +861,35 @@ public abstract class Type
     jdbcConvertTypes.put(804, SQL_BLOB);
     jdbcConvertTypes.put(803, SQL_BIT);
   }
-
+  
   public static class TypedComparator
     implements ObjectComparator
   {
     Session session;
     Type type;
     SortAndSlice sort;
-
+    
     TypedComparator(Session paramSession)
     {
       this.session = paramSession;
       this.sort = this.sort;
     }
-
+    
     public int compare(Object paramObject1, Object paramObject2)
     {
       return this.type.compare(this.session, paramObject1, paramObject2, this.sort);
     }
-
+    
     public int hashCode(Object paramObject)
     {
       return this.type.hashCode(paramObject);
     }
-
+    
     public long longKey(Object paramObject)
     {
       return 0L;
     }
-
+    
     public void setType(Type paramType, SortAndSlice paramSortAndSlice)
     {
       this.type = paramType;
@@ -872,7 +898,8 @@ public abstract class Type
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.types.Type
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

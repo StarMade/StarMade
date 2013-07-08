@@ -8,15 +8,16 @@ import org.hsqldb.types.TimeData;
 import org.hsqldb.types.TimestampData;
 import org.hsqldb.types.Type;
 
-public class RowInputBinary180 extends RowInputBinary
+public class RowInputBinary180
+  extends RowInputBinary
 {
   Calendar tempCalDefault = new GregorianCalendar();
-
+  
   public RowInputBinary180(byte[] paramArrayOfByte)
   {
     super(paramArrayOfByte);
   }
-
+  
   protected TimeData readTime(Type paramType)
     throws IOException
   {
@@ -29,7 +30,7 @@ public class RowInputBinary180 extends RowInputBinary
     }
     return new TimeData(readInt(), readInt(), readInt());
   }
-
+  
   protected TimestampData readDate(Type paramType)
     throws IOException
   {
@@ -38,7 +39,7 @@ public class RowInputBinary180 extends RowInputBinary
     l = HsqlDateTime.getNormalisedDate(l);
     return new TimestampData(l / 1000L);
   }
-
+  
   protected TimestampData readTimestamp(Type paramType)
     throws IOException
   {
@@ -53,7 +54,8 @@ public class RowInputBinary180 extends RowInputBinary
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.rowio.RowInputBinary180
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

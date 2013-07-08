@@ -4,22 +4,23 @@ import org.hsqldb.index.NodeAVL;
 import org.hsqldb.lib.java.JavaSystem;
 import org.hsqldb.persist.PersistentStore;
 
-public class RowAVL extends Row
+public class RowAVL
+  extends Row
 {
   public NodeAVL nPrimaryNode;
-
+  
   protected RowAVL(TableBase paramTableBase, Object[] paramArrayOfObject)
   {
     super(paramTableBase, paramArrayOfObject);
   }
-
+  
   public RowAVL(TableBase paramTableBase, Object[] paramArrayOfObject, int paramInt, PersistentStore paramPersistentStore)
   {
     super(paramTableBase, paramArrayOfObject);
     this.position = paramInt;
     setNewNodes(paramPersistentStore);
   }
-
+  
   public void setNewNodes(PersistentStore paramPersistentStore)
   {
     int i = paramPersistentStore.getAccessorKeys().length;
@@ -31,22 +32,23 @@ public class RowAVL extends Row
       localNodeAVL = localNodeAVL.nNext;
     }
   }
-
+  
   public NodeAVL getNode(int paramInt)
   {
-    for (NodeAVL localNodeAVL = this.nPrimaryNode; paramInt-- > 0; localNodeAVL = localNodeAVL.nNext);
+    for (NodeAVL localNodeAVL = this.nPrimaryNode; paramInt-- > 0; localNodeAVL = localNodeAVL.nNext) {}
     return localNodeAVL;
   }
-
+  
   NodeAVL getNextNode(NodeAVL paramNodeAVL)
   {
-    if (paramNodeAVL == null)
+    if (paramNodeAVL == null) {
       paramNodeAVL = this.nPrimaryNode;
-    else
+    } else {
       paramNodeAVL = paramNodeAVL.nNext;
+    }
     return paramNodeAVL;
   }
-
+  
   public NodeAVL insertNode(int paramInt)
   {
     NodeAVL localNodeAVL1 = getNode(paramInt - 1);
@@ -55,23 +57,23 @@ public class RowAVL extends Row
     localNodeAVL1.nNext = localNodeAVL2;
     return localNodeAVL2;
   }
-
+  
   public void clearNonPrimaryNodes()
   {
-    for (NodeAVL localNodeAVL = this.nPrimaryNode.nNext; localNodeAVL != null; localNodeAVL = localNodeAVL.nNext)
+    for (NodeAVL localNodeAVL = this.nPrimaryNode.nNext; localNodeAVL != null; localNodeAVL = localNodeAVL.nNext) {
       localNodeAVL.delete();
+    }
   }
-
+  
   public void delete(PersistentStore paramPersistentStore)
   {
-    for (NodeAVL localNodeAVL = this.nPrimaryNode; localNodeAVL != null; localNodeAVL = localNodeAVL.nNext)
+    for (NodeAVL localNodeAVL = this.nPrimaryNode; localNodeAVL != null; localNodeAVL = localNodeAVL.nNext) {
       localNodeAVL.delete();
+    }
   }
-
-  public void restore()
-  {
-  }
-
+  
+  public void restore() {}
+  
   public void destroy()
   {
     JavaSystem.memoryRecords += 1;
@@ -86,7 +88,8 @@ public class RowAVL extends Row
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.RowAVL
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

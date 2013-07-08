@@ -120,141 +120,144 @@ public class Types
   static final IntValueHashMap javaTypeNumbers = new IntValueHashMap(32);
   private static final HashSet illegalParameterClasses;
   public static final int MAX_CHAR_OR_VARCHAR_DISPLAY_SIZE = MAX_CHAR_OR_VARCHAR_DISPLAY_SIZE();
-
+  
   public static Type getParameterSQLType(Class paramClass)
   {
-    if (paramClass == null)
+    if (paramClass == null) {
       throw Error.runtimeError(201, "Types");
-    if (Void.TYPE.equals(paramClass))
+    }
+    if (Void.TYPE.equals(paramClass)) {
       return Type.SQL_ALL_TYPES;
+    }
     String str = paramClass.getName();
     int i = javaTypeNumbers.get(str, -2147483648);
-    if (i != -2147483648)
+    if (i != -2147483648) {
       return Type.getDefaultTypeWithSize(i);
+    }
     if (paramClass.isArray())
     {
       Class localClass = paramClass.getComponentType();
       str = localClass.getName();
       i = javaTypeNumbers.get(str, -2147483648);
-      if (i != -2147483648)
+      if (i != -2147483648) {
         return Type.getDefaultTypeWithSize(i);
-      if (i == 0)
+      }
+      if (i == 0) {
         return null;
+      }
       return Type.getDefaultTypeWithSize(i);
     }
-    if (str.equals("java.sql.Array"))
+    if (str.equals("java.sql.Array")) {
       return Type.getDefaultArrayType(0);
+    }
     return null;
   }
-
+  
   public static boolean acceptsZeroPrecision(int paramInt)
   {
     switch (paramInt)
     {
-    case 92:
-    case 93:
+    case 92: 
+    case 93: 
       return true;
     }
     return false;
   }
-
+  
   public static boolean requiresPrecision(int paramInt)
   {
     switch (paramInt)
     {
-    case -9:
-    case 12:
-    case 15:
-    case 61:
+    case -9: 
+    case 12: 
+    case 15: 
+    case 61: 
       return true;
     }
     return false;
   }
-
+  
   public static boolean acceptsPrecision(int paramInt)
   {
     switch (paramInt)
     {
-    case -9:
-    case -8:
-    case -4:
-    case -1:
-    case 1:
-    case 2:
-    case 3:
-    case 6:
-    case 12:
-    case 14:
-    case 15:
-    case 30:
-    case 40:
-    case 50:
-    case 60:
-    case 61:
-    case 92:
-    case 93:
-    case 100:
-    case 101:
-    case 102:
-    case 103:
-    case 104:
-    case 105:
-    case 106:
-    case 107:
-    case 108:
-    case 109:
-    case 110:
-    case 111:
-    case 112:
-    case 113:
-    case 2007:
+    case -9: 
+    case -8: 
+    case -4: 
+    case -1: 
+    case 1: 
+    case 2: 
+    case 3: 
+    case 6: 
+    case 12: 
+    case 14: 
+    case 15: 
+    case 30: 
+    case 40: 
+    case 50: 
+    case 60: 
+    case 61: 
+    case 92: 
+    case 93: 
+    case 100: 
+    case 101: 
+    case 102: 
+    case 103: 
+    case 104: 
+    case 105: 
+    case 106: 
+    case 107: 
+    case 108: 
+    case 109: 
+    case 110: 
+    case 111: 
+    case 112: 
+    case 113: 
+    case 2007: 
       return true;
     }
     return false;
   }
-
+  
   public static boolean acceptsScaleCreateParam(int paramInt)
   {
     switch (paramInt)
     {
-    case 106:
+    case 106: 
       return true;
-    case 2:
-    case 3:
+    case 2: 
+    case 3: 
       return true;
     }
     return false;
   }
-
+  
   private static int MAX_CHAR_OR_VARCHAR_DISPLAY_SIZE()
   {
     try
     {
       return Integer.getInteger("hsqldb.max_char_or_varchar_display_size", 32766).intValue();
     }
-    catch (SecurityException localSecurityException)
-    {
-    }
+    catch (SecurityException localSecurityException) {}
     return 32766;
   }
-
+  
   public static boolean isSearchable(int paramInt)
   {
     switch (paramInt)
     {
-    case 30:
-    case 40:
-    case 1111:
-    case 2000:
-    case 2002:
-    case 2007:
-    case 2008:
+    case 30: 
+    case 40: 
+    case 1111: 
+    case 2000: 
+    case 2002: 
+    case 2007: 
+    case 2008: 
       return false;
-    case 50:
     }
     return true;
   }
-
+  
   static
   {
     javaTypeNumbers.put("int", 4);
@@ -290,7 +293,8 @@ public class Types
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.types.Types
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

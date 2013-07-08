@@ -23,7 +23,7 @@ public class TarGenerator
   protected TarFileOutputStream archive;
   protected List<TarEntrySupplicant> entryQueue = new ArrayList();
   protected long paxThreshold = 8589934592L;
-
+  
   public static void main(String[] paramArrayOfString)
     throws IOException, TarMalformatException
   {
@@ -33,47 +33,53 @@ public class TarGenerator
       System.exit(0);
     }
     TarGenerator localTarGenerator = new TarGenerator(new File(paramArrayOfString[0]), true, null);
-    if (paramArrayOfString.length == 1)
+    if (paramArrayOfString.length == 1) {
       localTarGenerator.queueEntry("stdin", System.in, 10240);
-    else
-      for (int i = 1; i < paramArrayOfString.length; i++)
+    } else {
+      for (int i = 1; i < paramArrayOfString.length; i++) {
         localTarGenerator.queueEntry(new File(paramArrayOfString[i]));
+      }
+    }
     localTarGenerator.write();
   }
-
+  
   public void setPaxThreshold(long paramLong)
   {
     this.paxThreshold = paramLong;
   }
-
+  
   public long getPaxThreshold()
   {
     return this.paxThreshold;
   }
-
+  
   public TarGenerator(File paramFile, boolean paramBoolean, Integer paramInteger)
     throws IOException
   {
     File localFile1 = paramFile.getAbsoluteFile();
     int i = 0;
-    if ((localFile1.getName().endsWith(".tgz")) || (localFile1.getName().endsWith(".tar.gz")))
+    if ((localFile1.getName().endsWith(".tgz")) || (localFile1.getName().endsWith(".tar.gz"))) {
       i = 1;
-    else if (!localFile1.getName().endsWith(".tar"))
+    } else if (!localFile1.getName().endsWith(".tar")) {
       throw new IllegalArgumentException(RB.unsupported_ext.getString(new String[] { getClass().getName(), localFile1.getPath() }));
+    }
     if (localFile1.exists())
     {
-      if (!paramBoolean)
+      if (!paramBoolean) {
         throw new IOException(RB.dest_exists.getString(new String[] { localFile1.getPath() }));
+      }
     }
     else
     {
       File localFile2 = localFile1.getParentFile();
       if (localFile2.exists())
       {
-        if (!localFile2.isDirectory())
+        if (!localFile2.isDirectory()) {
           throw new IOException(RB.parent_not_dir.getString(new String[] { localFile2.getPath() }));
-        if (!localFile2.canWrite())
+        }
+        if (!localFile2.canWrite()) {
           throw new IOException(RB.cant_write_parent.getString(new String[] { localFile2.getPath() }));
+        }
       }
       else if (!localFile2.mkdirs())
       {
@@ -81,39 +87,41 @@ public class TarGenerator
       }
     }
     this.archive = (paramInteger == null ? new TarFileOutputStream(localFile1, i) : new TarFileOutputStream(localFile1, i, paramInteger.intValue()));
-    if ((paramInteger != null) && (TarFileOutputStream.debug))
+    if ((paramInteger != null) && (TarFileOutputStream.debug)) {
       System.out.println(RB.bpr_write.getString(paramInteger.intValue()));
+    }
   }
-
+  
   public void queueEntry(File paramFile)
     throws FileNotFoundException, TarMalformatException
   {
     queueEntry(null, paramFile);
   }
-
+  
   public void queueEntry(String paramString, File paramFile)
     throws FileNotFoundException, TarMalformatException
   {
     this.entryQueue.add(new TarEntrySupplicant(paramString, paramFile, this.archive, this.paxThreshold));
   }
-
+  
   public void queueEntry(String paramString, InputStreamInterface paramInputStreamInterface)
     throws FileNotFoundException, TarMalformatException
   {
     this.entryQueue.add(new TarEntrySupplicant(paramString, paramInputStreamInterface, this.archive, this.paxThreshold));
   }
-
+  
   public void queueEntry(String paramString, InputStream paramInputStream, int paramInt)
     throws IOException, TarMalformatException
   {
     this.entryQueue.add(new TarEntrySupplicant(paramString, paramInputStream, paramInt, '0', this.archive));
   }
-
+  
   public void write()
     throws IOException, TarMalformatException
   {
-    if (TarFileOutputStream.debug)
+    if (TarFileOutputStream.debug) {
       System.out.println(RB.write_queue_report.getString(this.entryQueue.size()));
+    }
     try
     {
       for (int i = 0; i < this.entryQueue.size(); i++)
@@ -140,13 +148,11 @@ public class TarGenerator
         }
         this.archive.close();
       }
-      catch (IOException localIOException2)
-      {
-      }
+      catch (IOException localIOException2) {}
       throw localIOException1;
     }
   }
-
+  
   protected static class TarEntrySupplicant
   {
     protected static byte[] HEADER_TEMPLATE = (byte[])TarFileOutputStream.ZERO_BLOCK.clone();
@@ -162,7 +168,7 @@ public class TarGenerator
     protected boolean paxSized = false;
     protected final long paxThreshold;
     public static final String DEFAULT_FILE_MODES = "600";
-
+    
     protected static void writeField(TarHeaderField paramTarHeaderField, String paramString, byte[] paramArrayOfByte)
       throws TarMalformatException
     {
@@ -177,47 +183,51 @@ public class TarGenerator
       {
         throw new RuntimeException(localUnsupportedEncodingException);
       }
-      if (arrayOfByte.length > j - i)
+      if (arrayOfByte.length > j - i) {
         throw new TarMalformatException(RB.tar_field_toobig.getString(new String[] { paramTarHeaderField.toString(), paramString }));
-      for (int k = 0; k < arrayOfByte.length; k++)
+      }
+      for (int k = 0; k < arrayOfByte.length; k++) {
         paramArrayOfByte[(i + k)] = arrayOfByte[k];
+      }
     }
-
+    
     protected static void clearField(TarHeaderField paramTarHeaderField, byte[] paramArrayOfByte)
     {
       int i = paramTarHeaderField.getStart();
       int j = paramTarHeaderField.getStop();
-      for (int k = i; k < j; k++)
+      for (int k = i; k < j; k++) {
         paramArrayOfByte[k] = 0;
+      }
     }
-
+    
     protected static void writeField(TarHeaderField paramTarHeaderField, long paramLong, byte[] paramArrayOfByte)
       throws TarMalformatException
     {
       writeField(paramTarHeaderField, prePaddedOctalString(paramLong, paramTarHeaderField.getStop() - paramTarHeaderField.getStart()), paramArrayOfByte);
     }
-
+    
     public static String prePaddedOctalString(long paramLong, int paramInt)
     {
       return StringUtil.toPaddedString(Long.toOctalString(paramLong), paramInt, '0', false);
     }
-
+    
     public String getPath()
     {
       return this.path;
     }
-
+    
     public long getDataSize()
     {
       return this.dataSize;
     }
-
+    
     protected TarEntrySupplicant(String paramString, char paramChar, TarFileOutputStream paramTarFileOutputStream, long paramLong)
       throws TarMalformatException
     {
       this.paxThreshold = paramLong;
-      if (paramString == null)
+      if (paramString == null) {
         throw new IllegalArgumentException(RB.missing_supp_path.getString());
+      }
       this.path = (swapOutDelim == null ? paramString : paramString.replace(swapOutDelim.charValue(), '/'));
       this.tarStream = paramTarFileOutputStream;
       writeField(TarHeaderField.typeflag, paramChar);
@@ -227,7 +237,7 @@ public class TarGenerator
         writeField(TarHeaderField.gname, "root", HEADER_TEMPLATE);
       }
     }
-
+    
     public TarEntrySupplicant makeXentry()
       throws IOException, TarMalformatException
     {
@@ -235,21 +245,23 @@ public class TarGenerator
       localPIFGenerator.addRecord("size", this.dataSize);
       return new TarEntrySupplicant(localPIFGenerator.getName(), new ByteArrayInputStream(localPIFGenerator.toByteArray()), localPIFGenerator.size(), 'x', this.tarStream);
     }
-
+    
     public TarEntrySupplicant(String paramString, File paramFile, TarFileOutputStream paramTarFileOutputStream, long paramLong)
       throws FileNotFoundException, TarMalformatException
     {
       this(paramString == null ? paramFile.getPath() : paramString, '0', paramTarFileOutputStream, paramLong);
-      if (!paramFile.isFile())
+      if (!paramFile.isFile()) {
         throw new IllegalArgumentException(RB.nonfile_entry.getString());
-      if (!paramFile.canRead())
+      }
+      if (!paramFile.canRead()) {
         throw new IllegalArgumentException(RB.read_denied.getString(new String[] { paramFile.getAbsolutePath() }));
+      }
       this.modTime = (paramFile.lastModified() / 1000L);
       this.fileMode = getLameMode(paramFile);
       this.dataSize = paramFile.length();
       this.inputStream = new InputStreamWrapper(new FileInputStream(paramFile));
     }
-
+    
     public TarEntrySupplicant(String paramString, InputStreamInterface paramInputStreamInterface, TarFileOutputStream paramTarFileOutputStream, long paramLong)
       throws FileNotFoundException, TarMalformatException
     {
@@ -258,24 +270,27 @@ public class TarGenerator
       this.fileMode = "600";
       this.inputStream = paramInputStreamInterface;
     }
-
+    
     public TarEntrySupplicant(String paramString, InputStream paramInputStream, int paramInt, char paramChar, TarFileOutputStream paramTarFileOutputStream)
       throws IOException, TarMalformatException
     {
       this(paramString, paramChar, paramTarFileOutputStream, 8589934592L);
-      if (paramInt < 1)
+      if (paramInt < 1) {
         throw new IllegalArgumentException(RB.read_lt_1.getString());
+      }
       PipedOutputStream localPipedOutputStream = new PipedOutputStream();
       try
       {
         this.inputStream = new InputStreamWrapper(new PipedInputStream(localPipedOutputStream));
         int i;
-        while ((i = paramInputStream.read(paramTarFileOutputStream.writeBuffer, 0, paramTarFileOutputStream.writeBuffer.length)) > 0)
+        while ((i = paramInputStream.read(paramTarFileOutputStream.writeBuffer, 0, paramTarFileOutputStream.writeBuffer.length)) > 0) {
           localPipedOutputStream.write(paramTarFileOutputStream.writeBuffer, 0, i);
+        }
         localPipedOutputStream.flush();
         this.dataSize = this.inputStream.available();
-        if (TarFileOutputStream.debug)
+        if (TarFileOutputStream.debug) {
           System.out.println(RB.stream_buffer_report.getString(new String[] { Long.toString(this.dataSize) }));
+        }
       }
       catch (IOException localIOException)
       {
@@ -295,12 +310,13 @@ public class TarGenerator
       }
       this.modTime = (new Date().getTime() / 1000L);
     }
-
+    
     public void close()
       throws IOException
     {
-      if (this.inputStream == null)
+      if (this.inputStream == null) {
         return;
+      }
       try
       {
         this.inputStream.close();
@@ -310,7 +326,7 @@ public class TarGenerator
         this.inputStream = null;
       }
     }
-
+    
     protected long headerChecksum()
     {
       long l = 0L;
@@ -321,40 +337,42 @@ public class TarGenerator
       }
       return l;
     }
-
+    
     protected void clearField(TarHeaderField paramTarHeaderField)
     {
       clearField(paramTarHeaderField, this.rawHeader);
     }
-
+    
     protected void writeField(TarHeaderField paramTarHeaderField, String paramString)
       throws TarMalformatException
     {
       writeField(paramTarHeaderField, paramString, this.rawHeader);
     }
-
+    
     protected void writeField(TarHeaderField paramTarHeaderField, long paramLong)
       throws TarMalformatException
     {
       writeField(paramTarHeaderField, paramLong, this.rawHeader);
     }
-
+    
     protected void writeField(TarHeaderField paramTarHeaderField, char paramChar)
       throws TarMalformatException
     {
       writeField(paramTarHeaderField, Character.toString(paramChar), this.rawHeader);
     }
-
+    
     public void write()
       throws IOException, TarMalformatException
     {
       try
       {
         long l1 = this.inputStream.getSizeLimit();
-        if (l1 == 0L)
+        if (l1 == 0L) {
           return;
-        if (l1 > 0L)
+        }
+        if (l1 > 0L) {
           this.dataSize = l1;
+        }
         if (this.dataSize >= this.paxThreshold)
         {
           this.paxSized = true;
@@ -363,17 +381,20 @@ public class TarGenerator
         }
         writeField(TarHeaderField.name, this.path);
         writeField(TarHeaderField.mode, this.fileMode);
-        if (!this.paxSized)
+        if (!this.paxSized) {
           writeField(TarHeaderField.size, this.dataSize);
+        }
         writeField(TarHeaderField.mtime, this.modTime);
         writeField(TarHeaderField.checksum, prePaddedOctalString(headerChecksum(), 6) + "");
         this.tarStream.writeBlock(this.rawHeader);
         long l2 = this.tarStream.getBytesWritten();
         int i;
-        while ((i = this.inputStream.read(this.tarStream.writeBuffer)) > 0)
+        while ((i = this.inputStream.read(this.tarStream.writeBuffer)) > 0) {
           this.tarStream.write(i);
-        if (l2 + this.dataSize != this.tarStream.getBytesWritten())
+        }
+        if (l2 + this.dataSize != this.tarStream.getBytesWritten()) {
           throw new IOException(RB.data_changed.getString(new String[] { Long.toString(this.dataSize), Long.toString(this.tarStream.getBytesWritten() - l2) }));
+        }
         this.tarStream.padCurrentBlock();
       }
       finally
@@ -381,24 +402,28 @@ public class TarGenerator
         close();
       }
     }
-
+    
     protected static String getLameMode(File paramFile)
     {
       int i = 0;
-      if (paramFile.canExecute())
+      if (paramFile.canExecute()) {
         i = 1;
-      if (paramFile.canWrite())
+      }
+      if (paramFile.canWrite()) {
         i += 2;
-      if (paramFile.canRead())
+      }
+      if (paramFile.canRead()) {
         i += 4;
+      }
       return "0" + i + "00";
     }
-
+    
     static
     {
       char c = System.getProperty("file.separator").charAt(0);
-      if (c != '/')
+      if (c != '/') {
         swapOutDelim = new Character(c);
+      }
       try
       {
         writeField(TarHeaderField.uid, 0L, HEADER_TEMPLATE);
@@ -409,15 +434,17 @@ public class TarGenerator
         throw new RuntimeException(localTarMalformatException);
       }
       int i = TarHeaderField.magic.getStart();
-      for (int j = 0; j < ustarBytes.length; j++)
+      for (int j = 0; j < ustarBytes.length; j++) {
         HEADER_TEMPLATE[(i + j)] = ustarBytes[j];
+      }
       HEADER_TEMPLATE[263] = 48;
       HEADER_TEMPLATE[264] = 48;
     }
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.lib.tar.TarGenerator
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

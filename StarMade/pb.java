@@ -1,28 +1,23 @@
-/*     */ import org.schema.game.common.facedit.ElementEditorFrame;
-/*     */ 
-/*     */ final class pb
-/*     */   implements Runnable
-/*     */ {
-/*     */   public final void run()
-/*     */   {
-/*     */     try
-/*     */     {
-/* 671 */       new ElementEditorFrame()
-/* 672 */         .setVisible(true);
-/*     */       return;
-/*     */     }
-/*     */     catch (Exception localException2)
-/*     */     {
-/*     */       Exception localException1;
-/* 673 */       (
-/* 674 */         localException1 = 
-/* 676 */         localException2).printStackTrace();
-/* 675 */       d.a(localException1);
-/*     */     }
-/*     */   }
-/*     */ }
+/*   1:    */import org.schema.game.common.facedit.ElementEditorFrame;
+/*   2:    */
+/* 665:    */final class pb
+/* 666:    */  implements Runnable
+/* 667:    */{
+/* 668:    */  public final void run()
+/* 669:    */  {
+/* 670:    */    try
+/* 671:    */    {
+/* 672:672 */      new ElementEditorFrame().setVisible(true); return;
+/* 673:    */    } catch (Exception localException2) { Exception localException1;
+/* 674:674 */      (localException1 = 
+/* 675:    */      
+/* 676:676 */        localException2).printStackTrace();d.a(localException1);
+/* 677:    */    }
+/* 678:    */  }
+/* 679:    */}
+
 
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     pb
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

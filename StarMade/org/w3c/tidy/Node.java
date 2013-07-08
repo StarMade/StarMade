@@ -34,12 +34,12 @@ public class Node
   protected AttVal attributes;
   protected Node content;
   protected org.w3c.dom.Node adapter;
-
+  
   public Node()
   {
     this((short)4, null, 0, 0);
   }
-
+  
   public Node(short paramShort, byte[] paramArrayOfByte, int paramInt1, int paramInt2)
   {
     this.start = paramInt1;
@@ -55,7 +55,7 @@ public class Node
     this.attributes = null;
     this.content = null;
   }
-
+  
   public Node(short paramShort, byte[] paramArrayOfByte, int paramInt1, int paramInt2, String paramString, TagTable paramTagTable)
   {
     this.start = paramInt1;
@@ -70,30 +70,32 @@ public class Node
     this.element = paramString;
     this.attributes = null;
     this.content = null;
-    if ((paramShort == 5) || (paramShort == 7) || (paramShort == 6))
+    if ((paramShort == 5) || (paramShort == 7) || (paramShort == 6)) {
       paramTagTable.findTag(this);
+    }
   }
-
+  
   public AttVal getAttrByName(String paramString)
   {
-    for (AttVal localAttVal = this.attributes; (localAttVal != null) && ((paramString == null) || (localAttVal.attribute == null) || (!localAttVal.attribute.equals(paramString))); localAttVal = localAttVal.next);
+    for (AttVal localAttVal = this.attributes; (localAttVal != null) && ((paramString == null) || (localAttVal.attribute == null) || (!localAttVal.attribute.equals(paramString))); localAttVal = localAttVal.next) {}
     return localAttVal;
   }
-
+  
   public void checkAttributes(Lexer paramLexer)
   {
-    for (AttVal localAttVal = this.attributes; localAttVal != null; localAttVal = localAttVal.next)
+    for (AttVal localAttVal = this.attributes; localAttVal != null; localAttVal = localAttVal.next) {
       localAttVal.checkAttribute(paramLexer, this);
+    }
   }
-
+  
   public void repairDuplicateAttributes(Lexer paramLexer)
   {
     Object localObject1 = this.attributes;
-    while (localObject1 != null)
+    while (localObject1 != null) {
       if ((((AttVal)localObject1).asp == null) && (((AttVal)localObject1).php == null))
       {
         Object localObject2 = ((AttVal)localObject1).next;
-        while (localObject2 != null)
+        while (localObject2 != null) {
           if ((((AttVal)localObject2).asp == null) && (((AttVal)localObject2).php == null) && (((AttVal)localObject1).attribute != null) && (((AttVal)localObject1).attribute.equalsIgnoreCase(((AttVal)localObject2).attribute)))
           {
             AttVal localAttVal;
@@ -101,10 +103,11 @@ public class Node
             {
               ((AttVal)localObject2).value = (((AttVal)localObject2).value + " " + ((AttVal)localObject1).value);
               localAttVal = ((AttVal)localObject1).next;
-              if (localAttVal.next == null)
+              if (localAttVal.next == null) {
                 localObject2 = null;
-              else
+              } else {
                 localObject2 = ((AttVal)localObject2).next;
+              }
               paramLexer.report.attrError(paramLexer, this, (AttVal)localObject1, (short)68);
               removeAttribute((AttVal)localObject1);
               localObject1 = localAttVal;
@@ -112,17 +115,19 @@ public class Node
             else if (("style".equalsIgnoreCase(((AttVal)localObject2).attribute)) && (paramLexer.configuration.joinStyles))
             {
               int i = ((AttVal)localObject2).value.length() - 1;
-              if (((AttVal)localObject2).value.charAt(i) == ';')
+              if (((AttVal)localObject2).value.charAt(i) == ';') {
                 ((AttVal)localObject2).value = (((AttVal)localObject2).value + " " + ((AttVal)localObject1).value);
-              else if (((AttVal)localObject2).value.charAt(i) == '}')
+              } else if (((AttVal)localObject2).value.charAt(i) == '}') {
                 ((AttVal)localObject2).value = (((AttVal)localObject2).value + " { " + ((AttVal)localObject1).value + " }");
-              else
+              } else {
                 ((AttVal)localObject2).value = (((AttVal)localObject2).value + "; " + ((AttVal)localObject1).value);
+              }
               localAttVal = ((AttVal)localObject1).next;
-              if (localAttVal.next == null)
+              if (localAttVal.next == null) {
                 localObject2 = null;
-              else
+              } else {
                 localObject2 = ((AttVal)localObject2).next;
+              }
               paramLexer.report.attrError(paramLexer, this, (AttVal)localObject1, (short)68);
               removeAttribute((AttVal)localObject1);
               localObject1 = localAttVal;
@@ -137,10 +142,11 @@ public class Node
             else
             {
               localAttVal = ((AttVal)localObject1).next;
-              if (((AttVal)localObject1).next == null)
+              if (((AttVal)localObject1).next == null) {
                 localObject2 = null;
-              else
+              } else {
                 localObject2 = ((AttVal)localObject2).next;
+              }
               paramLexer.report.attrError(paramLexer, this, (AttVal)localObject1, (short)55);
               removeAttribute((AttVal)localObject1);
               localObject1 = localAttVal;
@@ -150,14 +156,16 @@ public class Node
           {
             localObject2 = ((AttVal)localObject2).next;
           }
+        }
         localObject1 = ((AttVal)localObject1).next;
       }
       else
       {
         localObject1 = ((AttVal)localObject1).next;
       }
+    }
   }
-
+  
   public void addAttribute(String paramString1, String paramString2)
   {
     AttVal localAttVal1 = new AttVal(null, null, null, null, 34, paramString1, paramString2);
@@ -168,11 +176,11 @@ public class Node
     }
     else
     {
-      for (AttVal localAttVal2 = this.attributes; localAttVal2.next != null; localAttVal2 = localAttVal2.next);
+      for (AttVal localAttVal2 = this.attributes; localAttVal2.next != null; localAttVal2 = localAttVal2.next) {}
       localAttVal2.next = localAttVal1;
     }
   }
-
+  
   public void removeAttribute(AttVal paramAttVal)
   {
     Object localObject2 = null;
@@ -182,37 +190,41 @@ public class Node
       localAttVal = ((AttVal)localObject1).next;
       if (localObject1 == paramAttVal)
       {
-        if (localObject2 != null)
+        if (localObject2 != null) {
           localObject2.next = localAttVal;
-        else
+        } else {
           this.attributes = localAttVal;
+        }
       }
-      else
+      else {
         localObject2 = localObject1;
+      }
     }
   }
-
+  
   public Node findDocType()
   {
-    for (Node localNode = this.content; (localNode != null) && (localNode.type != 1); localNode = localNode.next);
+    for (Node localNode = this.content; (localNode != null) && (localNode.type != 1); localNode = localNode.next) {}
     return localNode;
   }
-
+  
   public void discardDocType()
   {
     Node localNode = findDocType();
     if (localNode != null)
     {
-      if (localNode.prev != null)
+      if (localNode.prev != null) {
         localNode.prev.next = localNode.next;
-      else
+      } else {
         localNode.parent.content = localNode.next;
-      if (localNode.next != null)
+      }
+      if (localNode.next != null) {
         localNode.next.prev = localNode.prev;
+      }
       localNode.next = null;
     }
   }
-
+  
   public static Node discardElement(Node paramNode)
   {
     Node localNode = null;
@@ -223,50 +235,56 @@ public class Node
     }
     return localNode;
   }
-
+  
   public void insertNodeAtStart(Node paramNode)
   {
     paramNode.parent = this;
-    if (this.content == null)
+    if (this.content == null) {
       this.last = paramNode;
-    else
+    } else {
       this.content.prev = paramNode;
+    }
     paramNode.next = this.content;
     paramNode.prev = null;
     this.content = paramNode;
   }
-
+  
   public void insertNodeAtEnd(Node paramNode)
   {
     paramNode.parent = this;
     paramNode.prev = this.last;
-    if (this.last != null)
+    if (this.last != null) {
       this.last.next = paramNode;
-    else
+    } else {
       this.content = paramNode;
+    }
     this.last = paramNode;
   }
-
+  
   public static void insertNodeAsParent(Node paramNode1, Node paramNode2)
   {
     paramNode2.content = paramNode1;
     paramNode2.last = paramNode1;
     paramNode2.parent = paramNode1.parent;
     paramNode1.parent = paramNode2;
-    if (paramNode2.parent.content == paramNode1)
+    if (paramNode2.parent.content == paramNode1) {
       paramNode2.parent.content = paramNode2;
-    if (paramNode2.parent.last == paramNode1)
+    }
+    if (paramNode2.parent.last == paramNode1) {
       paramNode2.parent.last = paramNode2;
+    }
     paramNode2.prev = paramNode1.prev;
     paramNode1.prev = null;
-    if (paramNode2.prev != null)
+    if (paramNode2.prev != null) {
       paramNode2.prev.next = paramNode2;
+    }
     paramNode2.next = paramNode1.next;
     paramNode1.next = null;
-    if (paramNode2.next != null)
+    if (paramNode2.next != null) {
       paramNode2.next.prev = paramNode2;
+    }
   }
-
+  
   public static void insertNodeBeforeElement(Node paramNode1, Node paramNode2)
   {
     Node localNode = paramNode1.parent;
@@ -274,12 +292,14 @@ public class Node
     paramNode2.next = paramNode1;
     paramNode2.prev = paramNode1.prev;
     paramNode1.prev = paramNode2;
-    if (paramNode2.prev != null)
+    if (paramNode2.prev != null) {
       paramNode2.prev.next = paramNode2;
-    if ((localNode != null) && (localNode.content == paramNode1))
+    }
+    if ((localNode != null) && (localNode.content == paramNode1)) {
       localNode.content = paramNode2;
+    }
   }
-
+  
   public void insertNodeAfterElement(Node paramNode)
   {
     Node localNode = this.parent;
@@ -291,13 +311,14 @@ public class Node
     else
     {
       paramNode.next = this.next;
-      if (paramNode.next != null)
+      if (paramNode.next != null) {
         paramNode.next.prev = paramNode;
+      }
     }
     this.next = paramNode;
     paramNode.prev = this;
   }
-
+  
   public static void trimEmptyElement(Lexer paramLexer, Node paramNode)
   {
     if (paramLexer.configuration.trimEmpty)
@@ -305,8 +326,9 @@ public class Node
       TagTable localTagTable = paramLexer.configuration.tt;
       if (paramLexer.canPrune(paramNode))
       {
-        if (paramNode.type != 4)
+        if (paramNode.type != 4) {
           paramLexer.report.warning(paramLexer, paramNode, null, (short)23);
+        }
         discardElement(paramNode);
       }
       else if ((paramNode.tag == localTagTable.tagP) && (paramNode.content == null))
@@ -317,7 +339,7 @@ public class Node
       }
     }
   }
-
+  
   public static void trimTrailingSpace(Lexer paramLexer, Node paramNode1, Node paramNode2)
   {
     TagTable localTagTable = paramLexer.configuration.tt;
@@ -326,32 +348,37 @@ public class Node
       if (paramNode2.end > paramNode2.start)
       {
         int i = paramLexer.lexbuf[(paramNode2.end - 1)];
-        if ((i == 160) || (i == 32))
+        if ((i == 160) || (i == 32)) {
           if ((i == 160) && ((paramNode1.tag == localTagTable.tagTd) || (paramNode1.tag == localTagTable.tagTh)))
           {
-            if (paramNode2.end > paramNode2.start + 1)
+            if (paramNode2.end > paramNode2.start + 1) {
               paramNode2.end -= 1;
+            }
           }
           else
           {
             paramNode2.end -= 1;
-            if ((TidyUtils.toBoolean(paramNode1.tag.model & 0x10)) && (!TidyUtils.toBoolean(paramNode1.tag.model & 0x400)))
+            if ((TidyUtils.toBoolean(paramNode1.tag.model & 0x10)) && (!TidyUtils.toBoolean(paramNode1.tag.model & 0x400))) {
               paramLexer.insertspace = true;
+            }
           }
+        }
       }
-      if (paramNode2.start == paramNode2.end)
+      if (paramNode2.start == paramNode2.end) {
         trimEmptyElement(paramLexer, paramNode2);
+      }
     }
   }
-
+  
   protected static Node escapeTag(Lexer paramLexer, Node paramNode)
   {
     Node localNode = paramLexer.newNode();
     localNode.start = paramLexer.lexsize;
     localNode.textarray = paramNode.textarray;
     paramLexer.addByte(60);
-    if (paramNode.type == 6)
+    if (paramNode.type == 6) {
       paramLexer.addByte(47);
+    }
     if (paramNode.element != null)
     {
       paramLexer.addStringLiteral(paramNode.element);
@@ -367,28 +394,32 @@ public class Node
       paramLexer.addByte(80);
       paramLexer.addByte(69);
       paramLexer.addByte(32);
-      for (int i = paramNode.start; i < paramNode.end; i++)
+      for (int i = paramNode.start; i < paramNode.end; i++) {
         paramLexer.addByte(paramLexer.lexbuf[i]);
+      }
     }
-    if (paramNode.type == 7)
+    if (paramNode.type == 7) {
       paramLexer.addByte(47);
+    }
     paramLexer.addByte(62);
     localNode.end = paramLexer.lexsize;
     return localNode;
   }
-
+  
   public boolean isBlank(Lexer paramLexer)
   {
     if (this.type == 4)
     {
-      if (this.end == this.start)
+      if (this.end == this.start) {
         return true;
-      if ((this.end == this.start + 1) && (paramLexer.lexbuf[(this.end - 1)] == 32))
+      }
+      if ((this.end == this.start + 1) && (paramLexer.lexbuf[(this.end - 1)] == 32)) {
         return true;
+      }
     }
     return false;
   }
-
+  
   public static void trimInitialSpace(Lexer paramLexer, Node paramNode1, Node paramNode2)
   {
     if ((paramNode2.type == 4) && (paramNode2.textarray[paramNode2.start] == 32) && (paramNode2.start < paramNode2.end))
@@ -398,8 +429,9 @@ public class Node
         Node localNode1 = paramNode1.prev;
         if ((localNode1 != null) && (localNode1.type == 4))
         {
-          if (localNode1.textarray[(localNode1.end - 1)] != 32)
+          if (localNode1.textarray[(localNode1.end - 1)] != 32) {
             localNode1.textarray[(localNode1.end++)] = 32;
+          }
           paramNode1.start += 1;
         }
         else
@@ -419,8 +451,9 @@ public class Node
           }
           localNode2.textarray[localNode2.start] = 32;
           localNode2.prev = localNode1;
-          if (localNode1 != null)
+          if (localNode1 != null) {
             localNode1.next = localNode2;
+          }
           localNode2.next = paramNode1;
           paramNode1.prev = localNode2;
           localNode2.parent = paramNode1.parent;
@@ -429,73 +462,83 @@ public class Node
       paramNode2.start += 1;
     }
   }
-
+  
   public static void trimSpaces(Lexer paramLexer, Node paramNode)
   {
     Node localNode = paramNode.content;
     TagTable localTagTable = paramLexer.configuration.tt;
-    if ((localNode != null) && (localNode.type == 4) && (paramNode.tag != localTagTable.tagPre))
+    if ((localNode != null) && (localNode.type == 4) && (paramNode.tag != localTagTable.tagPre)) {
       trimInitialSpace(paramLexer, paramNode, localNode);
+    }
     localNode = paramNode.last;
-    if ((localNode != null) && (localNode.type == 4))
+    if ((localNode != null) && (localNode.type == 4)) {
       trimTrailingSpace(paramLexer, paramNode, localNode);
+    }
   }
-
+  
   public boolean isDescendantOf(Dict paramDict)
   {
-    for (Node localNode = this.parent; localNode != null; localNode = localNode.parent)
-      if (localNode.tag == paramDict)
+    for (Node localNode = this.parent; localNode != null; localNode = localNode.parent) {
+      if (localNode.tag == paramDict) {
         return true;
+      }
+    }
     return false;
   }
-
+  
   public static void insertDocType(Lexer paramLexer, Node paramNode1, Node paramNode2)
   {
     TagTable localTagTable = paramLexer.configuration.tt;
     paramLexer.report.warning(paramLexer, paramNode1, paramNode2, (short)34);
-    while (paramNode1.tag != localTagTable.tagHtml)
+    while (paramNode1.tag != localTagTable.tagHtml) {
       paramNode1 = paramNode1.parent;
+    }
     insertNodeBeforeElement(paramNode1, paramNode2);
   }
-
+  
   public Node findBody(TagTable paramTagTable)
   {
-    for (Node localNode = this.content; (localNode != null) && (localNode.tag != paramTagTable.tagHtml); localNode = localNode.next);
-    if (localNode == null)
+    for (Node localNode = this.content; (localNode != null) && (localNode.tag != paramTagTable.tagHtml); localNode = localNode.next) {}
+    if (localNode == null) {
       return null;
-    for (localNode = localNode.content; (localNode != null) && (localNode.tag != paramTagTable.tagBody) && (localNode.tag != paramTagTable.tagFrameset); localNode = localNode.next);
+    }
+    for (localNode = localNode.content; (localNode != null) && (localNode.tag != paramTagTable.tagBody) && (localNode.tag != paramTagTable.tagFrameset); localNode = localNode.next) {}
     if (localNode.tag == paramTagTable.tagFrameset)
     {
-      for (localNode = localNode.content; (localNode != null) && (localNode.tag != paramTagTable.tagNoframes); localNode = localNode.next);
-      if (localNode != null)
-        for (localNode = localNode.content; (localNode != null) && (localNode.tag != paramTagTable.tagBody); localNode = localNode.next);
+      for (localNode = localNode.content; (localNode != null) && (localNode.tag != paramTagTable.tagNoframes); localNode = localNode.next) {}
+      if (localNode != null) {
+        for (localNode = localNode.content; (localNode != null) && (localNode.tag != paramTagTable.tagBody); localNode = localNode.next) {}
+      }
     }
     return localNode;
   }
-
+  
   public boolean isElement()
   {
     return (this.type == 5) || (this.type == 7);
   }
-
+  
   public static void moveBeforeTable(Node paramNode1, Node paramNode2, TagTable paramTagTable)
   {
-    for (Node localNode = paramNode1.parent; localNode != null; localNode = localNode.parent)
+    for (Node localNode = paramNode1.parent; localNode != null; localNode = localNode.parent) {
       if (localNode.tag == paramTagTable.tagTable)
       {
-        if (localNode.parent.content == localNode)
+        if (localNode.parent.content == localNode) {
           localNode.parent.content = paramNode2;
+        }
         paramNode2.prev = localNode.prev;
         paramNode2.next = localNode;
         localNode.prev = paramNode2;
         paramNode2.parent = localNode.parent;
-        if (paramNode2.prev == null)
+        if (paramNode2.prev == null) {
           break;
+        }
         paramNode2.prev.next = paramNode2;
         break;
       }
+    }
   }
-
+  
   public static void fixEmptyRow(Lexer paramLexer, Node paramNode)
   {
     if (paramNode.content == null)
@@ -505,7 +548,7 @@ public class Node
       paramLexer.report.warning(paramLexer, paramNode, localNode, (short)12);
     }
   }
-
+  
   public static void coerceNode(Lexer paramLexer, Node paramNode, Dict paramDict)
   {
     Node localNode = paramLexer.inferredTag(paramDict.name);
@@ -516,25 +559,29 @@ public class Node
     paramNode.implicit = true;
     paramNode.element = paramDict.name;
   }
-
+  
   public void removeNode()
   {
-    if (this.prev != null)
+    if (this.prev != null) {
       this.prev.next = this.next;
-    if (this.next != null)
+    }
+    if (this.next != null) {
       this.next.prev = this.prev;
+    }
     if (this.parent != null)
     {
-      if (this.parent.content == this)
+      if (this.parent.content == this) {
         this.parent.content = this.next;
-      if (this.parent.last == this)
+      }
+      if (this.parent.last == this) {
         this.parent.last = this.prev;
+      }
     }
     this.parent = null;
     this.prev = null;
     this.next = null;
   }
-
+  
   public static boolean insertMisc(Node paramNode1, Node paramNode2)
   {
     if ((paramNode2.type == 2) || (paramNode2.type == 3) || (paramNode2.type == 8) || (paramNode2.type == 9) || (paramNode2.type == 10) || (paramNode2.type == 11) || (paramNode2.type == 12) || (paramNode2.type == 13))
@@ -544,69 +591,79 @@ public class Node
     }
     return false;
   }
-
+  
   public boolean isNewNode()
   {
-    if (this.tag != null)
+    if (this.tag != null) {
       return TidyUtils.toBoolean(this.tag.model & 0x100000);
+    }
     return true;
   }
-
+  
   public boolean hasOneChild()
   {
     return (this.content != null) && (this.content.next == null);
   }
-
+  
   public Node findHTML(TagTable paramTagTable)
   {
-    for (Node localNode = this.content; (localNode != null) && (localNode.tag != paramTagTable.tagHtml); localNode = localNode.next);
+    for (Node localNode = this.content; (localNode != null) && (localNode.tag != paramTagTable.tagHtml); localNode = localNode.next) {}
     return localNode;
   }
-
+  
   public Node findHEAD(TagTable paramTagTable)
   {
     Node localNode = findHTML(paramTagTable);
-    if (localNode != null)
-      for (localNode = localNode.content; (localNode != null) && (localNode.tag != paramTagTable.tagHead); localNode = localNode.next);
+    if (localNode != null) {
+      for (localNode = localNode.content; (localNode != null) && (localNode.tag != paramTagTable.tagHead); localNode = localNode.next) {}
+    }
     return localNode;
   }
-
+  
   public Node findTITLE(TagTable paramTagTable)
   {
     Node localNode = findHEAD(paramTagTable);
-    if (localNode != null)
-      for (localNode = localNode.content; (localNode != null) && (localNode.tag != paramTagTable.tagTitle); localNode = localNode.next);
+    if (localNode != null) {
+      for (localNode = localNode.content; (localNode != null) && (localNode.tag != paramTagTable.tagTitle); localNode = localNode.next) {}
+    }
     return localNode;
   }
-
+  
   public boolean checkNodeIntegrity()
   {
-    if ((this.prev != null) && (this.prev.next != this))
+    if ((this.prev != null) && (this.prev.next != this)) {
       return false;
-    if ((this.next != null) && ((this.next == this) || (this.next.prev != this)))
+    }
+    if ((this.next != null) && ((this.next == this) || (this.next.prev != this))) {
       return false;
+    }
     if (this.parent != null)
     {
-      if ((this.prev == null) && (this.parent.content != this))
+      if ((this.prev == null) && (this.parent.content != this)) {
         return false;
-      if ((this.next == null) && (this.parent.last != this))
+      }
+      if ((this.next == null) && (this.parent.last != this)) {
         return false;
+      }
     }
-    for (Node localNode = this.content; localNode != null; localNode = localNode.next)
-      if ((localNode.parent != this) || (!localNode.checkNodeIntegrity()))
+    for (Node localNode = this.content; localNode != null; localNode = localNode.next) {
+      if ((localNode.parent != this) || (!localNode.checkNodeIntegrity())) {
         return false;
+      }
+    }
     return true;
   }
-
+  
   public void addClass(String paramString)
   {
     AttVal localAttVal = getAttrByName("class");
-    if (localAttVal != null)
+    if (localAttVal != null) {
       localAttVal.value = (localAttVal.value + " " + paramString);
-    else
+    } else {
       addAttribute("class", paramString);
+    }
   }
-
+  
   public String toString()
   {
     String str = "";
@@ -615,10 +672,11 @@ public class Node
       str = str + "[Node type=";
       str = str + NODETYPE_STRING[localNode.type];
       str = str + ",element=";
-      if (localNode.element != null)
+      if (localNode.element != null) {
         str = str + localNode.element;
-      else
+      } else {
         str = str + "null";
+      }
       if ((localNode.type == 4) || (localNode.type == 2) || (localNode.type == 3))
       {
         str = str + ",text=";
@@ -634,51 +692,54 @@ public class Node
         }
       }
       str = str + ",content=";
-      if (localNode.content != null)
+      if (localNode.content != null) {
         str = str + localNode.content.toString();
-      else
+      } else {
         str = str + "null";
+      }
       str = str + "]";
-      if (localNode.next != null)
+      if (localNode.next != null) {
         str = str + ",";
+      }
     }
     return str;
   }
-
+  
   protected org.w3c.dom.Node getAdapter()
   {
-    if (this.adapter == null)
+    if (this.adapter == null) {
       switch (this.type)
       {
-      case 0:
+      case 0: 
         this.adapter = new DOMDocumentImpl(this);
         break;
-      case 5:
-      case 7:
+      case 5: 
+      case 7: 
         this.adapter = new DOMElementImpl(this);
         break;
-      case 1:
+      case 1: 
         this.adapter = new DOMDocumentTypeImpl(this);
         break;
-      case 2:
+      case 2: 
         this.adapter = new DOMCommentImpl(this);
         break;
-      case 4:
+      case 4: 
         this.adapter = new DOMTextImpl(this);
         break;
-      case 8:
+      case 8: 
         this.adapter = new DOMCDATASectionImpl(this);
         break;
-      case 3:
+      case 3: 
         this.adapter = new DOMProcessingInstructionImpl(this);
         break;
-      case 6:
-      default:
+      case 6: 
+      default: 
         this.adapter = new DOMNodeImpl(this);
       }
+    }
     return this.adapter;
   }
-
+  
   protected Node cloneNode(boolean paramBoolean)
   {
     Node localNode1 = new Node(this.type, this.textarray, this.start, this.end);
@@ -687,44 +748,52 @@ public class Node
     localNode1.implicit = this.implicit;
     localNode1.tag = this.tag;
     localNode1.element = this.element;
-    if (this.attributes != null)
+    if (this.attributes != null) {
       localNode1.attributes = ((AttVal)this.attributes.clone());
-    if (paramBoolean)
+    }
+    if (paramBoolean) {
       for (Node localNode2 = this.content; localNode2 != null; localNode2 = localNode2.next)
       {
         Node localNode3 = localNode2.cloneNode(paramBoolean);
         localNode1.insertNodeAtEnd(localNode3);
       }
+    }
     return localNode1;
   }
-
+  
   protected void setType(short paramShort)
   {
     this.type = paramShort;
   }
-
+  
   public boolean isJavaScript()
   {
     boolean bool = false;
-    if (this.attributes == null)
+    if (this.attributes == null) {
       return true;
-    for (AttVal localAttVal = this.attributes; localAttVal != null; localAttVal = localAttVal.next)
-      if ((("language".equalsIgnoreCase(localAttVal.attribute)) || ("type".equalsIgnoreCase(localAttVal.attribute))) && ("javascript".equalsIgnoreCase(localAttVal.value)))
+    }
+    for (AttVal localAttVal = this.attributes; localAttVal != null; localAttVal = localAttVal.next) {
+      if ((("language".equalsIgnoreCase(localAttVal.attribute)) || ("type".equalsIgnoreCase(localAttVal.attribute))) && ("javascript".equalsIgnoreCase(localAttVal.value))) {
         bool = true;
+      }
+    }
     return bool;
   }
-
+  
   public boolean expectsContent()
   {
-    if (this.type != 5)
+    if (this.type != 5) {
       return false;
-    if (this.tag == null)
+    }
+    if (this.tag == null) {
       return true;
+    }
     return !TidyUtils.toBoolean(this.tag.model & 0x1);
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.w3c.tidy.Node
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

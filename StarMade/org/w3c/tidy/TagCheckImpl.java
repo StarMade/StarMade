@@ -16,7 +16,7 @@ public final class TagCheckImpl
   public static final TagCheck HR = new CheckHR();
   public static final TagCheck FORM = new CheckForm();
   public static final TagCheck META = new CheckMeta();
-
+  
   public static class CheckLINK
     implements TagCheck
   {
@@ -36,18 +36,19 @@ public final class TagCheckImpl
       }
     }
   }
-
+  
   public static class CheckTableCell
     implements TagCheck
   {
     public void check(Lexer paramLexer, Node paramNode)
     {
       paramNode.checkAttributes(paramLexer);
-      if ((paramNode.getAttrByName("width") != null) || (paramNode.getAttrByName("height") != null))
+      if ((paramNode.getAttrByName("width") != null) || (paramNode.getAttrByName("height") != null)) {
         paramLexer.constrainVersion(-5);
+      }
     }
   }
-
+  
   public static class CheckMeta
     implements TagCheck
   {
@@ -62,7 +63,7 @@ public final class TagCheckImpl
       }
     }
   }
-
+  
   public static class CheckForm
     implements TagCheck
   {
@@ -77,7 +78,7 @@ public final class TagCheckImpl
       }
     }
   }
-
+  
   public static class CheckSTYLE
     implements TagCheck
   {
@@ -93,7 +94,7 @@ public final class TagCheckImpl
       }
     }
   }
-
+  
   public static class CheckMap
     implements TagCheck
   {
@@ -103,7 +104,7 @@ public final class TagCheckImpl
       paramLexer.fixId(paramNode);
     }
   }
-
+  
   public static class CheckAnchor
     implements TagCheck
   {
@@ -113,7 +114,7 @@ public final class TagCheckImpl
       paramLexer.fixId(paramNode);
     }
   }
-
+  
   public static class CheckAREA
     implements TagCheck
   {
@@ -124,10 +125,11 @@ public final class TagCheckImpl
       for (AttVal localAttVal1 = paramNode.attributes; localAttVal1 != null; localAttVal1 = localAttVal1.next)
       {
         Attribute localAttribute = localAttVal1.checkAttribute(paramLexer, paramNode);
-        if (localAttribute == AttributeTable.attrAlt)
+        if (localAttribute == AttributeTable.attrAlt) {
           i = 1;
-        else if (localAttribute == AttributeTable.attrHref)
+        } else if (localAttribute == AttributeTable.attrHref) {
           j = 1;
+        }
       }
       AttVal localAttVal2;
       if (i == 0)
@@ -144,7 +146,7 @@ public final class TagCheckImpl
       }
     }
   }
-
+  
   public static class CheckIMG
     implements TagCheck
   {
@@ -158,18 +160,19 @@ public final class TagCheckImpl
       for (AttVal localAttVal1 = paramNode.attributes; localAttVal1 != null; localAttVal1 = localAttVal1.next)
       {
         Attribute localAttribute = localAttVal1.checkAttribute(paramLexer, paramNode);
-        if (localAttribute == AttributeTable.attrAlt)
+        if (localAttribute == AttributeTable.attrAlt) {
           i = 1;
-        else if (localAttribute == AttributeTable.attrSrc)
+        } else if (localAttribute == AttributeTable.attrSrc) {
           j = 1;
-        else if (localAttribute == AttributeTable.attrUsemap)
+        } else if (localAttribute == AttributeTable.attrUsemap) {
           k = 1;
-        else if (localAttribute == AttributeTable.attrIsmap)
+        } else if (localAttribute == AttributeTable.attrIsmap) {
           m = 1;
-        else if (localAttribute == AttributeTable.attrDatafld)
+        } else if (localAttribute == AttributeTable.attrDatafld) {
           n = 1;
-        else if ((localAttribute == AttributeTable.attrWidth) || (localAttribute == AttributeTable.attrHeight))
+        } else if ((localAttribute == AttributeTable.attrWidth) || (localAttribute == AttributeTable.attrHeight)) {
           paramLexer.constrainVersion(-2);
+        }
       }
       AttVal localAttVal2;
       if (i == 0)
@@ -178,8 +181,9 @@ public final class TagCheckImpl
         tmp138_137.badAccess = ((short)(tmp138_137.badAccess | 0x1));
         localAttVal2 = new AttVal(null, null, 34, "alt", "");
         paramLexer.report.attrError(paramLexer, paramNode, localAttVal2, (short)49);
-        if (paramLexer.configuration.altText != null)
+        if (paramLexer.configuration.altText != null) {
           paramNode.addAttribute("alt", paramLexer.configuration.altText);
+        }
       }
       if ((j == 0) && (n == 0))
       {
@@ -193,7 +197,7 @@ public final class TagCheckImpl
       }
     }
   }
-
+  
   public static class CheckHR
     implements TagCheck
   {
@@ -201,11 +205,12 @@ public final class TagCheckImpl
     {
       AttVal localAttVal = paramNode.getAttrByName("src");
       paramNode.checkAttributes(paramLexer);
-      if (localAttVal != null)
+      if (localAttVal != null) {
         paramLexer.report.attrError(paramLexer, paramNode, localAttVal, (short)54);
+      }
     }
   }
-
+  
   public static class CheckCaption
     implements TagCheck
   {
@@ -213,22 +218,25 @@ public final class TagCheckImpl
     {
       String str = null;
       paramNode.checkAttributes(paramLexer);
-      for (AttVal localAttVal = paramNode.attributes; localAttVal != null; localAttVal = localAttVal.next)
+      for (AttVal localAttVal = paramNode.attributes; localAttVal != null; localAttVal = localAttVal.next) {
         if ("align".equalsIgnoreCase(localAttVal.attribute))
         {
           str = localAttVal.value;
           break;
         }
-      if (str != null)
-        if (("left".equalsIgnoreCase(str)) || ("right".equalsIgnoreCase(str)))
+      }
+      if (str != null) {
+        if (("left".equalsIgnoreCase(str)) || ("right".equalsIgnoreCase(str))) {
           paramLexer.constrainVersion(8);
-        else if (("top".equalsIgnoreCase(str)) || ("bottom".equalsIgnoreCase(str)))
+        } else if (("top".equalsIgnoreCase(str)) || ("bottom".equalsIgnoreCase(str))) {
           paramLexer.constrainVersion(-4);
-        else
+        } else {
           paramLexer.report.attrError(paramLexer, paramNode, localAttVal, (short)51);
+        }
+      }
     }
   }
-
+  
   public static class CheckTABLE
     implements TagCheck
   {
@@ -238,8 +246,9 @@ public final class TagCheckImpl
       for (AttVal localAttVal = paramNode.attributes; localAttVal != null; localAttVal = localAttVal.next)
       {
         Attribute localAttribute = localAttVal.checkAttribute(paramLexer, paramNode);
-        if (localAttribute == AttributeTable.attrSummary)
+        if (localAttribute == AttributeTable.attrSummary) {
           i = 1;
+        }
       }
       if ((i == 0) && (paramLexer.doctype != 1) && (paramLexer.doctype != 2))
       {
@@ -249,8 +258,9 @@ public final class TagCheckImpl
       if (paramLexer.configuration.xmlOut)
       {
         localAttVal = paramNode.getAttrByName("border");
-        if ((localAttVal != null) && (localAttVal.value == null))
+        if ((localAttVal != null) && (localAttVal.value == null)) {
           localAttVal.value = "1";
+        }
       }
       if ((localAttVal = paramNode.getAttrByName("height")) != null)
       {
@@ -260,7 +270,7 @@ public final class TagCheckImpl
       }
     }
   }
-
+  
   public static class CheckSCRIPT
     implements TagCheck
   {
@@ -276,10 +286,11 @@ public final class TagCheckImpl
         if (localAttVal1 != null)
         {
           String str = localAttVal1.value;
-          if (("javascript".equalsIgnoreCase(str)) || ("jscript".equalsIgnoreCase(str)))
+          if (("javascript".equalsIgnoreCase(str)) || ("jscript".equalsIgnoreCase(str))) {
             paramNode.addAttribute("type", "text/javascript");
-          else if ("vbscript".equalsIgnoreCase(str))
+          } else if ("vbscript".equalsIgnoreCase(str)) {
             paramNode.addAttribute("type", "text/vbscript");
+          }
         }
         else
         {
@@ -288,31 +299,34 @@ public final class TagCheckImpl
       }
     }
   }
-
+  
   public static class CheckHTML
     implements TagCheck
   {
     private static final String XHTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
-
+    
     public void check(Lexer paramLexer, Node paramNode)
     {
       AttVal localAttVal2 = paramNode.getAttrByName("xmlns");
       if ((localAttVal2 != null) && ("http://www.w3.org/1999/xhtml".equals(localAttVal2.value)))
       {
         paramLexer.isvoyager = true;
-        if (!paramLexer.configuration.htmlOut)
+        if (!paramLexer.configuration.htmlOut) {
           paramLexer.configuration.xHTML = true;
+        }
         paramLexer.configuration.xmlOut = true;
         paramLexer.configuration.upperCaseTags = false;
         paramLexer.configuration.upperCaseAttrs = false;
       }
-      for (AttVal localAttVal1 = paramNode.attributes; localAttVal1 != null; localAttVal1 = localAttVal1.next)
+      for (AttVal localAttVal1 = paramNode.attributes; localAttVal1 != null; localAttVal1 = localAttVal1.next) {
         localAttVal1.checkAttribute(paramLexer, paramNode);
+      }
     }
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.w3c.tidy.TagCheckImpl
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

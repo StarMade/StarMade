@@ -7,30 +7,31 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 import org.hsqldb.store.BaseHashMap;
 import org.hsqldb.store.BaseHashMap.BaseHashIterator;
 
-public class LongKeyHashMap extends BaseHashMap
+public class LongKeyHashMap
+  extends BaseHashMap
 {
   Set keySet;
   Collection values;
   ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
   ReentrantReadWriteLock.ReadLock readLock = this.lock.readLock();
   ReentrantReadWriteLock.WriteLock writeLock = this.lock.writeLock();
-
+  
   public LongKeyHashMap()
   {
     this(16);
   }
-
+  
   public LongKeyHashMap(int paramInt)
     throws IllegalArgumentException
   {
     super(paramInt, 2, 3, false);
   }
-
+  
   public Lock getWriteLock()
   {
     return this.writeLock;
   }
-
+  
   public Object get(long paramLong)
   {
     this.readLock.lock();
@@ -50,7 +51,7 @@ public class LongKeyHashMap extends BaseHashMap
       this.readLock.unlock();
     }
   }
-
+  
   public Object put(long paramLong, Object paramObject)
   {
     this.writeLock.lock();
@@ -64,7 +65,7 @@ public class LongKeyHashMap extends BaseHashMap
       this.writeLock.unlock();
     }
   }
-
+  
   public boolean containsValue(Object paramObject)
   {
     this.readLock.lock();
@@ -78,7 +79,7 @@ public class LongKeyHashMap extends BaseHashMap
       this.readLock.unlock();
     }
   }
-
+  
   public Object remove(long paramLong)
   {
     this.writeLock.lock();
@@ -92,7 +93,7 @@ public class LongKeyHashMap extends BaseHashMap
       this.writeLock.unlock();
     }
   }
-
+  
   public boolean containsKey(long paramLong)
   {
     this.readLock.lock();
@@ -106,7 +107,7 @@ public class LongKeyHashMap extends BaseHashMap
       this.readLock.unlock();
     }
   }
-
+  
   public void clear()
   {
     this.writeLock.lock();
@@ -119,7 +120,7 @@ public class LongKeyHashMap extends BaseHashMap
       this.writeLock.unlock();
     }
   }
-
+  
   public Object[] toArray()
   {
     this.readLock.lock();
@@ -128,8 +129,9 @@ public class LongKeyHashMap extends BaseHashMap
       Object[] arrayOfObject1 = new Object[size()];
       int i = 0;
       BaseHashMap.BaseHashIterator localBaseHashIterator = new BaseHashMap.BaseHashIterator(this, false);
-      while (localBaseHashIterator.hasNext())
+      while (localBaseHashIterator.hasNext()) {
         arrayOfObject1[(i++)] = localBaseHashIterator.next();
+      }
       Object[] arrayOfObject2 = arrayOfObject1;
       return arrayOfObject2;
     }
@@ -138,15 +140,16 @@ public class LongKeyHashMap extends BaseHashMap
       this.readLock.unlock();
     }
   }
-
+  
   public int getOrderedMatchCount(int[] paramArrayOfInt)
   {
     int i = 0;
     try
     {
       this.readLock.lock();
-      while ((i < paramArrayOfInt.length) && (super.containsKey(paramArrayOfInt[i])))
+      while ((i < paramArrayOfInt.length) && (super.containsKey(paramArrayOfInt[i]))) {
         i++;
+      }
     }
     finally
     {
@@ -154,120 +157,118 @@ public class LongKeyHashMap extends BaseHashMap
     }
     return i;
   }
-
+  
   public Set keySet()
   {
-    if (this.keySet == null)
+    if (this.keySet == null) {
       this.keySet = new KeySet();
+    }
     return this.keySet;
   }
-
+  
   public Collection values()
   {
-    if (this.values == null)
+    if (this.values == null) {
       this.values = new Values();
+    }
     return this.values;
   }
-
+  
   class Values
     implements Collection
   {
-    Values()
-    {
-    }
-
+    Values() {}
+    
     public Iterator iterator()
     {
       LongKeyHashMap tmp8_5 = LongKeyHashMap.this;
       tmp8_5.getClass();
       return new BaseHashMap.BaseHashIterator(tmp8_5, false);
     }
-
+    
     public int size()
     {
       return LongKeyHashMap.this.size();
     }
-
+    
     public boolean contains(Object paramObject)
     {
       throw new RuntimeException();
     }
-
+    
     public boolean add(Object paramObject)
     {
       throw new RuntimeException();
     }
-
+    
     public boolean addAll(Collection paramCollection)
     {
       throw new RuntimeException();
     }
-
+    
     public boolean remove(Object paramObject)
     {
       throw new RuntimeException();
     }
-
+    
     public boolean isEmpty()
     {
       return size() == 0;
     }
-
+    
     public void clear()
     {
       LongKeyHashMap.this.clear();
     }
   }
-
+  
   class KeySet
     implements Set
   {
-    KeySet()
-    {
-    }
-
+    KeySet() {}
+    
     public Iterator iterator()
     {
       LongKeyHashMap tmp8_5 = LongKeyHashMap.this;
       tmp8_5.getClass();
       return new BaseHashMap.BaseHashIterator(tmp8_5, true);
     }
-
+    
     public int size()
     {
       return LongKeyHashMap.this.size();
     }
-
+    
     public boolean contains(Object paramObject)
     {
       throw new RuntimeException();
     }
-
+    
     public Object get(Object paramObject)
     {
       throw new RuntimeException();
     }
-
+    
     public boolean add(Object paramObject)
     {
       throw new RuntimeException();
     }
-
+    
     public boolean addAll(Collection paramCollection)
     {
       throw new RuntimeException();
     }
-
+    
     public boolean remove(Object paramObject)
     {
       throw new RuntimeException();
     }
-
+    
     public boolean isEmpty()
     {
       return size() == 0;
     }
-
+    
     public void clear()
     {
       LongKeyHashMap.this.clear();
@@ -275,7 +276,8 @@ public class LongKeyHashMap extends BaseHashMap
   }
 }
 
+
 /* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
  * Qualified Name:     org.hsqldb.lib.LongKeyHashMap
- * JD-Core Version:    0.6.2
+ * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */
