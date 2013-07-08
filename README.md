@@ -3,6 +3,8 @@ StarMade
 
 Open source repository of StarMade code deobfuscated and kept updated by community.
 
+CURRENT DECOMPILED VERSION: 0.09377
+
 StarMade: [http://star-made.org/](http://star-made.org/)
 
 Contributing
@@ -21,7 +23,7 @@ For opening sources in Eclipse:
 For textures while debugging in Eclipse:
 * Create a new folder in your project and call it resources or something
 * Make it a source folder
-* Link it to resources folder
+* Link it to your StarMade's data folder
 
 Compiling
 -----------
