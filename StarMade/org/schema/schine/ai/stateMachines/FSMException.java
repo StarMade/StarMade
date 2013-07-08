@@ -1,27 +1,27 @@
-/*  1:   */package org.schema.schine.ai.stateMachines;
-/*  2:   */
-/*  3:   */import wq;
-/*  4:   */import wt;
-/*  5:   */import wv;
-/*  6:   */
-/* 56:   */public class FSMException
-/* 57:   */  extends Exception
-/* 58:   */{
-/* 59:   */  private static final long serialVersionUID = -4217837268845972600L;
-/* 60:   */  
-/* 61:   */  public FSMException(wt paramwt, wv paramwv)
-/* 62:   */  {
-/* 63:63 */    super("ERR: Transition from \"" + paramwt + "\" --" + paramwv + "--> \"newState\" failed | not found in " + paramwt + ". inputs: " + paramwt.a().a + ", outputs " + paramwt.a().b);
-/* 64:   */  }
-/* 65:   */  
-/* 71:   */  public FSMException(String paramString)
-/* 72:   */  {
-/* 73:73 */    super(paramString);
-/* 74:   */  }
-/* 75:   */}
+package org.schema.schine.ai.stateMachines;
+
+import class_1003;
+import class_993;
+import class_999;
+
+public class FSMException
+  extends Exception
+{
+  private static final long serialVersionUID = -4217837268845972600L;
+  
+  public FSMException(class_999 paramclass_999, class_1003 paramclass_1003)
+  {
+    super("ERR: Transition from \"" + paramclass_999 + "\" --" + paramclass_1003 + "--> \"newState\" failed | not found in " + paramclass_999 + ". inputs: " + paramclass_999.a10().field_1277 + ", outputs " + paramclass_999.a10().field_1278);
+  }
+  
+  public FSMException(String paramString)
+  {
+    super(paramString);
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.schine.ai.stateMachines.FSMException
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -29,23 +29,23 @@ public class HsqlDateTime
   private static final char[][] dateTokens = { { 'R', 'R', 'R', 'R' }, { 'I', 'Y', 'Y', 'Y' }, { 'Y', 'Y', 'Y', 'Y' }, { 'I', 'Y' }, { 'Y', 'Y' }, { 'B', 'C' }, { 'B', '.', 'C', '.' }, { 'A', 'D' }, { 'A', '.', 'D', '.' }, { 'M', 'O', 'N' }, { 'M', 'O', 'N', 'T', 'H' }, { 'M', 'M' }, { 'D', 'A', 'Y' }, { 'D', 'Y' }, { 'W', 'W' }, { 'I', 'W' }, { 'D', 'D' }, { 'D', 'D', 'D' }, { 'W' }, { 'H', 'H', '2', '4' }, { 'H', 'H', '1', '2' }, { 'H', 'H' }, { 'M', 'I' }, { 'S', 'S' }, { 'A', 'M' }, { 'P', 'M' }, { 'A', '.', 'M', '.' }, { 'P', '.', 'M', '.' }, { 'F', 'F' } };
   private static final String[] javaDateTokens = { "yyyy", "'*IYYY'", "yyyy", "'*IY'", "yy", "G", "G", "G", "G", "MMM", "MMMMM", "MM", "EEEE", "EE", "'*WW'", "w", "dd", "D", "'*W'", "HH", "KK", "KK", "mm", "ss", "aaa", "aaa", "aaa", "aaa", "S" };
   private static final int[] sqlIntervalCodes = { -1, -1, 101, -1, 101, -1, -1, -1, -1, 102, 102, 102, -1, -1, 262, -1, 103, 103, -1, 104, -1, 104, 105, 106, -1, -1, -1, -1, -1 };
-  private static final char e = 'èøø';
+  private static final char field_2126 = 'èøø';
   
   /* Error */
   public static long getDateSeconds(String paramString)
   {
     // Byte code:
-    //   0: getstatic 3	org/hsqldb/HsqlDateTime:sdfd	Ljava/text/SimpleDateFormat;
+    //   0: getstatic 54	org/hsqldb/HsqlDateTime:sdfd	Ljava/text/SimpleDateFormat;
     //   3: dup
     //   4: astore_1
     //   5: monitorenter
-    //   6: getstatic 3	org/hsqldb/HsqlDateTime:sdfd	Ljava/text/SimpleDateFormat;
+    //   6: getstatic 54	org/hsqldb/HsqlDateTime:sdfd	Ljava/text/SimpleDateFormat;
     //   9: aload_0
-    //   10: invokevirtual 4	java/text/SimpleDateFormat:parse	(Ljava/lang/String;)Ljava/util/Date;
+    //   10: invokevirtual 60	java/text/SimpleDateFormat:parse	(Ljava/lang/String;)Ljava/util/Date;
     //   13: astore_2
     //   14: aload_2
-    //   15: invokevirtual 5	java/util/Date:getTime	()J
-    //   18: ldc2_w 6
+    //   15: invokevirtual 66	java/util/Date:getTime	()J
+    //   18: ldc2_w 67
     //   21: ldiv
     //   22: aload_1
     //   23: monitorexit
@@ -57,7 +57,7 @@ public class HsqlDateTime
     //   29: athrow
     //   30: astore_1
     //   31: sipush 3407
-    //   34: invokestatic 9	org/hsqldb/error/Error:error	(I)Lorg/hsqldb/HsqlException;
+    //   34: invokestatic 78	org/hsqldb/error/Error:error	(I)Lorg/hsqldb/HsqlException;
     //   37: athrow
     // Local variable table:
     //   start	length	slot	name	signature
@@ -86,17 +86,17 @@ public class HsqlDateTime
   public static long getTimestampSeconds(String paramString)
   {
     // Byte code:
-    //   0: getstatic 13	org/hsqldb/HsqlDateTime:sdfts	Ljava/text/SimpleDateFormat;
+    //   0: getstatic 93	org/hsqldb/HsqlDateTime:sdfts	Ljava/text/SimpleDateFormat;
     //   3: dup
     //   4: astore_1
     //   5: monitorenter
-    //   6: getstatic 13	org/hsqldb/HsqlDateTime:sdfts	Ljava/text/SimpleDateFormat;
+    //   6: getstatic 93	org/hsqldb/HsqlDateTime:sdfts	Ljava/text/SimpleDateFormat;
     //   9: aload_0
-    //   10: invokevirtual 4	java/text/SimpleDateFormat:parse	(Ljava/lang/String;)Ljava/util/Date;
+    //   10: invokevirtual 60	java/text/SimpleDateFormat:parse	(Ljava/lang/String;)Ljava/util/Date;
     //   13: astore_2
     //   14: aload_2
-    //   15: invokevirtual 5	java/util/Date:getTime	()J
-    //   18: ldc2_w 6
+    //   15: invokevirtual 66	java/util/Date:getTime	()J
+    //   18: ldc2_w 67
     //   21: ldiv
     //   22: aload_1
     //   23: monitorexit
@@ -108,7 +108,7 @@ public class HsqlDateTime
     //   29: athrow
     //   30: astore_1
     //   31: sipush 3407
-    //   34: invokestatic 9	org/hsqldb/error/Error:error	(I)Lorg/hsqldb/HsqlException;
+    //   34: invokestatic 78	org/hsqldb/error/Error:error	(I)Lorg/hsqldb/HsqlException;
     //   37: athrow
     // Local variable table:
     //   start	length	slot	name	signature
@@ -688,7 +688,7 @@ public class HsqlDateTime
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.HsqlDateTime
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

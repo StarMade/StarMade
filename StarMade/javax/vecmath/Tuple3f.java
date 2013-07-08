@@ -6,167 +6,167 @@ public abstract class Tuple3f
   implements Serializable, Cloneable
 {
   static final long serialVersionUID = 5019834619484343712L;
-  public float x;
-  public float y;
-  public float z;
+  public float field_615;
+  public float field_616;
+  public float field_617;
   
   public Tuple3f(float paramFloat1, float paramFloat2, float paramFloat3)
   {
-    this.x = paramFloat1;
-    this.y = paramFloat2;
-    this.z = paramFloat3;
+    this.field_615 = paramFloat1;
+    this.field_616 = paramFloat2;
+    this.field_617 = paramFloat3;
   }
   
   public Tuple3f(float[] paramArrayOfFloat)
   {
-    this.x = paramArrayOfFloat[0];
-    this.y = paramArrayOfFloat[1];
-    this.z = paramArrayOfFloat[2];
+    this.field_615 = paramArrayOfFloat[0];
+    this.field_616 = paramArrayOfFloat[1];
+    this.field_617 = paramArrayOfFloat[2];
   }
   
   public Tuple3f(Tuple3f paramTuple3f)
   {
-    this.x = paramTuple3f.x;
-    this.y = paramTuple3f.y;
-    this.z = paramTuple3f.z;
+    this.field_615 = paramTuple3f.field_615;
+    this.field_616 = paramTuple3f.field_616;
+    this.field_617 = paramTuple3f.field_617;
   }
   
   public Tuple3f(Tuple3d paramTuple3d)
   {
-    this.x = ((float)paramTuple3d.x);
-    this.y = ((float)paramTuple3d.y);
-    this.z = ((float)paramTuple3d.z);
+    this.field_615 = ((float)paramTuple3d.field_612);
+    this.field_616 = ((float)paramTuple3d.field_613);
+    this.field_617 = ((float)paramTuple3d.field_614);
   }
   
   public Tuple3f()
   {
-    this.x = 0.0F;
-    this.y = 0.0F;
-    this.z = 0.0F;
+    this.field_615 = 0.0F;
+    this.field_616 = 0.0F;
+    this.field_617 = 0.0F;
   }
   
   public String toString()
   {
-    return "(" + this.x + ", " + this.y + ", " + this.z + ")";
+    return "(" + this.field_615 + ", " + this.field_616 + ", " + this.field_617 + ")";
   }
   
   public final void set(float paramFloat1, float paramFloat2, float paramFloat3)
   {
-    this.x = paramFloat1;
-    this.y = paramFloat2;
-    this.z = paramFloat3;
+    this.field_615 = paramFloat1;
+    this.field_616 = paramFloat2;
+    this.field_617 = paramFloat3;
   }
   
   public final void set(float[] paramArrayOfFloat)
   {
-    this.x = paramArrayOfFloat[0];
-    this.y = paramArrayOfFloat[1];
-    this.z = paramArrayOfFloat[2];
+    this.field_615 = paramArrayOfFloat[0];
+    this.field_616 = paramArrayOfFloat[1];
+    this.field_617 = paramArrayOfFloat[2];
   }
   
   public final void set(Tuple3f paramTuple3f)
   {
-    this.x = paramTuple3f.x;
-    this.y = paramTuple3f.y;
-    this.z = paramTuple3f.z;
+    this.field_615 = paramTuple3f.field_615;
+    this.field_616 = paramTuple3f.field_616;
+    this.field_617 = paramTuple3f.field_617;
   }
   
   public final void set(Tuple3d paramTuple3d)
   {
-    this.x = ((float)paramTuple3d.x);
-    this.y = ((float)paramTuple3d.y);
-    this.z = ((float)paramTuple3d.z);
+    this.field_615 = ((float)paramTuple3d.field_612);
+    this.field_616 = ((float)paramTuple3d.field_613);
+    this.field_617 = ((float)paramTuple3d.field_614);
   }
   
   public final void get(float[] paramArrayOfFloat)
   {
-    paramArrayOfFloat[0] = this.x;
-    paramArrayOfFloat[1] = this.y;
-    paramArrayOfFloat[2] = this.z;
+    paramArrayOfFloat[0] = this.field_615;
+    paramArrayOfFloat[1] = this.field_616;
+    paramArrayOfFloat[2] = this.field_617;
   }
   
   public final void get(Tuple3f paramTuple3f)
   {
-    paramTuple3f.x = this.x;
-    paramTuple3f.y = this.y;
-    paramTuple3f.z = this.z;
+    paramTuple3f.field_615 = this.field_615;
+    paramTuple3f.field_616 = this.field_616;
+    paramTuple3f.field_617 = this.field_617;
   }
   
   public final void add(Tuple3f paramTuple3f1, Tuple3f paramTuple3f2)
   {
-    paramTuple3f1.x += paramTuple3f2.x;
-    paramTuple3f1.y += paramTuple3f2.y;
-    paramTuple3f1.z += paramTuple3f2.z;
+    paramTuple3f1.field_615 += paramTuple3f2.field_615;
+    paramTuple3f1.field_616 += paramTuple3f2.field_616;
+    paramTuple3f1.field_617 += paramTuple3f2.field_617;
   }
   
   public final void add(Tuple3f paramTuple3f)
   {
-    this.x += paramTuple3f.x;
-    this.y += paramTuple3f.y;
-    this.z += paramTuple3f.z;
+    this.field_615 += paramTuple3f.field_615;
+    this.field_616 += paramTuple3f.field_616;
+    this.field_617 += paramTuple3f.field_617;
   }
   
   public final void sub(Tuple3f paramTuple3f1, Tuple3f paramTuple3f2)
   {
-    paramTuple3f1.x -= paramTuple3f2.x;
-    paramTuple3f1.y -= paramTuple3f2.y;
-    paramTuple3f1.z -= paramTuple3f2.z;
+    paramTuple3f1.field_615 -= paramTuple3f2.field_615;
+    paramTuple3f1.field_616 -= paramTuple3f2.field_616;
+    paramTuple3f1.field_617 -= paramTuple3f2.field_617;
   }
   
   public final void sub(Tuple3f paramTuple3f)
   {
-    this.x -= paramTuple3f.x;
-    this.y -= paramTuple3f.y;
-    this.z -= paramTuple3f.z;
+    this.field_615 -= paramTuple3f.field_615;
+    this.field_616 -= paramTuple3f.field_616;
+    this.field_617 -= paramTuple3f.field_617;
   }
   
   public final void negate(Tuple3f paramTuple3f)
   {
-    this.x = (-paramTuple3f.x);
-    this.y = (-paramTuple3f.y);
-    this.z = (-paramTuple3f.z);
+    this.field_615 = (-paramTuple3f.field_615);
+    this.field_616 = (-paramTuple3f.field_616);
+    this.field_617 = (-paramTuple3f.field_617);
   }
   
   public final void negate()
   {
-    this.x = (-this.x);
-    this.y = (-this.y);
-    this.z = (-this.z);
+    this.field_615 = (-this.field_615);
+    this.field_616 = (-this.field_616);
+    this.field_617 = (-this.field_617);
   }
   
   public final void scale(float paramFloat, Tuple3f paramTuple3f)
   {
-    this.x = (paramFloat * paramTuple3f.x);
-    this.y = (paramFloat * paramTuple3f.y);
-    this.z = (paramFloat * paramTuple3f.z);
+    this.field_615 = (paramFloat * paramTuple3f.field_615);
+    this.field_616 = (paramFloat * paramTuple3f.field_616);
+    this.field_617 = (paramFloat * paramTuple3f.field_617);
   }
   
   public final void scale(float paramFloat)
   {
-    this.x *= paramFloat;
-    this.y *= paramFloat;
-    this.z *= paramFloat;
+    this.field_615 *= paramFloat;
+    this.field_616 *= paramFloat;
+    this.field_617 *= paramFloat;
   }
   
   public final void scaleAdd(float paramFloat, Tuple3f paramTuple3f1, Tuple3f paramTuple3f2)
   {
-    this.x = (paramFloat * paramTuple3f1.x + paramTuple3f2.x);
-    this.y = (paramFloat * paramTuple3f1.y + paramTuple3f2.y);
-    this.z = (paramFloat * paramTuple3f1.z + paramTuple3f2.z);
+    this.field_615 = (paramFloat * paramTuple3f1.field_615 + paramTuple3f2.field_615);
+    this.field_616 = (paramFloat * paramTuple3f1.field_616 + paramTuple3f2.field_616);
+    this.field_617 = (paramFloat * paramTuple3f1.field_617 + paramTuple3f2.field_617);
   }
   
   public final void scaleAdd(float paramFloat, Tuple3f paramTuple3f)
   {
-    this.x = (paramFloat * this.x + paramTuple3f.x);
-    this.y = (paramFloat * this.y + paramTuple3f.y);
-    this.z = (paramFloat * this.z + paramTuple3f.z);
+    this.field_615 = (paramFloat * this.field_615 + paramTuple3f.field_615);
+    this.field_616 = (paramFloat * this.field_616 + paramTuple3f.field_616);
+    this.field_617 = (paramFloat * this.field_617 + paramTuple3f.field_617);
   }
   
   public boolean equals(Tuple3f paramTuple3f)
   {
     try
     {
-      return (this.x == paramTuple3f.x) && (this.y == paramTuple3f.y) && (this.z == paramTuple3f.z);
+      return (this.field_615 == paramTuple3f.field_615) && (this.field_616 == paramTuple3f.field_616) && (this.field_617 == paramTuple3f.field_617);
     }
     catch (NullPointerException localNullPointerException) {}
     return false;
@@ -177,7 +177,7 @@ public abstract class Tuple3f
     try
     {
       Tuple3f localTuple3f = (Tuple3f)paramObject;
-      return (this.x == localTuple3f.x) && (this.y == localTuple3f.y) && (this.z == localTuple3f.z);
+      return (this.field_615 == localTuple3f.field_615) && (this.field_616 == localTuple3f.field_616) && (this.field_617 == localTuple3f.field_617);
     }
     catch (NullPointerException localNullPointerException)
     {
@@ -189,161 +189,161 @@ public abstract class Tuple3f
   
   public boolean epsilonEquals(Tuple3f paramTuple3f, float paramFloat)
   {
-    float f = this.x - paramTuple3f.x;
+    float f = this.field_615 - paramTuple3f.field_615;
     if ((f < 0.0F ? -f : f) > paramFloat) {
       return false;
     }
-    f = this.y - paramTuple3f.y;
+    f = this.field_616 - paramTuple3f.field_616;
     if ((f < 0.0F ? -f : f) > paramFloat) {
       return false;
     }
-    f = this.z - paramTuple3f.z;
+    f = this.field_617 - paramTuple3f.field_617;
     return (f < 0.0F ? -f : f) <= paramFloat;
   }
   
   public int hashCode()
   {
     long l = 1L;
-    l = 31L * l + VecMathUtil.floatToIntBits(this.x);
-    l = 31L * l + VecMathUtil.floatToIntBits(this.y);
-    l = 31L * l + VecMathUtil.floatToIntBits(this.z);
+    l = 31L * l + VecMathUtil.floatToIntBits(this.field_615);
+    l = 31L * l + VecMathUtil.floatToIntBits(this.field_616);
+    l = 31L * l + VecMathUtil.floatToIntBits(this.field_617);
     return (int)(l ^ l >> 32);
   }
   
   public final void clamp(float paramFloat1, float paramFloat2, Tuple3f paramTuple3f)
   {
-    if (paramTuple3f.x > paramFloat2) {
-      this.x = paramFloat2;
-    } else if (paramTuple3f.x < paramFloat1) {
-      this.x = paramFloat1;
+    if (paramTuple3f.field_615 > paramFloat2) {
+      this.field_615 = paramFloat2;
+    } else if (paramTuple3f.field_615 < paramFloat1) {
+      this.field_615 = paramFloat1;
     } else {
-      this.x = paramTuple3f.x;
+      this.field_615 = paramTuple3f.field_615;
     }
-    if (paramTuple3f.y > paramFloat2) {
-      this.y = paramFloat2;
-    } else if (paramTuple3f.y < paramFloat1) {
-      this.y = paramFloat1;
+    if (paramTuple3f.field_616 > paramFloat2) {
+      this.field_616 = paramFloat2;
+    } else if (paramTuple3f.field_616 < paramFloat1) {
+      this.field_616 = paramFloat1;
     } else {
-      this.y = paramTuple3f.y;
+      this.field_616 = paramTuple3f.field_616;
     }
-    if (paramTuple3f.z > paramFloat2) {
-      this.z = paramFloat2;
-    } else if (paramTuple3f.z < paramFloat1) {
-      this.z = paramFloat1;
+    if (paramTuple3f.field_617 > paramFloat2) {
+      this.field_617 = paramFloat2;
+    } else if (paramTuple3f.field_617 < paramFloat1) {
+      this.field_617 = paramFloat1;
     } else {
-      this.z = paramTuple3f.z;
+      this.field_617 = paramTuple3f.field_617;
     }
   }
   
   public final void clampMin(float paramFloat, Tuple3f paramTuple3f)
   {
-    if (paramTuple3f.x < paramFloat) {
-      this.x = paramFloat;
+    if (paramTuple3f.field_615 < paramFloat) {
+      this.field_615 = paramFloat;
     } else {
-      this.x = paramTuple3f.x;
+      this.field_615 = paramTuple3f.field_615;
     }
-    if (paramTuple3f.y < paramFloat) {
-      this.y = paramFloat;
+    if (paramTuple3f.field_616 < paramFloat) {
+      this.field_616 = paramFloat;
     } else {
-      this.y = paramTuple3f.y;
+      this.field_616 = paramTuple3f.field_616;
     }
-    if (paramTuple3f.z < paramFloat) {
-      this.z = paramFloat;
+    if (paramTuple3f.field_617 < paramFloat) {
+      this.field_617 = paramFloat;
     } else {
-      this.z = paramTuple3f.z;
+      this.field_617 = paramTuple3f.field_617;
     }
   }
   
   public final void clampMax(float paramFloat, Tuple3f paramTuple3f)
   {
-    if (paramTuple3f.x > paramFloat) {
-      this.x = paramFloat;
+    if (paramTuple3f.field_615 > paramFloat) {
+      this.field_615 = paramFloat;
     } else {
-      this.x = paramTuple3f.x;
+      this.field_615 = paramTuple3f.field_615;
     }
-    if (paramTuple3f.y > paramFloat) {
-      this.y = paramFloat;
+    if (paramTuple3f.field_616 > paramFloat) {
+      this.field_616 = paramFloat;
     } else {
-      this.y = paramTuple3f.y;
+      this.field_616 = paramTuple3f.field_616;
     }
-    if (paramTuple3f.z > paramFloat) {
-      this.z = paramFloat;
+    if (paramTuple3f.field_617 > paramFloat) {
+      this.field_617 = paramFloat;
     } else {
-      this.z = paramTuple3f.z;
+      this.field_617 = paramTuple3f.field_617;
     }
   }
   
   public final void absolute(Tuple3f paramTuple3f)
   {
-    this.x = Math.abs(paramTuple3f.x);
-    this.y = Math.abs(paramTuple3f.y);
-    this.z = Math.abs(paramTuple3f.z);
+    this.field_615 = Math.abs(paramTuple3f.field_615);
+    this.field_616 = Math.abs(paramTuple3f.field_616);
+    this.field_617 = Math.abs(paramTuple3f.field_617);
   }
   
   public final void clamp(float paramFloat1, float paramFloat2)
   {
-    if (this.x > paramFloat2) {
-      this.x = paramFloat2;
-    } else if (this.x < paramFloat1) {
-      this.x = paramFloat1;
+    if (this.field_615 > paramFloat2) {
+      this.field_615 = paramFloat2;
+    } else if (this.field_615 < paramFloat1) {
+      this.field_615 = paramFloat1;
     }
-    if (this.y > paramFloat2) {
-      this.y = paramFloat2;
-    } else if (this.y < paramFloat1) {
-      this.y = paramFloat1;
+    if (this.field_616 > paramFloat2) {
+      this.field_616 = paramFloat2;
+    } else if (this.field_616 < paramFloat1) {
+      this.field_616 = paramFloat1;
     }
-    if (this.z > paramFloat2) {
-      this.z = paramFloat2;
-    } else if (this.z < paramFloat1) {
-      this.z = paramFloat1;
+    if (this.field_617 > paramFloat2) {
+      this.field_617 = paramFloat2;
+    } else if (this.field_617 < paramFloat1) {
+      this.field_617 = paramFloat1;
     }
   }
   
   public final void clampMin(float paramFloat)
   {
-    if (this.x < paramFloat) {
-      this.x = paramFloat;
+    if (this.field_615 < paramFloat) {
+      this.field_615 = paramFloat;
     }
-    if (this.y < paramFloat) {
-      this.y = paramFloat;
+    if (this.field_616 < paramFloat) {
+      this.field_616 = paramFloat;
     }
-    if (this.z < paramFloat) {
-      this.z = paramFloat;
+    if (this.field_617 < paramFloat) {
+      this.field_617 = paramFloat;
     }
   }
   
   public final void clampMax(float paramFloat)
   {
-    if (this.x > paramFloat) {
-      this.x = paramFloat;
+    if (this.field_615 > paramFloat) {
+      this.field_615 = paramFloat;
     }
-    if (this.y > paramFloat) {
-      this.y = paramFloat;
+    if (this.field_616 > paramFloat) {
+      this.field_616 = paramFloat;
     }
-    if (this.z > paramFloat) {
-      this.z = paramFloat;
+    if (this.field_617 > paramFloat) {
+      this.field_617 = paramFloat;
     }
   }
   
   public final void absolute()
   {
-    this.x = Math.abs(this.x);
-    this.y = Math.abs(this.y);
-    this.z = Math.abs(this.z);
+    this.field_615 = Math.abs(this.field_615);
+    this.field_616 = Math.abs(this.field_616);
+    this.field_617 = Math.abs(this.field_617);
   }
   
   public final void interpolate(Tuple3f paramTuple3f1, Tuple3f paramTuple3f2, float paramFloat)
   {
-    this.x = ((1.0F - paramFloat) * paramTuple3f1.x + paramFloat * paramTuple3f2.x);
-    this.y = ((1.0F - paramFloat) * paramTuple3f1.y + paramFloat * paramTuple3f2.y);
-    this.z = ((1.0F - paramFloat) * paramTuple3f1.z + paramFloat * paramTuple3f2.z);
+    this.field_615 = ((1.0F - paramFloat) * paramTuple3f1.field_615 + paramFloat * paramTuple3f2.field_615);
+    this.field_616 = ((1.0F - paramFloat) * paramTuple3f1.field_616 + paramFloat * paramTuple3f2.field_616);
+    this.field_617 = ((1.0F - paramFloat) * paramTuple3f1.field_617 + paramFloat * paramTuple3f2.field_617);
   }
   
   public final void interpolate(Tuple3f paramTuple3f, float paramFloat)
   {
-    this.x = ((1.0F - paramFloat) * this.x + paramFloat * paramTuple3f.x);
-    this.y = ((1.0F - paramFloat) * this.y + paramFloat * paramTuple3f.y);
-    this.z = ((1.0F - paramFloat) * this.z + paramFloat * paramTuple3f.z);
+    this.field_615 = ((1.0F - paramFloat) * this.field_615 + paramFloat * paramTuple3f.field_615);
+    this.field_616 = ((1.0F - paramFloat) * this.field_616 + paramFloat * paramTuple3f.field_616);
+    this.field_617 = ((1.0F - paramFloat) * this.field_617 + paramFloat * paramTuple3f.field_617);
   }
   
   public Object clone()
@@ -360,7 +360,7 @@ public abstract class Tuple3f
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     javax.vecmath.Tuple3f
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

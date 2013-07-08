@@ -1,20 +1,32 @@
-/*  1:   */package it.unimi.dsi.fastutil.longs;
-/*  2:   */
-/* 55:   */public abstract class AbstractLongListIterator
-/* 56:   */  extends AbstractLongBidirectionalIterator
-/* 57:   */  implements LongListIterator
-/* 58:   */{
-/* 59:59 */  public void set(Long ok) { set(ok.longValue()); }
-/* 60:   */  
-/* 61:61 */  public void add(Long ok) { add(ok.longValue()); }
-/* 62:   */  
-/* 63:63 */  public void set(long k) { throw new UnsupportedOperationException(); }
-/* 64:   */  
-/* 65:65 */  public void add(long k) { throw new UnsupportedOperationException(); }
-/* 66:   */}
+package it.unimi.dsi.fastutil.longs;
+
+public abstract class AbstractLongListIterator
+  extends AbstractLongBidirectionalIterator
+  implements LongListIterator
+{
+  public void set(Long local_ok)
+  {
+    set(local_ok.longValue());
+  }
+  
+  public void add(Long local_ok)
+  {
+    add(local_ok.longValue());
+  }
+  
+  public void set(long local_k)
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  public void add(long local_k)
+  {
+    throw new UnsupportedOperationException();
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.longs.AbstractLongListIterator
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

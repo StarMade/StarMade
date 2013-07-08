@@ -746,7 +746,7 @@ public class PPrint
   
   private void printAttrs(Out paramOut, int paramInt, Node paramNode, AttVal paramAttVal)
   {
-    if ((this.configuration.xmlOut) && (this.configuration.xmlSpace) && (ParserImpl.XMLPreserveWhiteSpace(paramNode, this.configuration.tt)) && (paramNode.getAttrByName("xml:space") == null))
+    if ((this.configuration.xmlOut) && (this.configuration.xmlSpace) && (ParserImpl.XMLPreserveWhiteSpace(paramNode, this.configuration.field_1881)) && (paramNode.getAttrByName("xml:space") == null))
     {
       paramNode.addAttribute("xml:space", "preserve");
       if (paramAttVal != null) {
@@ -800,7 +800,7 @@ public class PPrint
   
   private void printTag(Lexer paramLexer, Out paramOut, short paramShort, int paramInt, Node paramNode)
   {
-    TagTable localTagTable = this.configuration.tt;
+    TagTable localTagTable = this.configuration.field_1881;
     addC(60, this.linelen++);
     if (paramNode.type == 6) {
       addC(47, this.linelen++);
@@ -1038,7 +1038,7 @@ public class PPrint
   
   private boolean insideHead(Node paramNode)
   {
-    if (paramNode.tag == this.configuration.tt.tagHead) {
+    if (paramNode.tag == this.configuration.field_1881.tagHead) {
       return true;
     }
     if (paramNode.parent != null) {
@@ -1150,7 +1150,7 @@ public class PPrint
   
   private boolean shouldIndent(Node paramNode)
   {
-    TagTable localTagTable = this.configuration.tt;
+    TagTable localTagTable = this.configuration.field_1881;
     if (!this.configuration.indentContent) {
       return false;
     }
@@ -1189,7 +1189,7 @@ public class PPrint
     if (paramNode == null) {
       return;
     }
-    Node localNode1 = paramNode.findBody(paramLexer.configuration.tt);
+    Node localNode1 = paramNode.findBody(paramLexer.configuration.field_1881);
     if (localNode1 != null) {
       for (Node localNode2 = localNode1.content; localNode2 != null; localNode2 = localNode2.next) {
         if (paramBoolean) {
@@ -1203,7 +1203,7 @@ public class PPrint
   
   public void printTree(Out paramOut, short paramShort, int paramInt, Lexer paramLexer, Node paramNode)
   {
-    TagTable localTagTable = this.configuration.tt;
+    TagTable localTagTable = this.configuration.field_1881;
     if (paramNode == null) {
       return;
     }
@@ -1395,7 +1395,7 @@ public class PPrint
   
   public void printXMLTree(Out paramOut, short paramShort, int paramInt, Lexer paramLexer, Node paramNode)
   {
-    TagTable localTagTable = this.configuration.tt;
+    TagTable localTagTable = this.configuration.field_1881;
     if (paramNode == null) {
       return;
     }
@@ -1499,7 +1499,7 @@ public class PPrint
   public int countSlides(Node paramNode)
   {
     int i = 1;
-    TagTable localTagTable = this.configuration.tt;
+    TagTable localTagTable = this.configuration.field_1881;
     if ((paramNode != null) && (paramNode.content != null) && (paramNode.content.tag == localTagTable.tagH2)) {
       i--;
     }
@@ -1543,7 +1543,7 @@ public class PPrint
   
   public void printSlide(Out paramOut, short paramShort, int paramInt, Lexer paramLexer)
   {
-    TagTable localTagTable = this.configuration.tt;
+    TagTable localTagTable = this.configuration.field_1881;
     NumberFormat localNumberFormat = NumberFormat.getInstance();
     localNumberFormat.setMinimumIntegerDigits(3);
     String str = "<div onclick=\"document.location='slide" + localNumberFormat.format(this.slide < this.count ? this.slide + 1 : 1L) + ".html'\">";
@@ -1599,7 +1599,7 @@ public class PPrint
   
   public void addTransitionEffect(Lexer paramLexer, Node paramNode, double paramDouble)
   {
-    Node localNode1 = paramNode.findHEAD(paramLexer.configuration.tt);
+    Node localNode1 = paramNode.findHEAD(paramLexer.configuration.field_1881);
     String str = "blendTrans(Duration=" + new Double(paramDouble).toString() + ")";
     if (localNode1 != null)
     {
@@ -1614,7 +1614,7 @@ public class PPrint
   {
     NumberFormat localNumberFormat = NumberFormat.getInstance();
     localNumberFormat.setMinimumIntegerDigits(3);
-    Node localNode = paramNode.findBody(paramLexer.configuration.tt);
+    Node localNode = paramNode.findBody(paramLexer.configuration.field_1881);
     this.count = countSlides(localNode);
     this.slidecontent = localNode.content;
     addTransitionEffect(paramLexer, paramNode, 3.0D);
@@ -1641,7 +1641,7 @@ public class PPrint
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.w3c.tidy.PPrint
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

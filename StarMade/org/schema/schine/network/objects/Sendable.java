@@ -1,8 +1,8 @@
 package org.schema.schine.network.objects;
 
+import class_941;
 import org.schema.schine.network.Identifiable;
 import org.schema.schine.network.StateInterface;
-import xq;
 
 public abstract interface Sendable
   extends Identifiable
@@ -31,7 +31,7 @@ public abstract interface Sendable
   
   public abstract void updateFromNetworkObject(NetworkObject paramNetworkObject);
   
-  public abstract void updateLocal(xq paramxq);
+  public abstract void updateLocal(class_941 paramclass_941);
   
   public abstract void updateToFullNetworkObject();
   
@@ -47,7 +47,7 @@ public abstract interface Sendable
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.schine.network.objects.Sendable
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -35,11 +35,11 @@ public class SetFunction
   private BigDecimal currentBigDecimal;
   private Object currentValue;
   static final BigInteger multiplier = BigInteger.valueOf(4294967296L);
-  long hi;
-  long lo;
-  private double sk;
-  private double vk;
-  private long n;
+  long field_504;
+  long field_505;
+  private double field_506;
+  private double field_507;
+  private long field_508;
   private boolean initialized;
   private boolean sample;
   
@@ -404,26 +404,26 @@ public class SetFunction
     if (paramLong != 0L) {
       if (paramLong > 0L)
       {
-        this.hi += (paramLong >> 32);
-        this.lo += (paramLong & 0xFFFFFFFF);
+        this.field_504 += (paramLong >> 32);
+        this.field_505 += (paramLong & 0xFFFFFFFF);
       }
       else if (paramLong == -9223372036854775808L)
       {
-        this.hi -= 2147483648L;
+        this.field_504 -= 2147483648L;
       }
       else
       {
         long l = (paramLong ^ 0xFFFFFFFF) + 1L;
-        this.hi -= (l >> 32);
-        this.lo -= (l & 0xFFFFFFFF);
+        this.field_504 -= (l >> 32);
+        this.field_505 -= (l & 0xFFFFFFFF);
       }
     }
   }
   
   BigInteger getLongSum()
   {
-    BigInteger localBigInteger1 = BigInteger.valueOf(this.lo);
-    BigInteger localBigInteger2 = BigInteger.valueOf(this.hi);
+    BigInteger localBigInteger1 = BigInteger.valueOf(this.field_505);
+    BigInteger localBigInteger2 = BigInteger.valueOf(this.field_504);
     BigInteger localBigInteger3 = localBigInteger2.multiply(multiplier).add(localBigInteger1);
     return localBigInteger3;
   }
@@ -436,17 +436,17 @@ public class SetFunction
     double d1 = paramNumber.doubleValue();
     if (!this.initialized)
     {
-      this.n = 1L;
-      this.sk = d1;
-      this.vk = 0.0D;
+      this.field_508 = 1L;
+      this.field_506 = d1;
+      this.field_507 = 0.0D;
       this.initialized = true;
       return;
     }
-    this.n += 1L;
-    long l = this.n - 1L;
-    double d2 = this.sk - d1 * l;
-    this.vk += d2 * d2 / this.n / l;
-    this.sk += d1;
+    this.field_508 += 1L;
+    long l = this.field_508 - 1L;
+    double d2 = this.field_506 - d1 * l;
+    this.field_507 += d2 * d2 / this.field_508 / l;
+    this.field_506 += d1;
   }
   
   private Number getVariance()
@@ -454,7 +454,7 @@ public class SetFunction
     if (!this.initialized) {
       return null;
     }
-    return this.sample ? new Double(this.vk / (this.n - 1L)) : this.n == 1L ? null : new Double(this.vk / this.n);
+    return this.sample ? new Double(this.field_507 / (this.field_508 - 1L)) : this.field_508 == 1L ? null : new Double(this.field_507 / this.field_508);
   }
   
   private Number getStdDev()
@@ -462,12 +462,12 @@ public class SetFunction
     if (!this.initialized) {
       return null;
     }
-    return this.sample ? new Double(Math.sqrt(this.vk / (this.n - 1L))) : this.n == 1L ? null : new Double(Math.sqrt(this.vk / this.n));
+    return this.sample ? new Double(Math.sqrt(this.field_507 / (this.field_508 - 1L))) : this.field_508 == 1L ? null : new Double(Math.sqrt(this.field_507 / this.field_508));
   }
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.SetFunction
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

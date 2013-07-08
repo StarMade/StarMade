@@ -1,273 +1,400 @@
-/*   1:    */package it.unimi.dsi.fastutil.shorts;
-/*   2:    */
-/*   3:    */import it.unimi.dsi.fastutil.BigArrays;
-/*   4:    */import java.io.IOException;
-/*   5:    */import java.io.ObjectInputStream;
-/*   6:    */import java.io.ObjectOutputStream;
-/*   7:    */import java.io.Serializable;
-/*   8:    */import java.util.Iterator;
-/*   9:    */import java.util.NoSuchElementException;
-/*  10:    */import java.util.RandomAccess;
-/*  11:    */
-/*  76:    */public class ShortBigArrayBigList
-/*  77:    */  extends AbstractShortBigList
-/*  78:    */  implements RandomAccess, Cloneable, Serializable
-/*  79:    */{
-/*  80:    */  public static final long serialVersionUID = -7046029254386353130L;
-/*  81:    */  public static final int DEFAULT_INITIAL_CAPACITY = 16;
-/*  82:    */  protected static final long ONEOVERPHI = 106039L;
-/*  83:    */  protected transient short[][] a;
-/*  84:    */  protected long size;
-/*  85:    */  private static final boolean ASSERTS = false;
-/*  86:    */  
-/*  87:    */  protected ShortBigArrayBigList(short[][] a, boolean dummy)
-/*  88:    */  {
-/*  89: 89 */    this.a = a;
-/*  90:    */  }
-/*  91:    */  
-/*  95:    */  public ShortBigArrayBigList(long capacity)
-/*  96:    */  {
-/*  97: 97 */    if (capacity < 0L) throw new IllegalArgumentException("Initial capacity (" + capacity + ") is negative");
-/*  98: 98 */    this.a = ShortBigArrays.newBigArray(capacity);
-/*  99:    */  }
-/* 100:    */  
-/* 101:    */  public ShortBigArrayBigList()
-/* 102:    */  {
-/* 103:103 */    this(16L);
-/* 104:    */  }
-/* 105:    */  
-/* 108:    */  public ShortBigArrayBigList(ShortCollection c)
-/* 109:    */  {
-/* 110:110 */    this(c.size());
-/* 111:111 */    for (ShortIterator i = c.iterator(); i.hasNext(); add(i.nextShort())) {}
-/* 112:    */  }
-/* 113:    */  
-/* 116:    */  public ShortBigArrayBigList(ShortBigList l)
-/* 117:    */  {
-/* 118:118 */    this(l.size64());
-/* 119:119 */    l.getElements(0L, this.a, 0L, this.size = l.size64());
-/* 120:    */  }
-/* 121:    */  
-/* 129:    */  public ShortBigArrayBigList(short[][] a)
-/* 130:    */  {
-/* 131:131 */    this(a, 0L, ShortBigArrays.length(a));
-/* 132:    */  }
-/* 133:    */  
-/* 143:    */  public ShortBigArrayBigList(short[][] a, long offset, long length)
-/* 144:    */  {
-/* 145:145 */    this(length);
-/* 146:146 */    ShortBigArrays.copy(a, offset, this.a, 0L, length);
-/* 147:147 */    this.size = length;
-/* 148:    */  }
-/* 149:    */  
-/* 152:    */  public ShortBigArrayBigList(Iterator<? extends Short> i)
-/* 153:    */  {
-/* 154:154 */    this();
-/* 155:155 */    while (i.hasNext()) { add((Short)i.next());
-/* 156:    */    }
-/* 157:    */  }
-/* 158:    */  
-/* 160:    */  public ShortBigArrayBigList(ShortIterator i)
-/* 161:    */  {
-/* 162:162 */    this();
-/* 163:163 */    while (i.hasNext()) { add(i.nextShort());
-/* 164:    */    }
-/* 165:    */  }
-/* 166:    */  
-/* 168:    */  public short[][] elements()
-/* 169:    */  {
-/* 170:170 */    return this.a;
-/* 171:    */  }
-/* 172:    */  
-/* 177:    */  public static ShortBigArrayBigList wrap(short[][] a, long length)
-/* 178:    */  {
-/* 179:179 */    if (length > ShortBigArrays.length(a)) throw new IllegalArgumentException("The specified length (" + length + ") is greater than the array size (" + ShortBigArrays.length(a) + ")");
-/* 180:180 */    ShortBigArrayBigList l = new ShortBigArrayBigList(a, false);
-/* 181:181 */    l.size = length;
-/* 182:182 */    return l;
-/* 183:    */  }
-/* 184:    */  
-/* 188:    */  public static ShortBigArrayBigList wrap(short[][] a)
-/* 189:    */  {
-/* 190:190 */    return wrap(a, ShortBigArrays.length(a));
-/* 191:    */  }
-/* 192:    */  
-/* 196:    */  public void ensureCapacity(long capacity)
-/* 197:    */  {
-/* 198:198 */    this.a = ShortBigArrays.ensureCapacity(this.a, capacity, this.size);
-/* 199:    */  }
-/* 200:    */  
-/* 206:    */  private void grow(long capacity)
-/* 207:    */  {
-/* 208:208 */    this.a = ShortBigArrays.grow(this.a, capacity, this.size);
-/* 209:    */  }
-/* 210:    */  
-/* 211:    */  public void add(long index, short k) {
-/* 212:212 */    ensureIndex(index);
-/* 213:213 */    grow(this.size + 1L);
-/* 214:214 */    if (index != this.size) ShortBigArrays.copy(this.a, index, this.a, index + 1L, this.size - index);
-/* 215:215 */    ShortBigArrays.set(this.a, index, k);
-/* 216:216 */    this.size += 1L;
-/* 217:    */  }
-/* 218:    */  
-/* 219:    */  public boolean add(short k) {
-/* 220:220 */    grow(this.size + 1L);
-/* 221:221 */    ShortBigArrays.set(this.a, this.size++, k);
-/* 222:    */    
-/* 223:223 */    return true;
-/* 224:    */  }
-/* 225:    */  
-/* 226:226 */  public short getShort(long index) { if (index >= this.size) throw new IndexOutOfBoundsException("Index (" + index + ") is greater than or equal to list size (" + this.size + ")");
-/* 227:227 */    return ShortBigArrays.get(this.a, index);
-/* 228:    */  }
-/* 229:    */  
-/* 230:230 */  public long indexOf(short k) { for (long i = 0L; i < this.size; i += 1L) if (k == ShortBigArrays.get(this.a, i)) return i;
-/* 231:231 */    return -1L;
-/* 232:    */  }
-/* 233:    */  
-/* 234:234 */  public long lastIndexOf(short k) { for (long i = this.size; i-- != 0L;) if (k == ShortBigArrays.get(this.a, i)) return i;
-/* 235:235 */    return -1L;
-/* 236:    */  }
-/* 237:    */  
-/* 238:238 */  public short removeShort(long index) { if (index >= this.size) throw new IndexOutOfBoundsException("Index (" + index + ") is greater than or equal to list size (" + this.size + ")");
-/* 239:239 */    short old = ShortBigArrays.get(this.a, index);
-/* 240:240 */    this.size -= 1L;
-/* 241:241 */    if (index != this.size) { ShortBigArrays.copy(this.a, index + 1L, this.a, index, this.size - index);
-/* 242:    */    }
-/* 243:243 */    return old;
-/* 244:    */  }
-/* 245:    */  
-/* 246:246 */  public boolean rem(short k) { long index = indexOf(k);
-/* 247:247 */    if (index == -1L) return false;
-/* 248:248 */    removeShort(index);
-/* 249:    */    
-/* 250:250 */    return true;
-/* 251:    */  }
-/* 252:    */  
-/* 253:253 */  public short set(long index, short k) { if (index >= this.size) throw new IndexOutOfBoundsException("Index (" + index + ") is greater than or equal to list size (" + this.size + ")");
-/* 254:254 */    short old = ShortBigArrays.get(this.a, index);
-/* 255:255 */    ShortBigArrays.set(this.a, index, k);
-/* 256:256 */    return old;
-/* 257:    */  }
-/* 258:    */  
-/* 259:259 */  public void clear() { this.size = 0L; }
-/* 260:    */  
-/* 263:263 */  public long size64() { return this.size; }
-/* 264:    */  
-/* 265:    */  public void size(long size) {
-/* 266:266 */    if (size > ShortBigArrays.length(this.a)) ensureCapacity(size);
-/* 267:267 */    if (size > this.size) ShortBigArrays.fill(this.a, this.size, size, (short)0);
-/* 268:268 */    this.size = size;
-/* 269:    */  }
-/* 270:    */  
-/* 271:271 */  public boolean isEmpty() { return this.size == 0L; }
-/* 272:    */  
-/* 276:    */  public void trim()
-/* 277:    */  {
-/* 278:278 */    trim(0L);
-/* 279:    */  }
-/* 280:    */  
-/* 294:    */  public void trim(long n)
-/* 295:    */  {
-/* 296:296 */    long arrayLength = ShortBigArrays.length(this.a);
-/* 297:297 */    if ((n >= arrayLength) || (this.size == arrayLength)) return;
-/* 298:298 */    this.a = ShortBigArrays.trim(this.a, Math.max(n, this.size));
-/* 299:    */  }
-/* 300:    */  
-/* 307:    */  public void getElements(int from, short[][] a, long offset, long length)
-/* 308:    */  {
-/* 309:309 */    ShortBigArrays.copy(this.a, from, a, offset, length);
-/* 310:    */  }
-/* 311:    */  
-/* 315:    */  public void removeElements(int from, int to)
-/* 316:    */  {
-/* 317:317 */    BigArrays.ensureFromTo(this.size, from, to);
-/* 318:318 */    ShortBigArrays.copy(this.a, to, this.a, from, this.size - to);
-/* 319:319 */    this.size -= to - from;
-/* 320:    */  }
-/* 321:    */  
-/* 327:    */  public void addElements(int index, short[][] a, long offset, long length)
-/* 328:    */  {
-/* 329:329 */    ensureIndex(index);
-/* 330:330 */    ShortBigArrays.ensureOffsetLength(a, offset, length);
-/* 331:331 */    grow(this.size + length);
-/* 332:332 */    ShortBigArrays.copy(this.a, index, this.a, index + length, this.size - index);
-/* 333:333 */    ShortBigArrays.copy(a, offset, this.a, index, length);
-/* 334:334 */    this.size += length;
-/* 335:    */  }
-/* 336:    */  
-/* 337:337 */  public ShortBigListIterator listIterator(final int index) { ensureIndex(index);
-/* 338:338 */    new AbstractShortBigListIterator() {
-/* 339:339 */      int last = -1; int pos = index;
-/* 340:340 */      public boolean hasNext() { return this.pos < ShortBigArrayBigList.this.size; }
-/* 341:341 */      public boolean hasPrevious() { return this.pos > 0; }
-/* 342:342 */      public short nextShort() { if (!hasNext()) throw new NoSuchElementException(); return ShortBigArrays.get(ShortBigArrayBigList.this.a, this.last = this.pos++); }
-/* 343:343 */      public short previousShort() { if (!hasPrevious()) throw new NoSuchElementException(); return ShortBigArrays.get(ShortBigArrayBigList.this.a, this.last = --this.pos); }
-/* 344:344 */      public long nextIndex() { return this.pos; }
-/* 345:345 */      public long previousIndex() { return this.pos - 1; }
-/* 346:    */      
-/* 347:347 */      public void add(short k) { if (this.last == -1) throw new IllegalStateException();
-/* 348:348 */        ShortBigArrayBigList.this.add(this.pos++, k);
-/* 349:349 */        this.last = -1;
-/* 350:    */      }
-/* 351:    */      
-/* 352:352 */      public void set(short k) { if (this.last == -1) throw new IllegalStateException();
-/* 353:353 */        ShortBigArrayBigList.this.set(this.last, k);
-/* 354:    */      }
-/* 355:    */      
-/* 356:356 */      public void remove() { if (this.last == -1) throw new IllegalStateException();
-/* 357:357 */        ShortBigArrayBigList.this.removeShort(this.last);
-/* 358:    */        
-/* 359:359 */        if (this.last < this.pos) this.pos -= 1;
-/* 360:360 */        this.last = -1;
-/* 361:    */      }
-/* 362:    */    };
-/* 363:    */  }
-/* 364:    */  
-/* 365:    */  public ShortBigArrayBigList clone() {
-/* 366:366 */    ShortBigArrayBigList c = new ShortBigArrayBigList(this.size);
-/* 367:367 */    ShortBigArrays.copy(this.a, 0L, c.a, 0L, this.size);
-/* 368:368 */    c.size = this.size;
-/* 369:369 */    return c;
-/* 370:    */  }
-/* 371:    */  
-/* 378:    */  public boolean equals(ShortBigArrayBigList l)
-/* 379:    */  {
-/* 380:380 */    if (l == this) return true;
-/* 381:381 */    long s = size64();
-/* 382:382 */    if (s != l.size64()) return false;
-/* 383:383 */    short[][] a1 = this.a;
-/* 384:384 */    short[][] a2 = l.a;
-/* 385:385 */    while (s-- != 0L) if (ShortBigArrays.get(a1, s) != ShortBigArrays.get(a2, s)) return false;
-/* 386:386 */    return true;
-/* 387:    */  }
-/* 388:    */  
-/* 398:    */  public int compareTo(ShortBigArrayBigList l)
-/* 399:    */  {
-/* 400:400 */    long s1 = size64();long s2 = l.size64();
-/* 401:401 */    short[][] a1 = this.a;short[][] a2 = l.a;
-/* 402:    */    
-/* 404:404 */    for (int i = 0; (i < s1) && (i < s2); i++) {
-/* 405:405 */      short e1 = ShortBigArrays.get(a1, i);
-/* 406:406 */      short e2 = ShortBigArrays.get(a2, i);
-/* 407:407 */      int r; if ((r = e1 == e2 ? 0 : e1 < e2 ? -1 : 1) != 0) return r;
-/* 408:    */    }
-/* 409:409 */    return i < s1 ? 1 : i < s2 ? -1 : 0;
-/* 410:    */  }
-/* 411:    */  
-/* 412:412 */  private void writeObject(ObjectOutputStream s) throws IOException { s.defaultWriteObject();
-/* 413:413 */    for (int i = 0; i < this.size; i++) s.writeShort(ShortBigArrays.get(this.a, i));
-/* 414:    */  }
-/* 415:    */  
-/* 416:    */  private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
-/* 417:417 */    s.defaultReadObject();
-/* 418:418 */    this.a = ShortBigArrays.newBigArray(this.size);
-/* 419:419 */    for (int i = 0; i < this.size; i++) ShortBigArrays.set(this.a, i, s.readShort());
-/* 420:    */  }
-/* 421:    */}
+package it.unimi.dsi.fastutil.shorts;
+
+import it.unimi.dsi.fastutil.BigArrays;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.RandomAccess;
+
+public class ShortBigArrayBigList
+  extends AbstractShortBigList
+  implements RandomAccess, Cloneable, Serializable
+{
+  public static final long serialVersionUID = -7046029254386353130L;
+  public static final int DEFAULT_INITIAL_CAPACITY = 16;
+  protected static final long ONEOVERPHI = 106039L;
+  protected transient short[][] field_220;
+  protected long size;
+  private static final boolean ASSERTS = false;
+  
+  protected ShortBigArrayBigList(short[][] local_a, boolean dummy)
+  {
+    this.field_220 = local_a;
+  }
+  
+  public ShortBigArrayBigList(long capacity)
+  {
+    if (capacity < 0L) {
+      throw new IllegalArgumentException("Initial capacity (" + capacity + ") is negative");
+    }
+    this.field_220 = ShortBigArrays.newBigArray(capacity);
+  }
+  
+  public ShortBigArrayBigList()
+  {
+    this(16L);
+  }
+  
+  public ShortBigArrayBigList(ShortCollection local_c)
+  {
+    this(local_c.size());
+    ShortIterator local_i = local_c.iterator();
+    while (local_i.hasNext()) {
+      add(local_i.nextShort());
+    }
+  }
+  
+  public ShortBigArrayBigList(ShortBigList local_l)
+  {
+    this(local_l.size64());
+    local_l.getElements(0L, this.field_220, 0L, this.size = local_l.size64());
+  }
+  
+  public ShortBigArrayBigList(short[][] local_a)
+  {
+    this(local_a, 0L, ShortBigArrays.length(local_a));
+  }
+  
+  public ShortBigArrayBigList(short[][] local_a, long offset, long length)
+  {
+    this(length);
+    ShortBigArrays.copy(local_a, offset, this.field_220, 0L, length);
+    this.size = length;
+  }
+  
+  public ShortBigArrayBigList(Iterator<? extends Short> local_i)
+  {
+    this();
+    while (local_i.hasNext()) {
+      add((Short)local_i.next());
+    }
+  }
+  
+  public ShortBigArrayBigList(ShortIterator local_i)
+  {
+    this();
+    while (local_i.hasNext()) {
+      add(local_i.nextShort());
+    }
+  }
+  
+  public short[][] elements()
+  {
+    return this.field_220;
+  }
+  
+  public static ShortBigArrayBigList wrap(short[][] local_a, long length)
+  {
+    if (length > ShortBigArrays.length(local_a)) {
+      throw new IllegalArgumentException("The specified length (" + length + ") is greater than the array size (" + ShortBigArrays.length(local_a) + ")");
+    }
+    ShortBigArrayBigList local_l = new ShortBigArrayBigList(local_a, false);
+    local_l.size = length;
+    return local_l;
+  }
+  
+  public static ShortBigArrayBigList wrap(short[][] local_a)
+  {
+    return wrap(local_a, ShortBigArrays.length(local_a));
+  }
+  
+  public void ensureCapacity(long capacity)
+  {
+    this.field_220 = ShortBigArrays.ensureCapacity(this.field_220, capacity, this.size);
+  }
+  
+  private void grow(long capacity)
+  {
+    this.field_220 = ShortBigArrays.grow(this.field_220, capacity, this.size);
+  }
+  
+  public void add(long index, short local_k)
+  {
+    ensureIndex(index);
+    grow(this.size + 1L);
+    if (index != this.size) {
+      ShortBigArrays.copy(this.field_220, index, this.field_220, index + 1L, this.size - index);
+    }
+    ShortBigArrays.set(this.field_220, index, local_k);
+    this.size += 1L;
+  }
+  
+  public boolean add(short local_k)
+  {
+    grow(this.size + 1L);
+    ShortBigArrays.set(this.field_220, this.size++, local_k);
+    return true;
+  }
+  
+  public short getShort(long index)
+  {
+    if (index >= this.size) {
+      throw new IndexOutOfBoundsException("Index (" + index + ") is greater than or equal to list size (" + this.size + ")");
+    }
+    return ShortBigArrays.get(this.field_220, index);
+  }
+  
+  public long indexOf(short local_k)
+  {
+    for (long local_i = 0L; local_i < this.size; local_i += 1L) {
+      if (local_k == ShortBigArrays.get(this.field_220, local_i)) {
+        return local_i;
+      }
+    }
+    return -1L;
+  }
+  
+  public long lastIndexOf(short local_k)
+  {
+    long local_i = this.size;
+    while (local_i-- != 0L) {
+      if (local_k == ShortBigArrays.get(this.field_220, local_i)) {
+        return local_i;
+      }
+    }
+    return -1L;
+  }
+  
+  public short removeShort(long index)
+  {
+    if (index >= this.size) {
+      throw new IndexOutOfBoundsException("Index (" + index + ") is greater than or equal to list size (" + this.size + ")");
+    }
+    short old = ShortBigArrays.get(this.field_220, index);
+    this.size -= 1L;
+    if (index != this.size) {
+      ShortBigArrays.copy(this.field_220, index + 1L, this.field_220, index, this.size - index);
+    }
+    return old;
+  }
+  
+  public boolean rem(short local_k)
+  {
+    long index = indexOf(local_k);
+    if (index == -1L) {
+      return false;
+    }
+    removeShort(index);
+    return true;
+  }
+  
+  public short set(long index, short local_k)
+  {
+    if (index >= this.size) {
+      throw new IndexOutOfBoundsException("Index (" + index + ") is greater than or equal to list size (" + this.size + ")");
+    }
+    short old = ShortBigArrays.get(this.field_220, index);
+    ShortBigArrays.set(this.field_220, index, local_k);
+    return old;
+  }
+  
+  public void clear()
+  {
+    this.size = 0L;
+  }
+  
+  public long size64()
+  {
+    return this.size;
+  }
+  
+  public void size(long size)
+  {
+    if (size > ShortBigArrays.length(this.field_220)) {
+      ensureCapacity(size);
+    }
+    if (size > this.size) {
+      ShortBigArrays.fill(this.field_220, this.size, size, (short)0);
+    }
+    this.size = size;
+  }
+  
+  public boolean isEmpty()
+  {
+    return this.size == 0L;
+  }
+  
+  public void trim()
+  {
+    trim(0L);
+  }
+  
+  public void trim(long local_n)
+  {
+    long arrayLength = ShortBigArrays.length(this.field_220);
+    if ((local_n >= arrayLength) || (this.size == arrayLength)) {
+      return;
+    }
+    this.field_220 = ShortBigArrays.trim(this.field_220, Math.max(local_n, this.size));
+  }
+  
+  public void getElements(int from, short[][] local_a, long offset, long length)
+  {
+    ShortBigArrays.copy(this.field_220, from, local_a, offset, length);
+  }
+  
+  public void removeElements(int from, int local_to)
+  {
+    BigArrays.ensureFromTo(this.size, from, local_to);
+    ShortBigArrays.copy(this.field_220, local_to, this.field_220, from, this.size - local_to);
+    this.size -= local_to - from;
+  }
+  
+  public void addElements(int index, short[][] local_a, long offset, long length)
+  {
+    ensureIndex(index);
+    ShortBigArrays.ensureOffsetLength(local_a, offset, length);
+    grow(this.size + length);
+    ShortBigArrays.copy(this.field_220, index, this.field_220, index + length, this.size - index);
+    ShortBigArrays.copy(local_a, offset, this.field_220, index, length);
+    this.size += length;
+  }
+  
+  public ShortBigListIterator listIterator(final int index)
+  {
+    ensureIndex(index);
+    new AbstractShortBigListIterator()
+    {
+      int pos = index;
+      int last = -1;
+      
+      public boolean hasNext()
+      {
+        return this.pos < ShortBigArrayBigList.this.size;
+      }
+      
+      public boolean hasPrevious()
+      {
+        return this.pos > 0;
+      }
+      
+      public short nextShort()
+      {
+        if (!hasNext()) {
+          throw new NoSuchElementException();
+        }
+        return ShortBigArrays.get(ShortBigArrayBigList.this.field_220, this.last = this.pos++);
+      }
+      
+      public short previousShort()
+      {
+        if (!hasPrevious()) {
+          throw new NoSuchElementException();
+        }
+        return ShortBigArrays.get(ShortBigArrayBigList.this.field_220, this.last = --this.pos);
+      }
+      
+      public long nextIndex()
+      {
+        return this.pos;
+      }
+      
+      public long previousIndex()
+      {
+        return this.pos - 1;
+      }
+      
+      public void add(short local_k)
+      {
+        if (this.last == -1) {
+          throw new IllegalStateException();
+        }
+        ShortBigArrayBigList.this.add(this.pos++, local_k);
+        this.last = -1;
+      }
+      
+      public void set(short local_k)
+      {
+        if (this.last == -1) {
+          throw new IllegalStateException();
+        }
+        ShortBigArrayBigList.this.set(this.last, local_k);
+      }
+      
+      public void remove()
+      {
+        if (this.last == -1) {
+          throw new IllegalStateException();
+        }
+        ShortBigArrayBigList.this.removeShort(this.last);
+        if (this.last < this.pos) {
+          this.pos -= 1;
+        }
+        this.last = -1;
+      }
+    };
+  }
+  
+  public ShortBigArrayBigList clone()
+  {
+    ShortBigArrayBigList local_c = new ShortBigArrayBigList(this.size);
+    ShortBigArrays.copy(this.field_220, 0L, local_c.field_220, 0L, this.size);
+    local_c.size = this.size;
+    return local_c;
+  }
+  
+  public boolean equals(ShortBigArrayBigList local_l)
+  {
+    if (local_l == this) {
+      return true;
+    }
+    long local_s = size64();
+    if (local_s != local_l.size64()) {
+      return false;
+    }
+    short[][] local_a1 = this.field_220;
+    short[][] local_a2 = local_l.field_220;
+    while (local_s-- != 0L) {
+      if (ShortBigArrays.get(local_a1, local_s) != ShortBigArrays.get(local_a2, local_s)) {
+        return false;
+      }
+    }
+    return true;
+  }
+  
+  public int compareTo(ShortBigArrayBigList local_l)
+  {
+    long local_s1 = size64();
+    long local_s2 = local_l.size64();
+    short[][] local_a1 = this.field_220;
+    short[][] local_a2 = local_l.field_220;
+    for (int local_i = 0; (local_i < local_s1) && (local_i < local_s2); local_i++)
+    {
+      short local_e1 = ShortBigArrays.get(local_a1, local_i);
+      short local_e2 = ShortBigArrays.get(local_a2, local_i);
+      int local_r;
+      if ((local_r = local_e1 == local_e2 ? 0 : local_e1 < local_e2 ? -1 : 1) != 0) {
+        return local_r;
+      }
+    }
+    return local_i < local_s1 ? 1 : local_i < local_s2 ? -1 : 0;
+  }
+  
+  private void writeObject(ObjectOutputStream local_s)
+    throws IOException
+  {
+    local_s.defaultWriteObject();
+    for (int local_i = 0; local_i < this.size; local_i++) {
+      local_s.writeShort(ShortBigArrays.get(this.field_220, local_i));
+    }
+  }
+  
+  private void readObject(ObjectInputStream local_s)
+    throws IOException, ClassNotFoundException
+  {
+    local_s.defaultReadObject();
+    this.field_220 = ShortBigArrays.newBigArray(this.size);
+    for (int local_i = 0; local_i < this.size; local_i++) {
+      ShortBigArrays.set(this.field_220, local_i, local_s.readShort());
+    }
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.shorts.ShortBigArrayBigList
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -1,16 +1,16 @@
-/*  1:   */package org.newdawn.slick.command;
-/*  2:   */
-/* 13:   */public class ControllerButtonControl
-/* 14:   */  extends ControllerControl
-/* 15:   */{
-/* 16:   */  public ControllerButtonControl(int controllerIndex, int button)
-/* 17:   */  {
-/* 18:18 */    super(controllerIndex, 0, button);
-/* 19:   */  }
-/* 20:   */}
+package org.newdawn.slick.command;
+
+public class ControllerButtonControl
+  extends ControllerControl
+{
+  public ControllerButtonControl(int controllerIndex, int button)
+  {
+    super(controllerIndex, 0, button);
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.newdawn.slick.command.ControllerButtonControl
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

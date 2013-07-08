@@ -77,15 +77,15 @@ public class Server
   
   public void checkRunning(boolean paramBoolean)
   {
-    printWithThread(new StringBuilder().append("checkRunning(").append(paramBoolean).append(") entered").toString());
+    printWithThread("checkRunning(" + paramBoolean + ") entered");
     int i = getState();
     int j = ((paramBoolean) && (i != 1)) || ((!paramBoolean) && (i != 16)) ? 1 : 0;
     if (j != 0)
     {
-      String str = new StringBuilder().append("server is ").append(paramBoolean ? "not " : "").append("running").toString();
+      String str = "server is " + (paramBoolean ? "not " : "") + "running";
       throw Error.error(458, str);
     }
-    printWithThread(new StringBuilder().append("checkRunning(").append(paramBoolean).append(") exited").toString());
+    printWithThread("checkRunning(" + paramBoolean + ") exited");
   }
   
   public synchronized void signalCloseAllServerConnections()
@@ -100,7 +100,7 @@ public class Server
     for (int i = 0; i < arrayOfServerConnection.length; i++)
     {
       ServerConnection localServerConnection = arrayOfServerConnection[i];
-      printWithThread(new StringBuilder().append("Closing ").append(localServerConnection).toString());
+      printWithThread("Closing " + localServerConnection);
       localServerConnection.signalClose();
     }
     printWithThread("signalCloseAllServerConnections() exited");
@@ -122,7 +122,7 @@ public class Server
   public String getDatabaseName(int paramInt, boolean paramBoolean)
   {
     if (paramBoolean) {
-      return this.serverProperties.getProperty(new StringBuilder().append("server.dbname.").append(paramInt).toString());
+      return this.serverProperties.getProperty("server.dbname." + paramInt);
     }
     if (getState() == 1) {
       return (this.dbAlias == null) || (paramInt < 0) || (paramInt >= this.dbAlias.length) ? null : this.dbAlias[paramInt];
@@ -133,7 +133,7 @@ public class Server
   public String getDatabasePath(int paramInt, boolean paramBoolean)
   {
     if (paramBoolean) {
-      return this.serverProperties.getProperty(new StringBuilder().append("server.database.").append(paramInt).toString());
+      return this.serverProperties.getProperty("server.database." + paramInt);
     }
     if (getState() == 1) {
       return (this.dbPath == null) || (paramInt < 0) || (paramInt >= this.dbPath.length) ? null : this.dbPath[paramInt];
@@ -232,7 +232,7 @@ public class Server
   
   public void handleConnection(Socket paramSocket)
   {
-    printWithThread(new StringBuilder().append("handleConnection(").append(paramSocket).append(") entered").toString());
+    printWithThread("handleConnection(" + paramSocket + ") entered");
     if (!allowConnection(paramSocket))
     {
       try
@@ -304,7 +304,7 @@ public class Server
     if ((localServerProperties == null) || (localServerProperties.isEmpty())) {
       return false;
     }
-    printWithThread(new StringBuilder().append("putPropertiesFromFile(): [").append(paramString1).append(".properties]").toString());
+    printWithThread("putPropertiesFromFile(): [" + paramString1 + ".properties]");
     try
     {
       setProperties(localServerProperties);
@@ -324,7 +324,7 @@ public class Server
     if (StringUtil.isEmpty(paramString)) {
       return;
     }
-    printWithThread(new StringBuilder().append("putPropertiesFromString(): [").append(paramString).append("]").toString());
+    printWithThread("putPropertiesFromString(): [" + paramString + "]");
     HsqlProperties localHsqlProperties = HsqlProperties.delimitedArgPairsToProps(paramString, "=", ";", "server");
     try
     {
@@ -342,28 +342,28 @@ public class Server
     if (StringUtil.isEmpty(paramString)) {
       paramString = "0.0.0.0";
     }
-    printWithThread(new StringBuilder().append("setAddress(").append(paramString).append(")").toString());
+    printWithThread("setAddress(" + paramString + ")");
     this.serverProperties.setProperty("server.address", paramString);
   }
   
   public void setDatabaseName(int paramInt, String paramString)
   {
     checkRunning(false);
-    printWithThread(new StringBuilder().append("setDatabaseName(").append(paramInt).append(",").append(paramString).append(")").toString());
-    this.serverProperties.setProperty(new StringBuilder().append("server.dbname.").append(paramInt).toString(), paramString);
+    printWithThread("setDatabaseName(" + paramInt + "," + paramString + ")");
+    this.serverProperties.setProperty("server.dbname." + paramInt, paramString);
   }
   
   public void setDatabasePath(int paramInt, String paramString)
   {
     checkRunning(false);
-    printWithThread(new StringBuilder().append("setDatabasePath(").append(paramInt).append(",").append(paramString).append(")").toString());
-    this.serverProperties.setProperty(new StringBuilder().append("server.database.").append(paramInt).toString(), paramString);
+    printWithThread("setDatabasePath(" + paramInt + "," + paramString + ")");
+    this.serverProperties.setProperty("server.database." + paramInt, paramString);
   }
   
   public void setDefaultWebPage(String paramString)
   {
     checkRunning(false);
-    printWithThread(new StringBuilder().append("setDefaultWebPage(").append(paramString).append(")").toString());
+    printWithThread("setDefaultWebPage(" + paramString + ")");
     if (this.serverProtocol != 0) {
       return;
     }
@@ -373,7 +373,7 @@ public class Server
   public void setPort(int paramInt)
   {
     checkRunning(false);
-    printWithThread(new StringBuilder().append("setPort(").append(paramInt).append(")").toString());
+    printWithThread("setPort(" + paramInt + ")");
     this.serverProperties.setProperty("server.port", paramInt);
   }
   
@@ -389,19 +389,19 @@ public class Server
   
   public void setNoSystemExit(boolean paramBoolean)
   {
-    printWithThread(new StringBuilder().append("setNoSystemExit(").append(paramBoolean).append(")").toString());
+    printWithThread("setNoSystemExit(" + paramBoolean + ")");
     this.serverProperties.setProperty("server.no_system_exit", paramBoolean);
   }
   
   public void setRestartOnShutdown(boolean paramBoolean)
   {
-    printWithThread(new StringBuilder().append("setRestartOnShutdown(").append(paramBoolean).append(")").toString());
+    printWithThread("setRestartOnShutdown(" + paramBoolean + ")");
     this.serverProperties.setProperty("server.restart_on_shutdown", paramBoolean);
   }
   
   public void setSilent(boolean paramBoolean)
   {
-    printWithThread(new StringBuilder().append("setSilent(").append(paramBoolean).append(")").toString());
+    printWithThread("setSilent(" + paramBoolean + ")");
     this.serverProperties.setProperty("server.silent", paramBoolean);
     this.isSilent = paramBoolean;
   }
@@ -409,13 +409,13 @@ public class Server
   public void setTls(boolean paramBoolean)
   {
     checkRunning(false);
-    printWithThread(new StringBuilder().append("setTls(").append(paramBoolean).append(")").toString());
+    printWithThread("setTls(" + paramBoolean + ")");
     this.serverProperties.setProperty("server.tls", paramBoolean);
   }
   
   public void setTrace(boolean paramBoolean)
   {
-    printWithThread(new StringBuilder().append("setTrace(").append(paramBoolean).append(")").toString());
+    printWithThread("setTrace(" + paramBoolean + ")");
     this.serverProperties.setProperty("server.trace", paramBoolean);
     JavaSystem.setLogToSystem(paramBoolean);
   }
@@ -423,7 +423,7 @@ public class Server
   public void setDaemon(boolean paramBoolean)
   {
     checkRunning(false);
-    printWithThread(new StringBuilder().append("setDaemon(").append(paramBoolean).append(")").toString());
+    printWithThread("setDaemon(" + paramBoolean + ")");
     this.serverProperties.setProperty("server.daemon", paramBoolean);
   }
   
@@ -431,7 +431,7 @@ public class Server
   {
     checkRunning(false);
     paramString = new File(paramString).getAbsolutePath();
-    printWithThread(new StringBuilder().append("setWebRoot(").append(paramString).append(")").toString());
+    printWithThread("setWebRoot(" + paramString + ")");
     if (this.serverProtocol != 0) {
       return;
     }
@@ -519,7 +519,7 @@ public class Server
     this.serverState = 16;
     this.serverConnSet = new HashSet();
     this.serverId = toString();
-    this.serverId = this.serverId.substring(this.serverId.lastIndexOf(46) + 1);
+    this.serverId = this.serverId.substring(this.serverId.lastIndexOf('.') + 1);
     this.serverProtocol = paramInt;
     this.serverProperties = ServerConfiguration.newDefaultProperties(paramInt);
     this.logWriter = new PrintWriter(System.out);
@@ -534,7 +534,7 @@ public class Server
   
   public final void notify(int paramInt1, int paramInt2)
   {
-    printWithThread(new StringBuilder().append("notifiy(").append(paramInt1).append(",").append(paramInt2).append(") entered").toString());
+    printWithThread("notifiy(" + paramInt1 + "," + paramInt2 + ") entered");
     if (paramInt1 != 0) {
       return;
     }
@@ -553,7 +553,7 @@ public class Server
   final synchronized void releaseDatabase(int paramInt)
   {
     int i = 0;
-    printWithThread(new StringBuilder().append("releaseDatabase(").append(paramInt).append(") entered").toString());
+    printWithThread("releaseDatabase(" + paramInt + ") entered");
     for (int j = 0; j < this.dbID.length; j++) {
       if ((this.dbID[j] == paramInt) && (this.dbAlias[j] != null))
       {
@@ -578,7 +578,7 @@ public class Server
         localServerConnection.signalClose();
       }
     }
-    printWithThread(new StringBuilder().append("releaseDatabase(").append(paramInt).append(") exiting").toString());
+    printWithThread("releaseDatabase(" + paramInt + ") exiting");
   }
   
   protected void print(String paramString)
@@ -586,7 +586,7 @@ public class Server
     PrintWriter localPrintWriter = this.logWriter;
     if (localPrintWriter != null)
     {
-      localPrintWriter.println(new StringBuilder().append("[").append(this.serverId).append("]: ").append(paramString).toString());
+      localPrintWriter.println("[" + this.serverId + "]: " + paramString);
       localPrintWriter.flush();
     }
   }
@@ -617,13 +617,13 @@ public class Server
   
   final void printWithTimestamp(String paramString)
   {
-    print(new StringBuilder().append(HsqlDateTime.getSystemTimeString()).append(" ").append(paramString).toString());
+    print(HsqlDateTime.getSystemTimeString() + " " + paramString);
   }
   
   protected void printWithThread(String paramString)
   {
     if (!isSilent()) {
-      print(new StringBuilder().append("[").append(Thread.currentThread()).append("]: ").append(paramString).toString());
+      print("[" + Thread.currentThread() + "]: " + paramString);
     }
   }
   
@@ -632,8 +632,8 @@ public class Server
     PrintWriter localPrintWriter = this.errWriter;
     if (localPrintWriter != null)
     {
-      localPrintWriter.print(new StringBuilder().append("[").append(this.serverId).append("]: ").toString());
-      localPrintWriter.print(new StringBuilder().append("[").append(Thread.currentThread()).append("]: ").toString());
+      localPrintWriter.print("[" + this.serverId + "]: ");
+      localPrintWriter.print("[" + Thread.currentThread() + "]: ");
       localPrintWriter.println(paramString);
       localPrintWriter.flush();
     }
@@ -763,7 +763,7 @@ public class Server
   
   final synchronized int getDBIndex(String paramString)
   {
-    int i = paramString.indexOf(59);
+    int i = paramString.indexOf(';');
     String str1 = paramString;
     String str2 = null;
     if (i != -1)
@@ -777,7 +777,7 @@ public class Server
       if (str2 == null)
       {
         HsqlException localHsqlException = Error.error(458, "database alias does not exist");
-        printError(new StringBuilder().append("database alias=").append(str1).append(" does not exist").toString());
+        printError("database alias=" + str1 + " does not exist");
         setServerError(localHsqlException);
         throw localHsqlException;
       }
@@ -830,7 +830,7 @@ public class Server
     }
     catch (HsqlException localHsqlException2)
     {
-      printError(new StringBuilder().append("Database [index=").append(i).append(", db=").append(this.dbType[i]).append(this.dbPath[i]).append(", alias=").append(this.dbAlias[i]).append("] did not open: ").append(localHsqlException2.toString()).toString());
+      printError("Database [index=" + i + ", db=" + this.dbType[i] + this.dbPath[i] + ", alias=" + this.dbAlias[i] + "] did not open: " + localHsqlException2.toString());
       setServerError(localHsqlException2);
       throw localHsqlException2;
     }
@@ -854,7 +854,7 @@ public class Server
     for (int i = 0; i < this.dbAlias.length; i++) {
       if (this.dbAlias[i] != null)
       {
-        printWithThread(new StringBuilder().append("Opening database: [").append(this.dbType[i]).append(this.dbPath[i]).append("]").toString());
+        printWithThread("Opening database: [" + this.dbType[i] + this.dbPath[i] + "]");
         StopWatch localStopWatch = new StopWatch();
         int j;
         try
@@ -865,7 +865,7 @@ public class Server
         }
         catch (HsqlException localHsqlException)
         {
-          printError(new StringBuilder().append("Database [index=").append(i).append(", db=").append(this.dbType[i]).append(this.dbPath[i]).append(", alias=").append(this.dbAlias[i]).append("] did not open: ").append(localHsqlException.toString()).toString());
+          printError("Database [index=" + i + ", db=" + this.dbType[i] + this.dbPath[i] + ", alias=" + this.dbAlias[i] + "] did not open: " + localHsqlException.toString());
           setServerError(localHsqlException);
           this.dbAlias[i] = null;
           this.dbPath[i] = null;
@@ -874,7 +874,7 @@ public class Server
           continue;
         }
         localStopWatch.stop();
-        String str = new StringBuilder().append("Database [index=").append(i).append(", id=").append(j).append(", db=").append(this.dbType[i]).append(this.dbPath[i]).append(", alias=").append(this.dbAlias[i]).append("] opened sucessfully").toString();
+        String str = "Database [index=" + i + ", id=" + j + ", db=" + this.dbType[i] + this.dbPath[i] + ", alias=" + this.dbAlias[i] + "] opened sucessfully";
         print(localStopWatch.elapsedTimeToMessage(str));
       }
     }
@@ -913,14 +913,14 @@ public class Server
       String str = getDatabasePath(m, true);
       if (str == null)
       {
-        printWithThread(new StringBuilder().append("missing database path: ").append(localIntKeyHashMap.get(m)).toString());
+        printWithThread("missing database path: " + localIntKeyHashMap.get(m));
       }
       else
       {
         HsqlProperties localHsqlProperties = DatabaseURL.parseURL(str, false, false);
         if (localHsqlProperties == null)
         {
-          printWithThread(new StringBuilder().append("malformed database path: ").append(str).toString());
+          printWithThread("malformed database path: " + str);
         }
         else
         {
@@ -951,16 +951,16 @@ public class Server
         }
         catch (NumberFormatException localNumberFormatException)
         {
-          printWithThread(new StringBuilder().append("maformed database enumerator: ").append(str1).toString());
+          printWithThread("maformed database enumerator: " + str1);
         }
         continue;
         String str2 = this.serverProperties.getProperty(str1).toLowerCase();
         if (!this.aliasSet.add(str2)) {
-          printWithThread(new StringBuilder().append("duplicate alias: ").append(str2).toString());
+          printWithThread("duplicate alias: " + str2);
         }
         Object localObject = localIntKeyHashMap.put(j, str2);
         if (localObject != null) {
-          printWithThread(new StringBuilder().append("duplicate database enumerator: ").append(str1).toString());
+          printWithThread("duplicate database enumerator: " + str1);
         }
       }
     }
@@ -1012,7 +1012,7 @@ public class Server
       }
     }
     this.socket.setSoTimeout(1000);
-    printWithThread(new StringBuilder().append("Got server socket: ").append(this.socket).toString());
+    printWithThread("Got server socket: " + this.socket);
     print(localStopWatch.elapsedTimeToMessage("Server socket opened successfully"));
     if (this.socketFactory.isSecure()) {
       print("Using TLS/SSL-encrypted JDBC");
@@ -1022,7 +1022,7 @@ public class Server
   
   private void printServerOnlineMessage()
   {
-    String str = new StringBuilder().append(getProductName()).append(" ").append(getProductVersion()).append(" is online on port ").append(getPort()).toString();
+    String str = getProductName() + " " + getProductVersion() + " is online on port " + getPort();
     printWithTimestamp(str);
     printResource("online.help");
   }
@@ -1037,7 +1037,7 @@ public class Server
     {
       String str1 = (String)localEnumeration.nextElement();
       String str2 = this.serverProperties.getProperty(str1);
-      printWithThread(new StringBuilder().append(str1).append("=").append(str2).toString());
+      printWithThread(str1 + "=" + str2);
     }
   }
   
@@ -1046,7 +1046,7 @@ public class Server
     printWithThread("releaseServerSocket() entered");
     if (this.socket != null)
     {
-      printWithThread(new StringBuilder().append("Releasing server socket: [").append(this.socket).append("]").toString());
+      printWithThread("Releasing server socket: [" + this.socket + "]");
       setState(8);
       try
       {
@@ -1055,7 +1055,7 @@ public class Server
       catch (IOException localIOException)
       {
         printError("Exception closing server socket");
-        printError(new StringBuilder().append("releaseServerSocket(): ").append(localIOException).toString());
+        printError("releaseServerSocket(): " + localIOException);
       }
       this.socket = null;
     }
@@ -1081,7 +1081,7 @@ public class Server
       shutdown(true);
       return;
     }
-    String str = new StringBuilder().append("HSQLDB Connections @").append(Integer.toString(hashCode(), 16)).toString();
+    String str = "HSQLDB Connections @" + Integer.toString(hashCode(), 16);
     ThreadGroup localThreadGroup = new ThreadGroup(str);
     localThreadGroup.setDaemon(false);
     this.serverConnectionThreadGroup = localThreadGroup;
@@ -1111,7 +1111,7 @@ public class Server
       if (getState() == 1)
       {
         setServerError(localIOException);
-        printError(new StringBuilder().append(this).append(".run()/handleConnection(): ").toString());
+        printError(this + ".run()/handleConnection(): ");
         printStackTrace(localIOException);
       }
     }
@@ -1179,11 +1179,11 @@ public class Server
         try
         {
           this.serverConnectionThreadGroup.destroy();
-          printWithThread(new StringBuilder().append(this.serverConnectionThreadGroup.getName()).append(" destroyed").toString());
+          printWithThread(this.serverConnectionThreadGroup.getName() + " destroyed");
         }
         catch (Throwable localThrowable2)
         {
-          printWithThread(new StringBuilder().append(this.serverConnectionThreadGroup.getName()).append(" not destroyed").toString());
+          printWithThread(this.serverConnectionThreadGroup.getName() + " not destroyed");
           printWithThread(localThrowable2.toString());
         }
       }
@@ -1234,7 +1234,7 @@ public class Server
     String[] arrayOfString = localHsqlProperties.getErrorKeys();
     if (arrayOfString.length != 0)
     {
-      System.out.println(new StringBuilder().append("no value for argument:").append(arrayOfString[0]).toString());
+      System.out.println("no value for argument:" + arrayOfString[0]);
       printHelp("server.help");
       return;
     }
@@ -1270,7 +1270,7 @@ public class Server
     localServer.print("Startup sequence initiated from main() method");
     if (localServerProperties1 != null)
     {
-      localServer.print(new StringBuilder().append("Loaded properties from [").append(str1).append(str2).append("]").toString());
+      localServer.print("Loaded properties from [" + str1 + str2 + "]");
     }
     else
     {
@@ -1298,7 +1298,7 @@ public class Server
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.server.Server
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

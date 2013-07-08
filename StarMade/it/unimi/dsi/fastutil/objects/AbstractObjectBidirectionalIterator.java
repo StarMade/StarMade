@@ -1,19 +1,21 @@
-/*  1:   */package it.unimi.dsi.fastutil.objects;
-/*  2:   */
-/* 54:   */public abstract class AbstractObjectBidirectionalIterator<K>
-/* 55:   */  extends AbstractObjectIterator<K>
-/* 56:   */  implements ObjectBidirectionalIterator<K>
-/* 57:   */{
-/* 58:   */  public int back(int n)
-/* 59:   */  {
-/* 60:60 */    int i = n;
-/* 61:61 */    while ((i-- != 0) && (hasPrevious())) previous();
-/* 62:62 */    return n - i - 1;
-/* 63:   */  }
-/* 64:   */}
+package it.unimi.dsi.fastutil.objects;
+
+public abstract class AbstractObjectBidirectionalIterator<K>
+  extends AbstractObjectIterator<K>
+  implements ObjectBidirectionalIterator<K>
+{
+  public int back(int local_n)
+  {
+    int local_i = local_n;
+    while ((local_i-- != 0) && (hasPrevious())) {
+      previous();
+    }
+    return local_n - local_i - 1;
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.objects.AbstractObjectBidirectionalIterator
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

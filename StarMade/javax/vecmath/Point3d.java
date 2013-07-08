@@ -42,42 +42,42 @@ public class Point3d
   
   public final double distanceSquared(Point3d paramPoint3d)
   {
-    double d1 = this.x - paramPoint3d.x;
-    double d2 = this.y - paramPoint3d.y;
-    double d3 = this.z - paramPoint3d.z;
+    double d1 = this.field_612 - paramPoint3d.field_612;
+    double d2 = this.field_613 - paramPoint3d.field_613;
+    double d3 = this.field_614 - paramPoint3d.field_614;
     return d1 * d1 + d2 * d2 + d3 * d3;
   }
   
   public final double distance(Point3d paramPoint3d)
   {
-    double d1 = this.x - paramPoint3d.x;
-    double d2 = this.y - paramPoint3d.y;
-    double d3 = this.z - paramPoint3d.z;
+    double d1 = this.field_612 - paramPoint3d.field_612;
+    double d2 = this.field_613 - paramPoint3d.field_613;
+    double d3 = this.field_614 - paramPoint3d.field_614;
     return Math.sqrt(d1 * d1 + d2 * d2 + d3 * d3);
   }
   
   public final double distanceL1(Point3d paramPoint3d)
   {
-    return Math.abs(this.x - paramPoint3d.x) + Math.abs(this.y - paramPoint3d.y) + Math.abs(this.z - paramPoint3d.z);
+    return Math.abs(this.field_612 - paramPoint3d.field_612) + Math.abs(this.field_613 - paramPoint3d.field_613) + Math.abs(this.field_614 - paramPoint3d.field_614);
   }
   
   public final double distanceLinf(Point3d paramPoint3d)
   {
-    double d = Math.max(Math.abs(this.x - paramPoint3d.x), Math.abs(this.y - paramPoint3d.y));
-    return Math.max(d, Math.abs(this.z - paramPoint3d.z));
+    double d = Math.max(Math.abs(this.field_612 - paramPoint3d.field_612), Math.abs(this.field_613 - paramPoint3d.field_613));
+    return Math.max(d, Math.abs(this.field_614 - paramPoint3d.field_614));
   }
   
   public final void project(Point4d paramPoint4d)
   {
-    double d = 1.0D / paramPoint4d.w;
-    this.x = (paramPoint4d.x * d);
-    this.y = (paramPoint4d.y * d);
-    this.z = (paramPoint4d.z * d);
+    double d = 1.0D / paramPoint4d.field_603;
+    this.field_612 = (paramPoint4d.field_600 * d);
+    this.field_613 = (paramPoint4d.field_601 * d);
+    this.field_614 = (paramPoint4d.field_602 * d);
   }
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     javax.vecmath.Point3d
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

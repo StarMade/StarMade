@@ -8,7 +8,7 @@ public class AppendableException
   extends Exception
 {
   static final long serialVersionUID = -1002629580611098803L;
-  public static String LS = System.getProperty("line.separator");
+  public static String field_1903 = System.getProperty("line.separator");
   public List<String> appendages = null;
   
   public String getMessage()
@@ -26,7 +26,7 @@ public class AppendableException
     {
       String str2 = (String)localIterator.next();
       if (localStringBuffer.length() > 0) {
-        localStringBuffer.append(LS);
+        localStringBuffer.append(field_1903);
       }
       localStringBuffer.append(str2);
     }
@@ -60,7 +60,7 @@ public class AppendableException
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.lib.AppendableException
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

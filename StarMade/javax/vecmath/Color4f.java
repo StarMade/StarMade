@@ -43,24 +43,24 @@ public class Color4f
   
   public final void set(Color paramColor)
   {
-    this.x = (paramColor.getRed() / 255.0F);
-    this.y = (paramColor.getGreen() / 255.0F);
-    this.z = (paramColor.getBlue() / 255.0F);
-    this.w = (paramColor.getAlpha() / 255.0F);
+    this.field_596 = (paramColor.getRed() / 255.0F);
+    this.field_597 = (paramColor.getGreen() / 255.0F);
+    this.field_598 = (paramColor.getBlue() / 255.0F);
+    this.field_599 = (paramColor.getAlpha() / 255.0F);
   }
   
   public final Color get()
   {
-    int i = Math.round(this.x * 255.0F);
-    int j = Math.round(this.y * 255.0F);
-    int k = Math.round(this.z * 255.0F);
-    int m = Math.round(this.w * 255.0F);
+    int i = Math.round(this.field_596 * 255.0F);
+    int j = Math.round(this.field_597 * 255.0F);
+    int k = Math.round(this.field_598 * 255.0F);
+    int m = Math.round(this.field_599 * 255.0F);
     return new Color(i, j, k, m);
   }
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     javax.vecmath.Color4f
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

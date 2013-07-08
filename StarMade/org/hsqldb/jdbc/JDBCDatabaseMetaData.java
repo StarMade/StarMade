@@ -1210,7 +1210,7 @@ public class JDBCDatabaseMetaData
     StringBuffer localStringBuffer = new StringBuffer(256);
     localStringBuffer.append("select ").append("sp.procedure_cat as FUNCTION_CAT,").append("sp.procedure_schem as FUNCTION_SCHEM,").append("sp.procedure_name as FUNCTION_NAME,").append("sp.remarks as REMARKS,").append("1 as FUNCTION_TYPE,").append("sp.specific_name as SPECIFIC_NAME ").append("from information_schema.system_procedures sp ").append("where sp.procedure_type = 2 ");
     if (wantsIsNull(paramString3)) {
-      return execute(localStringBuffer.append("and 1=0").toString());
+      return execute("and 1=0");
     }
     paramString2 = translateSchema(paramString2);
     localStringBuffer.append(and("sp.procedure_cat", "=", paramString1)).append(and("sp.procedure_schem", "LIKE", paramString2)).append(and("sp.procedure_name", "LIKE", paramString3));
@@ -1223,7 +1223,7 @@ public class JDBCDatabaseMetaData
     StringBuffer localStringBuffer = new StringBuffer(256);
     localStringBuffer.append("select pc.procedure_cat as FUNCTION_CAT,").append("pc.procedure_schem as FUNCTION_SCHEM,").append("pc.procedure_name as FUNCTION_NAME,").append("pc.column_name as COLUMN_NAME,").append("case pc.column_type").append(" when 3 then 5").append(" when 4 then 3").append(" when 5 then 4").append(" else pc.column_type").append(" end as COLUMN_TYPE,").append("pc.DATA_TYPE,").append("pc.TYPE_NAME,").append("pc.PRECISION,").append("pc.LENGTH,").append("pc.SCALE,").append("pc.RADIX,").append("pc.NULLABLE,").append("pc.REMARKS,").append("pc.CHAR_OCTET_LENGTH,").append("pc.ORDINAL_POSITION,").append("pc.IS_NULLABLE,").append("pc.SPECIFIC_NAME,").append("case pc.column_type").append(" when 3 then 1").append(" else 0").append(" end AS COLUMN_GROUP ").append("from information_schema.system_procedurecolumns pc ").append("join (select procedure_schem,").append("procedure_name,").append("specific_name ").append("from information_schema.system_procedures ").append("where procedure_type = 2) p ").append("on pc.procedure_schem = p.procedure_schem ").append("and pc.procedure_name = p.procedure_name ").append("and pc.specific_name = p.specific_name ").append("and ((pc.column_type = 3 and pc.column_name = '@p0') ").append("or ").append("(pc.column_type <> 3)) ");
     if ((wantsIsNull(paramString3)) || (wantsIsNull(paramString4))) {
-      return execute(localStringBuffer.append("where 1=0").toString());
+      return execute("where 1=0");
     }
     paramString2 = translateSchema(paramString2);
     localStringBuffer.append("where 1=1 ").append(and("pc.procedure_cat", "=", paramString1)).append(and("pc.procedure_schem", "LIKE", paramString2)).append(and("pc.procedure_name", "LIKE", paramString3)).append(and("pc.column_name", "LIKE", paramString4)).append(" order by 1, 2, 3, 17, 18 , 15");
@@ -1272,13 +1272,13 @@ public class JDBCDatabaseMetaData
     StringBuffer localStringBuffer = new StringBuffer();
     boolean bool = paramObject instanceof String;
     if ((bool) && (((String)paramObject).length() == 0)) {
-      return localStringBuffer.append(" AND ").append(paramString1).append(" IS NULL").toString();
+      return " AND " + paramString1 + " IS NULL";
     }
     String str = bool ? Type.SQL_VARCHAR.convertToSQLString(paramObject) : String.valueOf(paramObject);
     localStringBuffer.append(" AND ").append(paramString1).append(' ');
     if ((bool) && ("LIKE".equalsIgnoreCase(paramString2)))
     {
-      if ((str.indexOf(95) < 0) && (str.indexOf(37) < 0))
+      if ((str.indexOf('_') < 0) && (str.indexOf('%') < 0))
       {
         localStringBuffer.append("=").append(' ').append(str);
       }
@@ -1391,7 +1391,7 @@ public class JDBCDatabaseMetaData
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.jdbc.JDBCDatabaseMetaData
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

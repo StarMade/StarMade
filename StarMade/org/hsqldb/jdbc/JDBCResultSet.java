@@ -528,7 +528,7 @@ public class JDBCResultSet
     }
     if (i < 0)
     {
-      k = paramString.indexOf(46);
+      k = paramString.indexOf('.');
       if (k < 0) {
         throw Util.sqlException(421, paramString);
       }
@@ -2191,7 +2191,7 @@ public class JDBCResultSet
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.jdbc.JDBCResultSet
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

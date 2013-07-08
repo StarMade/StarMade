@@ -722,9 +722,9 @@ class DatabaseInformationMain
     {
       Routine localRoutine = (Routine)localIterator.next();
       Object[] arrayOfObject = localTable.getEmptyRowData();
-      String tmp217_214 = this.database.getCatalogName().name;
-      arrayOfObject[0] = tmp217_214;
-      arrayOfObject[0] = tmp217_214;
+      String tmp226_223 = this.database.getCatalogName().name;
+      arrayOfObject[0] = tmp226_223;
+      arrayOfObject[0] = tmp226_223;
       arrayOfObject[1] = localRoutine.getSchemaName().name;
       arrayOfObject[2] = localRoutine.getName().name;
       arrayOfObject[6] = localRoutine.getName().comment;
@@ -1506,7 +1506,7 @@ class DatabaseInformationMain
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.dbinfo.DatabaseInformationMain
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

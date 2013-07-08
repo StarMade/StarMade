@@ -1,660 +1,833 @@
-/*   1:    */package it.unimi.dsi.fastutil.doubles;
-/*   2:    */
-/*   3:    */import it.unimi.dsi.fastutil.Hash;
-/*   4:    */import it.unimi.dsi.fastutil.HashCommon;
-/*   5:    */import it.unimi.dsi.fastutil.booleans.BooleanArrays;
-/*   6:    */import it.unimi.dsi.fastutil.objects.AbstractObjectSet;
-/*   7:    */import it.unimi.dsi.fastutil.objects.ObjectIterator;
-/*   8:    */import it.unimi.dsi.fastutil.shorts.AbstractShortCollection;
-/*   9:    */import it.unimi.dsi.fastutil.shorts.ShortCollection;
-/*  10:    */import it.unimi.dsi.fastutil.shorts.ShortIterator;
-/*  11:    */import java.io.IOException;
-/*  12:    */import java.io.ObjectInputStream;
-/*  13:    */import java.io.ObjectOutputStream;
-/*  14:    */import java.io.Serializable;
-/*  15:    */import java.util.Map;
-/*  16:    */import java.util.Map.Entry;
-/*  17:    */import java.util.NoSuchElementException;
-/*  18:    */
-/*  90:    */public class Double2ShortOpenCustomHashMap
-/*  91:    */  extends AbstractDouble2ShortMap
-/*  92:    */  implements Serializable, Cloneable, Hash
-/*  93:    */{
-/*  94:    */  public static final long serialVersionUID = 0L;
-/*  95:    */  private static final boolean ASSERTS = false;
-/*  96:    */  protected transient double[] key;
-/*  97:    */  protected transient short[] value;
-/*  98:    */  protected transient boolean[] used;
-/*  99:    */  protected final float f;
-/* 100:    */  protected transient int n;
-/* 101:    */  protected transient int maxFill;
-/* 102:    */  protected transient int mask;
-/* 103:    */  protected int size;
-/* 104:    */  protected volatile transient Double2ShortMap.FastEntrySet entries;
-/* 105:    */  protected volatile transient DoubleSet keys;
-/* 106:    */  protected volatile transient ShortCollection values;
-/* 107:    */  protected DoubleHash.Strategy strategy;
-/* 108:    */  
-/* 109:    */  public Double2ShortOpenCustomHashMap(int expected, float f, DoubleHash.Strategy strategy)
-/* 110:    */  {
-/* 111:111 */    this.strategy = strategy;
-/* 112:112 */    if ((f <= 0.0F) || (f > 1.0F)) throw new IllegalArgumentException("Load factor must be greater than 0 and smaller than or equal to 1");
-/* 113:113 */    if (expected < 0) throw new IllegalArgumentException("The expected number of elements must be nonnegative");
-/* 114:114 */    this.f = f;
-/* 115:115 */    this.n = HashCommon.arraySize(expected, f);
-/* 116:116 */    this.mask = (this.n - 1);
-/* 117:117 */    this.maxFill = HashCommon.maxFill(this.n, f);
-/* 118:118 */    this.key = new double[this.n];
-/* 119:119 */    this.value = new short[this.n];
-/* 120:120 */    this.used = new boolean[this.n];
-/* 121:    */  }
-/* 122:    */  
-/* 126:    */  public Double2ShortOpenCustomHashMap(int expected, DoubleHash.Strategy strategy)
-/* 127:    */  {
-/* 128:128 */    this(expected, 0.75F, strategy);
-/* 129:    */  }
-/* 130:    */  
-/* 133:    */  public Double2ShortOpenCustomHashMap(DoubleHash.Strategy strategy)
-/* 134:    */  {
-/* 135:135 */    this(16, 0.75F, strategy);
-/* 136:    */  }
-/* 137:    */  
-/* 142:    */  public Double2ShortOpenCustomHashMap(Map<? extends Double, ? extends Short> m, float f, DoubleHash.Strategy strategy)
-/* 143:    */  {
-/* 144:144 */    this(m.size(), f, strategy);
-/* 145:145 */    putAll(m);
-/* 146:    */  }
-/* 147:    */  
-/* 151:    */  public Double2ShortOpenCustomHashMap(Map<? extends Double, ? extends Short> m, DoubleHash.Strategy strategy)
-/* 152:    */  {
-/* 153:153 */    this(m, 0.75F, strategy);
-/* 154:    */  }
-/* 155:    */  
-/* 160:    */  public Double2ShortOpenCustomHashMap(Double2ShortMap m, float f, DoubleHash.Strategy strategy)
-/* 161:    */  {
-/* 162:162 */    this(m.size(), f, strategy);
-/* 163:163 */    putAll(m);
-/* 164:    */  }
-/* 165:    */  
-/* 169:    */  public Double2ShortOpenCustomHashMap(Double2ShortMap m, DoubleHash.Strategy strategy)
-/* 170:    */  {
-/* 171:171 */    this(m, 0.75F, strategy);
-/* 172:    */  }
-/* 173:    */  
-/* 180:    */  public Double2ShortOpenCustomHashMap(double[] k, short[] v, float f, DoubleHash.Strategy strategy)
-/* 181:    */  {
-/* 182:182 */    this(k.length, f, strategy);
-/* 183:183 */    if (k.length != v.length) throw new IllegalArgumentException("The key array and the value array have different lengths (" + k.length + " and " + v.length + ")");
-/* 184:184 */    for (int i = 0; i < k.length; i++) { put(k[i], v[i]);
-/* 185:    */    }
-/* 186:    */  }
-/* 187:    */  
-/* 192:    */  public Double2ShortOpenCustomHashMap(double[] k, short[] v, DoubleHash.Strategy strategy)
-/* 193:    */  {
-/* 194:194 */    this(k, v, 0.75F, strategy);
-/* 195:    */  }
-/* 196:    */  
-/* 199:    */  public DoubleHash.Strategy strategy()
-/* 200:    */  {
-/* 201:201 */    return this.strategy;
-/* 202:    */  }
-/* 203:    */  
-/* 207:    */  public short put(double k, short v)
-/* 208:    */  {
-/* 209:209 */    int pos = HashCommon.murmurHash3(this.strategy.hashCode(k)) & this.mask;
-/* 210:    */    
-/* 211:211 */    while (this.used[pos] != 0) {
-/* 212:212 */      if (this.strategy.equals(this.key[pos], k)) {
-/* 213:213 */        short oldValue = this.value[pos];
-/* 214:214 */        this.value[pos] = v;
-/* 215:215 */        return oldValue;
-/* 216:    */      }
-/* 217:217 */      pos = pos + 1 & this.mask;
-/* 218:    */    }
-/* 219:219 */    this.used[pos] = true;
-/* 220:220 */    this.key[pos] = k;
-/* 221:221 */    this.value[pos] = v;
-/* 222:222 */    if (++this.size >= this.maxFill) { rehash(HashCommon.arraySize(this.size + 1, this.f));
-/* 223:    */    }
-/* 224:224 */    return this.defRetValue;
-/* 225:    */  }
-/* 226:    */  
-/* 227:227 */  public Short put(Double ok, Short ov) { short v = ov.shortValue();
-/* 228:228 */    double k = ok.doubleValue();
-/* 229:    */    
-/* 230:230 */    int pos = HashCommon.murmurHash3(this.strategy.hashCode(k)) & this.mask;
-/* 231:    */    
-/* 232:232 */    while (this.used[pos] != 0) {
-/* 233:233 */      if (this.strategy.equals(this.key[pos], k)) {
-/* 234:234 */        Short oldValue = Short.valueOf(this.value[pos]);
-/* 235:235 */        this.value[pos] = v;
-/* 236:236 */        return oldValue;
-/* 237:    */      }
-/* 238:238 */      pos = pos + 1 & this.mask;
-/* 239:    */    }
-/* 240:240 */    this.used[pos] = true;
-/* 241:241 */    this.key[pos] = k;
-/* 242:242 */    this.value[pos] = v;
-/* 243:243 */    if (++this.size >= this.maxFill) { rehash(HashCommon.arraySize(this.size + 1, this.f));
-/* 244:    */    }
-/* 245:245 */    return null;
-/* 246:    */  }
-/* 247:    */  
-/* 258:    */  public short add(double k, short incr)
-/* 259:    */  {
-/* 260:260 */    int pos = HashCommon.murmurHash3(this.strategy.hashCode(k)) & this.mask;
-/* 261:    */    
-/* 262:262 */    while (this.used[pos] != 0) {
-/* 263:263 */      if (this.strategy.equals(this.key[pos], k)) {
-/* 264:264 */        short oldValue = this.value[pos]; int 
-/* 265:265 */          tmp65_63 = pos; short[] tmp65_60 = this.value;tmp65_60[tmp65_63] = ((short)(tmp65_60[tmp65_63] + incr));
-/* 266:266 */        return tmp65_63;
-/* 267:    */      }
-/* 268:268 */      pos = pos + 1 & this.mask;
-/* 269:    */    }
-/* 270:270 */    this.used[pos] = true;
-/* 271:271 */    this.key[pos] = k;
-/* 272:272 */    this.value[pos] = ((short)(this.defRetValue + incr));
-/* 273:273 */    if (++this.size >= this.maxFill) { rehash(HashCommon.arraySize(this.size + 1, this.f));
-/* 274:    */    }
-/* 275:275 */    return this.defRetValue;
-/* 276:    */  }
-/* 277:    */  
-/* 280:    */  protected final int shiftKeys(int pos)
-/* 281:    */  {
-/* 282:    */    int last;
-/* 283:    */    
-/* 285:    */    for (;;)
-/* 286:    */    {
-/* 287:287 */      pos = (last = pos) + 1 & this.mask;
-/* 288:288 */      while (this.used[pos] != 0) {
-/* 289:289 */        int slot = HashCommon.murmurHash3(this.strategy.hashCode(this.key[pos])) & this.mask;
-/* 290:290 */        if (last <= pos ? (last < slot) && (slot <= pos) : (last >= slot) && (slot > pos)) break;
-/* 291:291 */        pos = pos + 1 & this.mask;
-/* 292:    */      }
-/* 293:293 */      if (this.used[pos] == 0) break;
-/* 294:294 */      this.key[last] = this.key[pos];
-/* 295:295 */      this.value[last] = this.value[pos];
-/* 296:    */    }
-/* 297:297 */    this.used[last] = false;
-/* 298:298 */    return last;
-/* 299:    */  }
-/* 300:    */  
-/* 301:    */  public short remove(double k)
-/* 302:    */  {
-/* 303:303 */    int pos = HashCommon.murmurHash3(this.strategy.hashCode(k)) & this.mask;
-/* 304:    */    
-/* 305:305 */    while (this.used[pos] != 0) {
-/* 306:306 */      if (this.strategy.equals(this.key[pos], k)) {
-/* 307:307 */        this.size -= 1;
-/* 308:308 */        short v = this.value[pos];
-/* 309:309 */        shiftKeys(pos);
-/* 310:310 */        return v;
-/* 311:    */      }
-/* 312:312 */      pos = pos + 1 & this.mask;
-/* 313:    */    }
-/* 314:314 */    return this.defRetValue;
-/* 315:    */  }
-/* 316:    */  
-/* 317:    */  public Short remove(Object ok) {
-/* 318:318 */    double k = ((Double)ok).doubleValue();
-/* 319:    */    
-/* 320:320 */    int pos = HashCommon.murmurHash3(this.strategy.hashCode(k)) & this.mask;
-/* 321:    */    
-/* 322:322 */    while (this.used[pos] != 0) {
-/* 323:323 */      if (this.strategy.equals(this.key[pos], k)) {
-/* 324:324 */        this.size -= 1;
-/* 325:325 */        short v = this.value[pos];
-/* 326:326 */        shiftKeys(pos);
-/* 327:327 */        return Short.valueOf(v);
-/* 328:    */      }
-/* 329:329 */      pos = pos + 1 & this.mask;
-/* 330:    */    }
-/* 331:331 */    return null;
-/* 332:    */  }
-/* 333:    */  
-/* 334:334 */  public Short get(Double ok) { double k = ok.doubleValue();
-/* 335:    */    
-/* 336:336 */    int pos = HashCommon.murmurHash3(this.strategy.hashCode(k)) & this.mask;
-/* 337:    */    
-/* 338:338 */    while (this.used[pos] != 0) {
-/* 339:339 */      if (this.strategy.equals(this.key[pos], k)) return Short.valueOf(this.value[pos]);
-/* 340:340 */      pos = pos + 1 & this.mask;
-/* 341:    */    }
-/* 342:342 */    return null;
-/* 343:    */  }
-/* 344:    */  
-/* 345:    */  public short get(double k)
-/* 346:    */  {
-/* 347:347 */    int pos = HashCommon.murmurHash3(this.strategy.hashCode(k)) & this.mask;
-/* 348:    */    
-/* 349:349 */    while (this.used[pos] != 0) {
-/* 350:350 */      if (this.strategy.equals(this.key[pos], k)) return this.value[pos];
-/* 351:351 */      pos = pos + 1 & this.mask;
-/* 352:    */    }
-/* 353:353 */    return this.defRetValue;
-/* 354:    */  }
-/* 355:    */  
-/* 356:    */  public boolean containsKey(double k)
-/* 357:    */  {
-/* 358:358 */    int pos = HashCommon.murmurHash3(this.strategy.hashCode(k)) & this.mask;
-/* 359:    */    
-/* 360:360 */    while (this.used[pos] != 0) {
-/* 361:361 */      if (this.strategy.equals(this.key[pos], k)) return true;
-/* 362:362 */      pos = pos + 1 & this.mask;
-/* 363:    */    }
-/* 364:364 */    return false;
-/* 365:    */  }
-/* 366:    */  
-/* 367:367 */  public boolean containsValue(short v) { short[] value = this.value;
-/* 368:368 */    boolean[] used = this.used;
-/* 369:369 */    for (int i = this.n; i-- != 0; return true) label16: if ((used[i] == 0) || (value[i] != v)) break label16;
-/* 370:370 */    return false;
-/* 371:    */  }
-/* 372:    */  
-/* 377:    */  public void clear()
-/* 378:    */  {
-/* 379:379 */    if (this.size == 0) return;
-/* 380:380 */    this.size = 0;
-/* 381:381 */    BooleanArrays.fill(this.used, false);
-/* 382:    */  }
-/* 383:    */  
-/* 384:    */  public int size() {
-/* 385:385 */    return this.size;
-/* 386:    */  }
-/* 387:    */  
-/* 388:388 */  public boolean isEmpty() { return this.size == 0; }
-/* 389:    */  
-/* 395:    */  @Deprecated
-/* 396:    */  public void growthFactor(int growthFactor) {}
-/* 397:    */  
-/* 402:    */  @Deprecated
-/* 403:    */  public int growthFactor()
-/* 404:    */  {
-/* 405:405 */    return 16;
-/* 406:    */  }
-/* 407:    */  
-/* 408:    */  private final class MapEntry
-/* 409:    */    implements Double2ShortMap.Entry, Map.Entry<Double, Short>
-/* 410:    */  {
-/* 411:    */    private int index;
-/* 412:    */    
-/* 413:    */    MapEntry(int index)
-/* 414:    */    {
-/* 415:415 */      this.index = index;
-/* 416:    */    }
-/* 417:    */    
-/* 418:418 */    public Double getKey() { return Double.valueOf(Double2ShortOpenCustomHashMap.this.key[this.index]); }
-/* 419:    */    
-/* 420:    */    public double getDoubleKey() {
-/* 421:421 */      return Double2ShortOpenCustomHashMap.this.key[this.index];
-/* 422:    */    }
-/* 423:    */    
-/* 424:424 */    public Short getValue() { return Short.valueOf(Double2ShortOpenCustomHashMap.this.value[this.index]); }
-/* 425:    */    
-/* 427:427 */    public short getShortValue() { return Double2ShortOpenCustomHashMap.this.value[this.index]; }
-/* 428:    */    
-/* 429:    */    public short setValue(short v) {
-/* 430:430 */      short oldValue = Double2ShortOpenCustomHashMap.this.value[this.index];
-/* 431:431 */      Double2ShortOpenCustomHashMap.this.value[this.index] = v;
-/* 432:432 */      return oldValue;
-/* 433:    */    }
-/* 434:    */    
-/* 435:435 */    public Short setValue(Short v) { return Short.valueOf(setValue(v.shortValue())); }
-/* 436:    */    
-/* 437:    */    public boolean equals(Object o)
-/* 438:    */    {
-/* 439:439 */      if (!(o instanceof Map.Entry)) return false;
-/* 440:440 */      Map.Entry<Double, Short> e = (Map.Entry)o;
-/* 441:441 */      return (Double2ShortOpenCustomHashMap.this.strategy.equals(Double2ShortOpenCustomHashMap.this.key[this.index], ((Double)e.getKey()).doubleValue())) && (Double2ShortOpenCustomHashMap.this.value[this.index] == ((Short)e.getValue()).shortValue());
-/* 442:    */    }
-/* 443:    */    
-/* 444:444 */    public int hashCode() { return Double2ShortOpenCustomHashMap.this.strategy.hashCode(Double2ShortOpenCustomHashMap.this.key[this.index]) ^ Double2ShortOpenCustomHashMap.this.value[this.index]; }
-/* 445:    */    
-/* 447:447 */    public String toString() { return Double2ShortOpenCustomHashMap.this.key[this.index] + "=>" + Double2ShortOpenCustomHashMap.this.value[this.index]; } }
-/* 448:    */  
-/* 449:    */  private class MapIterator { int pos;
-/* 450:    */    int last;
-/* 451:    */    int c;
-/* 452:    */    DoubleArrayList wrapped;
-/* 453:    */    
-/* 454:454 */    private MapIterator() { this.pos = Double2ShortOpenCustomHashMap.this.n;
-/* 455:    */      
-/* 457:457 */      this.last = -1;
-/* 458:    */      
-/* 459:459 */      this.c = Double2ShortOpenCustomHashMap.this.size;
-/* 460:    */      
-/* 464:464 */      boolean[] used = Double2ShortOpenCustomHashMap.this.used;
-/* 465:465 */      while ((this.c != 0) && (used[(--this.pos)] == 0)) {}
-/* 466:    */    }
-/* 467:    */    
-/* 468:468 */    public boolean hasNext() { return this.c != 0; }
-/* 469:    */    
-/* 470:    */    public int nextEntry() {
-/* 471:471 */      if (!hasNext()) throw new NoSuchElementException();
-/* 472:472 */      this.c -= 1;
-/* 473:    */      
-/* 474:474 */      if (this.pos < 0) {
-/* 475:475 */        double k = this.wrapped.getDouble(-(this.last = --this.pos) - 2);
-/* 476:    */        
-/* 477:477 */        int pos = HashCommon.murmurHash3(Double2ShortOpenCustomHashMap.this.strategy.hashCode(k)) & Double2ShortOpenCustomHashMap.this.mask;
-/* 478:    */        
-/* 479:479 */        while (Double2ShortOpenCustomHashMap.this.used[pos] != 0) {
-/* 480:480 */          if (Double2ShortOpenCustomHashMap.this.strategy.equals(Double2ShortOpenCustomHashMap.this.key[pos], k)) return pos;
-/* 481:481 */          pos = pos + 1 & Double2ShortOpenCustomHashMap.this.mask;
-/* 482:    */        }
-/* 483:    */      }
-/* 484:484 */      this.last = this.pos;
-/* 485:    */      
-/* 486:486 */      if (this.c != 0) {
-/* 487:487 */        boolean[] used = Double2ShortOpenCustomHashMap.this.used;
-/* 488:488 */        while ((this.pos-- != 0) && (used[this.pos] == 0)) {}
-/* 489:    */      }
-/* 490:    */      
-/* 491:491 */      return this.last;
-/* 492:    */    }
-/* 493:    */    
-/* 497:    */    protected final int shiftKeys(int pos)
-/* 498:    */    {
-/* 499:    */      int last;
-/* 500:    */      
-/* 502:    */      for (;;)
-/* 503:    */      {
-/* 504:504 */        pos = (last = pos) + 1 & Double2ShortOpenCustomHashMap.this.mask;
-/* 505:505 */        while (Double2ShortOpenCustomHashMap.this.used[pos] != 0) {
-/* 506:506 */          int slot = HashCommon.murmurHash3(Double2ShortOpenCustomHashMap.this.strategy.hashCode(Double2ShortOpenCustomHashMap.this.key[pos])) & Double2ShortOpenCustomHashMap.this.mask;
-/* 507:507 */          if (last <= pos ? (last < slot) && (slot <= pos) : (last >= slot) && (slot > pos)) break;
-/* 508:508 */          pos = pos + 1 & Double2ShortOpenCustomHashMap.this.mask;
-/* 509:    */        }
-/* 510:510 */        if (Double2ShortOpenCustomHashMap.this.used[pos] == 0) break;
-/* 511:511 */        if (pos < last)
-/* 512:    */        {
-/* 513:513 */          if (this.wrapped == null) this.wrapped = new DoubleArrayList();
-/* 514:514 */          this.wrapped.add(Double2ShortOpenCustomHashMap.this.key[pos]);
-/* 515:    */        }
-/* 516:516 */        Double2ShortOpenCustomHashMap.this.key[last] = Double2ShortOpenCustomHashMap.this.key[pos];
-/* 517:517 */        Double2ShortOpenCustomHashMap.this.value[last] = Double2ShortOpenCustomHashMap.this.value[pos];
-/* 518:    */      }
-/* 519:519 */      Double2ShortOpenCustomHashMap.this.used[last] = false;
-/* 520:520 */      return last;
-/* 521:    */    }
-/* 522:    */    
-/* 523:    */    public void remove() {
-/* 524:524 */      if (this.last == -1) throw new IllegalStateException();
-/* 525:525 */      if (this.pos < -1)
-/* 526:    */      {
-/* 527:527 */        Double2ShortOpenCustomHashMap.this.remove(this.wrapped.getDouble(-this.pos - 2));
-/* 528:528 */        this.last = -1;
-/* 529:529 */        return;
-/* 530:    */      }
-/* 531:531 */      Double2ShortOpenCustomHashMap.this.size -= 1;
-/* 532:532 */      if ((shiftKeys(this.last) == this.pos) && (this.c > 0)) {
-/* 533:533 */        this.c += 1;
-/* 534:534 */        nextEntry();
-/* 535:    */      }
-/* 536:536 */      this.last = -1;
-/* 537:    */    }
-/* 538:    */    
-/* 539:    */    public int skip(int n) {
-/* 540:540 */      int i = n;
-/* 541:541 */      while ((i-- != 0) && (hasNext())) nextEntry();
-/* 542:542 */      return n - i - 1;
-/* 543:    */    } }
-/* 544:    */  
-/* 545:545 */  private class EntryIterator extends Double2ShortOpenCustomHashMap.MapIterator implements ObjectIterator<Double2ShortMap.Entry> { private EntryIterator() { super(null); }
-/* 546:    */    
-/* 547:    */    private Double2ShortOpenCustomHashMap.MapEntry entry;
-/* 548:548 */    public Double2ShortMap.Entry next() { return this.entry = new Double2ShortOpenCustomHashMap.MapEntry(Double2ShortOpenCustomHashMap.this, nextEntry()); }
-/* 549:    */    
-/* 550:    */    public void remove()
-/* 551:    */    {
-/* 552:552 */      super.remove();
-/* 553:553 */      Double2ShortOpenCustomHashMap.MapEntry.access$102(this.entry, -1);
-/* 554:    */    } }
-/* 555:    */  
-/* 556:556 */  private class FastEntryIterator extends Double2ShortOpenCustomHashMap.MapIterator implements ObjectIterator<Double2ShortMap.Entry> { private FastEntryIterator() { super(null); }
-/* 557:557 */    final AbstractDouble2ShortMap.BasicEntry entry = new AbstractDouble2ShortMap.BasicEntry(0.0D, (short)0);
-/* 558:    */    
-/* 559:559 */    public AbstractDouble2ShortMap.BasicEntry next() { int e = nextEntry();
-/* 560:560 */      this.entry.key = Double2ShortOpenCustomHashMap.this.key[e];
-/* 561:561 */      this.entry.value = Double2ShortOpenCustomHashMap.this.value[e];
-/* 562:562 */      return this.entry;
-/* 563:    */    } }
-/* 564:    */  
-/* 565:    */  private final class MapEntrySet extends AbstractObjectSet<Double2ShortMap.Entry> implements Double2ShortMap.FastEntrySet { private MapEntrySet() {}
-/* 566:    */    
-/* 567:567 */    public ObjectIterator<Double2ShortMap.Entry> iterator() { return new Double2ShortOpenCustomHashMap.EntryIterator(Double2ShortOpenCustomHashMap.this, null); }
-/* 568:    */    
-/* 569:    */    public ObjectIterator<Double2ShortMap.Entry> fastIterator() {
-/* 570:570 */      return new Double2ShortOpenCustomHashMap.FastEntryIterator(Double2ShortOpenCustomHashMap.this, null);
-/* 571:    */    }
-/* 572:    */    
-/* 573:    */    public boolean contains(Object o) {
-/* 574:574 */      if (!(o instanceof Map.Entry)) return false;
-/* 575:575 */      Map.Entry<Double, Short> e = (Map.Entry)o;
-/* 576:576 */      double k = ((Double)e.getKey()).doubleValue();
-/* 577:    */      
-/* 578:578 */      int pos = HashCommon.murmurHash3(Double2ShortOpenCustomHashMap.this.strategy.hashCode(k)) & Double2ShortOpenCustomHashMap.this.mask;
-/* 579:    */      
-/* 580:580 */      while (Double2ShortOpenCustomHashMap.this.used[pos] != 0) {
-/* 581:581 */        if (Double2ShortOpenCustomHashMap.this.strategy.equals(Double2ShortOpenCustomHashMap.this.key[pos], k)) return Double2ShortOpenCustomHashMap.this.value[pos] == ((Short)e.getValue()).shortValue();
-/* 582:582 */        pos = pos + 1 & Double2ShortOpenCustomHashMap.this.mask;
-/* 583:    */      }
-/* 584:584 */      return false;
-/* 585:    */    }
-/* 586:    */    
-/* 587:    */    public boolean remove(Object o) {
-/* 588:588 */      if (!(o instanceof Map.Entry)) return false;
-/* 589:589 */      Map.Entry<Double, Short> e = (Map.Entry)o;
-/* 590:590 */      double k = ((Double)e.getKey()).doubleValue();
-/* 591:    */      
-/* 592:592 */      int pos = HashCommon.murmurHash3(Double2ShortOpenCustomHashMap.this.strategy.hashCode(k)) & Double2ShortOpenCustomHashMap.this.mask;
-/* 593:    */      
-/* 594:594 */      while (Double2ShortOpenCustomHashMap.this.used[pos] != 0) {
-/* 595:595 */        if (Double2ShortOpenCustomHashMap.this.strategy.equals(Double2ShortOpenCustomHashMap.this.key[pos], k)) {
-/* 596:596 */          Double2ShortOpenCustomHashMap.this.remove(e.getKey());
-/* 597:597 */          return true;
-/* 598:    */        }
-/* 599:599 */        pos = pos + 1 & Double2ShortOpenCustomHashMap.this.mask;
-/* 600:    */      }
-/* 601:601 */      return false;
-/* 602:    */    }
-/* 603:    */    
-/* 604:604 */    public int size() { return Double2ShortOpenCustomHashMap.this.size; }
-/* 605:    */    
-/* 607:607 */    public void clear() { Double2ShortOpenCustomHashMap.this.clear(); }
-/* 608:    */  }
-/* 609:    */  
-/* 610:    */  public Double2ShortMap.FastEntrySet double2ShortEntrySet() {
-/* 611:611 */    if (this.entries == null) this.entries = new MapEntrySet(null);
-/* 612:612 */    return this.entries;
-/* 613:    */  }
-/* 614:    */  
-/* 617:    */  private final class KeyIterator
-/* 618:    */    extends Double2ShortOpenCustomHashMap.MapIterator
-/* 619:    */    implements DoubleIterator
-/* 620:    */  {
-/* 621:621 */    public KeyIterator() { super(null); }
-/* 622:622 */    public double nextDouble() { return Double2ShortOpenCustomHashMap.this.key[nextEntry()]; }
-/* 623:623 */    public Double next() { return Double.valueOf(Double2ShortOpenCustomHashMap.this.key[nextEntry()]); } }
-/* 624:    */  
-/* 625:    */  private final class KeySet extends AbstractDoubleSet { private KeySet() {}
-/* 626:    */    
-/* 627:627 */    public DoubleIterator iterator() { return new Double2ShortOpenCustomHashMap.KeyIterator(Double2ShortOpenCustomHashMap.this); }
-/* 628:    */    
-/* 629:    */    public int size() {
-/* 630:630 */      return Double2ShortOpenCustomHashMap.this.size;
-/* 631:    */    }
-/* 632:    */    
-/* 633:633 */    public boolean contains(double k) { return Double2ShortOpenCustomHashMap.this.containsKey(k); }
-/* 634:    */    
-/* 635:    */    public boolean remove(double k) {
-/* 636:636 */      int oldSize = Double2ShortOpenCustomHashMap.this.size;
-/* 637:637 */      Double2ShortOpenCustomHashMap.this.remove(k);
-/* 638:638 */      return Double2ShortOpenCustomHashMap.this.size != oldSize;
-/* 639:    */    }
-/* 640:    */    
-/* 641:641 */    public void clear() { Double2ShortOpenCustomHashMap.this.clear(); }
-/* 642:    */  }
-/* 643:    */  
-/* 644:    */  public DoubleSet keySet() {
-/* 645:645 */    if (this.keys == null) this.keys = new KeySet(null);
-/* 646:646 */    return this.keys;
-/* 647:    */  }
-/* 648:    */  
-/* 651:    */  private final class ValueIterator
-/* 652:    */    extends Double2ShortOpenCustomHashMap.MapIterator
-/* 653:    */    implements ShortIterator
-/* 654:    */  {
-/* 655:655 */    public ValueIterator() { super(null); }
-/* 656:656 */    public short nextShort() { return Double2ShortOpenCustomHashMap.this.value[nextEntry()]; }
-/* 657:657 */    public Short next() { return Short.valueOf(Double2ShortOpenCustomHashMap.this.value[nextEntry()]); }
-/* 658:    */  }
-/* 659:    */  
-/* 660:660 */  public ShortCollection values() { if (this.values == null) { this.values = new AbstractShortCollection() {
-/* 661:    */        public ShortIterator iterator() {
-/* 662:662 */          return new Double2ShortOpenCustomHashMap.ValueIterator(Double2ShortOpenCustomHashMap.this);
-/* 663:    */        }
-/* 664:    */        
-/* 665:665 */        public int size() { return Double2ShortOpenCustomHashMap.this.size; }
-/* 666:    */        
-/* 667:    */        public boolean contains(short v) {
-/* 668:668 */          return Double2ShortOpenCustomHashMap.this.containsValue(v);
-/* 669:    */        }
-/* 670:    */        
-/* 671:671 */        public void clear() { Double2ShortOpenCustomHashMap.this.clear(); }
-/* 672:    */      };
-/* 673:    */    }
-/* 674:674 */    return this.values;
-/* 675:    */  }
-/* 676:    */  
-/* 685:    */  @Deprecated
-/* 686:    */  public boolean rehash()
-/* 687:    */  {
-/* 688:688 */    return true;
-/* 689:    */  }
-/* 690:    */  
-/* 701:    */  public boolean trim()
-/* 702:    */  {
-/* 703:703 */    int l = HashCommon.arraySize(this.size, this.f);
-/* 704:704 */    if (l >= this.n) return true;
-/* 705:    */    try {
-/* 706:706 */      rehash(l);
-/* 707:    */    } catch (OutOfMemoryError cantDoIt) {
-/* 708:708 */      return false; }
-/* 709:709 */    return true;
-/* 710:    */  }
-/* 711:    */  
-/* 728:    */  public boolean trim(int n)
-/* 729:    */  {
-/* 730:730 */    int l = HashCommon.nextPowerOfTwo((int)Math.ceil(n / this.f));
-/* 731:731 */    if (this.n <= l) return true;
-/* 732:    */    try {
-/* 733:733 */      rehash(l);
-/* 734:    */    } catch (OutOfMemoryError cantDoIt) {
-/* 735:735 */      return false; }
-/* 736:736 */    return true;
-/* 737:    */  }
-/* 738:    */  
-/* 747:    */  protected void rehash(int newN)
-/* 748:    */  {
-/* 749:749 */    int i = 0;
-/* 750:750 */    boolean[] used = this.used;
-/* 751:    */    
-/* 752:752 */    double[] key = this.key;
-/* 753:753 */    short[] value = this.value;
-/* 754:754 */    int newMask = newN - 1;
-/* 755:755 */    double[] newKey = new double[newN];
-/* 756:756 */    short[] newValue = new short[newN];
-/* 757:757 */    boolean[] newUsed = new boolean[newN];
-/* 758:758 */    for (int j = this.size; j-- != 0;) {
-/* 759:759 */      while (used[i] == 0) i++;
-/* 760:760 */      double k = key[i];
-/* 761:761 */      int pos = HashCommon.murmurHash3(this.strategy.hashCode(k)) & newMask;
-/* 762:762 */      while (newUsed[pos] != 0) pos = pos + 1 & newMask;
-/* 763:763 */      newUsed[pos] = true;
-/* 764:764 */      newKey[pos] = k;
-/* 765:765 */      newValue[pos] = value[i];
-/* 766:766 */      i++;
-/* 767:    */    }
-/* 768:768 */    this.n = newN;
-/* 769:769 */    this.mask = newMask;
-/* 770:770 */    this.maxFill = HashCommon.maxFill(this.n, this.f);
-/* 771:771 */    this.key = newKey;
-/* 772:772 */    this.value = newValue;
-/* 773:773 */    this.used = newUsed;
-/* 774:    */  }
-/* 775:    */  
-/* 779:    */  public Double2ShortOpenCustomHashMap clone()
-/* 780:    */  {
-/* 781:    */    Double2ShortOpenCustomHashMap c;
-/* 782:    */    
-/* 784:    */    try
-/* 785:    */    {
-/* 786:786 */      c = (Double2ShortOpenCustomHashMap)super.clone();
-/* 787:    */    }
-/* 788:    */    catch (CloneNotSupportedException cantHappen) {
-/* 789:789 */      throw new InternalError();
-/* 790:    */    }
-/* 791:791 */    c.keys = null;
-/* 792:792 */    c.values = null;
-/* 793:793 */    c.entries = null;
-/* 794:794 */    c.key = ((double[])this.key.clone());
-/* 795:795 */    c.value = ((short[])this.value.clone());
-/* 796:796 */    c.used = ((boolean[])this.used.clone());
-/* 797:797 */    c.strategy = this.strategy;
-/* 798:798 */    return c;
-/* 799:    */  }
-/* 800:    */  
-/* 808:    */  public int hashCode()
-/* 809:    */  {
-/* 810:810 */    int h = 0;
-/* 811:811 */    int j = this.size;int i = 0; for (int t = 0; j-- != 0;) {
-/* 812:812 */      while (this.used[i] == 0) i++;
-/* 813:813 */      t = this.strategy.hashCode(this.key[i]);
-/* 814:814 */      t ^= this.value[i];
-/* 815:815 */      h += t;
-/* 816:816 */      i++;
-/* 817:    */    }
-/* 818:818 */    return h;
-/* 819:    */  }
-/* 820:    */  
-/* 821:821 */  private void writeObject(ObjectOutputStream s) throws IOException { double[] key = this.key;
-/* 822:822 */    short[] value = this.value;
-/* 823:823 */    MapIterator i = new MapIterator(null);
-/* 824:824 */    s.defaultWriteObject();
-/* 825:825 */    for (int j = this.size; j-- != 0;) {
-/* 826:826 */      int e = i.nextEntry();
-/* 827:827 */      s.writeDouble(key[e]);
-/* 828:828 */      s.writeShort(value[e]);
-/* 829:    */    }
-/* 830:    */  }
-/* 831:    */  
-/* 832:    */  private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
-/* 833:833 */    s.defaultReadObject();
-/* 834:834 */    this.n = HashCommon.arraySize(this.size, this.f);
-/* 835:835 */    this.maxFill = HashCommon.maxFill(this.n, this.f);
-/* 836:836 */    this.mask = (this.n - 1);
-/* 837:837 */    double[] key = this.key = new double[this.n];
-/* 838:838 */    short[] value = this.value = new short[this.n];
-/* 839:839 */    boolean[] used = this.used = new boolean[this.n];
-/* 840:    */    
-/* 842:842 */    int i = this.size; for (int pos = 0; i-- != 0;) {
-/* 843:843 */      double k = s.readDouble();
-/* 844:844 */      short v = s.readShort();
-/* 845:845 */      pos = HashCommon.murmurHash3(this.strategy.hashCode(k)) & this.mask;
-/* 846:846 */      while (used[pos] != 0) pos = pos + 1 & this.mask;
-/* 847:847 */      used[pos] = true;
-/* 848:848 */      key[pos] = k;
-/* 849:849 */      value[pos] = v;
-/* 850:    */    }
-/* 851:    */  }
-/* 852:    */  
-/* 853:    */  private void checkTable() {}
-/* 854:    */}
+package it.unimi.dsi.fastutil.doubles;
+
+import it.unimi.dsi.fastutil.Hash;
+import it.unimi.dsi.fastutil.HashCommon;
+import it.unimi.dsi.fastutil.booleans.BooleanArrays;
+import it.unimi.dsi.fastutil.objects.AbstractObjectSet;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
+import it.unimi.dsi.fastutil.shorts.AbstractShortCollection;
+import it.unimi.dsi.fastutil.shorts.ShortCollection;
+import it.unimi.dsi.fastutil.shorts.ShortIterator;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.NoSuchElementException;
+
+public class Double2ShortOpenCustomHashMap
+  extends AbstractDouble2ShortMap
+  implements Serializable, Cloneable, Hash
+{
+  public static final long serialVersionUID = 0L;
+  private static final boolean ASSERTS = false;
+  protected transient double[] key;
+  protected transient short[] value;
+  protected transient boolean[] used;
+  protected final float field_48;
+  protected transient int field_49;
+  protected transient int maxFill;
+  protected transient int mask;
+  protected int size;
+  protected volatile transient Double2ShortMap.FastEntrySet entries;
+  protected volatile transient DoubleSet keys;
+  protected volatile transient ShortCollection values;
+  protected DoubleHash.Strategy strategy;
+  
+  public Double2ShortOpenCustomHashMap(int expected, float local_f, DoubleHash.Strategy strategy)
+  {
+    this.strategy = strategy;
+    if ((local_f <= 0.0F) || (local_f > 1.0F)) {
+      throw new IllegalArgumentException("Load factor must be greater than 0 and smaller than or equal to 1");
+    }
+    if (expected < 0) {
+      throw new IllegalArgumentException("The expected number of elements must be nonnegative");
+    }
+    this.field_48 = local_f;
+    this.field_49 = HashCommon.arraySize(expected, local_f);
+    this.mask = (this.field_49 - 1);
+    this.maxFill = HashCommon.maxFill(this.field_49, local_f);
+    this.key = new double[this.field_49];
+    this.value = new short[this.field_49];
+    this.used = new boolean[this.field_49];
+  }
+  
+  public Double2ShortOpenCustomHashMap(int expected, DoubleHash.Strategy strategy)
+  {
+    this(expected, 0.75F, strategy);
+  }
+  
+  public Double2ShortOpenCustomHashMap(DoubleHash.Strategy strategy)
+  {
+    this(16, 0.75F, strategy);
+  }
+  
+  public Double2ShortOpenCustomHashMap(Map<? extends Double, ? extends Short> local_m, float local_f, DoubleHash.Strategy strategy)
+  {
+    this(local_m.size(), local_f, strategy);
+    putAll(local_m);
+  }
+  
+  public Double2ShortOpenCustomHashMap(Map<? extends Double, ? extends Short> local_m, DoubleHash.Strategy strategy)
+  {
+    this(local_m, 0.75F, strategy);
+  }
+  
+  public Double2ShortOpenCustomHashMap(Double2ShortMap local_m, float local_f, DoubleHash.Strategy strategy)
+  {
+    this(local_m.size(), local_f, strategy);
+    putAll(local_m);
+  }
+  
+  public Double2ShortOpenCustomHashMap(Double2ShortMap local_m, DoubleHash.Strategy strategy)
+  {
+    this(local_m, 0.75F, strategy);
+  }
+  
+  public Double2ShortOpenCustomHashMap(double[] local_k, short[] local_v, float local_f, DoubleHash.Strategy strategy)
+  {
+    this(local_k.length, local_f, strategy);
+    if (local_k.length != local_v.length) {
+      throw new IllegalArgumentException("The key array and the value array have different lengths (" + local_k.length + " and " + local_v.length + ")");
+    }
+    for (int local_i = 0; local_i < local_k.length; local_i++) {
+      put(local_k[local_i], local_v[local_i]);
+    }
+  }
+  
+  public Double2ShortOpenCustomHashMap(double[] local_k, short[] local_v, DoubleHash.Strategy strategy)
+  {
+    this(local_k, local_v, 0.75F, strategy);
+  }
+  
+  public DoubleHash.Strategy strategy()
+  {
+    return this.strategy;
+  }
+  
+  public short put(double local_k, short local_v)
+  {
+    for (int pos = HashCommon.murmurHash3(this.strategy.hashCode(local_k)) & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask) {
+      if (this.strategy.equals(this.key[pos], local_k))
+      {
+        short oldValue = this.value[pos];
+        this.value[pos] = local_v;
+        return oldValue;
+      }
+    }
+    this.used[pos] = true;
+    this.key[pos] = local_k;
+    this.value[pos] = local_v;
+    if (++this.size >= this.maxFill) {
+      rehash(HashCommon.arraySize(this.size + 1, this.field_48));
+    }
+    return this.defRetValue;
+  }
+  
+  public Short put(Double local_ok, Short local_ov)
+  {
+    short local_v = local_ov.shortValue();
+    double local_k = local_ok.doubleValue();
+    for (int pos = HashCommon.murmurHash3(this.strategy.hashCode(local_k)) & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask) {
+      if (this.strategy.equals(this.key[pos], local_k))
+      {
+        Short oldValue = Short.valueOf(this.value[pos]);
+        this.value[pos] = local_v;
+        return oldValue;
+      }
+    }
+    this.used[pos] = true;
+    this.key[pos] = local_k;
+    this.value[pos] = local_v;
+    if (++this.size >= this.maxFill) {
+      rehash(HashCommon.arraySize(this.size + 1, this.field_48));
+    }
+    return null;
+  }
+  
+  public short add(double local_k, short incr)
+  {
+    for (int pos = HashCommon.murmurHash3(this.strategy.hashCode(local_k)) & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask) {
+      if (this.strategy.equals(this.key[pos], local_k))
+      {
+        short oldValue = this.value[pos];
+        int tmp65_63 = pos;
+        short[] tmp65_60 = this.value;
+        tmp65_60[tmp65_63] = ((short)(tmp65_60[tmp65_63] + incr));
+        return tmp65_63;
+      }
+    }
+    this.used[pos] = true;
+    this.key[pos] = local_k;
+    this.value[pos] = ((short)(this.defRetValue + incr));
+    if (++this.size >= this.maxFill) {
+      rehash(HashCommon.arraySize(this.size + 1, this.field_48));
+    }
+    return this.defRetValue;
+  }
+  
+  protected final int shiftKeys(int pos)
+  {
+    int last;
+    for (;;)
+    {
+      for (pos = (last = pos) + 1 & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask)
+      {
+        int slot = HashCommon.murmurHash3(this.strategy.hashCode(this.key[pos])) & this.mask;
+        if (last <= pos ? (last < slot) && (slot <= pos) : (last >= slot) && (slot > pos)) {
+          break;
+        }
+      }
+      if (this.used[pos] == 0) {
+        break;
+      }
+      this.key[last] = this.key[pos];
+      this.value[last] = this.value[pos];
+    }
+    this.used[last] = false;
+    return last;
+  }
+  
+  public short remove(double local_k)
+  {
+    for (int pos = HashCommon.murmurHash3(this.strategy.hashCode(local_k)) & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask) {
+      if (this.strategy.equals(this.key[pos], local_k))
+      {
+        this.size -= 1;
+        short local_v = this.value[pos];
+        shiftKeys(pos);
+        return local_v;
+      }
+    }
+    return this.defRetValue;
+  }
+  
+  public Short remove(Object local_ok)
+  {
+    double local_k = ((Double)local_ok).doubleValue();
+    for (int pos = HashCommon.murmurHash3(this.strategy.hashCode(local_k)) & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask) {
+      if (this.strategy.equals(this.key[pos], local_k))
+      {
+        this.size -= 1;
+        short local_v = this.value[pos];
+        shiftKeys(pos);
+        return Short.valueOf(local_v);
+      }
+    }
+    return null;
+  }
+  
+  public Short get(Double local_ok)
+  {
+    double local_k = local_ok.doubleValue();
+    for (int pos = HashCommon.murmurHash3(this.strategy.hashCode(local_k)) & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask) {
+      if (this.strategy.equals(this.key[pos], local_k)) {
+        return Short.valueOf(this.value[pos]);
+      }
+    }
+    return null;
+  }
+  
+  public short get(double local_k)
+  {
+    for (int pos = HashCommon.murmurHash3(this.strategy.hashCode(local_k)) & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask) {
+      if (this.strategy.equals(this.key[pos], local_k)) {
+        return this.value[pos];
+      }
+    }
+    return this.defRetValue;
+  }
+  
+  public boolean containsKey(double local_k)
+  {
+    for (int pos = HashCommon.murmurHash3(this.strategy.hashCode(local_k)) & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask) {
+      if (this.strategy.equals(this.key[pos], local_k)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  public boolean containsValue(short local_v)
+  {
+    short[] value = this.value;
+    boolean[] used = this.used;
+    int local_i = this.field_49;
+    while (local_i-- != 0) {
+      if ((used[local_i] != 0) && (value[local_i] == local_v)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  public void clear()
+  {
+    if (this.size == 0) {
+      return;
+    }
+    this.size = 0;
+    BooleanArrays.fill(this.used, false);
+  }
+  
+  public int size()
+  {
+    return this.size;
+  }
+  
+  public boolean isEmpty()
+  {
+    return this.size == 0;
+  }
+  
+  @Deprecated
+  public void growthFactor(int growthFactor) {}
+  
+  @Deprecated
+  public int growthFactor()
+  {
+    return 16;
+  }
+  
+  public Double2ShortMap.FastEntrySet double2ShortEntrySet()
+  {
+    if (this.entries == null) {
+      this.entries = new MapEntrySet(null);
+    }
+    return this.entries;
+  }
+  
+  public DoubleSet keySet()
+  {
+    if (this.keys == null) {
+      this.keys = new KeySet(null);
+    }
+    return this.keys;
+  }
+  
+  public ShortCollection values()
+  {
+    if (this.values == null) {
+      this.values = new AbstractShortCollection()
+      {
+        public ShortIterator iterator()
+        {
+          return new Double2ShortOpenCustomHashMap.ValueIterator(Double2ShortOpenCustomHashMap.this);
+        }
+        
+        public int size()
+        {
+          return Double2ShortOpenCustomHashMap.this.size;
+        }
+        
+        public boolean contains(short local_v)
+        {
+          return Double2ShortOpenCustomHashMap.this.containsValue(local_v);
+        }
+        
+        public void clear()
+        {
+          Double2ShortOpenCustomHashMap.this.clear();
+        }
+      };
+    }
+    return this.values;
+  }
+  
+  @Deprecated
+  public boolean rehash()
+  {
+    return true;
+  }
+  
+  public boolean trim()
+  {
+    int local_l = HashCommon.arraySize(this.size, this.field_48);
+    if (local_l >= this.field_49) {
+      return true;
+    }
+    try
+    {
+      rehash(local_l);
+    }
+    catch (OutOfMemoryError cantDoIt)
+    {
+      return false;
+    }
+    return true;
+  }
+  
+  public boolean trim(int local_n)
+  {
+    int local_l = HashCommon.nextPowerOfTwo((int)Math.ceil(local_n / this.field_48));
+    if (this.field_49 <= local_l) {
+      return true;
+    }
+    try
+    {
+      rehash(local_l);
+    }
+    catch (OutOfMemoryError cantDoIt)
+    {
+      return false;
+    }
+    return true;
+  }
+  
+  protected void rehash(int newN)
+  {
+    int local_i = 0;
+    boolean[] used = this.used;
+    double[] key = this.key;
+    short[] value = this.value;
+    int newMask = newN - 1;
+    double[] newKey = new double[newN];
+    short[] newValue = new short[newN];
+    boolean[] newUsed = new boolean[newN];
+    int local_j = this.size;
+    while (local_j-- != 0)
+    {
+      while (used[local_i] == 0) {
+        local_i++;
+      }
+      double local_k = key[local_i];
+      for (int pos = HashCommon.murmurHash3(this.strategy.hashCode(local_k)) & newMask; newUsed[pos] != 0; pos = pos + 1 & newMask) {}
+      newUsed[pos] = true;
+      newKey[pos] = local_k;
+      newValue[pos] = value[local_i];
+      local_i++;
+    }
+    this.field_49 = newN;
+    this.mask = newMask;
+    this.maxFill = HashCommon.maxFill(this.field_49, this.field_48);
+    this.key = newKey;
+    this.value = newValue;
+    this.used = newUsed;
+  }
+  
+  public Double2ShortOpenCustomHashMap clone()
+  {
+    Double2ShortOpenCustomHashMap local_c;
+    try
+    {
+      local_c = (Double2ShortOpenCustomHashMap)super.clone();
+    }
+    catch (CloneNotSupportedException cantHappen)
+    {
+      throw new InternalError();
+    }
+    local_c.keys = null;
+    local_c.values = null;
+    local_c.entries = null;
+    local_c.key = ((double[])this.key.clone());
+    local_c.value = ((short[])this.value.clone());
+    local_c.used = ((boolean[])this.used.clone());
+    local_c.strategy = this.strategy;
+    return local_c;
+  }
+  
+  public int hashCode()
+  {
+    int local_h = 0;
+    int local_j = this.size;
+    int local_i = 0;
+    int local_t = 0;
+    while (local_j-- != 0)
+    {
+      while (this.used[local_i] == 0) {
+        local_i++;
+      }
+      local_t = this.strategy.hashCode(this.key[local_i]);
+      local_t ^= this.value[local_i];
+      local_h += local_t;
+      local_i++;
+    }
+    return local_h;
+  }
+  
+  private void writeObject(ObjectOutputStream local_s)
+    throws IOException
+  {
+    double[] key = this.key;
+    short[] value = this.value;
+    MapIterator local_i = new MapIterator(null);
+    local_s.defaultWriteObject();
+    int local_j = this.size;
+    while (local_j-- != 0)
+    {
+      int local_e = local_i.nextEntry();
+      local_s.writeDouble(key[local_e]);
+      local_s.writeShort(value[local_e]);
+    }
+  }
+  
+  private void readObject(ObjectInputStream local_s)
+    throws IOException, ClassNotFoundException
+  {
+    local_s.defaultReadObject();
+    this.field_49 = HashCommon.arraySize(this.size, this.field_48);
+    this.maxFill = HashCommon.maxFill(this.field_49, this.field_48);
+    this.mask = (this.field_49 - 1);
+    double[] key = this.key = new double[this.field_49];
+    short[] value = this.value = new short[this.field_49];
+    boolean[] used = this.used = new boolean[this.field_49];
+    int local_i = this.size;
+    int pos = 0;
+    while (local_i-- != 0)
+    {
+      double local_k = local_s.readDouble();
+      short local_v = local_s.readShort();
+      for (pos = HashCommon.murmurHash3(this.strategy.hashCode(local_k)) & this.mask; used[pos] != 0; pos = pos + 1 & this.mask) {}
+      used[pos] = true;
+      key[pos] = local_k;
+      value[pos] = local_v;
+    }
+  }
+  
+  private void checkTable() {}
+  
+  private final class ValueIterator
+    extends Double2ShortOpenCustomHashMap.MapIterator
+    implements ShortIterator
+  {
+    public ValueIterator()
+    {
+      super(null);
+    }
+    
+    public short nextShort()
+    {
+      return Double2ShortOpenCustomHashMap.this.value[nextEntry()];
+    }
+    
+    public Short next()
+    {
+      return Short.valueOf(Double2ShortOpenCustomHashMap.this.value[nextEntry()]);
+    }
+  }
+  
+  private final class KeySet
+    extends AbstractDoubleSet
+  {
+    private KeySet() {}
+    
+    public DoubleIterator iterator()
+    {
+      return new Double2ShortOpenCustomHashMap.KeyIterator(Double2ShortOpenCustomHashMap.this);
+    }
+    
+    public int size()
+    {
+      return Double2ShortOpenCustomHashMap.this.size;
+    }
+    
+    public boolean contains(double local_k)
+    {
+      return Double2ShortOpenCustomHashMap.this.containsKey(local_k);
+    }
+    
+    public boolean remove(double local_k)
+    {
+      int oldSize = Double2ShortOpenCustomHashMap.this.size;
+      Double2ShortOpenCustomHashMap.this.remove(local_k);
+      return Double2ShortOpenCustomHashMap.this.size != oldSize;
+    }
+    
+    public void clear()
+    {
+      Double2ShortOpenCustomHashMap.this.clear();
+    }
+  }
+  
+  private final class KeyIterator
+    extends Double2ShortOpenCustomHashMap.MapIterator
+    implements DoubleIterator
+  {
+    public KeyIterator()
+    {
+      super(null);
+    }
+    
+    public double nextDouble()
+    {
+      return Double2ShortOpenCustomHashMap.this.key[nextEntry()];
+    }
+    
+    public Double next()
+    {
+      return Double.valueOf(Double2ShortOpenCustomHashMap.this.key[nextEntry()]);
+    }
+  }
+  
+  private final class MapEntrySet
+    extends AbstractObjectSet<Double2ShortMap.Entry>
+    implements Double2ShortMap.FastEntrySet
+  {
+    private MapEntrySet() {}
+    
+    public ObjectIterator<Double2ShortMap.Entry> iterator()
+    {
+      return new Double2ShortOpenCustomHashMap.EntryIterator(Double2ShortOpenCustomHashMap.this, null);
+    }
+    
+    public ObjectIterator<Double2ShortMap.Entry> fastIterator()
+    {
+      return new Double2ShortOpenCustomHashMap.FastEntryIterator(Double2ShortOpenCustomHashMap.this, null);
+    }
+    
+    public boolean contains(Object local_o)
+    {
+      if (!(local_o instanceof Map.Entry)) {
+        return false;
+      }
+      Map.Entry<Double, Short> local_e = (Map.Entry)local_o;
+      double local_k = ((Double)local_e.getKey()).doubleValue();
+      for (int pos = HashCommon.murmurHash3(Double2ShortOpenCustomHashMap.this.strategy.hashCode(local_k)) & Double2ShortOpenCustomHashMap.this.mask; Double2ShortOpenCustomHashMap.this.used[pos] != 0; pos = pos + 1 & Double2ShortOpenCustomHashMap.this.mask) {
+        if (Double2ShortOpenCustomHashMap.this.strategy.equals(Double2ShortOpenCustomHashMap.this.key[pos], local_k)) {
+          return Double2ShortOpenCustomHashMap.this.value[pos] == ((Short)local_e.getValue()).shortValue();
+        }
+      }
+      return false;
+    }
+    
+    public boolean remove(Object local_o)
+    {
+      if (!(local_o instanceof Map.Entry)) {
+        return false;
+      }
+      Map.Entry<Double, Short> local_e = (Map.Entry)local_o;
+      double local_k = ((Double)local_e.getKey()).doubleValue();
+      for (int pos = HashCommon.murmurHash3(Double2ShortOpenCustomHashMap.this.strategy.hashCode(local_k)) & Double2ShortOpenCustomHashMap.this.mask; Double2ShortOpenCustomHashMap.this.used[pos] != 0; pos = pos + 1 & Double2ShortOpenCustomHashMap.this.mask) {
+        if (Double2ShortOpenCustomHashMap.this.strategy.equals(Double2ShortOpenCustomHashMap.this.key[pos], local_k))
+        {
+          Double2ShortOpenCustomHashMap.this.remove(local_e.getKey());
+          return true;
+        }
+      }
+      return false;
+    }
+    
+    public int size()
+    {
+      return Double2ShortOpenCustomHashMap.this.size;
+    }
+    
+    public void clear()
+    {
+      Double2ShortOpenCustomHashMap.this.clear();
+    }
+  }
+  
+  private class FastEntryIterator
+    extends Double2ShortOpenCustomHashMap.MapIterator
+    implements ObjectIterator<Double2ShortMap.Entry>
+  {
+    final AbstractDouble2ShortMap.BasicEntry entry = new AbstractDouble2ShortMap.BasicEntry(0.0D, (short)0);
+    
+    private FastEntryIterator()
+    {
+      super(null);
+    }
+    
+    public AbstractDouble2ShortMap.BasicEntry next()
+    {
+      int local_e = nextEntry();
+      this.entry.key = Double2ShortOpenCustomHashMap.this.key[local_e];
+      this.entry.value = Double2ShortOpenCustomHashMap.this.value[local_e];
+      return this.entry;
+    }
+  }
+  
+  private class EntryIterator
+    extends Double2ShortOpenCustomHashMap.MapIterator
+    implements ObjectIterator<Double2ShortMap.Entry>
+  {
+    private Double2ShortOpenCustomHashMap.MapEntry entry;
+    
+    private EntryIterator()
+    {
+      super(null);
+    }
+    
+    public Double2ShortMap.Entry next()
+    {
+      return this.entry = new Double2ShortOpenCustomHashMap.MapEntry(Double2ShortOpenCustomHashMap.this, nextEntry());
+    }
+    
+    public void remove()
+    {
+      super.remove();
+      Double2ShortOpenCustomHashMap.MapEntry.access$102(this.entry, -1);
+    }
+  }
+  
+  private class MapIterator
+  {
+    int pos = Double2ShortOpenCustomHashMap.this.field_49;
+    int last = -1;
+    int field_1930 = Double2ShortOpenCustomHashMap.this.size;
+    DoubleArrayList wrapped;
+    
+    private MapIterator()
+    {
+      boolean[] used = Double2ShortOpenCustomHashMap.this.used;
+      while ((this.field_1930 != 0) && (used[(--this.pos)] == 0)) {}
+    }
+    
+    public boolean hasNext()
+    {
+      return this.field_1930 != 0;
+    }
+    
+    public int nextEntry()
+    {
+      if (!hasNext()) {
+        throw new NoSuchElementException();
+      }
+      this.field_1930 -= 1;
+      if (this.pos < 0)
+      {
+        double local_k = this.wrapped.getDouble(-(this.last = --this.pos) - 2);
+        for (int pos = HashCommon.murmurHash3(Double2ShortOpenCustomHashMap.this.strategy.hashCode(local_k)) & Double2ShortOpenCustomHashMap.this.mask; Double2ShortOpenCustomHashMap.this.used[pos] != 0; pos = pos + 1 & Double2ShortOpenCustomHashMap.this.mask) {
+          if (Double2ShortOpenCustomHashMap.this.strategy.equals(Double2ShortOpenCustomHashMap.this.key[pos], local_k)) {
+            return pos;
+          }
+        }
+      }
+      this.last = this.pos;
+      if (this.field_1930 != 0)
+      {
+        boolean[] local_k = Double2ShortOpenCustomHashMap.this.used;
+        while ((this.pos-- != 0) && (local_k[this.pos] == 0)) {}
+      }
+      return this.last;
+    }
+    
+    protected final int shiftKeys(int pos)
+    {
+      int last;
+      for (;;)
+      {
+        for (pos = (last = pos) + 1 & Double2ShortOpenCustomHashMap.this.mask; Double2ShortOpenCustomHashMap.this.used[pos] != 0; pos = pos + 1 & Double2ShortOpenCustomHashMap.this.mask)
+        {
+          int slot = HashCommon.murmurHash3(Double2ShortOpenCustomHashMap.this.strategy.hashCode(Double2ShortOpenCustomHashMap.this.key[pos])) & Double2ShortOpenCustomHashMap.this.mask;
+          if (last <= pos ? (last < slot) && (slot <= pos) : (last >= slot) && (slot > pos)) {
+            break;
+          }
+        }
+        if (Double2ShortOpenCustomHashMap.this.used[pos] == 0) {
+          break;
+        }
+        if (pos < last)
+        {
+          if (this.wrapped == null) {
+            this.wrapped = new DoubleArrayList();
+          }
+          this.wrapped.add(Double2ShortOpenCustomHashMap.this.key[pos]);
+        }
+        Double2ShortOpenCustomHashMap.this.key[last] = Double2ShortOpenCustomHashMap.this.key[pos];
+        Double2ShortOpenCustomHashMap.this.value[last] = Double2ShortOpenCustomHashMap.this.value[pos];
+      }
+      Double2ShortOpenCustomHashMap.this.used[last] = false;
+      return last;
+    }
+    
+    public void remove()
+    {
+      if (this.last == -1) {
+        throw new IllegalStateException();
+      }
+      if (this.pos < -1)
+      {
+        Double2ShortOpenCustomHashMap.this.remove(this.wrapped.getDouble(-this.pos - 2));
+        this.last = -1;
+        return;
+      }
+      Double2ShortOpenCustomHashMap.this.size -= 1;
+      if ((shiftKeys(this.last) == this.pos) && (this.field_1930 > 0))
+      {
+        this.field_1930 += 1;
+        nextEntry();
+      }
+      this.last = -1;
+    }
+    
+    public int skip(int local_n)
+    {
+      int local_i = local_n;
+      while ((local_i-- != 0) && (hasNext())) {
+        nextEntry();
+      }
+      return local_n - local_i - 1;
+    }
+  }
+  
+  private final class MapEntry
+    implements Double2ShortMap.Entry, Map.Entry<Double, Short>
+  {
+    private int index;
+    
+    MapEntry(int index)
+    {
+      this.index = index;
+    }
+    
+    public Double getKey()
+    {
+      return Double.valueOf(Double2ShortOpenCustomHashMap.this.key[this.index]);
+    }
+    
+    public double getDoubleKey()
+    {
+      return Double2ShortOpenCustomHashMap.this.key[this.index];
+    }
+    
+    public Short getValue()
+    {
+      return Short.valueOf(Double2ShortOpenCustomHashMap.this.value[this.index]);
+    }
+    
+    public short getShortValue()
+    {
+      return Double2ShortOpenCustomHashMap.this.value[this.index];
+    }
+    
+    public short setValue(short local_v)
+    {
+      short oldValue = Double2ShortOpenCustomHashMap.this.value[this.index];
+      Double2ShortOpenCustomHashMap.this.value[this.index] = local_v;
+      return oldValue;
+    }
+    
+    public Short setValue(Short local_v)
+    {
+      return Short.valueOf(setValue(local_v.shortValue()));
+    }
+    
+    public boolean equals(Object local_o)
+    {
+      if (!(local_o instanceof Map.Entry)) {
+        return false;
+      }
+      Map.Entry<Double, Short> local_e = (Map.Entry)local_o;
+      return (Double2ShortOpenCustomHashMap.this.strategy.equals(Double2ShortOpenCustomHashMap.this.key[this.index], ((Double)local_e.getKey()).doubleValue())) && (Double2ShortOpenCustomHashMap.this.value[this.index] == ((Short)local_e.getValue()).shortValue());
+    }
+    
+    public int hashCode()
+    {
+      return Double2ShortOpenCustomHashMap.this.strategy.hashCode(Double2ShortOpenCustomHashMap.this.key[this.index]) ^ Double2ShortOpenCustomHashMap.this.value[this.index];
+    }
+    
+    public String toString()
+    {
+      return Double2ShortOpenCustomHashMap.this.key[this.index] + "=>" + Double2ShortOpenCustomHashMap.this.value[this.index];
+    }
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.doubles.Double2ShortOpenCustomHashMap
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

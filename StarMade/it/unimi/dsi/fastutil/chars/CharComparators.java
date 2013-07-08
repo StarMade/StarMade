@@ -1,31 +1,38 @@
-/*  1:   */package it.unimi.dsi.fastutil.chars;
-/*  2:   */
-/* 49:   */public class CharComparators
-/* 50:   */{
-/* 51:51 */  public static final CharComparator NATURAL_COMPARATOR = new AbstractCharComparator() {
-/* 52:   */    public final int compare(char a, char b) {
-/* 53:53 */      return a == b ? 0 : a < b ? -1 : 1;
-/* 54:   */    }
-/* 55:   */  };
-/* 56:   */  
-/* 58:58 */  public static final CharComparator OPPOSITE_COMPARATOR = new AbstractCharComparator() {
-/* 59:   */    public final int compare(char a, char b) {
-/* 60:60 */      return b == a ? 0 : b < a ? -1 : 1;
-/* 61:   */    }
-/* 62:   */  };
-/* 63:   */  
-/* 67:   */  public static CharComparator oppositeComparator(CharComparator c)
-/* 68:   */  {
-/* 69:69 */    new AbstractCharComparator() {
-/* 70:70 */      private final CharComparator comparator = this.val$c;
-/* 71:   */      
-/* 72:72 */      public final int compare(char a, char b) { return -this.comparator.compare(a, b); }
-/* 73:   */    };
-/* 74:   */  }
-/* 75:   */}
+package it.unimi.dsi.fastutil.chars;
+
+public class CharComparators
+{
+  public static final CharComparator NATURAL_COMPARATOR = new AbstractCharComparator()
+  {
+    public final int compare(char local_a, char local_b)
+    {
+      return local_a == local_b ? 0 : local_a < local_b ? -1 : 1;
+    }
+  };
+  public static final CharComparator OPPOSITE_COMPARATOR = new AbstractCharComparator()
+  {
+    public final int compare(char local_a, char local_b)
+    {
+      return local_b == local_a ? 0 : local_b < local_a ? -1 : 1;
+    }
+  };
+  
+  public static CharComparator oppositeComparator(CharComparator local_c)
+  {
+    new AbstractCharComparator()
+    {
+      private final CharComparator comparator = this.val$c;
+      
+      public final int compare(char local_a, char local_b)
+      {
+        return -this.comparator.compare(local_a, local_b);
+      }
+    };
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.chars.CharComparators
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

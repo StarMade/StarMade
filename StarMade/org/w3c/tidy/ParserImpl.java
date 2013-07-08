@@ -46,7 +46,7 @@ public final class ParserImpl
   protected static void moveToHead(Lexer paramLexer, Node paramNode1, Node paramNode2)
   {
     paramNode2.removeNode();
-    TagTable localTagTable = paramLexer.configuration.tt;
+    TagTable localTagTable = paramLexer.configuration.field_1881;
     if ((paramNode2.type == 5) || (paramNode2.type == 7))
     {
       paramLexer.report.warning(paramLexer, paramNode1, paramNode2, (short)11);
@@ -73,14 +73,14 @@ public final class ParserImpl
   static void moveNodeToBody(Lexer paramLexer, Node paramNode)
   {
     paramNode.removeNode();
-    Node localNode = paramLexer.root.findBody(paramLexer.configuration.tt);
+    Node localNode = paramLexer.root.findBody(paramLexer.configuration.field_1881);
     localNode.insertNodeAtEnd(paramNode);
   }
   
   public static Node parseDocument(Lexer paramLexer)
   {
     Object localObject = null;
-    TagTable localTagTable = paramLexer.configuration.tt;
+    TagTable localTagTable = paramLexer.configuration.field_1881;
     Node localNode2 = paramLexer.newNode();
     localNode2.type = 0;
     paramLexer.root = localNode2;
@@ -123,15 +123,15 @@ public final class ParserImpl
         }
       }
     }
-    if (paramLexer.root.findHTML(paramLexer.configuration.tt) == null)
+    if (paramLexer.root.findHTML(paramLexer.configuration.field_1881) == null)
     {
       localNode3 = paramLexer.inferredTag("html");
       paramLexer.root.insertNodeAtEnd(localNode3);
       HTML.parse(paramLexer, localNode3, (short)0);
     }
-    if (paramLexer.root.findTITLE(paramLexer.configuration.tt) == null)
+    if (paramLexer.root.findTITLE(paramLexer.configuration.field_1881) == null)
     {
-      Node localNode4 = paramLexer.root.findHEAD(paramLexer.configuration.tt);
+      Node localNode4 = paramLexer.root.findHEAD(paramLexer.configuration.field_1881);
       paramLexer.report.warning(paramLexer, localNode4, null, (short)17);
       localNode4.insertNodeAtEnd(paramLexer.inferredTag("title"));
     }
@@ -159,7 +159,7 @@ public final class ParserImpl
   
   public static void parseXMLElement(Lexer paramLexer, Node paramNode, short paramShort)
   {
-    if (XMLPreserveWhiteSpace(paramNode, paramLexer.configuration.tt)) {
+    if (XMLPreserveWhiteSpace(paramNode, paramLexer.configuration.field_1881)) {
       paramShort = 2;
     }
     while ((localNode = paramLexer.getToken(paramShort)) != null)
@@ -253,7 +253,7 @@ public final class ParserImpl
   {
     public void parse(Lexer paramLexer, Node paramNode, short paramShort)
     {
-      TagTable localTagTable = paramLexer.configuration.tt;
+      TagTable localTagTable = paramLexer.configuration.field_1881;
       paramLexer.insert = -1;
       Node localNode;
       while ((localNode = paramLexer.getToken((short)0)) != null)
@@ -287,7 +287,7 @@ public final class ParserImpl
   {
     public void parse(Lexer paramLexer, Node paramNode, short paramShort)
     {
-      TagTable localTagTable = paramLexer.configuration.tt;
+      TagTable localTagTable = paramLexer.configuration.field_1881;
       paramLexer.insert = -1;
       if (paramNode.tag == localTagTable.tagTextarea) {
         paramShort = 2;
@@ -339,7 +339,7 @@ public final class ParserImpl
   {
     public void parse(Lexer paramLexer, Node paramNode, short paramShort)
     {
-      TagTable localTagTable = paramLexer.configuration.tt;
+      TagTable localTagTable = paramLexer.configuration.field_1881;
       paramLexer.insert = -1;
       Node localNode;
       while ((localNode = paramLexer.getToken((short)0)) != null)
@@ -371,7 +371,7 @@ public final class ParserImpl
   {
     public void parse(Lexer paramLexer, Node paramNode, short paramShort)
     {
-      TagTable localTagTable = paramLexer.configuration.tt;
+      TagTable localTagTable = paramLexer.configuration.field_1881;
       Lexer tmp10_9 = paramLexer;
       tmp10_9.badAccess = ((short)(tmp10_9.badAccess | 0x20));
       paramShort = 0;
@@ -455,7 +455,7 @@ public final class ParserImpl
   {
     public void parse(Lexer paramLexer, Node paramNode, short paramShort)
     {
-      TagTable localTagTable = paramLexer.configuration.tt;
+      TagTable localTagTable = paramLexer.configuration.field_1881;
       if ((paramNode.tag.model & 0x1) != 0) {
         return;
       }
@@ -581,7 +581,7 @@ public final class ParserImpl
   {
     public void parse(Lexer paramLexer, Node paramNode, short paramShort)
     {
-      TagTable localTagTable = paramLexer.configuration.tt;
+      TagTable localTagTable = paramLexer.configuration.field_1881;
       if ((paramNode.tag.model & 0x1) != 0) {
         return;
       }
@@ -700,7 +700,7 @@ public final class ParserImpl
   {
     public void parse(Lexer paramLexer, Node paramNode, short paramShort)
     {
-      TagTable localTagTable = paramLexer.configuration.tt;
+      TagTable localTagTable = paramLexer.configuration.field_1881;
       if ((paramNode.tag.model & 0x1) != 0) {
         return;
       }
@@ -770,7 +770,7 @@ public final class ParserImpl
   {
     public void parse(Lexer paramLexer, Node paramNode, short paramShort)
     {
-      TagTable localTagTable = paramLexer.configuration.tt;
+      TagTable localTagTable = paramLexer.configuration.field_1881;
       paramLexer.deferDup();
       int i = paramLexer.istackbase;
       paramLexer.istackbase = paramLexer.istack.size();
@@ -874,7 +874,7 @@ public final class ParserImpl
     public void parse(Lexer paramLexer, Node paramNode, short paramShort)
     {
       int j = 0;
-      TagTable localTagTable = paramLexer.configuration.tt;
+      TagTable localTagTable = paramLexer.configuration.field_1881;
       int i = 1;
       if ((paramNode.tag.model & 0x1) != 0) {
         return;
@@ -1191,7 +1191,7 @@ public final class ParserImpl
   {
     public void parse(Lexer paramLexer, Node paramNode, short paramShort)
     {
-      TagTable localTagTable = paramLexer.configuration.tt;
+      TagTable localTagTable = paramLexer.configuration.field_1881;
       if ((paramNode.tag.model & 0x1) != 0) {
         return;
       }
@@ -1274,7 +1274,7 @@ public final class ParserImpl
   {
     public void parse(Lexer paramLexer, Node paramNode, short paramShort)
     {
-      TagTable localTagTable = paramLexer.configuration.tt;
+      TagTable localTagTable = paramLexer.configuration.field_1881;
       if ((paramNode.tag.model & 0x1) != 0) {
         return;
       }
@@ -1393,7 +1393,7 @@ public final class ParserImpl
   {
     public void parse(Lexer paramLexer, Node paramNode, short paramShort)
     {
-      TagTable localTagTable = paramLexer.configuration.tt;
+      TagTable localTagTable = paramLexer.configuration.field_1881;
       if ((paramNode.tag.model & 0x1) != 0) {
         return;
       }
@@ -1477,7 +1477,7 @@ public final class ParserImpl
   {
     public void parse(Lexer paramLexer, Node paramNode, short paramShort)
     {
-      TagTable localTagTable = paramLexer.configuration.tt;
+      TagTable localTagTable = paramLexer.configuration.field_1881;
       if (TidyUtils.toBoolean(paramNode.tag.model & 0x1)) {
         return;
       }
@@ -1865,7 +1865,7 @@ public final class ParserImpl
   {
     public void parse(Lexer paramLexer, Node paramNode, short paramShort)
     {
-      TagTable localTagTable = paramLexer.configuration.tt;
+      TagTable localTagTable = paramLexer.configuration.field_1881;
       Lexer tmp10_9 = paramLexer;
       tmp10_9.badAccess = ((short)(tmp10_9.badAccess | 0x10));
       Node localNode;
@@ -1922,7 +1922,7 @@ public final class ParserImpl
     {
       paramShort = 0;
       int i = 1;
-      TagTable localTagTable = paramLexer.configuration.tt;
+      TagTable localTagTable = paramLexer.configuration.field_1881;
       Clean.bumpObject(paramLexer, paramNode.parent);
       Node localNode1;
       while ((localNode1 = paramLexer.getToken(paramShort)) != null) {
@@ -2209,7 +2209,7 @@ public final class ParserImpl
     {
       int i = 0;
       int j = 0;
-      TagTable localTagTable = paramLexer.configuration.tt;
+      TagTable localTagTable = paramLexer.configuration.field_1881;
       Node localNode;
       while ((localNode = paramLexer.getToken((short)0)) != null)
       {
@@ -2285,7 +2285,7 @@ public final class ParserImpl
       Object localObject2 = null;
       paramLexer.configuration.xmlTags = false;
       paramLexer.seenEndBody = false;
-      TagTable localTagTable = paramLexer.configuration.tt;
+      TagTable localTagTable = paramLexer.configuration.field_1881;
       do
       {
         for (;;)
@@ -2439,7 +2439,7 @@ public final class ParserImpl
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.w3c.tidy.ParserImpl
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -39,46 +39,46 @@ public class GVector
   public GVector(Tuple2f paramTuple2f)
   {
     this.values = new double[2];
-    this.values[0] = paramTuple2f.x;
-    this.values[1] = paramTuple2f.y;
+    this.values[0] = paramTuple2f.field_577;
+    this.values[1] = paramTuple2f.field_578;
     this.length = 2;
   }
   
   public GVector(Tuple3f paramTuple3f)
   {
     this.values = new double[3];
-    this.values[0] = paramTuple3f.x;
-    this.values[1] = paramTuple3f.y;
-    this.values[2] = paramTuple3f.z;
+    this.values[0] = paramTuple3f.field_615;
+    this.values[1] = paramTuple3f.field_616;
+    this.values[2] = paramTuple3f.field_617;
     this.length = 3;
   }
   
   public GVector(Tuple3d paramTuple3d)
   {
     this.values = new double[3];
-    this.values[0] = paramTuple3d.x;
-    this.values[1] = paramTuple3d.y;
-    this.values[2] = paramTuple3d.z;
+    this.values[0] = paramTuple3d.field_612;
+    this.values[1] = paramTuple3d.field_613;
+    this.values[2] = paramTuple3d.field_614;
     this.length = 3;
   }
   
   public GVector(Tuple4f paramTuple4f)
   {
     this.values = new double[4];
-    this.values[0] = paramTuple4f.x;
-    this.values[1] = paramTuple4f.y;
-    this.values[2] = paramTuple4f.z;
-    this.values[3] = paramTuple4f.w;
+    this.values[0] = paramTuple4f.field_596;
+    this.values[1] = paramTuple4f.field_597;
+    this.values[2] = paramTuple4f.field_598;
+    this.values[3] = paramTuple4f.field_599;
     this.length = 4;
   }
   
   public GVector(Tuple4d paramTuple4d)
   {
     this.values = new double[4];
-    this.values[0] = paramTuple4d.x;
-    this.values[1] = paramTuple4d.y;
-    this.values[2] = paramTuple4d.z;
-    this.values[3] = paramTuple4d.w;
+    this.values[0] = paramTuple4d.field_600;
+    this.values[1] = paramTuple4d.field_601;
+    this.values[2] = paramTuple4d.field_602;
+    this.values[3] = paramTuple4d.field_603;
     this.length = 4;
   }
   
@@ -320,8 +320,8 @@ public class GVector
       this.length = 2;
       this.values = new double[2];
     }
-    this.values[0] = paramTuple2f.x;
-    this.values[1] = paramTuple2f.y;
+    this.values[0] = paramTuple2f.field_577;
+    this.values[1] = paramTuple2f.field_578;
     for (int i = 2; i < this.length; i++) {
       this.values[i] = 0.0D;
     }
@@ -334,9 +334,9 @@ public class GVector
       this.length = 3;
       this.values = new double[3];
     }
-    this.values[0] = paramTuple3f.x;
-    this.values[1] = paramTuple3f.y;
-    this.values[2] = paramTuple3f.z;
+    this.values[0] = paramTuple3f.field_615;
+    this.values[1] = paramTuple3f.field_616;
+    this.values[2] = paramTuple3f.field_617;
     for (int i = 3; i < this.length; i++) {
       this.values[i] = 0.0D;
     }
@@ -349,9 +349,9 @@ public class GVector
       this.length = 3;
       this.values = new double[3];
     }
-    this.values[0] = paramTuple3d.x;
-    this.values[1] = paramTuple3d.y;
-    this.values[2] = paramTuple3d.z;
+    this.values[0] = paramTuple3d.field_612;
+    this.values[1] = paramTuple3d.field_613;
+    this.values[2] = paramTuple3d.field_614;
     for (int i = 3; i < this.length; i++) {
       this.values[i] = 0.0D;
     }
@@ -364,10 +364,10 @@ public class GVector
       this.length = 4;
       this.values = new double[4];
     }
-    this.values[0] = paramTuple4f.x;
-    this.values[1] = paramTuple4f.y;
-    this.values[2] = paramTuple4f.z;
-    this.values[3] = paramTuple4f.w;
+    this.values[0] = paramTuple4f.field_596;
+    this.values[1] = paramTuple4f.field_597;
+    this.values[2] = paramTuple4f.field_598;
+    this.values[3] = paramTuple4f.field_599;
     for (int i = 4; i < this.length; i++) {
       this.values[i] = 0.0D;
     }
@@ -380,10 +380,10 @@ public class GVector
       this.length = 4;
       this.values = new double[4];
     }
-    this.values[0] = paramTuple4d.x;
-    this.values[1] = paramTuple4d.y;
-    this.values[2] = paramTuple4d.z;
-    this.values[3] = paramTuple4d.w;
+    this.values[0] = paramTuple4d.field_600;
+    this.values[1] = paramTuple4d.field_601;
+    this.values[2] = paramTuple4d.field_602;
+    this.values[3] = paramTuple4d.field_603;
     for (int i = 4; i < this.length; i++) {
       this.values[i] = 0.0D;
     }
@@ -604,7 +604,7 @@ public class GVector
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     javax.vecmath.GVector
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

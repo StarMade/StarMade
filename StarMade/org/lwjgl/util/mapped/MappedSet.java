@@ -1,25 +1,25 @@
-/*  1:   */package org.lwjgl.util.mapped;
-/*  2:   */
-/* 44:   */public class MappedSet
-/* 45:   */{
-/* 46:   */  public static MappedSet2 create(MappedObject a, MappedObject b)
-/* 47:   */  {
-/* 48:48 */    return new MappedSet2(a, b);
-/* 49:   */  }
-/* 50:   */  
-/* 55:   */  public static MappedSet3 create(MappedObject a, MappedObject b, MappedObject c)
-/* 56:   */  {
-/* 57:57 */    return new MappedSet3(a, b, c);
-/* 58:   */  }
-/* 59:   */  
-/* 64:   */  public static MappedSet4 create(MappedObject a, MappedObject b, MappedObject c, MappedObject d)
-/* 65:   */  {
-/* 66:66 */    return new MappedSet4(a, b, c, d);
-/* 67:   */  }
-/* 68:   */}
+package org.lwjgl.util.mapped;
+
+public class MappedSet
+{
+  public static MappedSet2 create(MappedObject local_a, MappedObject local_b)
+  {
+    return new MappedSet2(local_a, local_b);
+  }
+  
+  public static MappedSet3 create(MappedObject local_a, MappedObject local_b, MappedObject local_c)
+  {
+    return new MappedSet3(local_a, local_b, local_c);
+  }
+  
+  public static MappedSet4 create(MappedObject local_a, MappedObject local_b, MappedObject local_c, MappedObject local_d)
+  {
+    return new MappedSet4(local_a, local_b, local_c, local_d);
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.lwjgl.util.mapped.MappedSet
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

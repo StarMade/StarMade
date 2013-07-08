@@ -26,7 +26,7 @@ public class Log
   private HsqlDatabaseProperties properties;
   private String fileName;
   private Database database;
-  private FileAccess fa;
+  private FileAccess field_2131;
   ScriptWriterBase dbLogWriter;
   private String scriptFileName;
   private String logFileName;
@@ -38,7 +38,7 @@ public class Log
   Log(Database paramDatabase)
   {
     this.database = paramDatabase;
-    this.fa = paramDatabase.logger.getFileAccess();
+    this.field_2131 = paramDatabase.logger.getFileAccess();
     this.fileName = paramDatabase.getPath();
     this.properties = paramDatabase.getProperties();
   }
@@ -65,7 +65,7 @@ public class Log
       deleteOldTempFiles();
       if (this.properties.isVersion18())
       {
-        if (this.fa.isStreamElement(this.scriptFileName)) {
+        if (this.field_2131.isStreamElement(this.scriptFileName)) {
           processScript();
         } else {
           this.database.schemaManager.createPublicSchema();
@@ -146,19 +146,19 @@ public class Log
   void deleteNewAndOldFiles()
   {
     deleteOldDataFiles();
-    this.fa.removeElement(this.fileName + ".data" + ".new");
-    this.fa.removeElement(this.fileName + ".backup" + ".new");
-    this.fa.removeElement(this.scriptFileName + ".new");
+    this.field_2131.removeElement(this.fileName + ".data" + ".new");
+    this.field_2131.removeElement(this.fileName + ".backup" + ".new");
+    this.field_2131.removeElement(this.scriptFileName + ".new");
   }
   
   void deleteBackup()
   {
-    this.fa.removeElement(this.fileName + ".backup");
+    this.field_2131.removeElement(this.fileName + ".backup");
   }
   
   void deleteData()
   {
-    this.fa.removeElement(this.fileName + ".data");
+    this.field_2131.removeElement(this.fileName + ".data");
   }
   
   void backupData()
@@ -166,49 +166,49 @@ public class Log
   {
     if (this.database.logger.propIncrementBackup)
     {
-      this.fa.removeElement(this.fileName + ".backup");
+      this.field_2131.removeElement(this.fileName + ".backup");
       return;
     }
-    if (this.fa.isStreamElement(this.fileName + ".data")) {
+    if (this.field_2131.isStreamElement(this.fileName + ".data")) {
       FileArchiver.archive(this.fileName + ".data", this.fileName + ".backup" + ".new", this.database.logger.getFileAccess(), 1);
     }
   }
   
   void renameNewDataFile()
   {
-    if (this.fa.isStreamElement(this.fileName + ".data" + ".new")) {
-      this.fa.renameElement(this.fileName + ".data" + ".new", this.fileName + ".data");
+    if (this.field_2131.isStreamElement(this.fileName + ".data" + ".new")) {
+      this.field_2131.renameElement(this.fileName + ".data" + ".new", this.fileName + ".data");
     }
   }
   
   void renameNewBackup()
   {
-    this.fa.removeElement(this.fileName + ".backup");
-    if (this.fa.isStreamElement(this.fileName + ".backup" + ".new")) {
-      this.fa.renameElement(this.fileName + ".backup" + ".new", this.fileName + ".backup");
+    this.field_2131.removeElement(this.fileName + ".backup");
+    if (this.field_2131.isStreamElement(this.fileName + ".backup" + ".new")) {
+      this.field_2131.renameElement(this.fileName + ".backup" + ".new", this.fileName + ".backup");
     }
   }
   
   void renameNewScript()
   {
-    if (this.fa.isStreamElement(this.scriptFileName + ".new")) {
-      this.fa.renameElement(this.scriptFileName + ".new", this.scriptFileName);
+    if (this.field_2131.isStreamElement(this.scriptFileName + ".new")) {
+      this.field_2131.renameElement(this.scriptFileName + ".new", this.scriptFileName);
     }
   }
   
   void deleteNewScript()
   {
-    this.fa.removeElement(this.scriptFileName + ".new");
+    this.field_2131.removeElement(this.scriptFileName + ".new");
   }
   
   void deleteNewBackup()
   {
-    this.fa.removeElement(this.fileName + ".backup" + ".new");
+    this.field_2131.removeElement(this.fileName + ".backup" + ".new");
   }
   
   void deleteLog()
   {
-    this.fa.removeElement(this.logFileName);
+    this.field_2131.removeElement(this.logFileName);
   }
   
   boolean isAnyCacheModified()
@@ -589,7 +589,7 @@ public class Log
   
   private void processLog()
   {
-    if (this.fa.isStreamElement(this.logFileName)) {
+    if (this.field_2131.isStreamElement(this.logFileName)) {
       ScriptRunner.runScript(this.database, this.logFileName);
     }
   }
@@ -654,7 +654,7 @@ public class Log
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.persist.Log
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -33,7 +33,7 @@ public class PIFData
         i++;
         Matcher localMatcher = pifRecordPattern.matcher(str1);
         if (!localMatcher.matches()) {
-          throw new TarMalformatException(RB.pif_malformat.getString(i, str1));
+          throw new TarMalformatException(class_1436.pif_malformat.getString(i, str1));
         }
         String str2 = localMatcher.group(1);
         String str3 = localMatcher.group(2);
@@ -63,14 +63,14 @@ public class PIFData
       }
       catch (NumberFormatException localNumberFormatException)
       {
-        throw new TarMalformatException(RB.pif_malformat_size.getString(new String[] { str1 }));
+        throw new TarMalformatException(class_1436.pif_malformat_size.getString(new String[] { str1 }));
       }
     }
   }
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.lib.tar.PIFData
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

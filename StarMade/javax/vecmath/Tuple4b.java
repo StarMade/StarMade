@@ -6,85 +6,85 @@ public abstract class Tuple4b
   implements Serializable, Cloneable
 {
   static final long serialVersionUID = -8226727741811898211L;
-  public byte x;
-  public byte y;
-  public byte z;
-  public byte w;
+  public byte field_592;
+  public byte field_593;
+  public byte field_594;
+  public byte field_595;
   
   public Tuple4b(byte paramByte1, byte paramByte2, byte paramByte3, byte paramByte4)
   {
-    this.x = paramByte1;
-    this.y = paramByte2;
-    this.z = paramByte3;
-    this.w = paramByte4;
+    this.field_592 = paramByte1;
+    this.field_593 = paramByte2;
+    this.field_594 = paramByte3;
+    this.field_595 = paramByte4;
   }
   
   public Tuple4b(byte[] paramArrayOfByte)
   {
-    this.x = paramArrayOfByte[0];
-    this.y = paramArrayOfByte[1];
-    this.z = paramArrayOfByte[2];
-    this.w = paramArrayOfByte[3];
+    this.field_592 = paramArrayOfByte[0];
+    this.field_593 = paramArrayOfByte[1];
+    this.field_594 = paramArrayOfByte[2];
+    this.field_595 = paramArrayOfByte[3];
   }
   
   public Tuple4b(Tuple4b paramTuple4b)
   {
-    this.x = paramTuple4b.x;
-    this.y = paramTuple4b.y;
-    this.z = paramTuple4b.z;
-    this.w = paramTuple4b.w;
+    this.field_592 = paramTuple4b.field_592;
+    this.field_593 = paramTuple4b.field_593;
+    this.field_594 = paramTuple4b.field_594;
+    this.field_595 = paramTuple4b.field_595;
   }
   
   public Tuple4b()
   {
-    this.x = 0;
-    this.y = 0;
-    this.z = 0;
-    this.w = 0;
+    this.field_592 = 0;
+    this.field_593 = 0;
+    this.field_594 = 0;
+    this.field_595 = 0;
   }
   
   public String toString()
   {
-    return "(" + (this.x & 0xFF) + ", " + (this.y & 0xFF) + ", " + (this.z & 0xFF) + ", " + (this.w & 0xFF) + ")";
+    return "(" + (this.field_592 & 0xFF) + ", " + (this.field_593 & 0xFF) + ", " + (this.field_594 & 0xFF) + ", " + (this.field_595 & 0xFF) + ")";
   }
   
   public final void get(byte[] paramArrayOfByte)
   {
-    paramArrayOfByte[0] = this.x;
-    paramArrayOfByte[1] = this.y;
-    paramArrayOfByte[2] = this.z;
-    paramArrayOfByte[3] = this.w;
+    paramArrayOfByte[0] = this.field_592;
+    paramArrayOfByte[1] = this.field_593;
+    paramArrayOfByte[2] = this.field_594;
+    paramArrayOfByte[3] = this.field_595;
   }
   
   public final void get(Tuple4b paramTuple4b)
   {
-    paramTuple4b.x = this.x;
-    paramTuple4b.y = this.y;
-    paramTuple4b.z = this.z;
-    paramTuple4b.w = this.w;
+    paramTuple4b.field_592 = this.field_592;
+    paramTuple4b.field_593 = this.field_593;
+    paramTuple4b.field_594 = this.field_594;
+    paramTuple4b.field_595 = this.field_595;
   }
   
   public final void set(Tuple4b paramTuple4b)
   {
-    this.x = paramTuple4b.x;
-    this.y = paramTuple4b.y;
-    this.z = paramTuple4b.z;
-    this.w = paramTuple4b.w;
+    this.field_592 = paramTuple4b.field_592;
+    this.field_593 = paramTuple4b.field_593;
+    this.field_594 = paramTuple4b.field_594;
+    this.field_595 = paramTuple4b.field_595;
   }
   
   public final void set(byte[] paramArrayOfByte)
   {
-    this.x = paramArrayOfByte[0];
-    this.y = paramArrayOfByte[1];
-    this.z = paramArrayOfByte[2];
-    this.w = paramArrayOfByte[3];
+    this.field_592 = paramArrayOfByte[0];
+    this.field_593 = paramArrayOfByte[1];
+    this.field_594 = paramArrayOfByte[2];
+    this.field_595 = paramArrayOfByte[3];
   }
   
   public boolean equals(Tuple4b paramTuple4b)
   {
     try
     {
-      return (this.x == paramTuple4b.x) && (this.y == paramTuple4b.y) && (this.z == paramTuple4b.z) && (this.w == paramTuple4b.w);
+      return (this.field_592 == paramTuple4b.field_592) && (this.field_593 == paramTuple4b.field_593) && (this.field_594 == paramTuple4b.field_594) && (this.field_595 == paramTuple4b.field_595);
     }
     catch (NullPointerException localNullPointerException) {}
     return false;
@@ -95,7 +95,7 @@ public abstract class Tuple4b
     try
     {
       Tuple4b localTuple4b = (Tuple4b)paramObject;
-      return (this.x == localTuple4b.x) && (this.y == localTuple4b.y) && (this.z == localTuple4b.z) && (this.w == localTuple4b.w);
+      return (this.field_592 == localTuple4b.field_592) && (this.field_593 == localTuple4b.field_593) && (this.field_594 == localTuple4b.field_594) && (this.field_595 == localTuple4b.field_595);
     }
     catch (NullPointerException localNullPointerException)
     {
@@ -107,7 +107,7 @@ public abstract class Tuple4b
   
   public int hashCode()
   {
-    return (this.x & 0xFF) << 0 | (this.y & 0xFF) << 8 | (this.z & 0xFF) << 16 | (this.w & 0xFF) << 24;
+    return (this.field_592 & 0xFF) << 0 | (this.field_593 & 0xFF) << 8 | (this.field_594 & 0xFF) << 16 | (this.field_595 & 0xFF) << 24;
   }
   
   public Object clone()
@@ -124,7 +124,7 @@ public abstract class Tuple4b
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     javax.vecmath.Tuple4b
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

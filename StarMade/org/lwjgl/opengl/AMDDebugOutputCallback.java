@@ -1,118 +1,119 @@
-/*   1:    */package org.lwjgl.opengl;
-/*   2:    */
-/*   3:    */import java.io.PrintStream;
-/*   4:    */import java.lang.reflect.Method;
-/*   5:    */import org.lwjgl.PointerWrapperAbstract;
-/*   6:    */
-/*  47:    */public final class AMDDebugOutputCallback
-/*  48:    */  extends PointerWrapperAbstract
-/*  49:    */{
-/*  50:    */  private static final int GL_DEBUG_SEVERITY_HIGH_AMD = 37190;
-/*  51:    */  private static final int GL_DEBUG_SEVERITY_MEDIUM_AMD = 37191;
-/*  52:    */  private static final int GL_DEBUG_SEVERITY_LOW_AMD = 37192;
-/*  53:    */  private static final int GL_DEBUG_CATEGORY_API_ERROR_AMD = 37193;
-/*  54:    */  private static final int GL_DEBUG_CATEGORY_WINDOW_SYSTEM_AMD = 37194;
-/*  55:    */  private static final int GL_DEBUG_CATEGORY_DEPRECATION_AMD = 37195;
-/*  56:    */  private static final int GL_DEBUG_CATEGORY_UNDEFINED_BEHAVIOR_AMD = 37196;
-/*  57:    */  private static final int GL_DEBUG_CATEGORY_PERFORMANCE_AMD = 37197;
-/*  58:    */  private static final int GL_DEBUG_CATEGORY_SHADER_COMPILER_AMD = 37198;
-/*  59:    */  private static final int GL_DEBUG_CATEGORY_APPLICATION_AMD = 37199;
-/*  60:    */  private static final int GL_DEBUG_CATEGORY_OTHER_AMD = 37200;
-/*  61:    */  
-/*  62:    */  static
-/*  63:    */  {
-/*  64: 64 */    long pointer = 0L;
-/*  65:    */    try
-/*  66:    */    {
-/*  67: 67 */      pointer = ((Long)Class.forName("org.lwjgl.opengl.CallbackUtil").getDeclaredMethod("getDebugOutputCallbackAMD", new Class[0]).invoke(null, new Object[0])).longValue();
-/*  68:    */    } catch (Exception e) {}
-/*  69:    */  }
-/*  70:    */  
-/*  71: 71 */  private static final long CALLBACK_POINTER = pointer;
-/*  72:    */  
-/*  75:    */  private final Handler handler;
-/*  76:    */  
-/*  79:    */  public AMDDebugOutputCallback()
-/*  80:    */  {
-/*  81: 81 */    this(new Handler() {
-/*  82:    */      public void handleMessage(int id, int category, int severity, String message) {
-/*  83: 83 */        System.err.println("[LWJGL] AMD_debug_output message");
-/*  84: 84 */        System.err.println("\tID: " + id);
-/*  85:    */        
-/*  86:    */        String description;
-/*  87: 87 */        switch (category) {
-/*  88:    */        case 37193: 
-/*  89: 89 */          description = "API ERROR";
-/*  90: 90 */          break;
-/*  91:    */        case 37194: 
-/*  92: 92 */          description = "WINDOW SYSTEM";
-/*  93: 93 */          break;
-/*  94:    */        case 37195: 
-/*  95: 95 */          description = "DEPRECATION";
-/*  96: 96 */          break;
-/*  97:    */        case 37196: 
-/*  98: 98 */          description = "UNDEFINED BEHAVIOR";
-/*  99: 99 */          break;
-/* 100:    */        case 37197: 
-/* 101:101 */          description = "PERFORMANCE";
-/* 102:102 */          break;
-/* 103:    */        case 37198: 
-/* 104:104 */          description = "SHADER COMPILER";
-/* 105:105 */          break;
-/* 106:    */        case 37199: 
-/* 107:107 */          description = "APPLICATION";
-/* 108:108 */          break;
-/* 109:    */        case 37200: 
-/* 110:110 */          description = "OTHER";
-/* 111:111 */          break;
-/* 112:    */        default: 
-/* 113:113 */          description = printUnknownToken(category);
-/* 114:    */        }
-/* 115:115 */        System.err.println("\tCategory: " + description);
-/* 116:    */        
-/* 117:117 */        switch (severity) {
-/* 118:    */        case 37190: 
-/* 119:119 */          description = "HIGH";
-/* 120:120 */          break;
-/* 121:    */        case 37191: 
-/* 122:122 */          description = "MEDIUM";
-/* 123:123 */          break;
-/* 124:    */        case 37192: 
-/* 125:125 */          description = "LOW";
-/* 126:126 */          break;
-/* 127:    */        default: 
-/* 128:128 */          description = printUnknownToken(severity);
-/* 129:    */        }
-/* 130:130 */        System.err.println("\tSeverity: " + description);
-/* 131:    */        
-/* 132:132 */        System.err.println("\tMessage: " + message);
-/* 133:    */      }
-/* 134:    */      
-/* 135:    */      private String printUnknownToken(int token) {
-/* 136:136 */        return "Unknown (0x" + Integer.toHexString(token).toUpperCase() + ")";
-/* 137:    */      }
-/* 138:    */    });
-/* 139:    */  }
-/* 140:    */  
-/* 147:    */  public AMDDebugOutputCallback(Handler handler)
-/* 148:    */  {
-/* 149:149 */    super(CALLBACK_POINTER);
-/* 150:    */    
-/* 151:151 */    this.handler = handler;
-/* 152:    */  }
-/* 153:    */  
-/* 154:    */  Handler getHandler() {
-/* 155:155 */    return this.handler;
-/* 156:    */  }
-/* 157:    */  
-/* 158:    */  public static abstract interface Handler
-/* 159:    */  {
-/* 160:    */    public abstract void handleMessage(int paramInt1, int paramInt2, int paramInt3, String paramString);
-/* 161:    */  }
-/* 162:    */}
+package org.lwjgl.opengl;
+
+import java.io.PrintStream;
+import java.lang.reflect.Method;
+import org.lwjgl.PointerWrapperAbstract;
+
+public final class AMDDebugOutputCallback
+  extends PointerWrapperAbstract
+{
+  private static final int GL_DEBUG_SEVERITY_HIGH_AMD = 37190;
+  private static final int GL_DEBUG_SEVERITY_MEDIUM_AMD = 37191;
+  private static final int GL_DEBUG_SEVERITY_LOW_AMD = 37192;
+  private static final int GL_DEBUG_CATEGORY_API_ERROR_AMD = 37193;
+  private static final int GL_DEBUG_CATEGORY_WINDOW_SYSTEM_AMD = 37194;
+  private static final int GL_DEBUG_CATEGORY_DEPRECATION_AMD = 37195;
+  private static final int GL_DEBUG_CATEGORY_UNDEFINED_BEHAVIOR_AMD = 37196;
+  private static final int GL_DEBUG_CATEGORY_PERFORMANCE_AMD = 37197;
+  private static final int GL_DEBUG_CATEGORY_SHADER_COMPILER_AMD = 37198;
+  private static final int GL_DEBUG_CATEGORY_APPLICATION_AMD = 37199;
+  private static final int GL_DEBUG_CATEGORY_OTHER_AMD = 37200;
+  private static final long CALLBACK_POINTER = pointer;
+  private final Handler handler;
+  
+  public AMDDebugOutputCallback()
+  {
+    this(new Handler()
+    {
+      public void handleMessage(int local_id, int category, int severity, String message)
+      {
+        System.err.println("[LWJGL] AMD_debug_output message");
+        System.err.println("\tID: " + local_id);
+        String description;
+        switch (category)
+        {
+        case 37193: 
+          description = "API ERROR";
+          break;
+        case 37194: 
+          description = "WINDOW SYSTEM";
+          break;
+        case 37195: 
+          description = "DEPRECATION";
+          break;
+        case 37196: 
+          description = "UNDEFINED BEHAVIOR";
+          break;
+        case 37197: 
+          description = "PERFORMANCE";
+          break;
+        case 37198: 
+          description = "SHADER COMPILER";
+          break;
+        case 37199: 
+          description = "APPLICATION";
+          break;
+        case 37200: 
+          description = "OTHER";
+          break;
+        default: 
+          description = printUnknownToken(category);
+        }
+        System.err.println("\tCategory: " + description);
+        switch (severity)
+        {
+        case 37190: 
+          description = "HIGH";
+          break;
+        case 37191: 
+          description = "MEDIUM";
+          break;
+        case 37192: 
+          description = "LOW";
+          break;
+        default: 
+          description = printUnknownToken(severity);
+        }
+        System.err.println("\tSeverity: " + description);
+        System.err.println("\tMessage: " + message);
+      }
+      
+      private String printUnknownToken(int token)
+      {
+        return "Unknown (0x" + Integer.toHexString(token).toUpperCase() + ")";
+      }
+    });
+  }
+  
+  public AMDDebugOutputCallback(Handler handler)
+  {
+    super(CALLBACK_POINTER);
+    this.handler = handler;
+  }
+  
+  Handler getHandler()
+  {
+    return this.handler;
+  }
+  
+  static
+  {
+    long pointer = 0L;
+    try
+    {
+      pointer = ((Long)Class.forName("org.lwjgl.opengl.CallbackUtil").getDeclaredMethod("getDebugOutputCallbackAMD", new Class[0]).invoke(null, new Object[0])).longValue();
+    }
+    catch (Exception local_e) {}
+  }
+  
+  public static abstract interface Handler
+  {
+    public abstract void handleMessage(int paramInt1, int paramInt2, int paramInt3, String paramString);
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.lwjgl.opengl.AMDDebugOutputCallback
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -1,156 +1,323 @@
-/*   1:    */package it.unimi.dsi.fastutil.bytes;
-/*   2:    */
-/*   3:    */import java.io.Serializable;
-/*   4:    */
-/*  53:    */public class Byte2DoubleFunctions
-/*  54:    */{
-/*  55:    */  public static class EmptyFunction
-/*  56:    */    extends AbstractByte2DoubleFunction
-/*  57:    */    implements Serializable, Cloneable
-/*  58:    */  {
-/*  59:    */    public static final long serialVersionUID = -7046029254386353129L;
-/*  60:    */    
-/*  61: 61 */    public double get(byte k) { return 0.0D; }
-/*  62: 62 */    public boolean containsKey(byte k) { return false; }
-/*  63: 63 */    public double defaultReturnValue() { return 0.0D; }
-/*  64: 64 */    public void defaultReturnValue(double defRetValue) { throw new UnsupportedOperationException(); }
-/*  65: 65 */    public Double get(Object k) { return null; }
-/*  66: 66 */    public int size() { return 0; }
-/*  67:    */    public void clear() {}
-/*  68: 68 */    private Object readResolve() { return Byte2DoubleFunctions.EMPTY_FUNCTION; }
-/*  69: 69 */    public Object clone() { return Byte2DoubleFunctions.EMPTY_FUNCTION; }
-/*  70:    */  }
-/*  71:    */  
-/*  73: 73 */  public static final EmptyFunction EMPTY_FUNCTION = new EmptyFunction();
-/*  74:    */  
-/*  76:    */  public static class Singleton
-/*  77:    */    extends AbstractByte2DoubleFunction
-/*  78:    */    implements Serializable, Cloneable
-/*  79:    */  {
-/*  80:    */    public static final long serialVersionUID = -7046029254386353129L;
-/*  81:    */    protected final byte key;
-/*  82:    */    protected final double value;
-/*  83:    */    
-/*  84:    */    protected Singleton(byte key, double value)
-/*  85:    */    {
-/*  86: 86 */      this.key = key;
-/*  87: 87 */      this.value = value;
-/*  88:    */    }
-/*  89:    */    
-/*  90: 90 */    public boolean containsKey(byte k) { return this.key == k; }
-/*  91:    */    
-/*  92: 92 */    public double get(byte k) { if (this.key == k) return this.value; return this.defRetValue; }
-/*  93:    */    
-/*  94: 94 */    public int size() { return 1; }
-/*  95:    */    
-/*  96: 96 */    public Object clone() { return this; }
-/*  97:    */  }
-/*  98:    */  
-/* 107:    */  public static Byte2DoubleFunction singleton(byte key, double value)
-/* 108:    */  {
-/* 109:109 */    return new Singleton(key, value);
-/* 110:    */  }
-/* 111:    */  
-/* 122:    */  public static Byte2DoubleFunction singleton(Byte key, Double value)
-/* 123:    */  {
-/* 124:124 */    return new Singleton(key.byteValue(), value.doubleValue());
-/* 125:    */  }
-/* 126:    */  
-/* 128:    */  public static class SynchronizedFunction
-/* 129:    */    extends AbstractByte2DoubleFunction
-/* 130:    */    implements Serializable
-/* 131:    */  {
-/* 132:    */    public static final long serialVersionUID = -7046029254386353129L;
-/* 133:    */    
-/* 134:    */    protected final Byte2DoubleFunction function;
-/* 135:    */    
-/* 136:    */    protected final Object sync;
-/* 137:    */    
-/* 138:    */    protected SynchronizedFunction(Byte2DoubleFunction f, Object sync)
-/* 139:    */    {
-/* 140:140 */      if (f == null) throw new NullPointerException();
-/* 141:141 */      this.function = f;
-/* 142:142 */      this.sync = sync;
-/* 143:    */    }
-/* 144:    */    
-/* 145:    */    protected SynchronizedFunction(Byte2DoubleFunction f) {
-/* 146:146 */      if (f == null) throw new NullPointerException();
-/* 147:147 */      this.function = f;
-/* 148:148 */      this.sync = this;
-/* 149:    */    }
-/* 150:    */    
-/* 151:151 */    public int size() { synchronized (this.sync) { return this.function.size(); } }
-/* 152:152 */    public boolean containsKey(byte k) { synchronized (this.sync) { return this.function.containsKey(k); } }
-/* 153:    */    
-/* 154:154 */    public double defaultReturnValue() { synchronized (this.sync) { return this.function.defaultReturnValue(); } }
-/* 155:155 */    public void defaultReturnValue(double defRetValue) { synchronized (this.sync) { this.function.defaultReturnValue(defRetValue); } }
-/* 156:    */    
-/* 157:157 */    public double put(byte k, double v) { synchronized (this.sync) { return this.function.put(k, v); } }
-/* 158:    */    
-/* 159:159 */    public void clear() { synchronized (this.sync) { this.function.clear(); } }
-/* 160:160 */    public String toString() { synchronized (this.sync) { return this.function.toString();
-/* 161:    */      } }
-/* 162:    */    
-/* 163:163 */    public Double put(Byte k, Double v) { synchronized (this.sync) { return (Double)this.function.put(k, v); } }
-/* 164:164 */    public Double get(Object k) { synchronized (this.sync) { return (Double)this.function.get(k); } }
-/* 165:165 */    public Double remove(Object k) { synchronized (this.sync) { return (Double)this.function.remove(k);
-/* 166:    */      }
-/* 167:    */    }
-/* 168:    */    
-/* 169:169 */    public double remove(byte k) { synchronized (this.sync) { return this.function.remove(k); } }
-/* 170:170 */    public double get(byte k) { synchronized (this.sync) { return this.function.get(k); } }
-/* 171:171 */    public boolean containsKey(Object ok) { synchronized (this.sync) { return this.function.containsKey(ok);
-/* 172:    */      }
-/* 173:    */    }
-/* 174:    */  }
-/* 175:    */  
-/* 185:    */  public static Byte2DoubleFunction synchronize(Byte2DoubleFunction f)
-/* 186:    */  {
-/* 187:187 */    return new SynchronizedFunction(f);
-/* 188:    */  }
-/* 189:    */  
-/* 195:    */  public static Byte2DoubleFunction synchronize(Byte2DoubleFunction f, Object sync)
-/* 196:    */  {
-/* 197:197 */    return new SynchronizedFunction(f, sync);
-/* 198:    */  }
-/* 199:    */  
-/* 201:    */  public static class UnmodifiableFunction
-/* 202:    */    extends AbstractByte2DoubleFunction
-/* 203:    */    implements Serializable
-/* 204:    */  {
-/* 205:    */    public static final long serialVersionUID = -7046029254386353129L;
-/* 206:    */    protected final Byte2DoubleFunction function;
-/* 207:    */    
-/* 208:    */    protected UnmodifiableFunction(Byte2DoubleFunction f)
-/* 209:    */    {
-/* 210:210 */      if (f == null) throw new NullPointerException();
-/* 211:211 */      this.function = f;
-/* 212:    */    }
-/* 213:    */    
-/* 214:214 */    public int size() { return this.function.size(); }
-/* 215:215 */    public boolean containsKey(byte k) { return this.function.containsKey(k); }
-/* 216:    */    
-/* 217:217 */    public double defaultReturnValue() { return this.function.defaultReturnValue(); }
-/* 218:218 */    public void defaultReturnValue(double defRetValue) { throw new UnsupportedOperationException(); }
-/* 219:    */    
-/* 220:220 */    public double put(byte k, double v) { throw new UnsupportedOperationException(); }
-/* 221:    */    
-/* 222:222 */    public void clear() { throw new UnsupportedOperationException(); }
-/* 223:223 */    public String toString() { return this.function.toString(); }
-/* 224:    */    
-/* 226:226 */    public double remove(byte k) { throw new UnsupportedOperationException(); }
-/* 227:227 */    public double get(byte k) { return this.function.get(k); }
-/* 228:228 */    public boolean containsKey(Object ok) { return this.function.containsKey(ok); }
-/* 229:    */  }
-/* 230:    */  
-/* 242:    */  public static Byte2DoubleFunction unmodifiable(Byte2DoubleFunction f)
-/* 243:    */  {
-/* 244:244 */    return new UnmodifiableFunction(f);
-/* 245:    */  }
-/* 246:    */}
+package it.unimi.dsi.fastutil.bytes;
+
+import java.io.Serializable;
+
+public class Byte2DoubleFunctions
+{
+  public static final EmptyFunction EMPTY_FUNCTION = new EmptyFunction();
+  
+  public static Byte2DoubleFunction singleton(byte key, double value)
+  {
+    return new Singleton(key, value);
+  }
+  
+  public static Byte2DoubleFunction singleton(Byte key, Double value)
+  {
+    return new Singleton(key.byteValue(), value.doubleValue());
+  }
+  
+  public static Byte2DoubleFunction synchronize(Byte2DoubleFunction local_f)
+  {
+    return new SynchronizedFunction(local_f);
+  }
+  
+  public static Byte2DoubleFunction synchronize(Byte2DoubleFunction local_f, Object sync)
+  {
+    return new SynchronizedFunction(local_f, sync);
+  }
+  
+  public static Byte2DoubleFunction unmodifiable(Byte2DoubleFunction local_f)
+  {
+    return new UnmodifiableFunction(local_f);
+  }
+  
+  public static class UnmodifiableFunction
+    extends AbstractByte2DoubleFunction
+    implements Serializable
+  {
+    public static final long serialVersionUID = -7046029254386353129L;
+    protected final Byte2DoubleFunction function;
+    
+    protected UnmodifiableFunction(Byte2DoubleFunction local_f)
+    {
+      if (local_f == null) {
+        throw new NullPointerException();
+      }
+      this.function = local_f;
+    }
+    
+    public int size()
+    {
+      return this.function.size();
+    }
+    
+    public boolean containsKey(byte local_k)
+    {
+      return this.function.containsKey(local_k);
+    }
+    
+    public double defaultReturnValue()
+    {
+      return this.function.defaultReturnValue();
+    }
+    
+    public void defaultReturnValue(double defRetValue)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public double put(byte local_k, double local_v)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public void clear()
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public String toString()
+    {
+      return this.function.toString();
+    }
+    
+    public double remove(byte local_k)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public double get(byte local_k)
+    {
+      return this.function.get(local_k);
+    }
+    
+    public boolean containsKey(Object local_ok)
+    {
+      return this.function.containsKey(local_ok);
+    }
+  }
+  
+  public static class SynchronizedFunction
+    extends AbstractByte2DoubleFunction
+    implements Serializable
+  {
+    public static final long serialVersionUID = -7046029254386353129L;
+    protected final Byte2DoubleFunction function;
+    protected final Object sync;
+    
+    protected SynchronizedFunction(Byte2DoubleFunction local_f, Object sync)
+    {
+      if (local_f == null) {
+        throw new NullPointerException();
+      }
+      this.function = local_f;
+      this.sync = sync;
+    }
+    
+    protected SynchronizedFunction(Byte2DoubleFunction local_f)
+    {
+      if (local_f == null) {
+        throw new NullPointerException();
+      }
+      this.function = local_f;
+      this.sync = this;
+    }
+    
+    public int size()
+    {
+      synchronized (this.sync)
+      {
+        return this.function.size();
+      }
+    }
+    
+    public boolean containsKey(byte local_k)
+    {
+      synchronized (this.sync)
+      {
+        return this.function.containsKey(local_k);
+      }
+    }
+    
+    public double defaultReturnValue()
+    {
+      synchronized (this.sync)
+      {
+        return this.function.defaultReturnValue();
+      }
+    }
+    
+    public void defaultReturnValue(double defRetValue)
+    {
+      synchronized (this.sync)
+      {
+        this.function.defaultReturnValue(defRetValue);
+      }
+    }
+    
+    public double put(byte local_k, double local_v)
+    {
+      synchronized (this.sync)
+      {
+        return this.function.put(local_k, local_v);
+      }
+    }
+    
+    public void clear()
+    {
+      synchronized (this.sync)
+      {
+        this.function.clear();
+      }
+    }
+    
+    public String toString()
+    {
+      synchronized (this.sync)
+      {
+        return this.function.toString();
+      }
+    }
+    
+    public Double put(Byte local_k, Double local_v)
+    {
+      synchronized (this.sync)
+      {
+        return (Double)this.function.put(local_k, local_v);
+      }
+    }
+    
+    public Double get(Object local_k)
+    {
+      synchronized (this.sync)
+      {
+        return (Double)this.function.get(local_k);
+      }
+    }
+    
+    public Double remove(Object local_k)
+    {
+      synchronized (this.sync)
+      {
+        return (Double)this.function.remove(local_k);
+      }
+    }
+    
+    public double remove(byte local_k)
+    {
+      synchronized (this.sync)
+      {
+        return this.function.remove(local_k);
+      }
+    }
+    
+    public double get(byte local_k)
+    {
+      synchronized (this.sync)
+      {
+        return this.function.get(local_k);
+      }
+    }
+    
+    public boolean containsKey(Object local_ok)
+    {
+      synchronized (this.sync)
+      {
+        return this.function.containsKey(local_ok);
+      }
+    }
+  }
+  
+  public static class Singleton
+    extends AbstractByte2DoubleFunction
+    implements Serializable, Cloneable
+  {
+    public static final long serialVersionUID = -7046029254386353129L;
+    protected final byte key;
+    protected final double value;
+    
+    protected Singleton(byte key, double value)
+    {
+      this.key = key;
+      this.value = value;
+    }
+    
+    public boolean containsKey(byte local_k)
+    {
+      return this.key == local_k;
+    }
+    
+    public double get(byte local_k)
+    {
+      if (this.key == local_k) {
+        return this.value;
+      }
+      return this.defRetValue;
+    }
+    
+    public int size()
+    {
+      return 1;
+    }
+    
+    public Object clone()
+    {
+      return this;
+    }
+  }
+  
+  public static class EmptyFunction
+    extends AbstractByte2DoubleFunction
+    implements Serializable, Cloneable
+  {
+    public static final long serialVersionUID = -7046029254386353129L;
+    
+    public double get(byte local_k)
+    {
+      return 0.0D;
+    }
+    
+    public boolean containsKey(byte local_k)
+    {
+      return false;
+    }
+    
+    public double defaultReturnValue()
+    {
+      return 0.0D;
+    }
+    
+    public void defaultReturnValue(double defRetValue)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public Double get(Object local_k)
+    {
+      return null;
+    }
+    
+    public int size()
+    {
+      return 0;
+    }
+    
+    public void clear() {}
+    
+    private Object readResolve()
+    {
+      return Byte2DoubleFunctions.EMPTY_FUNCTION;
+    }
+    
+    public Object clone()
+    {
+      return Byte2DoubleFunctions.EMPTY_FUNCTION;
+    }
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.bytes.Byte2DoubleFunctions
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

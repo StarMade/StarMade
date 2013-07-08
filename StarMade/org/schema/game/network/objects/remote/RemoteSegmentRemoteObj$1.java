@@ -1,16 +1,16 @@
-/*  1:   */package org.schema.game.network.objects.remote;
-/*  2:   */
-/* 29:   */final class RemoteSegmentRemoteObj$1
-/* 30:   */  extends ThreadLocal
-/* 31:   */{
-/* 32:   */  protected final byte[] initialValue()
-/* 33:   */  {
-/* 34:34 */    return new byte[102400];
-/* 35:   */  }
-/* 36:   */}
+package org.schema.game.network.objects.remote;
+
+final class RemoteSegmentRemoteObj$1
+  extends ThreadLocal
+{
+  protected final byte[] initialValue()
+  {
+    return new byte[102400];
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.game.network.objects.remote.RemoteSegmentRemoteObj.1
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

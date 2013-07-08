@@ -11,7 +11,7 @@ import java.util.Vector;
 
 public class CodeSwitcher
 {
-  private static final String ls = System.getProperty("line.separator", "\n");
+  private static final String field_1715 = System.getProperty("line.separator", "\n");
   private Vector vList = new Vector();
   private Vector vSwitchOn = new Vector();
   private Vector vSwitchOff = new Vector();
@@ -61,7 +61,7 @@ public class CodeSwitcher
         BufferedReader localBufferedReader = new BufferedReader(new FileReader(localFile1));
         while ((str1 = localBufferedReader.readLine()) != null)
         {
-          int j = str1.indexOf(35);
+          int j = str1.indexOf('#');
           String str2 = (j > -1 ? str1.substring(0, j) : str1).trim();
           if (str2.length() >= 1)
           {
@@ -321,7 +321,7 @@ public class CodeSwitcher
     for (int i = 0; i < paramVector.size(); i++)
     {
       localFileWriter.write((String)paramVector.elementAt(i));
-      localFileWriter.write(ls);
+      localFileWriter.write(field_1715);
     }
     localFileWriter.flush();
     localFileWriter.close();
@@ -335,7 +335,7 @@ public class CodeSwitcher
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.util.CodeSwitcher
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

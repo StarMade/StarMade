@@ -27,8 +27,8 @@ class Grid
   private int iFirstRow;
   private int iGridWidth;
   private int iGridHeight;
-  private int iX;
-  private int iY;
+  private int field_1916;
+  private int field_1917;
   protected String[] sColHead = new String[0];
   protected Vector vData = new Vector();
   private int[] iColWidth;
@@ -129,12 +129,12 @@ class Grid
     }
     this.iGridWidth = i;
     this.iGridHeight = (this.iRowHeight * (this.iRowCount + 1));
-    this.sbHoriz.setValues(this.iX, this.iWidth, 0, this.iGridWidth);
-    j = this.iY / this.iRowHeight;
+    this.sbHoriz.setValues(this.field_1916, this.iWidth, 0, this.iGridWidth);
+    j = this.field_1917 / this.iRowHeight;
     int k = this.iHeight / this.iRowHeight;
     this.sbVert.setValues(j, k, 0, this.iRowCount + 1);
-    this.iX = this.sbHoriz.getValue();
-    this.iY = (this.iRowHeight * this.sbVert.getValue());
+    this.field_1916 = this.sbHoriz.getValue();
+    this.field_1917 = (this.iRowHeight * this.sbVert.getValue());
   }
   
   public boolean handleEvent(Event paramEvent)
@@ -146,8 +146,8 @@ class Grid
     case 603: 
     case 604: 
     case 605: 
-      this.iX = this.sbHoriz.getValue();
-      this.iY = (this.iRowHeight * this.sbVert.getValue());
+      this.field_1916 = this.sbHoriz.getValue();
+      this.field_1917 = (this.iRowHeight * this.sbVert.getValue());
       repaint();
       return true;
     }
@@ -190,7 +190,7 @@ class Grid
     this.gImage.fillRect(0, 0, this.iWidth, this.iHeight);
     this.gImage.setColor(Color.darkGray);
     this.gImage.drawLine(0, this.iRowHeight, this.iWidth, this.iRowHeight);
-    int i = -this.iX;
+    int i = -this.field_1916;
     for (int j = 0; j < this.iColCount; j++)
     {
       k = this.iColWidth[j];
@@ -208,7 +208,7 @@ class Grid
     this.gImage.fillRect(0, 0, 1, this.iRowHeight);
     this.gImage.fillRect(i + 1, 0, this.iWidth - i, this.iRowHeight);
     this.gImage.drawLine(0, 0, 0, this.iRowHeight - 1);
-    j = this.iRowHeight + 1 - this.iY;
+    j = this.iRowHeight + 1 - this.field_1917;
     int k = 0;
     while (j < this.iRowHeight + 1)
     {
@@ -219,7 +219,7 @@ class Grid
     j = this.iRowHeight + 1;
     while ((j < this.iHeight) && (k < this.iRowCount))
     {
-      i = -this.iX;
+      i = -this.field_1916;
       for (int m = 0; m < this.iColCount; m++)
       {
         int n = this.iColWidth[m];
@@ -252,7 +252,7 @@ class Grid
     if (paramInt2 <= this.iRowHeight)
     {
       int i = paramInt1;
-      paramInt1 += this.iX - this.iGridWidth;
+      paramInt1 += this.field_1916 - this.iGridWidth;
       for (int j = this.iColCount - 1; (j >= 0) && ((paramInt1 <= -7) || (paramInt1 >= 7)); j--) {
         paramInt1 += this.iColWidth[j];
       }
@@ -345,7 +345,7 @@ class Grid
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.util.Grid
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

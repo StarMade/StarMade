@@ -1,130 +1,122 @@
-/*   1:    */package org.newdawn.slick.geom;
-/*   2:    */
-/*   3:    */import java.util.ArrayList;
-/*   4:    */
-/*  10:    */public class Path
-/*  11:    */  extends Shape
-/*  12:    */{
-/*  13: 13 */  private ArrayList localPoints = new ArrayList();
-/*  14:    */  
-/*  15:    */  private float cx;
-/*  16:    */  
-/*  17:    */  private float cy;
-/*  18:    */  
-/*  19:    */  private boolean closed;
-/*  20:    */  
-/*  21: 21 */  private ArrayList holes = new ArrayList();
-/*  22:    */  
-/*  25:    */  private ArrayList hole;
-/*  26:    */  
-/*  30:    */  public Path(float sx, float sy)
-/*  31:    */  {
-/*  32: 32 */    this.localPoints.add(new float[] { sx, sy });
-/*  33: 33 */    this.cx = sx;
-/*  34: 34 */    this.cy = sy;
-/*  35: 35 */    this.pointsDirty = true;
-/*  36:    */  }
-/*  37:    */  
-/*  43:    */  public void startHole(float sx, float sy)
-/*  44:    */  {
-/*  45: 45 */    this.hole = new ArrayList();
-/*  46: 46 */    this.holes.add(this.hole);
-/*  47:    */  }
-/*  48:    */  
-/*  55:    */  public void lineTo(float x, float y)
-/*  56:    */  {
-/*  57: 57 */    if (this.hole != null) {
-/*  58: 58 */      this.hole.add(new float[] { x, y });
-/*  59:    */    } else {
-/*  60: 60 */      this.localPoints.add(new float[] { x, y });
-/*  61:    */    }
-/*  62: 62 */    this.cx = x;
-/*  63: 63 */    this.cy = y;
-/*  64: 64 */    this.pointsDirty = true;
-/*  65:    */  }
-/*  66:    */  
-/*  69:    */  public void close()
-/*  70:    */  {
-/*  71: 71 */    this.closed = true;
-/*  72:    */  }
-/*  73:    */  
-/*  83:    */  public void curveTo(float x, float y, float cx1, float cy1, float cx2, float cy2)
-/*  84:    */  {
-/*  85: 85 */    curveTo(x, y, cx1, cy1, cx2, cy2, 10);
-/*  86:    */  }
-/*  87:    */  
-/*  99:    */  public void curveTo(float x, float y, float cx1, float cy1, float cx2, float cy2, int segments)
-/* 100:    */  {
-/* 101:101 */    if ((this.cx == x) && (this.cy == y)) {
-/* 102:102 */      return;
-/* 103:    */    }
-/* 104:    */    
-/* 105:105 */    Curve curve = new Curve(new Vector2f(this.cx, this.cy), new Vector2f(cx1, cy1), new Vector2f(cx2, cy2), new Vector2f(x, y));
-/* 106:106 */    float step = 1.0F / segments;
-/* 107:    */    
-/* 108:108 */    for (int i = 1; i < segments + 1; i++) {
-/* 109:109 */      float t = i * step;
-/* 110:110 */      Vector2f p = curve.pointAt(t);
-/* 111:111 */      if (this.hole != null) {
-/* 112:112 */        this.hole.add(new float[] { p.x, p.y });
-/* 113:    */      } else {
-/* 114:114 */        this.localPoints.add(new float[] { p.x, p.y });
-/* 115:    */      }
-/* 116:116 */      this.cx = p.x;
-/* 117:117 */      this.cy = p.y;
-/* 118:    */    }
-/* 119:119 */    this.pointsDirty = true;
-/* 120:    */  }
-/* 121:    */  
-/* 124:    */  protected void createPoints()
-/* 125:    */  {
-/* 126:126 */    this.points = new float[this.localPoints.size() * 2];
-/* 127:127 */    for (int i = 0; i < this.localPoints.size(); i++) {
-/* 128:128 */      float[] p = (float[])this.localPoints.get(i);
-/* 129:129 */      this.points[(i * 2)] = p[0];
-/* 130:130 */      this.points[(i * 2 + 1)] = p[1];
-/* 131:    */    }
-/* 132:    */  }
-/* 133:    */  
-/* 136:    */  public Shape transform(Transform transform)
-/* 137:    */  {
-/* 138:138 */    Path p = new Path(this.cx, this.cy);
-/* 139:139 */    p.localPoints = transform(this.localPoints, transform);
-/* 140:140 */    for (int i = 0; i < this.holes.size(); i++) {
-/* 141:141 */      p.holes.add(transform((ArrayList)this.holes.get(i), transform));
-/* 142:    */    }
-/* 143:143 */    p.closed = this.closed;
-/* 144:    */    
-/* 145:145 */    return p;
-/* 146:    */  }
-/* 147:    */  
-/* 154:    */  private ArrayList transform(ArrayList pts, Transform t)
-/* 155:    */  {
-/* 156:156 */    float[] in = new float[pts.size() * 2];
-/* 157:157 */    float[] out = new float[pts.size() * 2];
-/* 158:    */    
-/* 159:159 */    for (int i = 0; i < pts.size(); i++) {
-/* 160:160 */      in[(i * 2)] = ((float[])(float[])pts.get(i))[0];
-/* 161:161 */      in[(i * 2 + 1)] = ((float[])(float[])pts.get(i))[1];
-/* 162:    */    }
-/* 163:163 */    t.transform(in, 0, out, 0, pts.size());
-/* 164:    */    
-/* 165:165 */    ArrayList outList = new ArrayList();
-/* 166:166 */    for (int i = 0; i < pts.size(); i++) {
-/* 167:167 */      outList.add(new float[] { out[(i * 2)], out[(i * 2 + 1)] });
-/* 168:    */    }
-/* 169:    */    
-/* 170:170 */    return outList;
-/* 171:    */  }
-/* 172:    */  
-/* 237:    */  public boolean closed()
-/* 238:    */  {
-/* 239:239 */    return this.closed;
-/* 240:    */  }
-/* 241:    */}
+package org.newdawn.slick.geom;
+
+import java.util.ArrayList;
+
+public class Path
+  extends Shape
+{
+  private ArrayList localPoints = new ArrayList();
+  private float field_330;
+  private float field_331;
+  private boolean closed;
+  private ArrayList holes = new ArrayList();
+  private ArrayList hole;
+  
+  public Path(float local_sx, float local_sy)
+  {
+    this.localPoints.add(new float[] { local_sx, local_sy });
+    this.field_330 = local_sx;
+    this.field_331 = local_sy;
+    this.pointsDirty = true;
+  }
+  
+  public void startHole(float local_sx, float local_sy)
+  {
+    this.hole = new ArrayList();
+    this.holes.add(this.hole);
+  }
+  
+  public void lineTo(float local_x, float local_y)
+  {
+    if (this.hole != null) {
+      this.hole.add(new float[] { local_x, local_y });
+    } else {
+      this.localPoints.add(new float[] { local_x, local_y });
+    }
+    this.field_330 = local_x;
+    this.field_331 = local_y;
+    this.pointsDirty = true;
+  }
+  
+  public void close()
+  {
+    this.closed = true;
+  }
+  
+  public void curveTo(float local_x, float local_y, float cx1, float cy1, float cx2, float cy2)
+  {
+    curveTo(local_x, local_y, cx1, cy1, cx2, cy2, 10);
+  }
+  
+  public void curveTo(float local_x, float local_y, float cx1, float cy1, float cx2, float cy2, int segments)
+  {
+    if ((this.field_330 == local_x) && (this.field_331 == local_y)) {
+      return;
+    }
+    Curve curve = new Curve(new Vector2f(this.field_330, this.field_331), new Vector2f(cx1, cy1), new Vector2f(cx2, cy2), new Vector2f(local_x, local_y));
+    float step = 1.0F / segments;
+    for (int local_i = 1; local_i < segments + 1; local_i++)
+    {
+      float local_t = local_i * step;
+      Vector2f local_p = curve.pointAt(local_t);
+      if (this.hole != null) {
+        this.hole.add(new float[] { local_p.field_1680, local_p.field_1681 });
+      } else {
+        this.localPoints.add(new float[] { local_p.field_1680, local_p.field_1681 });
+      }
+      this.field_330 = local_p.field_1680;
+      this.field_331 = local_p.field_1681;
+    }
+    this.pointsDirty = true;
+  }
+  
+  protected void createPoints()
+  {
+    this.points = new float[this.localPoints.size() * 2];
+    for (int local_i = 0; local_i < this.localPoints.size(); local_i++)
+    {
+      float[] local_p = (float[])this.localPoints.get(local_i);
+      this.points[(local_i * 2)] = local_p[0];
+      this.points[(local_i * 2 + 1)] = local_p[1];
+    }
+  }
+  
+  public Shape transform(Transform transform)
+  {
+    Path local_p = new Path(this.field_330, this.field_331);
+    local_p.localPoints = transform(this.localPoints, transform);
+    for (int local_i = 0; local_i < this.holes.size(); local_i++) {
+      local_p.holes.add(transform((ArrayList)this.holes.get(local_i), transform));
+    }
+    local_p.closed = this.closed;
+    return local_p;
+  }
+  
+  private ArrayList transform(ArrayList pts, Transform local_t)
+  {
+    float[] local_in = new float[pts.size() * 2];
+    float[] out = new float[pts.size() * 2];
+    for (int local_i = 0; local_i < pts.size(); local_i++)
+    {
+      local_in[(local_i * 2)] = ((float[])(float[])pts.get(local_i))[0];
+      local_in[(local_i * 2 + 1)] = ((float[])(float[])pts.get(local_i))[1];
+    }
+    local_t.transform(local_in, 0, out, 0, pts.size());
+    ArrayList local_i = new ArrayList();
+    for (int local_i1 = 0; local_i1 < pts.size(); local_i1++) {
+      local_i.add(new float[] { out[(local_i1 * 2)], out[(local_i1 * 2 + 1)] });
+    }
+    return local_i;
+  }
+  
+  public boolean closed()
+  {
+    return this.closed;
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.newdawn.slick.geom.Path
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

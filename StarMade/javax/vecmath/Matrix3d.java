@@ -226,21 +226,21 @@ public class Matrix3d
   {
     if (paramInt == 0)
     {
-      paramVector3d.x = this.m00;
-      paramVector3d.y = this.m01;
-      paramVector3d.z = this.m02;
+      paramVector3d.field_612 = this.m00;
+      paramVector3d.field_613 = this.m01;
+      paramVector3d.field_614 = this.m02;
     }
     else if (paramInt == 1)
     {
-      paramVector3d.x = this.m10;
-      paramVector3d.y = this.m11;
-      paramVector3d.z = this.m12;
+      paramVector3d.field_612 = this.m10;
+      paramVector3d.field_613 = this.m11;
+      paramVector3d.field_614 = this.m12;
     }
     else if (paramInt == 2)
     {
-      paramVector3d.x = this.m20;
-      paramVector3d.y = this.m21;
-      paramVector3d.z = this.m22;
+      paramVector3d.field_612 = this.m20;
+      paramVector3d.field_613 = this.m21;
+      paramVector3d.field_614 = this.m22;
     }
     else
     {
@@ -278,21 +278,21 @@ public class Matrix3d
   {
     if (paramInt == 0)
     {
-      paramVector3d.x = this.m00;
-      paramVector3d.y = this.m10;
-      paramVector3d.z = this.m20;
+      paramVector3d.field_612 = this.m00;
+      paramVector3d.field_613 = this.m10;
+      paramVector3d.field_614 = this.m20;
     }
     else if (paramInt == 1)
     {
-      paramVector3d.x = this.m01;
-      paramVector3d.y = this.m11;
-      paramVector3d.z = this.m21;
+      paramVector3d.field_612 = this.m01;
+      paramVector3d.field_613 = this.m11;
+      paramVector3d.field_614 = this.m21;
     }
     else if (paramInt == 2)
     {
-      paramVector3d.x = this.m02;
-      paramVector3d.y = this.m12;
-      paramVector3d.z = this.m22;
+      paramVector3d.field_612 = this.m02;
+      paramVector3d.field_613 = this.m12;
+      paramVector3d.field_614 = this.m22;
     }
     else
     {
@@ -355,19 +355,19 @@ public class Matrix3d
     switch (paramInt)
     {
     case 0: 
-      this.m00 = paramVector3d.x;
-      this.m01 = paramVector3d.y;
-      this.m02 = paramVector3d.z;
+      this.m00 = paramVector3d.field_612;
+      this.m01 = paramVector3d.field_613;
+      this.m02 = paramVector3d.field_614;
       break;
     case 1: 
-      this.m10 = paramVector3d.x;
-      this.m11 = paramVector3d.y;
-      this.m12 = paramVector3d.z;
+      this.m10 = paramVector3d.field_612;
+      this.m11 = paramVector3d.field_613;
+      this.m12 = paramVector3d.field_614;
       break;
     case 2: 
-      this.m20 = paramVector3d.x;
-      this.m21 = paramVector3d.y;
-      this.m22 = paramVector3d.z;
+      this.m20 = paramVector3d.field_612;
+      this.m21 = paramVector3d.field_613;
+      this.m22 = paramVector3d.field_614;
       break;
     default: 
       throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix3d6"));
@@ -427,19 +427,19 @@ public class Matrix3d
     switch (paramInt)
     {
     case 0: 
-      this.m00 = paramVector3d.x;
-      this.m10 = paramVector3d.y;
-      this.m20 = paramVector3d.z;
+      this.m00 = paramVector3d.field_612;
+      this.m10 = paramVector3d.field_613;
+      this.m20 = paramVector3d.field_614;
       break;
     case 1: 
-      this.m01 = paramVector3d.x;
-      this.m11 = paramVector3d.y;
-      this.m21 = paramVector3d.z;
+      this.m01 = paramVector3d.field_612;
+      this.m11 = paramVector3d.field_613;
+      this.m21 = paramVector3d.field_614;
       break;
     case 2: 
-      this.m02 = paramVector3d.x;
-      this.m12 = paramVector3d.y;
-      this.m22 = paramVector3d.z;
+      this.m02 = paramVector3d.field_612;
+      this.m12 = paramVector3d.field_613;
+      this.m22 = paramVector3d.field_614;
       break;
     default: 
       throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix3d9"));
@@ -591,20 +591,20 @@ public class Matrix3d
   
   public final void set(Quat4d paramQuat4d)
   {
-    this.m00 = (1.0D - 2.0D * paramQuat4d.y * paramQuat4d.y - 2.0D * paramQuat4d.z * paramQuat4d.z);
-    this.m10 = (2.0D * (paramQuat4d.x * paramQuat4d.y + paramQuat4d.w * paramQuat4d.z));
-    this.m20 = (2.0D * (paramQuat4d.x * paramQuat4d.z - paramQuat4d.w * paramQuat4d.y));
-    this.m01 = (2.0D * (paramQuat4d.x * paramQuat4d.y - paramQuat4d.w * paramQuat4d.z));
-    this.m11 = (1.0D - 2.0D * paramQuat4d.x * paramQuat4d.x - 2.0D * paramQuat4d.z * paramQuat4d.z);
-    this.m21 = (2.0D * (paramQuat4d.y * paramQuat4d.z + paramQuat4d.w * paramQuat4d.x));
-    this.m02 = (2.0D * (paramQuat4d.x * paramQuat4d.z + paramQuat4d.w * paramQuat4d.y));
-    this.m12 = (2.0D * (paramQuat4d.y * paramQuat4d.z - paramQuat4d.w * paramQuat4d.x));
-    this.m22 = (1.0D - 2.0D * paramQuat4d.x * paramQuat4d.x - 2.0D * paramQuat4d.y * paramQuat4d.y);
+    this.m00 = (1.0D - 2.0D * paramQuat4d.field_601 * paramQuat4d.field_601 - 2.0D * paramQuat4d.field_602 * paramQuat4d.field_602);
+    this.m10 = (2.0D * (paramQuat4d.field_600 * paramQuat4d.field_601 + paramQuat4d.field_603 * paramQuat4d.field_602));
+    this.m20 = (2.0D * (paramQuat4d.field_600 * paramQuat4d.field_602 - paramQuat4d.field_603 * paramQuat4d.field_601));
+    this.m01 = (2.0D * (paramQuat4d.field_600 * paramQuat4d.field_601 - paramQuat4d.field_603 * paramQuat4d.field_602));
+    this.m11 = (1.0D - 2.0D * paramQuat4d.field_600 * paramQuat4d.field_600 - 2.0D * paramQuat4d.field_602 * paramQuat4d.field_602);
+    this.m21 = (2.0D * (paramQuat4d.field_601 * paramQuat4d.field_602 + paramQuat4d.field_603 * paramQuat4d.field_600));
+    this.m02 = (2.0D * (paramQuat4d.field_600 * paramQuat4d.field_602 + paramQuat4d.field_603 * paramQuat4d.field_601));
+    this.m12 = (2.0D * (paramQuat4d.field_601 * paramQuat4d.field_602 - paramQuat4d.field_603 * paramQuat4d.field_600));
+    this.m22 = (1.0D - 2.0D * paramQuat4d.field_600 * paramQuat4d.field_600 - 2.0D * paramQuat4d.field_601 * paramQuat4d.field_601);
   }
   
   public final void set(AxisAngle4d paramAxisAngle4d)
   {
-    double d1 = Math.sqrt(paramAxisAngle4d.x * paramAxisAngle4d.x + paramAxisAngle4d.y * paramAxisAngle4d.y + paramAxisAngle4d.z * paramAxisAngle4d.z);
+    double d1 = Math.sqrt(paramAxisAngle4d.field_589 * paramAxisAngle4d.field_589 + paramAxisAngle4d.field_590 * paramAxisAngle4d.field_590 + paramAxisAngle4d.field_591 * paramAxisAngle4d.field_591);
     if (d1 < 1.110223024E-016D)
     {
       this.m00 = 1.0D;
@@ -620,15 +620,15 @@ public class Matrix3d
     else
     {
       d1 = 1.0D / d1;
-      double d2 = paramAxisAngle4d.x * d1;
-      double d3 = paramAxisAngle4d.y * d1;
-      double d4 = paramAxisAngle4d.z * d1;
+      double d2 = paramAxisAngle4d.field_589 * d1;
+      double d3 = paramAxisAngle4d.field_590 * d1;
+      double d4 = paramAxisAngle4d.field_591 * d1;
       double d5 = Math.sin(paramAxisAngle4d.angle);
       double d6 = Math.cos(paramAxisAngle4d.angle);
       double d7 = 1.0D - d6;
-      double d8 = paramAxisAngle4d.x * paramAxisAngle4d.z;
-      double d9 = paramAxisAngle4d.x * paramAxisAngle4d.y;
-      double d10 = paramAxisAngle4d.y * paramAxisAngle4d.z;
+      double d8 = paramAxisAngle4d.field_589 * paramAxisAngle4d.field_591;
+      double d9 = paramAxisAngle4d.field_589 * paramAxisAngle4d.field_590;
+      double d10 = paramAxisAngle4d.field_590 * paramAxisAngle4d.field_591;
       this.m00 = (d7 * d2 * d2 + d6);
       this.m01 = (d7 * d9 - d5 * d4);
       this.m02 = (d7 * d8 + d5 * d3);
@@ -643,20 +643,20 @@ public class Matrix3d
   
   public final void set(Quat4f paramQuat4f)
   {
-    this.m00 = (1.0D - 2.0D * paramQuat4f.y * paramQuat4f.y - 2.0D * paramQuat4f.z * paramQuat4f.z);
-    this.m10 = (2.0D * (paramQuat4f.x * paramQuat4f.y + paramQuat4f.w * paramQuat4f.z));
-    this.m20 = (2.0D * (paramQuat4f.x * paramQuat4f.z - paramQuat4f.w * paramQuat4f.y));
-    this.m01 = (2.0D * (paramQuat4f.x * paramQuat4f.y - paramQuat4f.w * paramQuat4f.z));
-    this.m11 = (1.0D - 2.0D * paramQuat4f.x * paramQuat4f.x - 2.0D * paramQuat4f.z * paramQuat4f.z);
-    this.m21 = (2.0D * (paramQuat4f.y * paramQuat4f.z + paramQuat4f.w * paramQuat4f.x));
-    this.m02 = (2.0D * (paramQuat4f.x * paramQuat4f.z + paramQuat4f.w * paramQuat4f.y));
-    this.m12 = (2.0D * (paramQuat4f.y * paramQuat4f.z - paramQuat4f.w * paramQuat4f.x));
-    this.m22 = (1.0D - 2.0D * paramQuat4f.x * paramQuat4f.x - 2.0D * paramQuat4f.y * paramQuat4f.y);
+    this.m00 = (1.0D - 2.0D * paramQuat4f.field_597 * paramQuat4f.field_597 - 2.0D * paramQuat4f.field_598 * paramQuat4f.field_598);
+    this.m10 = (2.0D * (paramQuat4f.field_596 * paramQuat4f.field_597 + paramQuat4f.field_599 * paramQuat4f.field_598));
+    this.m20 = (2.0D * (paramQuat4f.field_596 * paramQuat4f.field_598 - paramQuat4f.field_599 * paramQuat4f.field_597));
+    this.m01 = (2.0D * (paramQuat4f.field_596 * paramQuat4f.field_597 - paramQuat4f.field_599 * paramQuat4f.field_598));
+    this.m11 = (1.0D - 2.0D * paramQuat4f.field_596 * paramQuat4f.field_596 - 2.0D * paramQuat4f.field_598 * paramQuat4f.field_598);
+    this.m21 = (2.0D * (paramQuat4f.field_597 * paramQuat4f.field_598 + paramQuat4f.field_599 * paramQuat4f.field_596));
+    this.m02 = (2.0D * (paramQuat4f.field_596 * paramQuat4f.field_598 + paramQuat4f.field_599 * paramQuat4f.field_597));
+    this.m12 = (2.0D * (paramQuat4f.field_597 * paramQuat4f.field_598 - paramQuat4f.field_599 * paramQuat4f.field_596));
+    this.m22 = (1.0D - 2.0D * paramQuat4f.field_596 * paramQuat4f.field_596 - 2.0D * paramQuat4f.field_597 * paramQuat4f.field_597);
   }
   
   public final void set(AxisAngle4f paramAxisAngle4f)
   {
-    double d1 = Math.sqrt(paramAxisAngle4f.x * paramAxisAngle4f.x + paramAxisAngle4f.y * paramAxisAngle4f.y + paramAxisAngle4f.z * paramAxisAngle4f.z);
+    double d1 = Math.sqrt(paramAxisAngle4f.field_586 * paramAxisAngle4f.field_586 + paramAxisAngle4f.field_587 * paramAxisAngle4f.field_587 + paramAxisAngle4f.field_588 * paramAxisAngle4f.field_588);
     if (d1 < 1.110223024E-016D)
     {
       this.m00 = 1.0D;
@@ -672,9 +672,9 @@ public class Matrix3d
     else
     {
       d1 = 1.0D / d1;
-      double d2 = paramAxisAngle4f.x * d1;
-      double d3 = paramAxisAngle4f.y * d1;
-      double d4 = paramAxisAngle4f.z * d1;
+      double d2 = paramAxisAngle4f.field_586 * d1;
+      double d3 = paramAxisAngle4f.field_587 * d1;
+      double d4 = paramAxisAngle4f.field_588 * d1;
       double d5 = Math.sin(paramAxisAngle4f.angle);
       double d6 = Math.cos(paramAxisAngle4f.angle);
       double d7 = 1.0D - d6;
@@ -1414,19 +1414,19 @@ public class Matrix3d
   
   public final void transform(Tuple3d paramTuple3d)
   {
-    double d1 = this.m00 * paramTuple3d.x + this.m01 * paramTuple3d.y + this.m02 * paramTuple3d.z;
-    double d2 = this.m10 * paramTuple3d.x + this.m11 * paramTuple3d.y + this.m12 * paramTuple3d.z;
-    double d3 = this.m20 * paramTuple3d.x + this.m21 * paramTuple3d.y + this.m22 * paramTuple3d.z;
+    double d1 = this.m00 * paramTuple3d.field_612 + this.m01 * paramTuple3d.field_613 + this.m02 * paramTuple3d.field_614;
+    double d2 = this.m10 * paramTuple3d.field_612 + this.m11 * paramTuple3d.field_613 + this.m12 * paramTuple3d.field_614;
+    double d3 = this.m20 * paramTuple3d.field_612 + this.m21 * paramTuple3d.field_613 + this.m22 * paramTuple3d.field_614;
     paramTuple3d.set(d1, d2, d3);
   }
   
   public final void transform(Tuple3d paramTuple3d1, Tuple3d paramTuple3d2)
   {
-    double d1 = this.m00 * paramTuple3d1.x + this.m01 * paramTuple3d1.y + this.m02 * paramTuple3d1.z;
-    double d2 = this.m10 * paramTuple3d1.x + this.m11 * paramTuple3d1.y + this.m12 * paramTuple3d1.z;
-    paramTuple3d2.z = (this.m20 * paramTuple3d1.x + this.m21 * paramTuple3d1.y + this.m22 * paramTuple3d1.z);
-    paramTuple3d2.x = d1;
-    paramTuple3d2.y = d2;
+    double d1 = this.m00 * paramTuple3d1.field_612 + this.m01 * paramTuple3d1.field_613 + this.m02 * paramTuple3d1.field_614;
+    double d2 = this.m10 * paramTuple3d1.field_612 + this.m11 * paramTuple3d1.field_613 + this.m12 * paramTuple3d1.field_614;
+    paramTuple3d2.field_614 = (this.m20 * paramTuple3d1.field_612 + this.m21 * paramTuple3d1.field_613 + this.m22 * paramTuple3d1.field_614);
+    paramTuple3d2.field_612 = d1;
+    paramTuple3d2.field_613 = d2;
   }
   
   final void getScaleRotate(double[] paramArrayOfDouble1, double[] paramArrayOfDouble2)
@@ -2419,7 +2419,7 @@ public class Matrix3d
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     javax.vecmath.Matrix3d
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

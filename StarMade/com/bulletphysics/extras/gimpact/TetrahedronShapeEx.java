@@ -1,30 +1,31 @@
-/*  1:   */package com.bulletphysics.extras.gimpact;
-/*  2:   */
-/*  3:   */import com.bulletphysics.collision.shapes.BU_Simplex1to4;
-/*  4:   */import javax.vecmath.Vector3f;
-/*  5:   */
-/* 36:   */class TetrahedronShapeEx
-/* 37:   */  extends BU_Simplex1to4
-/* 38:   */{
-/* 39:   */  public TetrahedronShapeEx()
-/* 40:   */  {
-/* 41:41 */    this.numVertices = 4;
-/* 42:42 */    for (int i = 0; i < this.numVertices; i++) {
-/* 43:43 */      this.vertices[i] = new Vector3f();
-/* 44:   */    }
-/* 45:   */  }
-/* 46:   */  
-/* 47:   */  public void setVertices(Vector3f v0, Vector3f v1, Vector3f v2, Vector3f v3) {
-/* 48:48 */    this.vertices[0].set(v0);
-/* 49:49 */    this.vertices[1].set(v1);
-/* 50:50 */    this.vertices[2].set(v2);
-/* 51:51 */    this.vertices[3].set(v3);
-/* 52:52 */    recalcLocalAabb();
-/* 53:   */  }
-/* 54:   */}
+package com.bulletphysics.extras.gimpact;
+
+import com.bulletphysics.collision.shapes.BU_Simplex1to4;
+import javax.vecmath.Vector3f;
+
+class TetrahedronShapeEx
+  extends BU_Simplex1to4
+{
+  public TetrahedronShapeEx()
+  {
+    this.numVertices = 4;
+    for (int local_i = 0; local_i < this.numVertices; local_i++) {
+      this.vertices[local_i] = new Vector3f();
+    }
+  }
+  
+  public void setVertices(Vector3f local_v0, Vector3f local_v1, Vector3f local_v2, Vector3f local_v3)
+  {
+    this.vertices[0].set(local_v0);
+    this.vertices[1].set(local_v1);
+    this.vertices[2].set(local_v2);
+    this.vertices[3].set(local_v3);
+    recalcLocalAabb();
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     com.bulletphysics.extras.gimpact.TetrahedronShapeEx
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

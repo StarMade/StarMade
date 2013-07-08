@@ -1,24 +1,35 @@
-/*  1:   */package it.unimi.dsi.fastutil.ints;
-/*  2:   */
-/* 57:   */public abstract class AbstractIntIterator
-/* 58:   */  implements IntIterator
-/* 59:   */{
-/* 60:60 */  public int nextInt() { return next().intValue(); }
-/* 61:   */  
-/* 62:62 */  public Integer next() { return Integer.valueOf(nextInt()); }
-/* 63:   */  
-/* 64:64 */  public void remove() { throw new UnsupportedOperationException(); }
-/* 65:   */  
-/* 66:   */  public int skip(int n)
-/* 67:   */  {
-/* 68:68 */    int i = n;
-/* 69:69 */    while ((i-- != 0) && (hasNext())) nextInt();
-/* 70:70 */    return n - i - 1;
-/* 71:   */  }
-/* 72:   */}
+package it.unimi.dsi.fastutil.ints;
+
+public abstract class AbstractIntIterator
+  implements IntIterator
+{
+  public int nextInt()
+  {
+    return next().intValue();
+  }
+  
+  public Integer next()
+  {
+    return Integer.valueOf(nextInt());
+  }
+  
+  public void remove()
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  public int skip(int local_n)
+  {
+    int local_i = local_n;
+    while ((local_i-- != 0) && (hasNext())) {
+      nextInt();
+    }
+    return local_n - local_i - 1;
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.ints.AbstractIntIterator
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

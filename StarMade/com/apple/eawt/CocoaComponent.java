@@ -1,22 +1,29 @@
-/* 1:  */package com.apple.eawt;
-/* 2:  */
-/* 3:  */import java.awt.Canvas;
-/* 4:  */
-/* 5:  */public abstract class CocoaComponent extends Canvas { public abstract int createNSView();
-/* 6:  */  
-/* 7:7 */  public long createNSViewLong() { return 0L; }
-/* 8:  */  
-/* 9:  */  public abstract java.awt.Dimension getMaximumSize();
-/* 10:  */  
-/* 11:  */  public abstract java.awt.Dimension getMinimumSize();
-/* 12:  */  
-/* 13:  */  public abstract java.awt.Dimension getPreferredSize();
-/* 14:  */  
-/* 15:  */  public final void sendMessage(int paramInt, Object paramObject) {}
-/* 16:  */}
+package com.apple.eawt;
+
+import java.awt.Canvas;
+import java.awt.Dimension;
+
+public abstract class CocoaComponent
+  extends Canvas
+{
+  public abstract int createNSView();
+  
+  public long createNSViewLong()
+  {
+    return 0L;
+  }
+  
+  public abstract Dimension getMaximumSize();
+  
+  public abstract Dimension getMinimumSize();
+  
+  public abstract Dimension getPreferredSize();
+  
+  public final void sendMessage(int paramInt, Object paramObject) {}
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     com.apple.eawt.CocoaComponent
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

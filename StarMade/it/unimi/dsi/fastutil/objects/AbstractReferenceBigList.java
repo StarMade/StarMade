@@ -1,360 +1,571 @@
-/*   1:    */package it.unimi.dsi.fastutil.objects;
-/*   2:    */
-/*   3:    */import it.unimi.dsi.fastutil.BigList;
-/*   4:    */import it.unimi.dsi.fastutil.BigListIterator;
-/*   5:    */import it.unimi.dsi.fastutil.Stack;
-/*   6:    */import java.io.Serializable;
-/*   7:    */import java.util.Collection;
-/*   8:    */import java.util.Iterator;
-/*   9:    */import java.util.NoSuchElementException;
-/*  10:    */
-/*  53:    */public abstract class AbstractReferenceBigList<K>
-/*  54:    */  extends AbstractReferenceCollection<K>
-/*  55:    */  implements ReferenceBigList<K>, Stack<K>
-/*  56:    */{
-/*  57:    */  protected void ensureIndex(long index)
-/*  58:    */  {
-/*  59: 59 */    if (index < 0L) throw new IndexOutOfBoundsException(new StringBuilder().append("Index (").append(index).append(") is negative").toString());
-/*  60: 60 */    if (index > size64()) { throw new IndexOutOfBoundsException(new StringBuilder().append("Index (").append(index).append(") is greater than list size (").append(size64()).append(")").toString());
-/*  61:    */    }
-/*  62:    */  }
-/*  63:    */  
-/*  66:    */  protected void ensureRestrictedIndex(long index)
-/*  67:    */  {
-/*  68: 68 */    if (index < 0L) throw new IndexOutOfBoundsException(new StringBuilder().append("Index (").append(index).append(") is negative").toString());
-/*  69: 69 */    if (index >= size64()) throw new IndexOutOfBoundsException(new StringBuilder().append("Index (").append(index).append(") is greater than or equal to list size (").append(size64()).append(")").toString());
-/*  70:    */  }
-/*  71:    */  
-/*  72: 72 */  public void add(long index, K k) { throw new UnsupportedOperationException(); }
-/*  73:    */  
-/*  74:    */  public boolean add(K k) {
-/*  75: 75 */    add(size64(), k);
-/*  76: 76 */    return true;
-/*  77:    */  }
-/*  78:    */  
-/*  79: 79 */  public K remove(long i) { throw new UnsupportedOperationException(); }
-/*  80:    */  
-/*  81:    */  public K remove(int i) {
-/*  82: 82 */    return remove(i);
-/*  83:    */  }
-/*  84:    */  
-/*  85: 85 */  public K set(long index, K k) { throw new UnsupportedOperationException(); }
-/*  86:    */  
-/*  88: 88 */  public K set(int index, K k) { return set(index, k); }
-/*  89:    */  
-/*  90:    */  public boolean addAll(long index, Collection<? extends K> c) {
-/*  91: 91 */    ensureIndex(index);
-/*  92: 92 */    int n = c.size();
-/*  93: 93 */    if (n == 0) return false;
-/*  94: 94 */    Iterator<? extends K> i = c.iterator();
-/*  95: 95 */    while (n-- != 0) add(index++, i.next());
-/*  96: 96 */    return true;
-/*  97:    */  }
-/*  98:    */  
-/*  99: 99 */  public boolean addAll(int index, Collection<? extends K> c) { return addAll(index, c); }
-/* 100:    */  
-/* 101:    */  public boolean addAll(Collection<? extends K> c)
-/* 102:    */  {
-/* 103:103 */    return addAll(size64(), c);
-/* 104:    */  }
-/* 105:    */  
-/* 106:106 */  public ObjectBigListIterator<K> iterator() { return listIterator(); }
-/* 107:    */  
-/* 108:    */  public ObjectBigListIterator<K> listIterator() {
-/* 109:109 */    return listIterator(0L);
-/* 110:    */  }
-/* 111:    */  
-/* 112:112 */  public ObjectBigListIterator<K> listIterator(final long index) { new AbstractObjectBigListIterator() {
-/* 113:113 */      long last = -1L; long pos = index;
-/* 114:114 */      public boolean hasNext() { return this.pos < AbstractReferenceBigList.this.size64(); }
-/* 115:115 */      public boolean hasPrevious() { return this.pos > 0L; }
-/* 116:116 */      public K next() { if (!hasNext()) throw new NoSuchElementException(); return AbstractReferenceBigList.this.get(this.last = this.pos++); }
-/* 117:117 */      public K previous() { if (!hasPrevious()) throw new NoSuchElementException(); return AbstractReferenceBigList.this.get(this.last = --this.pos); }
-/* 118:118 */      public long nextIndex() { return this.pos; }
-/* 119:119 */      public long previousIndex() { return this.pos - 1L; }
-/* 120:    */      
-/* 121:121 */      public void add(K k) { if (this.last == -1L) throw new IllegalStateException();
-/* 122:122 */        AbstractReferenceBigList.this.add(this.pos++, k);
-/* 123:123 */        this.last = -1L;
-/* 124:    */      }
-/* 125:    */      
-/* 126:126 */      public void set(K k) { if (this.last == -1L) throw new IllegalStateException();
-/* 127:127 */        AbstractReferenceBigList.this.set(this.last, k);
-/* 128:    */      }
-/* 129:    */      
-/* 130:130 */      public void remove() { if (this.last == -1L) throw new IllegalStateException();
-/* 131:131 */        AbstractReferenceBigList.this.remove(this.last);
-/* 132:    */        
-/* 133:133 */        if (this.last < this.pos) this.pos -= 1L;
-/* 134:134 */        this.last = -1L;
-/* 135:    */      }
-/* 136:    */    }; }
-/* 137:    */  
-/* 139:    */  public ObjectBigListIterator<K> listIterator(int index)
-/* 140:    */  {
-/* 141:141 */    return listIterator(index);
-/* 142:    */  }
-/* 143:    */  
-/* 144:    */  public boolean contains(Object k)
-/* 145:    */  {
-/* 146:146 */    return indexOf(k) >= 0L;
-/* 147:    */  }
-/* 148:    */  
-/* 149:    */  public long indexOf(Object k) {
-/* 150:150 */    ObjectBigListIterator<K> i = listIterator();
-/* 151:    */    
-/* 152:152 */    while (i.hasNext()) {
-/* 153:153 */      K e = i.next();
-/* 154:154 */      if (k == e) return i.previousIndex();
-/* 155:    */    }
-/* 156:156 */    return -1L;
-/* 157:    */  }
-/* 158:    */  
-/* 159:    */  public long lastIndexOf(Object k) {
-/* 160:160 */    ObjectBigListIterator<K> i = listIterator(size64());
-/* 161:    */    
-/* 162:162 */    while (i.hasPrevious()) {
-/* 163:163 */      K e = i.previous();
-/* 164:164 */      if (k == e) return i.nextIndex();
-/* 165:    */    }
-/* 166:166 */    return -1L;
-/* 167:    */  }
-/* 168:    */  
-/* 169:    */  public void size(long size) {
-/* 170:170 */    long i = size64();
-/* 171:171 */    for (size <= i; i++ < size; add(null)) {}
-/* 172:172 */    while (i-- != size) remove(i);
-/* 173:    */  }
-/* 174:    */  
-/* 175:    */  public void size(int size) {
-/* 176:176 */    size(size);
-/* 177:    */  }
-/* 178:    */  
-/* 179:    */  public ReferenceBigList<K> subList(long from, long to) {
-/* 180:180 */    ensureIndex(from);
-/* 181:181 */    ensureIndex(to);
-/* 182:182 */    if (from > to) { throw new IndexOutOfBoundsException(new StringBuilder().append("Start index (").append(from).append(") is greater than end index (").append(to).append(")").toString());
-/* 183:    */    }
-/* 184:184 */    return new ReferenceSubList(this, from, to);
-/* 185:    */  }
-/* 186:    */  
-/* 195:    */  public void removeElements(long from, long to)
-/* 196:    */  {
-/* 197:197 */    ensureIndex(to);
-/* 198:198 */    ObjectBigListIterator<K> i = listIterator(from);
-/* 199:199 */    long n = to - from;
-/* 200:200 */    if (n < 0L) throw new IllegalArgumentException(new StringBuilder().append("Start index (").append(from).append(") is greater than end index (").append(to).append(")").toString());
-/* 201:201 */    while (n-- != 0L) {
-/* 202:202 */      i.next();
-/* 203:203 */      i.remove();
-/* 204:    */    }
-/* 205:    */  }
-/* 206:    */  
-/* 217:    */  public void addElements(long index, K[][] a, long offset, long length)
-/* 218:    */  {
-/* 219:219 */    ensureIndex(index);
-/* 220:220 */    ObjectBigArrays.ensureOffsetLength(a, offset, length);
-/* 221:221 */    while (length-- != 0L) add(index++, ObjectBigArrays.get(a, offset++));
-/* 222:    */  }
-/* 223:    */  
-/* 224:    */  public void addElements(long index, K[][] a) {
-/* 225:225 */    addElements(index, a, 0L, ObjectBigArrays.length(a));
-/* 226:    */  }
-/* 227:    */  
-/* 238:    */  public void getElements(long from, Object[][] a, long offset, long length)
-/* 239:    */  {
-/* 240:240 */    ObjectBigListIterator<K> i = listIterator(from);
-/* 241:241 */    ObjectBigArrays.ensureOffsetLength(a, offset, length);
-/* 242:242 */    if (from + length > size64()) throw new IndexOutOfBoundsException(new StringBuilder().append("End index (").append(from + length).append(") is greater than list size (").append(size64()).append(")").toString());
-/* 243:243 */    while (length-- != 0L) ObjectBigArrays.set(a, offset++, i.next());
-/* 244:    */  }
-/* 245:    */  
-/* 246:    */  @Deprecated
-/* 247:    */  public int size() {
-/* 248:248 */    return (int)Math.min(2147483647L, size64());
-/* 249:    */  }
-/* 250:    */  
-/* 257:    */  public boolean equals(Object o)
-/* 258:    */  {
-/* 259:259 */    if (o == this) return true;
-/* 260:260 */    if (!(o instanceof BigList)) return false;
-/* 261:261 */    BigList<?> l = (BigList)o;
-/* 262:262 */    long s = size64();
-/* 263:263 */    if (s != l.size64()) { return false;
-/* 264:    */    }
-/* 265:265 */    BigListIterator<?> i1 = listIterator();BigListIterator<?> i2 = l.listIterator();
-/* 266:    */    
-/* 268:268 */    while (s-- != 0L) { if (i1.next() != i2.next()) { return false;
-/* 269:    */      }
-/* 270:    */    }
-/* 271:    */    
-/* 272:272 */    return true;
-/* 273:    */  }
-/* 274:    */  
-/* 277:    */  public int hashCode()
-/* 278:    */  {
-/* 279:279 */    ObjectIterator<K> i = iterator();
-/* 280:280 */    int h = 1;
-/* 281:281 */    long s = size64();
-/* 282:282 */    while (s-- != 0L) {
-/* 283:283 */      K k = i.next();
-/* 284:284 */      h = 31 * h + (k == null ? 0 : System.identityHashCode(k));
-/* 285:    */    }
-/* 286:286 */    return h;
-/* 287:    */  }
-/* 288:    */  
-/* 289:289 */  public void push(K o) { add(o); }
-/* 290:    */  
-/* 291:    */  public K pop() {
-/* 292:292 */    if (isEmpty()) throw new NoSuchElementException();
-/* 293:293 */    return remove(size64() - 1L);
-/* 294:    */  }
-/* 295:    */  
-/* 296:296 */  public K top() { if (isEmpty()) throw new NoSuchElementException();
-/* 297:297 */    return get(size64() - 1L);
-/* 298:    */  }
-/* 299:    */  
-/* 300:300 */  public K peek(int i) { return get(size64() - 1L - i); }
-/* 301:    */  
-/* 303:303 */  public K get(int index) { return get(index); }
-/* 304:    */  
-/* 305:    */  public String toString() {
-/* 306:306 */    StringBuilder s = new StringBuilder();
-/* 307:307 */    ObjectIterator<K> i = iterator();
-/* 308:308 */    long n = size64();
-/* 309:    */    
-/* 310:310 */    boolean first = true;
-/* 311:311 */    s.append("[");
-/* 312:312 */    while (n-- != 0L) {
-/* 313:313 */      if (first) first = false; else
-/* 314:314 */        s.append(", ");
-/* 315:315 */      K k = i.next();
-/* 316:316 */      if (this == k) s.append("(this big list)"); else
-/* 317:317 */        s.append(String.valueOf(k));
-/* 318:    */    }
-/* 319:319 */    s.append("]");
-/* 320:320 */    return s.toString();
-/* 321:    */  }
-/* 322:    */  
-/* 323:    */  public static class ReferenceSubList<K> extends AbstractReferenceBigList<K> implements Serializable
-/* 324:    */  {
-/* 325:    */    public static final long serialVersionUID = -7046029254386353129L;
-/* 326:    */    protected final ReferenceBigList<K> l;
-/* 327:    */    protected final long from;
-/* 328:    */    protected long to;
-/* 329:    */    private static final boolean ASSERTS = false;
-/* 330:    */    
-/* 331:    */    public ReferenceSubList(ReferenceBigList<K> l, long from, long to) {
-/* 332:332 */      this.l = l;
-/* 333:333 */      this.from = from;
-/* 334:334 */      this.to = to;
-/* 335:    */    }
-/* 336:    */    
-/* 339:    */    private void assertRange() {}
-/* 340:    */    
-/* 342:    */    public boolean add(K k)
-/* 343:    */    {
-/* 344:344 */      this.l.add(this.to, k);
-/* 345:345 */      this.to += 1L;
-/* 346:    */      
-/* 347:347 */      return true;
-/* 348:    */    }
-/* 349:    */    
-/* 350:350 */    public void add(long index, K k) { ensureIndex(index);
-/* 351:351 */      this.l.add(this.from + index, k);
-/* 352:352 */      this.to += 1L;
-/* 353:    */    }
-/* 354:    */    
-/* 355:    */    public boolean addAll(long index, Collection<? extends K> c) {
-/* 356:356 */      ensureIndex(index);
-/* 357:357 */      this.to += c.size();
-/* 358:    */      
-/* 363:363 */      return this.l.addAll(this.from + index, c);
-/* 364:    */    }
-/* 365:    */    
-/* 366:366 */    public K get(long index) { ensureRestrictedIndex(index);
-/* 367:367 */      return this.l.get(this.from + index);
-/* 368:    */    }
-/* 369:    */    
-/* 370:370 */    public K remove(long index) { ensureRestrictedIndex(index);
-/* 371:371 */      this.to -= 1L;
-/* 372:372 */      return this.l.remove(this.from + index);
-/* 373:    */    }
-/* 374:    */    
-/* 375:375 */    public K set(long index, K k) { ensureRestrictedIndex(index);
-/* 376:376 */      return this.l.set(this.from + index, k);
-/* 377:    */    }
-/* 378:    */    
-/* 379:379 */    public void clear() { removeElements(0L, size64()); }
-/* 380:    */    
-/* 383:383 */    public long size64() { return this.to - this.from; }
-/* 384:    */    
-/* 385:    */    public void getElements(long from, Object[][] a, long offset, long length) {
-/* 386:386 */      ensureIndex(from);
-/* 387:387 */      if (from + length > size64()) throw new IndexOutOfBoundsException("End index (" + from + length + ") is greater than list size (" + size64() + ")");
-/* 388:388 */      this.l.getElements(this.from + from, a, offset, length);
-/* 389:    */    }
-/* 390:    */    
-/* 391:391 */    public void removeElements(long from, long to) { ensureIndex(from);
-/* 392:392 */      ensureIndex(to);
-/* 393:393 */      this.l.removeElements(this.from + from, this.from + to);
-/* 394:394 */      this.to -= to - from;
-/* 395:    */    }
-/* 396:    */    
-/* 397:    */    public void addElements(long index, K[][] a, long offset, long length) {
-/* 398:398 */      ensureIndex(index);
-/* 399:399 */      this.l.addElements(this.from + index, a, offset, length);
-/* 400:400 */      this.to += length;
-/* 401:    */    }
-/* 402:    */    
-/* 403:    */    public ObjectBigListIterator<K> listIterator(final long index) {
-/* 404:404 */      ensureIndex(index);
-/* 405:405 */      new AbstractObjectBigListIterator() {
-/* 406:406 */        long last = -1L; long pos = index;
-/* 407:407 */        public boolean hasNext() { return this.pos < AbstractReferenceBigList.ReferenceSubList.this.size64(); }
-/* 408:408 */        public boolean hasPrevious() { return this.pos > 0L; }
-/* 409:409 */        public K next() { if (!hasNext()) throw new NoSuchElementException(); return AbstractReferenceBigList.ReferenceSubList.this.l.get(AbstractReferenceBigList.ReferenceSubList.this.from + (this.last = this.pos++)); }
-/* 410:410 */        public K previous() { if (!hasPrevious()) throw new NoSuchElementException(); return AbstractReferenceBigList.ReferenceSubList.this.l.get(AbstractReferenceBigList.ReferenceSubList.this.from + (this.last = --this.pos)); }
-/* 411:411 */        public long nextIndex() { return this.pos; }
-/* 412:412 */        public long previousIndex() { return this.pos - 1L; }
-/* 413:    */        
-/* 414:414 */        public void add(K k) { if (this.last == -1L) throw new IllegalStateException();
-/* 415:415 */          AbstractReferenceBigList.ReferenceSubList.this.add(this.pos++, k);
-/* 416:416 */          this.last = -1L;
-/* 417:    */        }
-/* 418:    */        
-/* 419:    */        public void set(K k) {
-/* 420:420 */          if (this.last == -1L) throw new IllegalStateException();
-/* 421:421 */          AbstractReferenceBigList.ReferenceSubList.this.set(this.last, k);
-/* 422:    */        }
-/* 423:    */        
-/* 424:424 */        public void remove() { if (this.last == -1L) throw new IllegalStateException();
-/* 425:425 */          AbstractReferenceBigList.ReferenceSubList.this.remove(this.last);
-/* 426:    */          
-/* 427:427 */          if (this.last < this.pos) this.pos -= 1L;
-/* 428:428 */          this.last = -1L;
-/* 429:    */        }
-/* 430:    */      };
-/* 431:    */    }
-/* 432:    */    
-/* 433:    */    public ReferenceBigList<K> subList(long from, long to) {
-/* 434:434 */      ensureIndex(from);
-/* 435:435 */      ensureIndex(to);
-/* 436:436 */      if (from > to) throw new IllegalArgumentException("Start index (" + from + ") is greater than end index (" + to + ")");
-/* 437:437 */      return new ReferenceSubList(this, from, to);
-/* 438:    */    }
-/* 439:    */    
-/* 440:    */    public boolean remove(Object o) {
-/* 441:441 */      long index = indexOf(o);
-/* 442:442 */      if (index == -1L) return false;
-/* 443:443 */      remove(index);
-/* 444:444 */      return true;
-/* 445:    */    }
-/* 446:    */  }
-/* 447:    */}
+package it.unimi.dsi.fastutil.objects;
+
+import it.unimi.dsi.fastutil.BigList;
+import it.unimi.dsi.fastutil.BigListIterator;
+import it.unimi.dsi.fastutil.Stack;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+public abstract class AbstractReferenceBigList<K>
+  extends AbstractReferenceCollection<K>
+  implements ReferenceBigList<K>, Stack<K>
+{
+  protected void ensureIndex(long index)
+  {
+    if (index < 0L) {
+      throw new IndexOutOfBoundsException("Index (" + index + ") is negative");
+    }
+    if (index > size64()) {
+      throw new IndexOutOfBoundsException("Index (" + index + ") is greater than list size (" + size64() + ")");
+    }
+  }
+  
+  protected void ensureRestrictedIndex(long index)
+  {
+    if (index < 0L) {
+      throw new IndexOutOfBoundsException("Index (" + index + ") is negative");
+    }
+    if (index >= size64()) {
+      throw new IndexOutOfBoundsException("Index (" + index + ") is greater than or equal to list size (" + size64() + ")");
+    }
+  }
+  
+  public void add(long index, K local_k)
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  public boolean add(K local_k)
+  {
+    add(size64(), local_k);
+    return true;
+  }
+  
+  public K remove(long local_i)
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  public K remove(int local_i)
+  {
+    return remove(local_i);
+  }
+  
+  public K set(long index, K local_k)
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  public K set(int index, K local_k)
+  {
+    return set(index, local_k);
+  }
+  
+  public boolean addAll(long index, Collection<? extends K> local_c)
+  {
+    ensureIndex(index);
+    int local_n = local_c.size();
+    if (local_n == 0) {
+      return false;
+    }
+    Iterator<? extends K> local_i = local_c.iterator();
+    while (local_n-- != 0) {
+      add(index++, local_i.next());
+    }
+    return true;
+  }
+  
+  public boolean addAll(int index, Collection<? extends K> local_c)
+  {
+    return addAll(index, local_c);
+  }
+  
+  public boolean addAll(Collection<? extends K> local_c)
+  {
+    return addAll(size64(), local_c);
+  }
+  
+  public ObjectBigListIterator<K> iterator()
+  {
+    return listIterator();
+  }
+  
+  public ObjectBigListIterator<K> listIterator()
+  {
+    return listIterator(0L);
+  }
+  
+  public ObjectBigListIterator<K> listIterator(final long index)
+  {
+    new AbstractObjectBigListIterator()
+    {
+      long pos = index;
+      long last = -1L;
+      
+      public boolean hasNext()
+      {
+        return this.pos < AbstractReferenceBigList.this.size64();
+      }
+      
+      public boolean hasPrevious()
+      {
+        return this.pos > 0L;
+      }
+      
+      public K next()
+      {
+        if (!hasNext()) {
+          throw new NoSuchElementException();
+        }
+        return AbstractReferenceBigList.this.get(this.last = this.pos++);
+      }
+      
+      public K previous()
+      {
+        if (!hasPrevious()) {
+          throw new NoSuchElementException();
+        }
+        return AbstractReferenceBigList.this.get(this.last = --this.pos);
+      }
+      
+      public long nextIndex()
+      {
+        return this.pos;
+      }
+      
+      public long previousIndex()
+      {
+        return this.pos - 1L;
+      }
+      
+      public void add(K local_k)
+      {
+        if (this.last == -1L) {
+          throw new IllegalStateException();
+        }
+        AbstractReferenceBigList.this.add(this.pos++, local_k);
+        this.last = -1L;
+      }
+      
+      public void set(K local_k)
+      {
+        if (this.last == -1L) {
+          throw new IllegalStateException();
+        }
+        AbstractReferenceBigList.this.set(this.last, local_k);
+      }
+      
+      public void remove()
+      {
+        if (this.last == -1L) {
+          throw new IllegalStateException();
+        }
+        AbstractReferenceBigList.this.remove(this.last);
+        if (this.last < this.pos) {
+          this.pos -= 1L;
+        }
+        this.last = -1L;
+      }
+    };
+  }
+  
+  public ObjectBigListIterator<K> listIterator(int index)
+  {
+    return listIterator(index);
+  }
+  
+  public boolean contains(Object local_k)
+  {
+    return indexOf(local_k) >= 0L;
+  }
+  
+  public long indexOf(Object local_k)
+  {
+    ObjectBigListIterator<K> local_i = listIterator();
+    while (local_i.hasNext())
+    {
+      K local_e = local_i.next();
+      if (local_k == local_e) {
+        return local_i.previousIndex();
+      }
+    }
+    return -1L;
+  }
+  
+  public long lastIndexOf(Object local_k)
+  {
+    ObjectBigListIterator<K> local_i = listIterator(size64());
+    while (local_i.hasPrevious())
+    {
+      K local_e = local_i.previous();
+      if (local_k == local_e) {
+        return local_i.nextIndex();
+      }
+    }
+    return -1L;
+  }
+  
+  public void size(long size)
+  {
+    long local_i = size64();
+    if (size > local_i) {
+      while (local_i++ < size) {
+        add(null);
+      }
+    }
+    while (local_i-- != size) {
+      remove(local_i);
+    }
+  }
+  
+  public void size(int size)
+  {
+    size(size);
+  }
+  
+  public ReferenceBigList<K> subList(long from, long local_to)
+  {
+    ensureIndex(from);
+    ensureIndex(local_to);
+    if (from > local_to) {
+      throw new IndexOutOfBoundsException("Start index (" + from + ") is greater than end index (" + local_to + ")");
+    }
+    return new ReferenceSubList(this, from, local_to);
+  }
+  
+  public void removeElements(long from, long local_to)
+  {
+    ensureIndex(local_to);
+    ObjectBigListIterator<K> local_i = listIterator(from);
+    long local_n = local_to - from;
+    if (local_n < 0L) {
+      throw new IllegalArgumentException("Start index (" + from + ") is greater than end index (" + local_to + ")");
+    }
+    while (local_n-- != 0L)
+    {
+      local_i.next();
+      local_i.remove();
+    }
+  }
+  
+  public void addElements(long index, K[][] local_a, long offset, long length)
+  {
+    ensureIndex(index);
+    ObjectBigArrays.ensureOffsetLength(local_a, offset, length);
+    while (length-- != 0L) {
+      add(index++, ObjectBigArrays.get(local_a, offset++));
+    }
+  }
+  
+  public void addElements(long index, K[][] local_a)
+  {
+    addElements(index, local_a, 0L, ObjectBigArrays.length(local_a));
+  }
+  
+  public void getElements(long from, Object[][] local_a, long offset, long length)
+  {
+    ObjectBigListIterator<K> local_i = listIterator(from);
+    ObjectBigArrays.ensureOffsetLength(local_a, offset, length);
+    if (from + length > size64()) {
+      throw new IndexOutOfBoundsException("End index (" + (from + length) + ") is greater than list size (" + size64() + ")");
+    }
+    while (length-- != 0L) {
+      ObjectBigArrays.set(local_a, offset++, local_i.next());
+    }
+  }
+  
+  @Deprecated
+  public int size()
+  {
+    return (int)Math.min(2147483647L, size64());
+  }
+  
+  public boolean equals(Object local_o)
+  {
+    if (local_o == this) {
+      return true;
+    }
+    if (!(local_o instanceof BigList)) {
+      return false;
+    }
+    BigList<?> local_l = (BigList)local_o;
+    long local_s = size64();
+    if (local_s != local_l.size64()) {
+      return false;
+    }
+    BigListIterator<?> local_i1 = listIterator();
+    BigListIterator<?> local_i2 = local_l.listIterator();
+    while (local_s-- != 0L) {
+      if (local_i1.next() != local_i2.next()) {
+        return false;
+      }
+    }
+    return true;
+  }
+  
+  public int hashCode()
+  {
+    ObjectIterator<K> local_i = iterator();
+    int local_h = 1;
+    long local_s = size64();
+    while (local_s-- != 0L)
+    {
+      K local_k = local_i.next();
+      local_h = 31 * local_h + (local_k == null ? 0 : System.identityHashCode(local_k));
+    }
+    return local_h;
+  }
+  
+  public void push(K local_o)
+  {
+    add(local_o);
+  }
+  
+  public K pop()
+  {
+    if (isEmpty()) {
+      throw new NoSuchElementException();
+    }
+    return remove(size64() - 1L);
+  }
+  
+  public K top()
+  {
+    if (isEmpty()) {
+      throw new NoSuchElementException();
+    }
+    return get(size64() - 1L);
+  }
+  
+  public K peek(int local_i)
+  {
+    return get(size64() - 1L - local_i);
+  }
+  
+  public K get(int index)
+  {
+    return get(index);
+  }
+  
+  public String toString()
+  {
+    StringBuilder local_s = new StringBuilder();
+    ObjectIterator<K> local_i = iterator();
+    long local_n = size64();
+    boolean first = true;
+    local_s.append("[");
+    while (local_n-- != 0L)
+    {
+      if (first) {
+        first = false;
+      } else {
+        local_s.append(", ");
+      }
+      K local_k = local_i.next();
+      if (this == local_k) {
+        local_s.append("(this big list)");
+      } else {
+        local_s.append(String.valueOf(local_k));
+      }
+    }
+    local_s.append("]");
+    return local_s.toString();
+  }
+  
+  public static class ReferenceSubList<K>
+    extends AbstractReferenceBigList<K>
+    implements Serializable
+  {
+    public static final long serialVersionUID = -7046029254386353129L;
+    protected final ReferenceBigList<K> field_56;
+    protected final long from;
+    protected long field_57;
+    private static final boolean ASSERTS = false;
+    
+    public ReferenceSubList(ReferenceBigList<K> local_l, long from, long local_to)
+    {
+      this.field_56 = local_l;
+      this.from = from;
+      this.field_57 = local_to;
+    }
+    
+    private void assertRange() {}
+    
+    public boolean add(K local_k)
+    {
+      this.field_56.add(this.field_57, local_k);
+      this.field_57 += 1L;
+      return true;
+    }
+    
+    public void add(long index, K local_k)
+    {
+      ensureIndex(index);
+      this.field_56.add(this.from + index, local_k);
+      this.field_57 += 1L;
+    }
+    
+    public boolean addAll(long index, Collection<? extends K> local_c)
+    {
+      ensureIndex(index);
+      this.field_57 += local_c.size();
+      return this.field_56.addAll(this.from + index, local_c);
+    }
+    
+    public K get(long index)
+    {
+      ensureRestrictedIndex(index);
+      return this.field_56.get(this.from + index);
+    }
+    
+    public K remove(long index)
+    {
+      ensureRestrictedIndex(index);
+      this.field_57 -= 1L;
+      return this.field_56.remove(this.from + index);
+    }
+    
+    public K set(long index, K local_k)
+    {
+      ensureRestrictedIndex(index);
+      return this.field_56.set(this.from + index, local_k);
+    }
+    
+    public void clear()
+    {
+      removeElements(0L, size64());
+    }
+    
+    public long size64()
+    {
+      return this.field_57 - this.from;
+    }
+    
+    public void getElements(long from, Object[][] local_a, long offset, long length)
+    {
+      ensureIndex(from);
+      if (from + length > size64()) {
+        throw new IndexOutOfBoundsException("End index (" + from + length + ") is greater than list size (" + size64() + ")");
+      }
+      this.field_56.getElements(this.from + from, local_a, offset, length);
+    }
+    
+    public void removeElements(long from, long local_to)
+    {
+      ensureIndex(from);
+      ensureIndex(local_to);
+      this.field_56.removeElements(this.from + from, this.from + local_to);
+      this.field_57 -= local_to - from;
+    }
+    
+    public void addElements(long index, K[][] local_a, long offset, long length)
+    {
+      ensureIndex(index);
+      this.field_56.addElements(this.from + index, local_a, offset, length);
+      this.field_57 += length;
+    }
+    
+    public ObjectBigListIterator<K> listIterator(final long index)
+    {
+      ensureIndex(index);
+      new AbstractObjectBigListIterator()
+      {
+        long pos = index;
+        long last = -1L;
+        
+        public boolean hasNext()
+        {
+          return this.pos < AbstractReferenceBigList.ReferenceSubList.this.size64();
+        }
+        
+        public boolean hasPrevious()
+        {
+          return this.pos > 0L;
+        }
+        
+        public K next()
+        {
+          if (!hasNext()) {
+            throw new NoSuchElementException();
+          }
+          return AbstractReferenceBigList.ReferenceSubList.this.field_56.get(AbstractReferenceBigList.ReferenceSubList.this.from + (this.last = this.pos++));
+        }
+        
+        public K previous()
+        {
+          if (!hasPrevious()) {
+            throw new NoSuchElementException();
+          }
+          return AbstractReferenceBigList.ReferenceSubList.this.field_56.get(AbstractReferenceBigList.ReferenceSubList.this.from + (this.last = --this.pos));
+        }
+        
+        public long nextIndex()
+        {
+          return this.pos;
+        }
+        
+        public long previousIndex()
+        {
+          return this.pos - 1L;
+        }
+        
+        public void add(K local_k)
+        {
+          if (this.last == -1L) {
+            throw new IllegalStateException();
+          }
+          AbstractReferenceBigList.ReferenceSubList.this.add(this.pos++, local_k);
+          this.last = -1L;
+        }
+        
+        public void set(K local_k)
+        {
+          if (this.last == -1L) {
+            throw new IllegalStateException();
+          }
+          AbstractReferenceBigList.ReferenceSubList.this.set(this.last, local_k);
+        }
+        
+        public void remove()
+        {
+          if (this.last == -1L) {
+            throw new IllegalStateException();
+          }
+          AbstractReferenceBigList.ReferenceSubList.this.remove(this.last);
+          if (this.last < this.pos) {
+            this.pos -= 1L;
+          }
+          this.last = -1L;
+        }
+      };
+    }
+    
+    public ReferenceBigList<K> subList(long from, long local_to)
+    {
+      ensureIndex(from);
+      ensureIndex(local_to);
+      if (from > local_to) {
+        throw new IllegalArgumentException("Start index (" + from + ") is greater than end index (" + local_to + ")");
+      }
+      return new ReferenceSubList(this, from, local_to);
+    }
+    
+    public boolean remove(Object local_o)
+    {
+      long index = indexOf(local_o);
+      if (index == -1L) {
+        return false;
+      }
+      remove(index);
+      return true;
+    }
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.objects.AbstractReferenceBigList
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

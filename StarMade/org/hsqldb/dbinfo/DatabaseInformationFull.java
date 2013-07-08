@@ -633,8 +633,8 @@ final class DatabaseInformationFull
           TextFileSettings localTextFileSettings = localTextCache.getTextFileSettings();
           arrayOfObject[4] = FileUtil.getFileUtil().canonicalOrAbsolutePath(localTextCache.getFileName());
           arrayOfObject[5] = localTextFileSettings.stringEncoding;
-          arrayOfObject[6] = localTextFileSettings.fs;
-          arrayOfObject[7] = localTextFileSettings.vs;
+          arrayOfObject[6] = localTextFileSettings.field_1928;
+          arrayOfObject[7] = localTextFileSettings.field_1929;
           arrayOfObject[8] = localTextFileSettings.lvs;
           arrayOfObject[9] = ValuePool.getBoolean(localTextFileSettings.ignoreFirst);
           arrayOfObject[10] = ValuePool.getBoolean(localTextFileSettings.isQuoted);
@@ -1218,9 +1218,9 @@ final class DatabaseInformationFull
               arrayOfObject[45] = ValuePool.getLong(((NumberType)localType).getNumericPrecisionInRadix());
               if (localType.isExactNumberType())
               {
-                Long tmp1003_1000 = ValuePool.getLong(localType.scale);
-                arrayOfObject[46] = tmp1003_1000;
-                arrayOfObject[12] = tmp1003_1000;
+                Long tmp1007_1004 = ValuePool.getLong(localType.scale);
+                arrayOfObject[46] = tmp1007_1004;
+                arrayOfObject[12] = tmp1007_1004;
               }
               arrayOfObject[11] = ValuePool.getLong(localType.getPrecisionRadix());
             }
@@ -3900,7 +3900,7 @@ final class DatabaseInformationFull
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.dbinfo.DatabaseInformationFull
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

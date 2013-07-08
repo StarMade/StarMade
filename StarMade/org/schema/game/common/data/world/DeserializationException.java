@@ -1,18 +1,18 @@
-/*  1:   */package org.schema.game.common.data.world;
-/*  2:   */
-/*  4:   */public class DeserializationException
-/*  5:   */  extends Exception
-/*  6:   */{
-/*  7:   */  private static final long serialVersionUID = -7886298274306398474L;
-/*  8:   */  
-/*  9:   */  public DeserializationException(String paramString)
-/* 10:   */  {
-/* 11:11 */    super(paramString);
-/* 12:   */  }
-/* 13:   */}
+package org.schema.game.common.data.world;
+
+public class DeserializationException
+  extends Exception
+{
+  private static final long serialVersionUID = -7886298274306398474L;
+  
+  public DeserializationException(String paramString)
+  {
+    super(paramString);
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.game.common.data.world.DeserializationException
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

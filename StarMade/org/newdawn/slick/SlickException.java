@@ -1,21 +1,21 @@
-/*  1:   */package org.newdawn.slick;
-/*  2:   */
-/* 10:   */public class SlickException
-/* 11:   */  extends Exception
-/* 12:   */{
-/* 13:   */  public SlickException(String message)
-/* 14:   */  {
-/* 15:15 */    super(message);
-/* 16:   */  }
-/* 17:   */  
-/* 23:   */  public SlickException(String message, Throwable e)
-/* 24:   */  {
-/* 25:25 */    super(message, e);
-/* 26:   */  }
-/* 27:   */}
+package org.newdawn.slick;
+
+public class SlickException
+  extends Exception
+{
+  public SlickException(String message)
+  {
+    super(message);
+  }
+  
+  public SlickException(String message, Throwable local_e)
+  {
+    super(message, local_e);
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.newdawn.slick.SlickException
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

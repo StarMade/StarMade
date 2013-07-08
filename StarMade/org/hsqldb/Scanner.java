@@ -867,9 +867,9 @@ public class Scanner
     int j;
     if ((i == 45) && (charAt(this.currentPosition + 1) == 45))
     {
-      j = this.sqlString.indexOf(13, this.currentPosition + 2);
+      j = this.sqlString.indexOf('\r', this.currentPosition + 2);
       if (j == -1) {
-        j = this.sqlString.indexOf(10, this.currentPosition + 2);
+        j = this.sqlString.indexOf('\n', this.currentPosition + 2);
       } else if (charAt(j + 1) == 10) {
         j++;
       }
@@ -1141,9 +1141,9 @@ public class Scanner
     case 47: 
       if (charAt(this.currentPosition + 1) == 47)
       {
-        j = this.sqlString.indexOf(13, this.currentPosition + 2);
+        j = this.sqlString.indexOf('\r', this.currentPosition + 2);
         if (j == -1) {
-          j = this.sqlString.indexOf(10, this.currentPosition + 2);
+          j = this.sqlString.indexOf('\n', this.currentPosition + 2);
         }
         if (j == -1) {
           j = this.limit;
@@ -1176,9 +1176,9 @@ public class Scanner
     case 45: 
       if (charAt(this.currentPosition + 1) == 45)
       {
-        j = this.sqlString.indexOf(13, this.currentPosition + 2);
+        j = this.sqlString.indexOf('\r', this.currentPosition + 2);
         if (j == -1) {
-          j = this.sqlString.indexOf(10, this.currentPosition + 2);
+          j = this.sqlString.indexOf('\n', this.currentPosition + 2);
         }
         if (j == -1) {
           j = this.limit;
@@ -1930,7 +1930,7 @@ public class Scanner
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.Scanner
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

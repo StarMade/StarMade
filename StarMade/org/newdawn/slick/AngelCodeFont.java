@@ -1,465 +1,481 @@
-/*   1:    */package org.newdawn.slick;
-/*   2:    */
-/*   3:    */import java.io.BufferedReader;
-/*   4:    */import java.io.IOException;
-/*   5:    */import java.io.InputStream;
-/*   6:    */import java.io.InputStreamReader;
-/*   7:    */import java.util.ArrayList;
-/*   8:    */import java.util.HashMap;
-/*   9:    */import java.util.Iterator;
-/*  10:    */import java.util.LinkedHashMap;
-/*  11:    */import java.util.List;
-/*  12:    */import java.util.Map;
-/*  13:    */import java.util.Map.Entry;
-/*  14:    */import java.util.Set;
-/*  15:    */import java.util.StringTokenizer;
-/*  16:    */import org.newdawn.slick.opengl.renderer.Renderer;
-/*  17:    */import org.newdawn.slick.opengl.renderer.SGL;
-/*  18:    */import org.newdawn.slick.util.Log;
-/*  19:    */import org.newdawn.slick.util.ResourceLoader;
-/*  20:    */
-/*  34:    */public class AngelCodeFont
-/*  35:    */  implements Font
-/*  36:    */{
-/*  37: 37 */  private static SGL GL = ;
-/*  38:    */  
-/*  41:    */  private static final int DISPLAY_LIST_CACHE_SIZE = 200;
-/*  42:    */  
-/*  45:    */  private static final int MAX_CHAR = 255;
-/*  46:    */  
-/*  49: 49 */  private boolean displayListCaching = true;
-/*  50:    */  
-/*  52:    */  private Image fontImage;
-/*  53:    */  
-/*  54:    */  private CharDef[] chars;
-/*  55:    */  
-/*  56:    */  private int lineHeight;
-/*  57:    */  
-/*  58: 58 */  private int baseDisplayListID = -1;
-/*  59:    */  
-/*  61:    */  private int eldestDisplayListID;
-/*  62:    */  
-/*  63:    */  private DisplayList eldestDisplayList;
-/*  64:    */  
-/*  65: 65 */  private final LinkedHashMap displayLists = new LinkedHashMap(200, 1.0F, true) {
-/*  66:    */    protected boolean removeEldestEntry(Map.Entry eldest) {
-/*  67: 67 */      AngelCodeFont.this.eldestDisplayList = ((AngelCodeFont.DisplayList)eldest.getValue());
-/*  68: 68 */      AngelCodeFont.this.eldestDisplayListID = AngelCodeFont.this.eldestDisplayList.id;
-/*  69:    */      
-/*  70: 70 */      return false;
-/*  71:    */    }
-/*  72:    */  };
-/*  73:    */  
-/*  84:    */  public AngelCodeFont(String fntFile, Image image)
-/*  85:    */    throws SlickException
-/*  86:    */  {
-/*  87: 87 */    this.fontImage = image;
-/*  88:    */    
-/*  89: 89 */    parseFnt(ResourceLoader.getResourceAsStream(fntFile));
-/*  90:    */  }
-/*  91:    */  
-/* 101:    */  public AngelCodeFont(String fntFile, String imgFile)
-/* 102:    */    throws SlickException
-/* 103:    */  {
-/* 104:104 */    this.fontImage = new Image(imgFile);
-/* 105:    */    
-/* 106:106 */    parseFnt(ResourceLoader.getResourceAsStream(fntFile));
-/* 107:    */  }
-/* 108:    */  
-/* 121:    */  public AngelCodeFont(String fntFile, Image image, boolean caching)
-/* 122:    */    throws SlickException
-/* 123:    */  {
-/* 124:124 */    this.fontImage = image;
-/* 125:125 */    this.displayListCaching = caching;
-/* 126:126 */    parseFnt(ResourceLoader.getResourceAsStream(fntFile));
-/* 127:    */  }
-/* 128:    */  
-/* 141:    */  public AngelCodeFont(String fntFile, String imgFile, boolean caching)
-/* 142:    */    throws SlickException
-/* 143:    */  {
-/* 144:144 */    this.fontImage = new Image(imgFile);
-/* 145:145 */    this.displayListCaching = caching;
-/* 146:146 */    parseFnt(ResourceLoader.getResourceAsStream(fntFile));
-/* 147:    */  }
-/* 148:    */  
-/* 161:    */  public AngelCodeFont(String name, InputStream fntFile, InputStream imgFile)
-/* 162:    */    throws SlickException
-/* 163:    */  {
-/* 164:164 */    this.fontImage = new Image(imgFile, name, false);
-/* 165:    */    
-/* 166:166 */    parseFnt(fntFile);
-/* 167:    */  }
-/* 168:    */  
-/* 183:    */  public AngelCodeFont(String name, InputStream fntFile, InputStream imgFile, boolean caching)
-/* 184:    */    throws SlickException
-/* 185:    */  {
-/* 186:186 */    this.fontImage = new Image(imgFile, name, false);
-/* 187:    */    
-/* 188:188 */    this.displayListCaching = caching;
-/* 189:189 */    parseFnt(fntFile);
-/* 190:    */  }
-/* 191:    */  
-/* 197:    */  private void parseFnt(InputStream fntFile)
-/* 198:    */    throws SlickException
-/* 199:    */  {
-/* 200:200 */    if (this.displayListCaching) {
-/* 201:201 */      this.baseDisplayListID = GL.glGenLists(200);
-/* 202:202 */      if (this.baseDisplayListID == 0) { this.displayListCaching = false;
-/* 203:    */      }
-/* 204:    */    }
-/* 205:    */    try
-/* 206:    */    {
-/* 207:207 */      BufferedReader in = new BufferedReader(new InputStreamReader(fntFile));
-/* 208:    */      
-/* 209:209 */      String info = in.readLine();
-/* 210:210 */      String common = in.readLine();
-/* 211:211 */      String page = in.readLine();
-/* 212:    */      
-/* 213:213 */      Map kerning = new HashMap(64);
-/* 214:214 */      List charDefs = new ArrayList(255);
-/* 215:215 */      int maxChar = 0;
-/* 216:216 */      boolean done = false;
-/* 217:217 */      while (!done) {
-/* 218:218 */        String line = in.readLine();
-/* 219:219 */        if (line == null) {
-/* 220:220 */          done = true;
-/* 221:    */        } else {
-/* 222:222 */          if (!line.startsWith("chars c"))
-/* 223:    */          {
-/* 224:224 */            if (line.startsWith("char")) {
-/* 225:225 */              CharDef def = parseChar(line);
-/* 226:226 */              if (def != null) {
-/* 227:227 */                maxChar = Math.max(maxChar, def.id);
-/* 228:228 */                charDefs.add(def);
-/* 229:    */              }
-/* 230:    */            } }
-/* 231:231 */          if (!line.startsWith("kernings c"))
-/* 232:    */          {
-/* 233:233 */            if (line.startsWith("kerning")) {
-/* 234:234 */              StringTokenizer tokens = new StringTokenizer(line, " =");
-/* 235:235 */              tokens.nextToken();
-/* 236:236 */              tokens.nextToken();
-/* 237:237 */              short first = Short.parseShort(tokens.nextToken());
-/* 238:238 */              tokens.nextToken();
-/* 239:239 */              int second = Integer.parseInt(tokens.nextToken());
-/* 240:240 */              tokens.nextToken();
-/* 241:241 */              int offset = Integer.parseInt(tokens.nextToken());
-/* 242:242 */              List values = (List)kerning.get(new Short(first));
-/* 243:243 */              if (values == null) {
-/* 244:244 */                values = new ArrayList();
-/* 245:245 */                kerning.put(new Short(first), values);
-/* 246:    */              }
-/* 247:    */              
-/* 248:248 */              values.add(new Short((short)(offset << 8 | second)));
-/* 249:    */            }
-/* 250:    */          }
-/* 251:    */        }
-/* 252:    */      }
-/* 253:253 */      this.chars = new CharDef[maxChar + 1];
-/* 254:254 */      for (Iterator iter = charDefs.iterator(); iter.hasNext();) {
-/* 255:255 */        CharDef def = (CharDef)iter.next();
-/* 256:256 */        this.chars[def.id] = def;
-/* 257:    */      }
-/* 258:    */      
-/* 260:260 */      for (iter = kerning.entrySet().iterator(); iter.hasNext();) {
-/* 261:261 */        Map.Entry entry = (Map.Entry)iter.next();
-/* 262:262 */        short first = ((Short)entry.getKey()).shortValue();
-/* 263:263 */        List valueList = (List)entry.getValue();
-/* 264:264 */        short[] valueArray = new short[valueList.size()];
-/* 265:265 */        int i = 0;
-/* 266:266 */        for (Iterator valueIter = valueList.iterator(); valueIter.hasNext(); i++)
-/* 267:267 */          valueArray[i] = ((Short)valueIter.next()).shortValue();
-/* 268:268 */        this.chars[first].kerning = valueArray;
-/* 269:    */      }
-/* 270:    */    } catch (IOException e) { Iterator iter;
-/* 271:271 */      Log.error(e);
-/* 272:272 */      throw new SlickException("Failed to parse font file: " + fntFile);
-/* 273:    */    }
-/* 274:    */  }
-/* 275:    */  
-/* 282:    */  private CharDef parseChar(String line)
-/* 283:    */    throws SlickException
-/* 284:    */  {
-/* 285:285 */    CharDef def = new CharDef(null);
-/* 286:286 */    StringTokenizer tokens = new StringTokenizer(line, " =");
-/* 287:    */    
-/* 288:288 */    tokens.nextToken();
-/* 289:289 */    tokens.nextToken();
-/* 290:290 */    def.id = Short.parseShort(tokens.nextToken());
-/* 291:291 */    if (def.id < 0) {
-/* 292:292 */      return null;
-/* 293:    */    }
-/* 294:294 */    if (def.id > 255) {
-/* 295:295 */      throw new SlickException("Invalid character '" + def.id + "': AngelCodeFont does not support characters above " + 255);
-/* 296:    */    }
-/* 297:    */    
-/* 299:299 */    tokens.nextToken();
-/* 300:300 */    def.x = Short.parseShort(tokens.nextToken());
-/* 301:301 */    tokens.nextToken();
-/* 302:302 */    def.y = Short.parseShort(tokens.nextToken());
-/* 303:303 */    tokens.nextToken();
-/* 304:304 */    def.width = Short.parseShort(tokens.nextToken());
-/* 305:305 */    tokens.nextToken();
-/* 306:306 */    def.height = Short.parseShort(tokens.nextToken());
-/* 307:307 */    tokens.nextToken();
-/* 308:308 */    def.xoffset = Short.parseShort(tokens.nextToken());
-/* 309:309 */    tokens.nextToken();
-/* 310:310 */    def.yoffset = Short.parseShort(tokens.nextToken());
-/* 311:311 */    tokens.nextToken();
-/* 312:312 */    def.xadvance = Short.parseShort(tokens.nextToken());
-/* 313:    */    
-/* 314:314 */    def.init();
-/* 315:    */    
-/* 316:316 */    if (def.id != 32) {
-/* 317:317 */      this.lineHeight = Math.max(def.height + def.yoffset, this.lineHeight);
-/* 318:    */    }
-/* 319:    */    
-/* 320:320 */    return def;
-/* 321:    */  }
-/* 322:    */  
-/* 325:    */  public void drawString(float x, float y, String text)
-/* 326:    */  {
-/* 327:327 */    drawString(x, y, text, Color.white);
-/* 328:    */  }
-/* 329:    */  
-/* 333:    */  public void drawString(float x, float y, String text, Color col)
-/* 334:    */  {
-/* 335:335 */    drawString(x, y, text, col, 0, text.length() - 1);
-/* 336:    */  }
-/* 337:    */  
-/* 341:    */  public void drawString(float x, float y, String text, Color col, int startIndex, int endIndex)
-/* 342:    */  {
-/* 343:343 */    this.fontImage.bind();
-/* 344:344 */    col.bind();
-/* 345:    */    
-/* 346:346 */    GL.glTranslatef(x, y, 0.0F);
-/* 347:347 */    if ((this.displayListCaching) && (startIndex == 0) && (endIndex == text.length() - 1)) {
-/* 348:348 */      DisplayList displayList = (DisplayList)this.displayLists.get(text);
-/* 349:349 */      if (displayList != null) {
-/* 350:350 */        GL.glCallList(displayList.id);
-/* 351:    */      }
-/* 352:    */      else {
-/* 353:353 */        displayList = new DisplayList(null);
-/* 354:354 */        displayList.text = text;
-/* 355:355 */        int displayListCount = this.displayLists.size();
-/* 356:356 */        if (displayListCount < 200) {
-/* 357:357 */          displayList.id = (this.baseDisplayListID + displayListCount);
-/* 358:    */        } else {
-/* 359:359 */          displayList.id = this.eldestDisplayListID;
-/* 360:360 */          this.displayLists.remove(this.eldestDisplayList.text);
-/* 361:    */        }
-/* 362:    */        
-/* 363:363 */        this.displayLists.put(text, displayList);
-/* 364:    */        
-/* 365:365 */        GL.glNewList(displayList.id, 4865);
-/* 366:366 */        render(text, startIndex, endIndex);
-/* 367:367 */        GL.glEndList();
-/* 368:    */      }
-/* 369:    */    } else {
-/* 370:370 */      render(text, startIndex, endIndex);
-/* 371:    */    }
-/* 372:372 */    GL.glTranslatef(-x, -y, 0.0F);
-/* 373:    */  }
-/* 374:    */  
-/* 381:    */  private void render(String text, int start, int end)
-/* 382:    */  {
-/* 383:383 */    GL.glBegin(7);
-/* 384:    */    
-/* 385:385 */    int x = 0;int y = 0;
-/* 386:386 */    CharDef lastCharDef = null;
-/* 387:387 */    char[] data = text.toCharArray();
-/* 388:388 */    for (int i = 0; i < data.length; i++) {
-/* 389:389 */      int id = data[i];
-/* 390:390 */      if (id == 10) {
-/* 391:391 */        x = 0;
-/* 392:392 */        y += getLineHeight();
-/* 394:    */      }
-/* 395:395 */      else if (id < this.chars.length)
-/* 396:    */      {
-/* 398:398 */        CharDef charDef = this.chars[id];
-/* 399:399 */        if (charDef != null)
-/* 400:    */        {
-/* 403:403 */          if (lastCharDef != null) x += lastCharDef.getKerning(id);
-/* 404:404 */          lastCharDef = charDef;
-/* 405:    */          
-/* 406:406 */          if ((i >= start) && (i <= end)) {
-/* 407:407 */            charDef.draw(x, y);
-/* 408:    */          }
-/* 409:    */          
-/* 410:410 */          x += charDef.xadvance;
-/* 411:    */        } } }
-/* 412:412 */    GL.glEnd();
-/* 413:    */  }
-/* 414:    */  
-/* 421:    */  public int getYOffset(String text)
-/* 422:    */  {
-/* 423:423 */    DisplayList displayList = null;
-/* 424:424 */    if (this.displayListCaching) {
-/* 425:425 */      displayList = (DisplayList)this.displayLists.get(text);
-/* 426:426 */      if ((displayList != null) && (displayList.yOffset != null)) { return displayList.yOffset.intValue();
-/* 427:    */      }
-/* 428:    */    }
-/* 429:429 */    int stopIndex = text.indexOf('\n');
-/* 430:430 */    if (stopIndex == -1) { stopIndex = text.length();
-/* 431:    */    }
-/* 432:432 */    int minYOffset = 10000;
-/* 433:433 */    for (int i = 0; i < stopIndex; i++) {
-/* 434:434 */      int id = text.charAt(i);
-/* 435:435 */      CharDef charDef = this.chars[id];
-/* 436:436 */      if (charDef != null)
-/* 437:    */      {
-/* 439:439 */        minYOffset = Math.min(charDef.yoffset, minYOffset);
-/* 440:    */      }
-/* 441:    */    }
-/* 442:442 */    if (displayList != null) { displayList.yOffset = new Short((short)minYOffset);
-/* 443:    */    }
-/* 444:444 */    return minYOffset;
-/* 445:    */  }
-/* 446:    */  
-/* 449:    */  public int getHeight(String text)
-/* 450:    */  {
-/* 451:451 */    DisplayList displayList = null;
-/* 452:452 */    if (this.displayListCaching) {
-/* 453:453 */      displayList = (DisplayList)this.displayLists.get(text);
-/* 454:454 */      if ((displayList != null) && (displayList.height != null)) { return displayList.height.intValue();
-/* 455:    */      }
-/* 456:    */    }
-/* 457:457 */    int lines = 0;
-/* 458:458 */    int maxHeight = 0;
-/* 459:459 */    for (int i = 0; i < text.length(); i++) {
-/* 460:460 */      int id = text.charAt(i);
-/* 461:461 */      if (id == 10) {
-/* 462:462 */        lines++;
-/* 463:463 */        maxHeight = 0;
-/* 466:    */      }
-/* 467:467 */      else if (id != 32)
-/* 468:    */      {
-/* 470:470 */        CharDef charDef = this.chars[id];
-/* 471:471 */        if (charDef != null)
-/* 472:    */        {
-/* 475:475 */          maxHeight = Math.max(charDef.height + charDef.yoffset, maxHeight);
-/* 476:    */        }
-/* 477:    */      }
-/* 478:    */    }
-/* 479:479 */    maxHeight += lines * getLineHeight();
-/* 480:    */    
-/* 481:481 */    if (displayList != null) { displayList.height = new Short((short)maxHeight);
-/* 482:    */    }
-/* 483:483 */    return maxHeight;
-/* 484:    */  }
-/* 485:    */  
-/* 488:    */  public int getWidth(String text)
-/* 489:    */  {
-/* 490:490 */    DisplayList displayList = null;
-/* 491:491 */    if (this.displayListCaching) {
-/* 492:492 */      displayList = (DisplayList)this.displayLists.get(text);
-/* 493:493 */      if ((displayList != null) && (displayList.width != null)) { return displayList.width.intValue();
-/* 494:    */      }
-/* 495:    */    }
-/* 496:496 */    int maxWidth = 0;
-/* 497:497 */    int width = 0;
-/* 498:498 */    CharDef lastCharDef = null;
-/* 499:499 */    int i = 0; for (int n = text.length(); i < n; i++) {
-/* 500:500 */      int id = text.charAt(i);
-/* 501:501 */      if (id == 10) {
-/* 502:502 */        width = 0;
-/* 504:    */      }
-/* 505:505 */      else if (id < this.chars.length)
-/* 506:    */      {
-/* 508:508 */        CharDef charDef = this.chars[id];
-/* 509:509 */        if (charDef != null)
-/* 510:    */        {
-/* 513:513 */          if (lastCharDef != null) width += lastCharDef.getKerning(id);
-/* 514:514 */          lastCharDef = charDef;
-/* 515:    */          
-/* 516:516 */          if (i < n - 1) {
-/* 517:517 */            width += charDef.xadvance;
-/* 518:    */          } else {
-/* 519:519 */            width += charDef.width;
-/* 520:    */          }
-/* 521:521 */          maxWidth = Math.max(maxWidth, width);
-/* 522:    */        }
-/* 523:    */      } }
-/* 524:524 */    if (displayList != null) { displayList.width = new Short((short)maxWidth);
-/* 525:    */    }
-/* 526:526 */    return maxWidth;
-/* 527:    */  }
-/* 528:    */  
-/* 530:    */  private static class DisplayList
-/* 531:    */  {
-/* 532:    */    int id;
-/* 533:    */    
-/* 534:    */    Short yOffset;
-/* 535:    */    
-/* 536:    */    Short width;
-/* 537:    */    
-/* 538:    */    Short height;
-/* 539:    */    
-/* 540:    */    String text;
-/* 541:    */  }
-/* 542:    */  
-/* 544:    */  private class CharDef
-/* 545:    */  {
-/* 546:    */    public short id;
-/* 547:    */    
-/* 548:    */    public short x;
-/* 549:    */    
-/* 550:    */    public short y;
-/* 551:    */    
-/* 552:    */    public short width;
-/* 553:    */    public short height;
-/* 554:    */    public short xoffset;
-/* 555:    */    public short yoffset;
-/* 556:    */    public short xadvance;
-/* 557:    */    public Image image;
-/* 558:    */    public short dlIndex;
-/* 559:    */    public short[] kerning;
-/* 560:    */    
-/* 561:    */    private CharDef() {}
-/* 562:    */    
-/* 563:    */    public void init()
-/* 564:    */    {
-/* 565:565 */      this.image = AngelCodeFont.this.fontImage.getSubImage(this.x, this.y, this.width, this.height);
-/* 566:    */    }
-/* 567:    */    
-/* 570:    */    public String toString()
-/* 571:    */    {
-/* 572:572 */      return "[CharDef id=" + this.id + " x=" + this.x + " y=" + this.y + "]";
-/* 573:    */    }
-/* 574:    */    
-/* 582:    */    public void draw(float x, float y)
-/* 583:    */    {
-/* 584:584 */      this.image.drawEmbedded(x + this.xoffset, y + this.yoffset, this.width, this.height);
-/* 585:    */    }
-/* 586:    */    
-/* 591:    */    public int getKerning(int otherCodePoint)
-/* 592:    */    {
-/* 593:593 */      if (this.kerning == null) return 0;
-/* 594:594 */      int low = 0;
-/* 595:595 */      int high = this.kerning.length - 1;
-/* 596:596 */      while (low <= high) {
-/* 597:597 */        int midIndex = low + high >>> 1;
-/* 598:598 */        int value = this.kerning[midIndex];
-/* 599:599 */        int foundCodePoint = value & 0xFF;
-/* 600:600 */        if (foundCodePoint < otherCodePoint) {
-/* 601:601 */          low = midIndex + 1;
-/* 602:602 */        } else if (foundCodePoint > otherCodePoint) {
-/* 603:603 */          high = midIndex - 1;
-/* 604:    */        } else
-/* 605:605 */          return value >> 8;
-/* 606:    */      }
-/* 607:607 */      return 0;
-/* 608:    */    }
-/* 609:    */  }
-/* 610:    */  
-/* 613:    */  public int getLineHeight()
-/* 614:    */  {
-/* 615:615 */    return this.lineHeight;
-/* 616:    */  }
-/* 617:    */}
+package org.newdawn.slick;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.StringTokenizer;
+import org.newdawn.slick.opengl.renderer.Renderer;
+import org.newdawn.slick.opengl.renderer.SGL;
+import org.newdawn.slick.util.Log;
+import org.newdawn.slick.util.ResourceLoader;
+
+public class AngelCodeFont
+  implements Font
+{
+  private static SGL field_2 = ;
+  private static final int DISPLAY_LIST_CACHE_SIZE = 200;
+  private static final int MAX_CHAR = 255;
+  private boolean displayListCaching = true;
+  private Image fontImage;
+  private CharDef[] chars;
+  private int lineHeight;
+  private int baseDisplayListID = -1;
+  private int eldestDisplayListID;
+  private DisplayList eldestDisplayList;
+  private final LinkedHashMap displayLists = new LinkedHashMap(200, 1.0F, true)
+  {
+    protected boolean removeEldestEntry(Map.Entry eldest)
+    {
+      AngelCodeFont.this.eldestDisplayList = ((AngelCodeFont.DisplayList)eldest.getValue());
+      AngelCodeFont.this.eldestDisplayListID = AngelCodeFont.this.eldestDisplayList.field_2140;
+      return false;
+    }
+  };
+  
+  public AngelCodeFont(String fntFile, Image image)
+    throws SlickException
+  {
+    this.fontImage = image;
+    parseFnt(ResourceLoader.getResourceAsStream(fntFile));
+  }
+  
+  public AngelCodeFont(String fntFile, String imgFile)
+    throws SlickException
+  {
+    this.fontImage = new Image(imgFile);
+    parseFnt(ResourceLoader.getResourceAsStream(fntFile));
+  }
+  
+  public AngelCodeFont(String fntFile, Image image, boolean caching)
+    throws SlickException
+  {
+    this.fontImage = image;
+    this.displayListCaching = caching;
+    parseFnt(ResourceLoader.getResourceAsStream(fntFile));
+  }
+  
+  public AngelCodeFont(String fntFile, String imgFile, boolean caching)
+    throws SlickException
+  {
+    this.fontImage = new Image(imgFile);
+    this.displayListCaching = caching;
+    parseFnt(ResourceLoader.getResourceAsStream(fntFile));
+  }
+  
+  public AngelCodeFont(String name, InputStream fntFile, InputStream imgFile)
+    throws SlickException
+  {
+    this.fontImage = new Image(imgFile, name, false);
+    parseFnt(fntFile);
+  }
+  
+  public AngelCodeFont(String name, InputStream fntFile, InputStream imgFile, boolean caching)
+    throws SlickException
+  {
+    this.fontImage = new Image(imgFile, name, false);
+    this.displayListCaching = caching;
+    parseFnt(fntFile);
+  }
+  
+  private void parseFnt(InputStream fntFile)
+    throws SlickException
+  {
+    if (this.displayListCaching)
+    {
+      this.baseDisplayListID = field_2.glGenLists(200);
+      if (this.baseDisplayListID == 0) {
+        this.displayListCaching = false;
+      }
+    }
+    try
+    {
+      BufferedReader local_in = new BufferedReader(new InputStreamReader(fntFile));
+      String info = local_in.readLine();
+      String common = local_in.readLine();
+      String page = local_in.readLine();
+      Map kerning = new HashMap(64);
+      List charDefs = new ArrayList(255);
+      int maxChar = 0;
+      boolean done = false;
+      while (!done)
+      {
+        String line = local_in.readLine();
+        if (line == null)
+        {
+          done = true;
+        }
+        else
+        {
+          if ((!line.startsWith("chars c")) && (line.startsWith("char")))
+          {
+            CharDef def = parseChar(line);
+            if (def != null)
+            {
+              maxChar = Math.max(maxChar, def.field_1849);
+              charDefs.add(def);
+            }
+          }
+          if ((!line.startsWith("kernings c")) && (line.startsWith("kerning")))
+          {
+            StringTokenizer def = new StringTokenizer(line, " =");
+            def.nextToken();
+            def.nextToken();
+            short first = Short.parseShort(def.nextToken());
+            def.nextToken();
+            int second = Integer.parseInt(def.nextToken());
+            def.nextToken();
+            int offset = Integer.parseInt(def.nextToken());
+            List values = (List)kerning.get(new Short(first));
+            if (values == null)
+            {
+              values = new ArrayList();
+              kerning.put(new Short(first), values);
+            }
+            values.add(new Short((short)(offset << 8 | second)));
+          }
+        }
+      }
+      this.chars = new CharDef[maxChar + 1];
+      Iterator line = charDefs.iterator();
+      while (line.hasNext())
+      {
+        CharDef def = (CharDef)line.next();
+        this.chars[def.field_1849] = def;
+      }
+      Iterator line = kerning.entrySet().iterator();
+      while (line.hasNext())
+      {
+        Map.Entry def = (Map.Entry)line.next();
+        short first = ((Short)def.getKey()).shortValue();
+        List second = (List)def.getValue();
+        short[] offset = new short[second.size()];
+        int values = 0;
+        Iterator valueIter = second.iterator();
+        while (valueIter.hasNext())
+        {
+          offset[values] = ((Short)valueIter.next()).shortValue();
+          values++;
+        }
+        this.chars[first].kerning = offset;
+      }
+    }
+    catch (IOException local_in)
+    {
+      Log.error(local_in);
+      throw new SlickException("Failed to parse font file: " + fntFile);
+    }
+  }
+  
+  private CharDef parseChar(String line)
+    throws SlickException
+  {
+    CharDef def = new CharDef(null);
+    StringTokenizer tokens = new StringTokenizer(line, " =");
+    tokens.nextToken();
+    tokens.nextToken();
+    def.field_1849 = Short.parseShort(tokens.nextToken());
+    if (def.field_1849 < 0) {
+      return null;
+    }
+    if (def.field_1849 > 255) {
+      throw new SlickException("Invalid character '" + def.field_1849 + "': AngelCodeFont does not support characters above " + 255);
+    }
+    tokens.nextToken();
+    def.field_1850 = Short.parseShort(tokens.nextToken());
+    tokens.nextToken();
+    def.field_1851 = Short.parseShort(tokens.nextToken());
+    tokens.nextToken();
+    def.width = Short.parseShort(tokens.nextToken());
+    tokens.nextToken();
+    def.height = Short.parseShort(tokens.nextToken());
+    tokens.nextToken();
+    def.xoffset = Short.parseShort(tokens.nextToken());
+    tokens.nextToken();
+    def.yoffset = Short.parseShort(tokens.nextToken());
+    tokens.nextToken();
+    def.xadvance = Short.parseShort(tokens.nextToken());
+    def.init();
+    if (def.field_1849 != 32) {
+      this.lineHeight = Math.max(def.height + def.yoffset, this.lineHeight);
+    }
+    return def;
+  }
+  
+  public void drawString(float local_x, float local_y, String text)
+  {
+    drawString(local_x, local_y, text, Color.white);
+  }
+  
+  public void drawString(float local_x, float local_y, String text, Color col)
+  {
+    drawString(local_x, local_y, text, col, 0, text.length() - 1);
+  }
+  
+  public void drawString(float local_x, float local_y, String text, Color col, int startIndex, int endIndex)
+  {
+    this.fontImage.bind();
+    col.bind();
+    field_2.glTranslatef(local_x, local_y, 0.0F);
+    if ((this.displayListCaching) && (startIndex == 0) && (endIndex == text.length() - 1))
+    {
+      DisplayList displayList = (DisplayList)this.displayLists.get(text);
+      if (displayList != null)
+      {
+        field_2.glCallList(displayList.field_2140);
+      }
+      else
+      {
+        displayList = new DisplayList(null);
+        displayList.text = text;
+        int displayListCount = this.displayLists.size();
+        if (displayListCount < 200)
+        {
+          displayList.field_2140 = (this.baseDisplayListID + displayListCount);
+        }
+        else
+        {
+          displayList.field_2140 = this.eldestDisplayListID;
+          this.displayLists.remove(this.eldestDisplayList.text);
+        }
+        this.displayLists.put(text, displayList);
+        field_2.glNewList(displayList.field_2140, 4865);
+        render(text, startIndex, endIndex);
+        field_2.glEndList();
+      }
+    }
+    else
+    {
+      render(text, startIndex, endIndex);
+    }
+    field_2.glTranslatef(-local_x, -local_y, 0.0F);
+  }
+  
+  private void render(String text, int start, int end)
+  {
+    field_2.glBegin(7);
+    int local_x = 0;
+    int local_y = 0;
+    CharDef lastCharDef = null;
+    char[] data = text.toCharArray();
+    for (int local_i = 0; local_i < data.length; local_i++)
+    {
+      int local_id = data[local_i];
+      if (local_id == 10)
+      {
+        local_x = 0;
+        local_y += getLineHeight();
+      }
+      else if (local_id < this.chars.length)
+      {
+        CharDef charDef = this.chars[local_id];
+        if (charDef != null)
+        {
+          if (lastCharDef != null) {
+            local_x += lastCharDef.getKerning(local_id);
+          }
+          lastCharDef = charDef;
+          if ((local_i >= start) && (local_i <= end)) {
+            charDef.draw(local_x, local_y);
+          }
+          local_x += charDef.xadvance;
+        }
+      }
+    }
+    field_2.glEnd();
+  }
+  
+  public int getYOffset(String text)
+  {
+    DisplayList displayList = null;
+    if (this.displayListCaching)
+    {
+      displayList = (DisplayList)this.displayLists.get(text);
+      if ((displayList != null) && (displayList.yOffset != null)) {
+        return displayList.yOffset.intValue();
+      }
+    }
+    int stopIndex = text.indexOf('\n');
+    if (stopIndex == -1) {
+      stopIndex = text.length();
+    }
+    int minYOffset = 10000;
+    for (int local_i = 0; local_i < stopIndex; local_i++)
+    {
+      int local_id = text.charAt(local_i);
+      CharDef charDef = this.chars[local_id];
+      if (charDef != null) {
+        minYOffset = Math.min(charDef.yoffset, minYOffset);
+      }
+    }
+    if (displayList != null) {
+      displayList.yOffset = new Short((short)minYOffset);
+    }
+    return minYOffset;
+  }
+  
+  public int getHeight(String text)
+  {
+    DisplayList displayList = null;
+    if (this.displayListCaching)
+    {
+      displayList = (DisplayList)this.displayLists.get(text);
+      if ((displayList != null) && (displayList.height != null)) {
+        return displayList.height.intValue();
+      }
+    }
+    int lines = 0;
+    int maxHeight = 0;
+    for (int local_i = 0; local_i < text.length(); local_i++)
+    {
+      int local_id = text.charAt(local_i);
+      if (local_id == 10)
+      {
+        lines++;
+        maxHeight = 0;
+      }
+      else if (local_id != 32)
+      {
+        CharDef charDef = this.chars[local_id];
+        if (charDef != null) {
+          maxHeight = Math.max(charDef.height + charDef.yoffset, maxHeight);
+        }
+      }
+    }
+    maxHeight += lines * getLineHeight();
+    if (displayList != null) {
+      displayList.height = new Short((short)maxHeight);
+    }
+    return maxHeight;
+  }
+  
+  public int getWidth(String text)
+  {
+    DisplayList displayList = null;
+    if (this.displayListCaching)
+    {
+      displayList = (DisplayList)this.displayLists.get(text);
+      if ((displayList != null) && (displayList.width != null)) {
+        return displayList.width.intValue();
+      }
+    }
+    int maxWidth = 0;
+    int width = 0;
+    CharDef lastCharDef = null;
+    int local_i = 0;
+    int local_n = text.length();
+    while (local_i < local_n)
+    {
+      int local_id = text.charAt(local_i);
+      if (local_id == 10)
+      {
+        width = 0;
+      }
+      else if (local_id < this.chars.length)
+      {
+        CharDef charDef = this.chars[local_id];
+        if (charDef != null)
+        {
+          if (lastCharDef != null) {
+            width += lastCharDef.getKerning(local_id);
+          }
+          lastCharDef = charDef;
+          if (local_i < local_n - 1) {
+            width += charDef.xadvance;
+          } else {
+            width += charDef.width;
+          }
+          maxWidth = Math.max(maxWidth, width);
+        }
+      }
+      local_i++;
+    }
+    if (displayList != null) {
+      displayList.width = new Short((short)maxWidth);
+    }
+    return maxWidth;
+  }
+  
+  public int getLineHeight()
+  {
+    return this.lineHeight;
+  }
+  
+  private static class DisplayList
+  {
+    int field_2140;
+    Short yOffset;
+    Short width;
+    Short height;
+    String text;
+  }
+  
+  private class CharDef
+  {
+    public short field_1849;
+    public short field_1850;
+    public short field_1851;
+    public short width;
+    public short height;
+    public short xoffset;
+    public short yoffset;
+    public short xadvance;
+    public Image image;
+    public short dlIndex;
+    public short[] kerning;
+    
+    private CharDef() {}
+    
+    public void init()
+    {
+      this.image = AngelCodeFont.this.fontImage.getSubImage(this.field_1850, this.field_1851, this.width, this.height);
+    }
+    
+    public String toString()
+    {
+      return "[CharDef id=" + this.field_1849 + " x=" + this.field_1850 + " y=" + this.field_1851 + "]";
+    }
+    
+    public void draw(float local_x, float local_y)
+    {
+      this.image.drawEmbedded(local_x + this.xoffset, local_y + this.yoffset, this.width, this.height);
+    }
+    
+    public int getKerning(int otherCodePoint)
+    {
+      if (this.kerning == null) {
+        return 0;
+      }
+      int low = 0;
+      int high = this.kerning.length - 1;
+      while (low <= high)
+      {
+        int midIndex = low + high >>> 1;
+        int value = this.kerning[midIndex];
+        int foundCodePoint = value & 0xFF;
+        if (foundCodePoint < otherCodePoint) {
+          low = midIndex + 1;
+        } else if (foundCodePoint > otherCodePoint) {
+          high = midIndex - 1;
+        } else {
+          return value >> 8;
+        }
+      }
+      return 0;
+    }
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.newdawn.slick.AngelCodeFont
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -29,8 +29,8 @@ class Tree
   private int iFirstRow;
   private int iTreeWidth;
   private int iTreeHeight;
-  private int iX;
-  private int iY;
+  private int field_1838;
+  private int field_1839;
   private Vector vData = new Vector();
   private int iRowCount;
   private Scrollbar sbHoriz;
@@ -108,12 +108,12 @@ class Tree
   {
     this.iTreeHeight = (iRowHeight * (this.iRowCount + 1));
     this.iTreeWidth = (this.iMaxTextLength * 2);
-    this.sbHoriz.setValues(this.iX, this.iWidth, 0, this.iTreeWidth);
-    int i = this.iY / iRowHeight;
+    this.sbHoriz.setValues(this.field_1838, this.iWidth, 0, this.iTreeWidth);
+    int i = this.field_1839 / iRowHeight;
     int j = this.iHeight / iRowHeight;
     this.sbVert.setValues(i, j, 0, this.iRowCount + 1);
-    this.iX = this.sbHoriz.getValue();
-    this.iY = (iRowHeight * this.sbVert.getValue());
+    this.field_1838 = this.sbHoriz.getValue();
+    this.field_1839 = (iRowHeight * this.sbVert.getValue());
   }
   
   public boolean handleEvent(Event paramEvent)
@@ -125,8 +125,8 @@ class Tree
     case 603: 
     case 604: 
     case 605: 
-      this.iX = this.sbHoriz.getValue();
-      this.iY = (iRowHeight * this.sbVert.getValue());
+      this.field_1838 = this.sbHoriz.getValue();
+      this.field_1839 = (iRowHeight * this.sbVert.getValue());
       repaint();
       return true;
     }
@@ -153,7 +153,7 @@ class Tree
     arrayOfString1[0] = "";
     int i = 0;
     int j = iRowHeight;
-    j -= this.iY;
+    j -= this.field_1839;
     int k = 0;
     for (int m = 0; m < this.iRowCount; m++)
     {
@@ -169,7 +169,7 @@ class Tree
       {
         k = (str3 != null) && (str3.equals("+")) ? 1 : 0;
         arrayOfString1[n] = str1;
-        int i1 = iIndentWidth * n - this.iX;
+        int i1 = iIndentWidth * n - this.field_1838;
         this.gImage.setColor(Color.lightGray);
         this.gImage.drawLine(i1, j, i1 + iIndentWidth, j);
         this.gImage.drawLine(i1, j, i1, arrayOfInt[n]);
@@ -239,7 +239,7 @@ class Tree
     int j = iRowHeight;
     int k = 0;
     int m = 0;
-    paramInt2 += this.iY;
+    paramInt2 += this.field_1839;
     String[] arrayOfString2;
     String str1;
     while (m < this.iRowCount)
@@ -286,7 +286,7 @@ class Tree
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.util.Tree
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

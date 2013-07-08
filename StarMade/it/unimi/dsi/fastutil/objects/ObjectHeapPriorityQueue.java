@@ -1,105 +1,122 @@
-/*   1:    */package it.unimi.dsi.fastutil.objects;
-/*   2:    */
-/*   3:    */import it.unimi.dsi.fastutil.AbstractPriorityQueue;
-/*   4:    */import java.util.Comparator;
-/*   5:    */import java.util.NoSuchElementException;
-/*   6:    */
-/*  51:    */public class ObjectHeapPriorityQueue<K>
-/*  52:    */  extends AbstractPriorityQueue<K>
-/*  53:    */{
-/*  54: 54 */  protected K[] heap = (Object[])ObjectArrays.EMPTY_ARRAY;
-/*  55:    */  
-/*  58:    */  protected int size;
-/*  59:    */  
-/*  61:    */  protected Comparator<? super K> c;
-/*  62:    */  
-/*  65:    */  public ObjectHeapPriorityQueue(int capacity, Comparator<? super K> c)
-/*  66:    */  {
-/*  67: 67 */    if (capacity > 0) this.heap = ((Object[])new Object[capacity]);
-/*  68: 68 */    this.c = c;
-/*  69:    */  }
-/*  70:    */  
-/*  73:    */  public ObjectHeapPriorityQueue(int capacity)
-/*  74:    */  {
-/*  75: 75 */    this(capacity, null);
-/*  76:    */  }
-/*  77:    */  
-/*  80:    */  public ObjectHeapPriorityQueue(Comparator<? super K> c)
-/*  81:    */  {
-/*  82: 82 */    this(0, c);
-/*  83:    */  }
-/*  84:    */  
-/*  85:    */  public ObjectHeapPriorityQueue()
-/*  86:    */  {
-/*  87: 87 */    this(0, null);
-/*  88:    */  }
-/*  89:    */  
-/*  98:    */  public ObjectHeapPriorityQueue(K[] a, int size, Comparator<? super K> c)
-/*  99:    */  {
-/* 100:100 */    this(c);
-/* 101:101 */    this.heap = a;
-/* 102:102 */    this.size = size;
-/* 103:103 */    ObjectHeaps.makeHeap(a, size, c);
-/* 104:    */  }
-/* 105:    */  
-/* 113:    */  public ObjectHeapPriorityQueue(K[] a, Comparator<? super K> c)
-/* 114:    */  {
-/* 115:115 */    this(a, a.length, c);
-/* 116:    */  }
-/* 117:    */  
-/* 125:    */  public ObjectHeapPriorityQueue(K[] a, int size)
-/* 126:    */  {
-/* 127:127 */    this(a, size, null);
-/* 128:    */  }
-/* 129:    */  
-/* 138:138 */  public ObjectHeapPriorityQueue(K[] a) { this(a, a.length); }
-/* 139:    */  
-/* 140:    */  public void enqueue(K x) {
-/* 141:141 */    if (this.size == this.heap.length) this.heap = ObjectArrays.grow(this.heap, this.size + 1);
-/* 142:142 */    this.heap[(this.size++)] = x;
-/* 143:143 */    ObjectHeaps.upHeap(this.heap, this.size, this.size - 1, this.c);
-/* 144:    */  }
-/* 145:    */  
-/* 146:    */  public K dequeue() {
-/* 147:147 */    if (this.size == 0) { throw new NoSuchElementException();
-/* 148:    */    }
-/* 149:149 */    K result = this.heap[0];
-/* 150:150 */    this.heap[0] = this.heap[(--this.size)];
-/* 151:    */    
-/* 152:152 */    this.heap[this.size] = null;
-/* 153:    */    
-/* 154:154 */    if (this.size != 0) ObjectHeaps.downHeap(this.heap, this.size, 0, this.c);
-/* 155:155 */    return result;
-/* 156:    */  }
-/* 157:    */  
-/* 158:    */  public K first() {
-/* 159:159 */    if (this.size == 0) throw new NoSuchElementException();
-/* 160:160 */    return this.heap[0];
-/* 161:    */  }
-/* 162:    */  
-/* 163:    */  public void changed() {
-/* 164:164 */    ObjectHeaps.downHeap(this.heap, this.size, 0, this.c);
-/* 165:    */  }
-/* 166:    */  
-/* 167:167 */  public int size() { return this.size; }
-/* 168:    */  
-/* 169:    */  public void clear()
-/* 170:    */  {
-/* 171:171 */    ObjectArrays.fill(this.heap, 0, this.size, null);
-/* 172:    */    
-/* 173:173 */    this.size = 0;
-/* 174:    */  }
-/* 175:    */  
-/* 178:    */  public void trim()
-/* 179:    */  {
-/* 180:180 */    this.heap = ObjectArrays.trim(this.heap, this.size);
-/* 181:    */  }
-/* 182:    */  
-/* 183:183 */  public Comparator<? super K> comparator() { return this.c; }
-/* 184:    */}
+package it.unimi.dsi.fastutil.objects;
+
+import it.unimi.dsi.fastutil.AbstractPriorityQueue;
+import java.util.Comparator;
+import java.util.NoSuchElementException;
+
+public class ObjectHeapPriorityQueue<K>
+  extends AbstractPriorityQueue<K>
+{
+  protected K[] heap = (Object[])ObjectArrays.EMPTY_ARRAY;
+  protected int size;
+  protected Comparator<? super K> field_76;
+  
+  public ObjectHeapPriorityQueue(int capacity, Comparator<? super K> local_c)
+  {
+    if (capacity > 0) {
+      this.heap = ((Object[])new Object[capacity]);
+    }
+    this.field_76 = local_c;
+  }
+  
+  public ObjectHeapPriorityQueue(int capacity)
+  {
+    this(capacity, null);
+  }
+  
+  public ObjectHeapPriorityQueue(Comparator<? super K> local_c)
+  {
+    this(0, local_c);
+  }
+  
+  public ObjectHeapPriorityQueue()
+  {
+    this(0, null);
+  }
+  
+  public ObjectHeapPriorityQueue(K[] local_a, int size, Comparator<? super K> local_c)
+  {
+    this(local_c);
+    this.heap = local_a;
+    this.size = size;
+    ObjectHeaps.makeHeap(local_a, size, local_c);
+  }
+  
+  public ObjectHeapPriorityQueue(K[] local_a, Comparator<? super K> local_c)
+  {
+    this(local_a, local_a.length, local_c);
+  }
+  
+  public ObjectHeapPriorityQueue(K[] local_a, int size)
+  {
+    this(local_a, size, null);
+  }
+  
+  public ObjectHeapPriorityQueue(K[] local_a)
+  {
+    this(local_a, local_a.length);
+  }
+  
+  public void enqueue(K local_x)
+  {
+    if (this.size == this.heap.length) {
+      this.heap = ObjectArrays.grow(this.heap, this.size + 1);
+    }
+    this.heap[(this.size++)] = local_x;
+    ObjectHeaps.upHeap(this.heap, this.size, this.size - 1, this.field_76);
+  }
+  
+  public K dequeue()
+  {
+    if (this.size == 0) {
+      throw new NoSuchElementException();
+    }
+    K result = this.heap[0];
+    this.heap[0] = this.heap[(--this.size)];
+    this.heap[this.size] = null;
+    if (this.size != 0) {
+      ObjectHeaps.downHeap(this.heap, this.size, 0, this.field_76);
+    }
+    return result;
+  }
+  
+  public K first()
+  {
+    if (this.size == 0) {
+      throw new NoSuchElementException();
+    }
+    return this.heap[0];
+  }
+  
+  public void changed()
+  {
+    ObjectHeaps.downHeap(this.heap, this.size, 0, this.field_76);
+  }
+  
+  public int size()
+  {
+    return this.size;
+  }
+  
+  public void clear()
+  {
+    ObjectArrays.fill(this.heap, 0, this.size, null);
+    this.size = 0;
+  }
+  
+  public void trim()
+  {
+    this.heap = ObjectArrays.trim(this.heap, this.size);
+  }
+  
+  public Comparator<? super K> comparator()
+  {
+    return this.field_76;
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.objects.ObjectHeapPriorityQueue
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

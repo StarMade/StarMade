@@ -1,641 +1,805 @@
-/*   1:    */package it.unimi.dsi.fastutil.objects;
-/*   2:    */
-/*   3:    */import it.unimi.dsi.fastutil.Hash;
-/*   4:    */import it.unimi.dsi.fastutil.HashCommon;
-/*   5:    */import it.unimi.dsi.fastutil.booleans.BooleanArrays;
-/*   6:    */import it.unimi.dsi.fastutil.longs.AbstractLongCollection;
-/*   7:    */import it.unimi.dsi.fastutil.longs.LongCollection;
-/*   8:    */import it.unimi.dsi.fastutil.longs.LongIterator;
-/*   9:    */import java.io.IOException;
-/*  10:    */import java.io.ObjectInputStream;
-/*  11:    */import java.io.ObjectOutputStream;
-/*  12:    */import java.io.Serializable;
-/*  13:    */import java.util.Map;
-/*  14:    */import java.util.Map.Entry;
-/*  15:    */import java.util.NoSuchElementException;
-/*  16:    */
-/*  86:    */public class Reference2LongOpenHashMap<K>
-/*  87:    */  extends AbstractReference2LongMap<K>
-/*  88:    */  implements Serializable, Cloneable, Hash
-/*  89:    */{
-/*  90:    */  public static final long serialVersionUID = 0L;
-/*  91:    */  private static final boolean ASSERTS = false;
-/*  92:    */  protected transient K[] key;
-/*  93:    */  protected transient long[] value;
-/*  94:    */  protected transient boolean[] used;
-/*  95:    */  protected final float f;
-/*  96:    */  protected transient int n;
-/*  97:    */  protected transient int maxFill;
-/*  98:    */  protected transient int mask;
-/*  99:    */  protected int size;
-/* 100:    */  protected volatile transient Reference2LongMap.FastEntrySet<K> entries;
-/* 101:    */  protected volatile transient ReferenceSet<K> keys;
-/* 102:    */  protected volatile transient LongCollection values;
-/* 103:    */  
-/* 104:    */  public Reference2LongOpenHashMap(int expected, float f)
-/* 105:    */  {
-/* 106:106 */    if ((f <= 0.0F) || (f > 1.0F)) throw new IllegalArgumentException("Load factor must be greater than 0 and smaller than or equal to 1");
-/* 107:107 */    if (expected < 0) throw new IllegalArgumentException("The expected number of elements must be nonnegative");
-/* 108:108 */    this.f = f;
-/* 109:109 */    this.n = HashCommon.arraySize(expected, f);
-/* 110:110 */    this.mask = (this.n - 1);
-/* 111:111 */    this.maxFill = HashCommon.maxFill(this.n, f);
-/* 112:112 */    this.key = ((Object[])new Object[this.n]);
-/* 113:113 */    this.value = new long[this.n];
-/* 114:114 */    this.used = new boolean[this.n];
-/* 115:    */  }
-/* 116:    */  
-/* 119:    */  public Reference2LongOpenHashMap(int expected)
-/* 120:    */  {
-/* 121:121 */    this(expected, 0.75F);
-/* 122:    */  }
-/* 123:    */  
-/* 125:    */  public Reference2LongOpenHashMap()
-/* 126:    */  {
-/* 127:127 */    this(16, 0.75F);
-/* 128:    */  }
-/* 129:    */  
-/* 133:    */  public Reference2LongOpenHashMap(Map<? extends K, ? extends Long> m, float f)
-/* 134:    */  {
-/* 135:135 */    this(m.size(), f);
-/* 136:136 */    putAll(m);
-/* 137:    */  }
-/* 138:    */  
-/* 141:    */  public Reference2LongOpenHashMap(Map<? extends K, ? extends Long> m)
-/* 142:    */  {
-/* 143:143 */    this(m, 0.75F);
-/* 144:    */  }
-/* 145:    */  
-/* 149:    */  public Reference2LongOpenHashMap(Reference2LongMap<K> m, float f)
-/* 150:    */  {
-/* 151:151 */    this(m.size(), f);
-/* 152:152 */    putAll(m);
-/* 153:    */  }
-/* 154:    */  
-/* 157:    */  public Reference2LongOpenHashMap(Reference2LongMap<K> m)
-/* 158:    */  {
-/* 159:159 */    this(m, 0.75F);
-/* 160:    */  }
-/* 161:    */  
-/* 167:    */  public Reference2LongOpenHashMap(K[] k, long[] v, float f)
-/* 168:    */  {
-/* 169:169 */    this(k.length, f);
-/* 170:170 */    if (k.length != v.length) throw new IllegalArgumentException("The key array and the value array have different lengths (" + k.length + " and " + v.length + ")");
-/* 171:171 */    for (int i = 0; i < k.length; i++) { put(k[i], v[i]);
-/* 172:    */    }
-/* 173:    */  }
-/* 174:    */  
-/* 178:    */  public Reference2LongOpenHashMap(K[] k, long[] v)
-/* 179:    */  {
-/* 180:180 */    this(k, v, 0.75F);
-/* 181:    */  }
-/* 182:    */  
-/* 186:    */  public long put(K k, long v)
-/* 187:    */  {
-/* 188:188 */    int pos = (k == null ? 142593372 : HashCommon.murmurHash3(System.identityHashCode(k))) & this.mask;
-/* 189:    */    
-/* 190:190 */    while (this.used[pos] != 0) {
-/* 191:191 */      if (this.key[pos] == k) {
-/* 192:192 */        long oldValue = this.value[pos];
-/* 193:193 */        this.value[pos] = v;
-/* 194:194 */        return oldValue;
-/* 195:    */      }
-/* 196:196 */      pos = pos + 1 & this.mask;
-/* 197:    */    }
-/* 198:198 */    this.used[pos] = true;
-/* 199:199 */    this.key[pos] = k;
-/* 200:200 */    this.value[pos] = v;
-/* 201:201 */    if (++this.size >= this.maxFill) { rehash(HashCommon.arraySize(this.size + 1, this.f));
-/* 202:    */    }
-/* 203:203 */    return this.defRetValue;
-/* 204:    */  }
-/* 205:    */  
-/* 206:206 */  public Long put(K ok, Long ov) { long v = ov.longValue();
-/* 207:207 */    K k = ok;
-/* 208:    */    
-/* 209:209 */    int pos = (k == null ? 142593372 : HashCommon.murmurHash3(System.identityHashCode(k))) & this.mask;
-/* 210:    */    
-/* 211:211 */    while (this.used[pos] != 0) {
-/* 212:212 */      if (this.key[pos] == k) {
-/* 213:213 */        Long oldValue = Long.valueOf(this.value[pos]);
-/* 214:214 */        this.value[pos] = v;
-/* 215:215 */        return oldValue;
-/* 216:    */      }
-/* 217:217 */      pos = pos + 1 & this.mask;
-/* 218:    */    }
-/* 219:219 */    this.used[pos] = true;
-/* 220:220 */    this.key[pos] = k;
-/* 221:221 */    this.value[pos] = v;
-/* 222:222 */    if (++this.size >= this.maxFill) { rehash(HashCommon.arraySize(this.size + 1, this.f));
-/* 223:    */    }
-/* 224:224 */    return null;
-/* 225:    */  }
-/* 226:    */  
-/* 237:    */  public long add(K k, long incr)
-/* 238:    */  {
-/* 239:239 */    int pos = (k == null ? 142593372 : HashCommon.murmurHash3(System.identityHashCode(k))) & this.mask;
-/* 240:    */    
-/* 241:241 */    while (this.used[pos] != 0) {
-/* 242:242 */      if (this.key[pos] == k) {
-/* 243:243 */        long oldValue = this.value[pos];
-/* 244:244 */        this.value[pos] += incr;
-/* 245:245 */        return oldValue;
-/* 246:    */      }
-/* 247:247 */      pos = pos + 1 & this.mask;
-/* 248:    */    }
-/* 249:249 */    this.used[pos] = true;
-/* 250:250 */    this.key[pos] = k;
-/* 251:251 */    this.value[pos] = (this.defRetValue + incr);
-/* 252:252 */    if (++this.size >= this.maxFill) { rehash(HashCommon.arraySize(this.size + 1, this.f));
-/* 253:    */    }
-/* 254:254 */    return this.defRetValue;
-/* 255:    */  }
-/* 256:    */  
-/* 259:    */  protected final int shiftKeys(int pos)
-/* 260:    */  {
-/* 261:    */    int last;
-/* 262:    */    
-/* 264:    */    for (;;)
-/* 265:    */    {
-/* 266:266 */      pos = (last = pos) + 1 & this.mask;
-/* 267:267 */      while (this.used[pos] != 0) {
-/* 268:268 */        int slot = (this.key[pos] == null ? 142593372 : HashCommon.murmurHash3(System.identityHashCode(this.key[pos]))) & this.mask;
-/* 269:269 */        if (last <= pos ? (last < slot) && (slot <= pos) : (last >= slot) && (slot > pos)) break;
-/* 270:270 */        pos = pos + 1 & this.mask;
-/* 271:    */      }
-/* 272:272 */      if (this.used[pos] == 0) break;
-/* 273:273 */      this.key[last] = this.key[pos];
-/* 274:274 */      this.value[last] = this.value[pos];
-/* 275:    */    }
-/* 276:276 */    this.used[last] = false;
-/* 277:277 */    this.key[last] = null;
-/* 278:278 */    return last;
-/* 279:    */  }
-/* 280:    */  
-/* 281:    */  public long removeLong(Object k)
-/* 282:    */  {
-/* 283:283 */    int pos = (k == null ? 142593372 : HashCommon.murmurHash3(System.identityHashCode(k))) & this.mask;
-/* 284:    */    
-/* 285:285 */    while (this.used[pos] != 0) {
-/* 286:286 */      if (this.key[pos] == k) {
-/* 287:287 */        this.size -= 1;
-/* 288:288 */        long v = this.value[pos];
-/* 289:289 */        shiftKeys(pos);
-/* 290:290 */        return v;
-/* 291:    */      }
-/* 292:292 */      pos = pos + 1 & this.mask;
-/* 293:    */    }
-/* 294:294 */    return this.defRetValue;
-/* 295:    */  }
-/* 296:    */  
-/* 297:    */  public Long remove(Object ok) {
-/* 298:298 */    K k = ok;
-/* 299:    */    
-/* 300:300 */    int pos = (k == null ? 142593372 : HashCommon.murmurHash3(System.identityHashCode(k))) & this.mask;
-/* 301:    */    
-/* 302:302 */    while (this.used[pos] != 0) {
-/* 303:303 */      if (this.key[pos] == k) {
-/* 304:304 */        this.size -= 1;
-/* 305:305 */        long v = this.value[pos];
-/* 306:306 */        shiftKeys(pos);
-/* 307:307 */        return Long.valueOf(v);
-/* 308:    */      }
-/* 309:309 */      pos = pos + 1 & this.mask;
-/* 310:    */    }
-/* 311:311 */    return null;
-/* 312:    */  }
-/* 313:    */  
-/* 314:    */  public long getLong(Object k)
-/* 315:    */  {
-/* 316:316 */    int pos = (k == null ? 142593372 : HashCommon.murmurHash3(System.identityHashCode(k))) & this.mask;
-/* 317:    */    
-/* 318:318 */    while (this.used[pos] != 0) {
-/* 319:319 */      if (this.key[pos] == k) return this.value[pos];
-/* 320:320 */      pos = pos + 1 & this.mask;
-/* 321:    */    }
-/* 322:322 */    return this.defRetValue;
-/* 323:    */  }
-/* 324:    */  
-/* 325:    */  public boolean containsKey(Object k)
-/* 326:    */  {
-/* 327:327 */    int pos = (k == null ? 142593372 : HashCommon.murmurHash3(System.identityHashCode(k))) & this.mask;
-/* 328:    */    
-/* 329:329 */    while (this.used[pos] != 0) {
-/* 330:330 */      if (this.key[pos] == k) return true;
-/* 331:331 */      pos = pos + 1 & this.mask;
-/* 332:    */    }
-/* 333:333 */    return false;
-/* 334:    */  }
-/* 335:    */  
-/* 336:336 */  public boolean containsValue(long v) { long[] value = this.value;
-/* 337:337 */    boolean[] used = this.used;
-/* 338:338 */    for (int i = this.n; i-- != 0; return true) label17: if ((used[i] == 0) || (value[i] != v)) break label17;
-/* 339:339 */    return false;
-/* 340:    */  }
-/* 341:    */  
-/* 346:    */  public void clear()
-/* 347:    */  {
-/* 348:348 */    if (this.size == 0) return;
-/* 349:349 */    this.size = 0;
-/* 350:350 */    BooleanArrays.fill(this.used, false);
-/* 351:    */    
-/* 352:352 */    ObjectArrays.fill(this.key, null);
-/* 353:    */  }
-/* 354:    */  
-/* 355:355 */  public int size() { return this.size; }
-/* 356:    */  
-/* 357:    */  public boolean isEmpty() {
-/* 358:358 */    return this.size == 0;
-/* 359:    */  }
-/* 360:    */  
-/* 365:    */  @Deprecated
-/* 366:    */  public void growthFactor(int growthFactor) {}
-/* 367:    */  
-/* 372:    */  @Deprecated
-/* 373:    */  public int growthFactor()
-/* 374:    */  {
-/* 375:375 */    return 16;
-/* 376:    */  }
-/* 377:    */  
-/* 378:    */  private final class MapEntry
-/* 379:    */    implements Reference2LongMap.Entry<K>, Map.Entry<K, Long>
-/* 380:    */  {
-/* 381:    */    private int index;
-/* 382:    */    
-/* 383:    */    MapEntry(int index)
-/* 384:    */    {
-/* 385:385 */      this.index = index;
-/* 386:    */    }
-/* 387:    */    
-/* 388:388 */    public K getKey() { return Reference2LongOpenHashMap.this.key[this.index]; }
-/* 389:    */    
-/* 390:    */    public Long getValue() {
-/* 391:391 */      return Long.valueOf(Reference2LongOpenHashMap.this.value[this.index]);
-/* 392:    */    }
-/* 393:    */    
-/* 394:394 */    public long getLongValue() { return Reference2LongOpenHashMap.this.value[this.index]; }
-/* 395:    */    
-/* 396:    */    public long setValue(long v) {
-/* 397:397 */      long oldValue = Reference2LongOpenHashMap.this.value[this.index];
-/* 398:398 */      Reference2LongOpenHashMap.this.value[this.index] = v;
-/* 399:399 */      return oldValue;
-/* 400:    */    }
-/* 401:    */    
-/* 402:402 */    public Long setValue(Long v) { return Long.valueOf(setValue(v.longValue())); }
-/* 403:    */    
-/* 404:    */    public boolean equals(Object o)
-/* 405:    */    {
-/* 406:406 */      if (!(o instanceof Map.Entry)) return false;
-/* 407:407 */      Map.Entry<K, Long> e = (Map.Entry)o;
-/* 408:408 */      return (Reference2LongOpenHashMap.this.key[this.index] == e.getKey()) && (Reference2LongOpenHashMap.this.value[this.index] == ((Long)e.getValue()).longValue());
-/* 409:    */    }
-/* 410:    */    
-/* 411:411 */    public int hashCode() { return (Reference2LongOpenHashMap.this.key[this.index] == null ? 0 : System.identityHashCode(Reference2LongOpenHashMap.this.key[this.index])) ^ HashCommon.long2int(Reference2LongOpenHashMap.this.value[this.index]); }
-/* 412:    */    
-/* 414:414 */    public String toString() { return Reference2LongOpenHashMap.this.key[this.index] + "=>" + Reference2LongOpenHashMap.this.value[this.index]; } }
-/* 415:    */  
-/* 416:    */  private class MapIterator { int pos;
-/* 417:    */    int last;
-/* 418:    */    int c;
-/* 419:    */    ReferenceArrayList<K> wrapped;
-/* 420:    */    
-/* 421:421 */    private MapIterator() { this.pos = Reference2LongOpenHashMap.this.n;
-/* 422:    */      
-/* 424:424 */      this.last = -1;
-/* 425:    */      
-/* 426:426 */      this.c = Reference2LongOpenHashMap.this.size;
-/* 427:    */      
-/* 431:431 */      boolean[] used = Reference2LongOpenHashMap.this.used;
-/* 432:432 */      while ((this.c != 0) && (used[(--this.pos)] == 0)) {}
-/* 433:    */    }
-/* 434:    */    
-/* 435:435 */    public boolean hasNext() { return this.c != 0; }
-/* 436:    */    
-/* 437:    */    public int nextEntry() {
-/* 438:438 */      if (!hasNext()) throw new NoSuchElementException();
-/* 439:439 */      this.c -= 1;
-/* 440:    */      
-/* 441:441 */      if (this.pos < 0) {
-/* 442:442 */        Object k = this.wrapped.get(-(this.last = --this.pos) - 2);
-/* 443:    */        
-/* 444:444 */        int pos = (k == null ? 142593372 : HashCommon.murmurHash3(System.identityHashCode(k))) & Reference2LongOpenHashMap.this.mask;
-/* 445:    */        
-/* 446:446 */        while (Reference2LongOpenHashMap.this.used[pos] != 0) {
-/* 447:447 */          if (Reference2LongOpenHashMap.this.key[pos] == k) return pos;
-/* 448:448 */          pos = pos + 1 & Reference2LongOpenHashMap.this.mask;
-/* 449:    */        }
-/* 450:    */      }
-/* 451:451 */      this.last = this.pos;
-/* 452:    */      
-/* 453:453 */      if (this.c != 0) {
-/* 454:454 */        boolean[] used = Reference2LongOpenHashMap.this.used;
-/* 455:455 */        while ((this.pos-- != 0) && (used[this.pos] == 0)) {}
-/* 456:    */      }
-/* 457:    */      
-/* 458:458 */      return this.last;
-/* 459:    */    }
-/* 460:    */    
-/* 464:    */    protected final int shiftKeys(int pos)
-/* 465:    */    {
-/* 466:    */      int last;
-/* 467:    */      
-/* 469:    */      for (;;)
-/* 470:    */      {
-/* 471:471 */        pos = (last = pos) + 1 & Reference2LongOpenHashMap.this.mask;
-/* 472:472 */        while (Reference2LongOpenHashMap.this.used[pos] != 0) {
-/* 473:473 */          int slot = (Reference2LongOpenHashMap.this.key[pos] == null ? 142593372 : HashCommon.murmurHash3(System.identityHashCode(Reference2LongOpenHashMap.this.key[pos]))) & Reference2LongOpenHashMap.this.mask;
-/* 474:474 */          if (last <= pos ? (last < slot) && (slot <= pos) : (last >= slot) && (slot > pos)) break;
-/* 475:475 */          pos = pos + 1 & Reference2LongOpenHashMap.this.mask;
-/* 476:    */        }
-/* 477:477 */        if (Reference2LongOpenHashMap.this.used[pos] == 0) break;
-/* 478:478 */        if (pos < last)
-/* 479:    */        {
-/* 480:480 */          if (this.wrapped == null) this.wrapped = new ReferenceArrayList();
-/* 481:481 */          this.wrapped.add(Reference2LongOpenHashMap.this.key[pos]);
-/* 482:    */        }
-/* 483:483 */        Reference2LongOpenHashMap.this.key[last] = Reference2LongOpenHashMap.this.key[pos];
-/* 484:484 */        Reference2LongOpenHashMap.this.value[last] = Reference2LongOpenHashMap.this.value[pos];
-/* 485:    */      }
-/* 486:486 */      Reference2LongOpenHashMap.this.used[last] = false;
-/* 487:487 */      Reference2LongOpenHashMap.this.key[last] = null;
-/* 488:488 */      return last;
-/* 489:    */    }
-/* 490:    */    
-/* 491:    */    public void remove() {
-/* 492:492 */      if (this.last == -1) throw new IllegalStateException();
-/* 493:493 */      if (this.pos < -1)
-/* 494:    */      {
-/* 495:495 */        Reference2LongOpenHashMap.this.remove(this.wrapped.set(-this.pos - 2, null));
-/* 496:496 */        this.last = -1;
-/* 497:497 */        return;
-/* 498:    */      }
-/* 499:499 */      Reference2LongOpenHashMap.this.size -= 1;
-/* 500:500 */      if ((shiftKeys(this.last) == this.pos) && (this.c > 0)) {
-/* 501:501 */        this.c += 1;
-/* 502:502 */        nextEntry();
-/* 503:    */      }
-/* 504:504 */      this.last = -1;
-/* 505:    */    }
-/* 506:    */    
-/* 507:    */    public int skip(int n) {
-/* 508:508 */      int i = n;
-/* 509:509 */      while ((i-- != 0) && (hasNext())) nextEntry();
-/* 510:510 */      return n - i - 1;
-/* 511:    */    } }
-/* 512:    */  
-/* 513:513 */  private class EntryIterator extends Reference2LongOpenHashMap<K>.MapIterator implements ObjectIterator<Reference2LongMap.Entry<K>> { private EntryIterator() { super(null); }
-/* 514:    */    
-/* 515:    */    private Reference2LongOpenHashMap<K>.MapEntry entry;
-/* 516:516 */    public Reference2LongMap.Entry<K> next() { return this.entry = new Reference2LongOpenHashMap.MapEntry(Reference2LongOpenHashMap.this, nextEntry()); }
-/* 517:    */    
-/* 518:    */    public void remove()
-/* 519:    */    {
-/* 520:520 */      super.remove();
-/* 521:521 */      Reference2LongOpenHashMap.MapEntry.access$102(this.entry, -1);
-/* 522:    */    } }
-/* 523:    */  
-/* 524:524 */  private class FastEntryIterator extends Reference2LongOpenHashMap<K>.MapIterator implements ObjectIterator<Reference2LongMap.Entry<K>> { private FastEntryIterator() { super(null); }
-/* 525:525 */    final AbstractReference2LongMap.BasicEntry<K> entry = new AbstractReference2LongMap.BasicEntry(null, 0L);
-/* 526:    */    
-/* 527:527 */    public AbstractReference2LongMap.BasicEntry<K> next() { int e = nextEntry();
-/* 528:528 */      this.entry.key = Reference2LongOpenHashMap.this.key[e];
-/* 529:529 */      this.entry.value = Reference2LongOpenHashMap.this.value[e];
-/* 530:530 */      return this.entry;
-/* 531:    */    } }
-/* 532:    */  
-/* 533:    */  private final class MapEntrySet extends AbstractObjectSet<Reference2LongMap.Entry<K>> implements Reference2LongMap.FastEntrySet<K> { private MapEntrySet() {}
-/* 534:    */    
-/* 535:535 */    public ObjectIterator<Reference2LongMap.Entry<K>> iterator() { return new Reference2LongOpenHashMap.EntryIterator(Reference2LongOpenHashMap.this, null); }
-/* 536:    */    
-/* 537:    */    public ObjectIterator<Reference2LongMap.Entry<K>> fastIterator() {
-/* 538:538 */      return new Reference2LongOpenHashMap.FastEntryIterator(Reference2LongOpenHashMap.this, null);
-/* 539:    */    }
-/* 540:    */    
-/* 541:    */    public boolean contains(Object o) {
-/* 542:542 */      if (!(o instanceof Map.Entry)) return false;
-/* 543:543 */      Map.Entry<K, Long> e = (Map.Entry)o;
-/* 544:544 */      K k = e.getKey();
-/* 545:    */      
-/* 546:546 */      int pos = (k == null ? 142593372 : HashCommon.murmurHash3(System.identityHashCode(k))) & Reference2LongOpenHashMap.this.mask;
-/* 547:    */      
-/* 548:548 */      while (Reference2LongOpenHashMap.this.used[pos] != 0) {
-/* 549:549 */        if (Reference2LongOpenHashMap.this.key[pos] == k) return Reference2LongOpenHashMap.this.value[pos] == ((Long)e.getValue()).longValue();
-/* 550:550 */        pos = pos + 1 & Reference2LongOpenHashMap.this.mask;
-/* 551:    */      }
-/* 552:552 */      return false;
-/* 553:    */    }
-/* 554:    */    
-/* 555:    */    public boolean remove(Object o) {
-/* 556:556 */      if (!(o instanceof Map.Entry)) return false;
-/* 557:557 */      Map.Entry<K, Long> e = (Map.Entry)o;
-/* 558:558 */      K k = e.getKey();
-/* 559:    */      
-/* 560:560 */      int pos = (k == null ? 142593372 : HashCommon.murmurHash3(System.identityHashCode(k))) & Reference2LongOpenHashMap.this.mask;
-/* 561:    */      
-/* 562:562 */      while (Reference2LongOpenHashMap.this.used[pos] != 0) {
-/* 563:563 */        if (Reference2LongOpenHashMap.this.key[pos] == k) {
-/* 564:564 */          Reference2LongOpenHashMap.this.remove(e.getKey());
-/* 565:565 */          return true;
-/* 566:    */        }
-/* 567:567 */        pos = pos + 1 & Reference2LongOpenHashMap.this.mask;
-/* 568:    */      }
-/* 569:569 */      return false;
-/* 570:    */    }
-/* 571:    */    
-/* 572:572 */    public int size() { return Reference2LongOpenHashMap.this.size; }
-/* 573:    */    
-/* 575:575 */    public void clear() { Reference2LongOpenHashMap.this.clear(); }
-/* 576:    */  }
-/* 577:    */  
-/* 578:    */  public Reference2LongMap.FastEntrySet<K> reference2LongEntrySet() {
-/* 579:579 */    if (this.entries == null) this.entries = new MapEntrySet(null);
-/* 580:580 */    return this.entries;
-/* 581:    */  }
-/* 582:    */  
-/* 585:    */  private final class KeyIterator
-/* 586:    */    extends Reference2LongOpenHashMap<K>.MapIterator
-/* 587:    */    implements ObjectIterator<K>
-/* 588:    */  {
-/* 589:589 */    public KeyIterator() { super(null); }
-/* 590:590 */    public K next() { return Reference2LongOpenHashMap.this.key[nextEntry()]; } }
-/* 591:    */  
-/* 592:    */  private final class KeySet extends AbstractReferenceSet<K> { private KeySet() {}
-/* 593:    */    
-/* 594:594 */    public ObjectIterator<K> iterator() { return new Reference2LongOpenHashMap.KeyIterator(Reference2LongOpenHashMap.this); }
-/* 595:    */    
-/* 596:    */    public int size() {
-/* 597:597 */      return Reference2LongOpenHashMap.this.size;
-/* 598:    */    }
-/* 599:    */    
-/* 600:600 */    public boolean contains(Object k) { return Reference2LongOpenHashMap.this.containsKey(k); }
-/* 601:    */    
-/* 602:    */    public boolean remove(Object k) {
-/* 603:603 */      int oldSize = Reference2LongOpenHashMap.this.size;
-/* 604:604 */      Reference2LongOpenHashMap.this.remove(k);
-/* 605:605 */      return Reference2LongOpenHashMap.this.size != oldSize;
-/* 606:    */    }
-/* 607:    */    
-/* 608:608 */    public void clear() { Reference2LongOpenHashMap.this.clear(); }
-/* 609:    */  }
-/* 610:    */  
-/* 611:    */  public ReferenceSet<K> keySet() {
-/* 612:612 */    if (this.keys == null) this.keys = new KeySet(null);
-/* 613:613 */    return this.keys;
-/* 614:    */  }
-/* 615:    */  
-/* 618:    */  private final class ValueIterator
-/* 619:    */    extends Reference2LongOpenHashMap.MapIterator
-/* 620:    */    implements LongIterator
-/* 621:    */  {
-/* 622:622 */    public ValueIterator() { super(null); }
-/* 623:623 */    public long nextLong() { return Reference2LongOpenHashMap.this.value[nextEntry()]; }
-/* 624:624 */    public Long next() { return Long.valueOf(Reference2LongOpenHashMap.this.value[nextEntry()]); }
-/* 625:    */  }
-/* 626:    */  
-/* 627:627 */  public LongCollection values() { if (this.values == null) { this.values = new AbstractLongCollection() {
-/* 628:    */        public LongIterator iterator() {
-/* 629:629 */          return new Reference2LongOpenHashMap.ValueIterator(Reference2LongOpenHashMap.this);
-/* 630:    */        }
-/* 631:    */        
-/* 632:632 */        public int size() { return Reference2LongOpenHashMap.this.size; }
-/* 633:    */        
-/* 634:    */        public boolean contains(long v) {
-/* 635:635 */          return Reference2LongOpenHashMap.this.containsValue(v);
-/* 636:    */        }
-/* 637:    */        
-/* 638:638 */        public void clear() { Reference2LongOpenHashMap.this.clear(); }
-/* 639:    */      };
-/* 640:    */    }
-/* 641:641 */    return this.values;
-/* 642:    */  }
-/* 643:    */  
-/* 652:    */  @Deprecated
-/* 653:    */  public boolean rehash()
-/* 654:    */  {
-/* 655:655 */    return true;
-/* 656:    */  }
-/* 657:    */  
-/* 668:    */  public boolean trim()
-/* 669:    */  {
-/* 670:670 */    int l = HashCommon.arraySize(this.size, this.f);
-/* 671:671 */    if (l >= this.n) return true;
-/* 672:    */    try {
-/* 673:673 */      rehash(l);
-/* 674:    */    } catch (OutOfMemoryError cantDoIt) {
-/* 675:675 */      return false; }
-/* 676:676 */    return true;
-/* 677:    */  }
-/* 678:    */  
-/* 695:    */  public boolean trim(int n)
-/* 696:    */  {
-/* 697:697 */    int l = HashCommon.nextPowerOfTwo((int)Math.ceil(n / this.f));
-/* 698:698 */    if (this.n <= l) return true;
-/* 699:    */    try {
-/* 700:700 */      rehash(l);
-/* 701:    */    } catch (OutOfMemoryError cantDoIt) {
-/* 702:702 */      return false; }
-/* 703:703 */    return true;
-/* 704:    */  }
-/* 705:    */  
-/* 714:    */  protected void rehash(int newN)
-/* 715:    */  {
-/* 716:716 */    int i = 0;
-/* 717:717 */    boolean[] used = this.used;
-/* 718:    */    
-/* 719:719 */    K[] key = this.key;
-/* 720:720 */    long[] value = this.value;
-/* 721:721 */    int newMask = newN - 1;
-/* 722:722 */    K[] newKey = (Object[])new Object[newN];
-/* 723:723 */    long[] newValue = new long[newN];
-/* 724:724 */    boolean[] newUsed = new boolean[newN];
-/* 725:725 */    for (int j = this.size; j-- != 0;) {
-/* 726:726 */      while (used[i] == 0) i++;
-/* 727:727 */      K k = key[i];
-/* 728:728 */      int pos = (k == null ? 142593372 : HashCommon.murmurHash3(System.identityHashCode(k))) & newMask;
-/* 729:729 */      while (newUsed[pos] != 0) pos = pos + 1 & newMask;
-/* 730:730 */      newUsed[pos] = true;
-/* 731:731 */      newKey[pos] = k;
-/* 732:732 */      newValue[pos] = value[i];
-/* 733:733 */      i++;
-/* 734:    */    }
-/* 735:735 */    this.n = newN;
-/* 736:736 */    this.mask = newMask;
-/* 737:737 */    this.maxFill = HashCommon.maxFill(this.n, this.f);
-/* 738:738 */    this.key = newKey;
-/* 739:739 */    this.value = newValue;
-/* 740:740 */    this.used = newUsed;
-/* 741:    */  }
-/* 742:    */  
-/* 746:    */  public Reference2LongOpenHashMap<K> clone()
-/* 747:    */  {
-/* 748:    */    Reference2LongOpenHashMap<K> c;
-/* 749:    */    
-/* 751:    */    try
-/* 752:    */    {
-/* 753:753 */      c = (Reference2LongOpenHashMap)super.clone();
-/* 754:    */    }
-/* 755:    */    catch (CloneNotSupportedException cantHappen) {
-/* 756:756 */      throw new InternalError();
-/* 757:    */    }
-/* 758:758 */    c.keys = null;
-/* 759:759 */    c.values = null;
-/* 760:760 */    c.entries = null;
-/* 761:761 */    c.key = ((Object[])this.key.clone());
-/* 762:762 */    c.value = ((long[])this.value.clone());
-/* 763:763 */    c.used = ((boolean[])this.used.clone());
-/* 764:764 */    return c;
-/* 765:    */  }
-/* 766:    */  
-/* 774:    */  public int hashCode()
-/* 775:    */  {
-/* 776:776 */    int h = 0;
-/* 777:777 */    int j = this.size;int i = 0; for (int t = 0; j-- != 0;) {
-/* 778:778 */      while (this.used[i] == 0) i++;
-/* 779:779 */      if (this != this.key[i])
-/* 780:780 */        t = this.key[i] == null ? 0 : System.identityHashCode(this.key[i]);
-/* 781:781 */      t ^= HashCommon.long2int(this.value[i]);
-/* 782:782 */      h += t;
-/* 783:783 */      i++;
-/* 784:    */    }
-/* 785:785 */    return h;
-/* 786:    */  }
-/* 787:    */  
-/* 788:788 */  private void writeObject(ObjectOutputStream s) throws IOException { K[] key = this.key;
-/* 789:789 */    long[] value = this.value;
-/* 790:790 */    Reference2LongOpenHashMap<K>.MapIterator i = new MapIterator(null);
-/* 791:791 */    s.defaultWriteObject();
-/* 792:792 */    for (int j = this.size; j-- != 0;) {
-/* 793:793 */      int e = i.nextEntry();
-/* 794:794 */      s.writeObject(key[e]);
-/* 795:795 */      s.writeLong(value[e]);
-/* 796:    */    }
-/* 797:    */  }
-/* 798:    */  
-/* 799:    */  private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
-/* 800:800 */    s.defaultReadObject();
-/* 801:801 */    this.n = HashCommon.arraySize(this.size, this.f);
-/* 802:802 */    this.maxFill = HashCommon.maxFill(this.n, this.f);
-/* 803:803 */    this.mask = (this.n - 1);
-/* 804:804 */    K[] key = this.key = (Object[])new Object[this.n];
-/* 805:805 */    long[] value = this.value = new long[this.n];
-/* 806:806 */    boolean[] used = this.used = new boolean[this.n];
-/* 807:    */    
-/* 809:809 */    int i = this.size; for (int pos = 0; i-- != 0;) {
-/* 810:810 */      K k = s.readObject();
-/* 811:811 */      long v = s.readLong();
-/* 812:812 */      pos = (k == null ? 142593372 : HashCommon.murmurHash3(System.identityHashCode(k))) & this.mask;
-/* 813:813 */      while (used[pos] != 0) pos = pos + 1 & this.mask;
-/* 814:814 */      used[pos] = true;
-/* 815:815 */      key[pos] = k;
-/* 816:816 */      value[pos] = v;
-/* 817:    */    }
-/* 818:    */  }
-/* 819:    */  
-/* 820:    */  private void checkTable() {}
-/* 821:    */}
+package it.unimi.dsi.fastutil.objects;
+
+import it.unimi.dsi.fastutil.Hash;
+import it.unimi.dsi.fastutil.HashCommon;
+import it.unimi.dsi.fastutil.booleans.BooleanArrays;
+import it.unimi.dsi.fastutil.longs.AbstractLongCollection;
+import it.unimi.dsi.fastutil.longs.LongCollection;
+import it.unimi.dsi.fastutil.longs.LongIterator;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.NoSuchElementException;
+
+public class Reference2LongOpenHashMap<K>
+  extends AbstractReference2LongMap<K>
+  implements Serializable, Cloneable, Hash
+{
+  public static final long serialVersionUID = 0L;
+  private static final boolean ASSERTS = false;
+  protected transient K[] key;
+  protected transient long[] value;
+  protected transient boolean[] used;
+  protected final float field_48;
+  protected transient int field_49;
+  protected transient int maxFill;
+  protected transient int mask;
+  protected int size;
+  protected volatile transient Reference2LongMap.FastEntrySet<K> entries;
+  protected volatile transient ReferenceSet<K> keys;
+  protected volatile transient LongCollection values;
+  
+  public Reference2LongOpenHashMap(int expected, float local_f)
+  {
+    if ((local_f <= 0.0F) || (local_f > 1.0F)) {
+      throw new IllegalArgumentException("Load factor must be greater than 0 and smaller than or equal to 1");
+    }
+    if (expected < 0) {
+      throw new IllegalArgumentException("The expected number of elements must be nonnegative");
+    }
+    this.field_48 = local_f;
+    this.field_49 = HashCommon.arraySize(expected, local_f);
+    this.mask = (this.field_49 - 1);
+    this.maxFill = HashCommon.maxFill(this.field_49, local_f);
+    this.key = ((Object[])new Object[this.field_49]);
+    this.value = new long[this.field_49];
+    this.used = new boolean[this.field_49];
+  }
+  
+  public Reference2LongOpenHashMap(int expected)
+  {
+    this(expected, 0.75F);
+  }
+  
+  public Reference2LongOpenHashMap()
+  {
+    this(16, 0.75F);
+  }
+  
+  public Reference2LongOpenHashMap(Map<? extends K, ? extends Long> local_m, float local_f)
+  {
+    this(local_m.size(), local_f);
+    putAll(local_m);
+  }
+  
+  public Reference2LongOpenHashMap(Map<? extends K, ? extends Long> local_m)
+  {
+    this(local_m, 0.75F);
+  }
+  
+  public Reference2LongOpenHashMap(Reference2LongMap<K> local_m, float local_f)
+  {
+    this(local_m.size(), local_f);
+    putAll(local_m);
+  }
+  
+  public Reference2LongOpenHashMap(Reference2LongMap<K> local_m)
+  {
+    this(local_m, 0.75F);
+  }
+  
+  public Reference2LongOpenHashMap(K[] local_k, long[] local_v, float local_f)
+  {
+    this(local_k.length, local_f);
+    if (local_k.length != local_v.length) {
+      throw new IllegalArgumentException("The key array and the value array have different lengths (" + local_k.length + " and " + local_v.length + ")");
+    }
+    for (int local_i = 0; local_i < local_k.length; local_i++) {
+      put(local_k[local_i], local_v[local_i]);
+    }
+  }
+  
+  public Reference2LongOpenHashMap(K[] local_k, long[] local_v)
+  {
+    this(local_k, local_v, 0.75F);
+  }
+  
+  public long put(K local_k, long local_v)
+  {
+    for (int pos = (local_k == null ? 142593372 : HashCommon.murmurHash3(System.identityHashCode(local_k))) & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask) {
+      if (this.key[pos] == local_k)
+      {
+        long oldValue = this.value[pos];
+        this.value[pos] = local_v;
+        return oldValue;
+      }
+    }
+    this.used[pos] = true;
+    this.key[pos] = local_k;
+    this.value[pos] = local_v;
+    if (++this.size >= this.maxFill) {
+      rehash(HashCommon.arraySize(this.size + 1, this.field_48));
+    }
+    return this.defRetValue;
+  }
+  
+  public Long put(K local_ok, Long local_ov)
+  {
+    long local_v = local_ov.longValue();
+    K local_k = local_ok;
+    for (int pos = (local_k == null ? 142593372 : HashCommon.murmurHash3(System.identityHashCode(local_k))) & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask) {
+      if (this.key[pos] == local_k)
+      {
+        Long oldValue = Long.valueOf(this.value[pos]);
+        this.value[pos] = local_v;
+        return oldValue;
+      }
+    }
+    this.used[pos] = true;
+    this.key[pos] = local_k;
+    this.value[pos] = local_v;
+    if (++this.size >= this.maxFill) {
+      rehash(HashCommon.arraySize(this.size + 1, this.field_48));
+    }
+    return null;
+  }
+  
+  public long add(K local_k, long incr)
+  {
+    for (int pos = (local_k == null ? 142593372 : HashCommon.murmurHash3(System.identityHashCode(local_k))) & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask) {
+      if (this.key[pos] == local_k)
+      {
+        long oldValue = this.value[pos];
+        this.value[pos] += incr;
+        return oldValue;
+      }
+    }
+    this.used[pos] = true;
+    this.key[pos] = local_k;
+    this.value[pos] = (this.defRetValue + incr);
+    if (++this.size >= this.maxFill) {
+      rehash(HashCommon.arraySize(this.size + 1, this.field_48));
+    }
+    return this.defRetValue;
+  }
+  
+  protected final int shiftKeys(int pos)
+  {
+    int last;
+    for (;;)
+    {
+      for (pos = (last = pos) + 1 & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask)
+      {
+        int slot = (this.key[pos] == null ? 142593372 : HashCommon.murmurHash3(System.identityHashCode(this.key[pos]))) & this.mask;
+        if (last <= pos ? (last < slot) && (slot <= pos) : (last >= slot) && (slot > pos)) {
+          break;
+        }
+      }
+      if (this.used[pos] == 0) {
+        break;
+      }
+      this.key[last] = this.key[pos];
+      this.value[last] = this.value[pos];
+    }
+    this.used[last] = false;
+    this.key[last] = null;
+    return last;
+  }
+  
+  public long removeLong(Object local_k)
+  {
+    for (int pos = (local_k == null ? 142593372 : HashCommon.murmurHash3(System.identityHashCode(local_k))) & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask) {
+      if (this.key[pos] == local_k)
+      {
+        this.size -= 1;
+        long local_v = this.value[pos];
+        shiftKeys(pos);
+        return local_v;
+      }
+    }
+    return this.defRetValue;
+  }
+  
+  public Long remove(Object local_ok)
+  {
+    K local_k = local_ok;
+    for (int pos = (local_k == null ? 142593372 : HashCommon.murmurHash3(System.identityHashCode(local_k))) & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask) {
+      if (this.key[pos] == local_k)
+      {
+        this.size -= 1;
+        long local_v = this.value[pos];
+        shiftKeys(pos);
+        return Long.valueOf(local_v);
+      }
+    }
+    return null;
+  }
+  
+  public long getLong(Object local_k)
+  {
+    for (int pos = (local_k == null ? 142593372 : HashCommon.murmurHash3(System.identityHashCode(local_k))) & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask) {
+      if (this.key[pos] == local_k) {
+        return this.value[pos];
+      }
+    }
+    return this.defRetValue;
+  }
+  
+  public boolean containsKey(Object local_k)
+  {
+    for (int pos = (local_k == null ? 142593372 : HashCommon.murmurHash3(System.identityHashCode(local_k))) & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask) {
+      if (this.key[pos] == local_k) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  public boolean containsValue(long local_v)
+  {
+    long[] value = this.value;
+    boolean[] used = this.used;
+    int local_i = this.field_49;
+    while (local_i-- != 0) {
+      if ((used[local_i] != 0) && (value[local_i] == local_v)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  public void clear()
+  {
+    if (this.size == 0) {
+      return;
+    }
+    this.size = 0;
+    BooleanArrays.fill(this.used, false);
+    ObjectArrays.fill(this.key, null);
+  }
+  
+  public int size()
+  {
+    return this.size;
+  }
+  
+  public boolean isEmpty()
+  {
+    return this.size == 0;
+  }
+  
+  @Deprecated
+  public void growthFactor(int growthFactor) {}
+  
+  @Deprecated
+  public int growthFactor()
+  {
+    return 16;
+  }
+  
+  public Reference2LongMap.FastEntrySet<K> reference2LongEntrySet()
+  {
+    if (this.entries == null) {
+      this.entries = new MapEntrySet(null);
+    }
+    return this.entries;
+  }
+  
+  public ReferenceSet<K> keySet()
+  {
+    if (this.keys == null) {
+      this.keys = new KeySet(null);
+    }
+    return this.keys;
+  }
+  
+  public LongCollection values()
+  {
+    if (this.values == null) {
+      this.values = new AbstractLongCollection()
+      {
+        public LongIterator iterator()
+        {
+          return new Reference2LongOpenHashMap.ValueIterator(Reference2LongOpenHashMap.this);
+        }
+        
+        public int size()
+        {
+          return Reference2LongOpenHashMap.this.size;
+        }
+        
+        public boolean contains(long local_v)
+        {
+          return Reference2LongOpenHashMap.this.containsValue(local_v);
+        }
+        
+        public void clear()
+        {
+          Reference2LongOpenHashMap.this.clear();
+        }
+      };
+    }
+    return this.values;
+  }
+  
+  @Deprecated
+  public boolean rehash()
+  {
+    return true;
+  }
+  
+  public boolean trim()
+  {
+    int local_l = HashCommon.arraySize(this.size, this.field_48);
+    if (local_l >= this.field_49) {
+      return true;
+    }
+    try
+    {
+      rehash(local_l);
+    }
+    catch (OutOfMemoryError cantDoIt)
+    {
+      return false;
+    }
+    return true;
+  }
+  
+  public boolean trim(int local_n)
+  {
+    int local_l = HashCommon.nextPowerOfTwo((int)Math.ceil(local_n / this.field_48));
+    if (this.field_49 <= local_l) {
+      return true;
+    }
+    try
+    {
+      rehash(local_l);
+    }
+    catch (OutOfMemoryError cantDoIt)
+    {
+      return false;
+    }
+    return true;
+  }
+  
+  protected void rehash(int newN)
+  {
+    int local_i = 0;
+    boolean[] used = this.used;
+    K[] key = this.key;
+    long[] value = this.value;
+    int newMask = newN - 1;
+    K[] newKey = (Object[])new Object[newN];
+    long[] newValue = new long[newN];
+    boolean[] newUsed = new boolean[newN];
+    int local_j = this.size;
+    while (local_j-- != 0)
+    {
+      while (used[local_i] == 0) {
+        local_i++;
+      }
+      K local_k = key[local_i];
+      for (int pos = (local_k == null ? 142593372 : HashCommon.murmurHash3(System.identityHashCode(local_k))) & newMask; newUsed[pos] != 0; pos = pos + 1 & newMask) {}
+      newUsed[pos] = true;
+      newKey[pos] = local_k;
+      newValue[pos] = value[local_i];
+      local_i++;
+    }
+    this.field_49 = newN;
+    this.mask = newMask;
+    this.maxFill = HashCommon.maxFill(this.field_49, this.field_48);
+    this.key = newKey;
+    this.value = newValue;
+    this.used = newUsed;
+  }
+  
+  public Reference2LongOpenHashMap<K> clone()
+  {
+    Reference2LongOpenHashMap<K> local_c;
+    try
+    {
+      local_c = (Reference2LongOpenHashMap)super.clone();
+    }
+    catch (CloneNotSupportedException cantHappen)
+    {
+      throw new InternalError();
+    }
+    local_c.keys = null;
+    local_c.values = null;
+    local_c.entries = null;
+    local_c.key = ((Object[])this.key.clone());
+    local_c.value = ((long[])this.value.clone());
+    local_c.used = ((boolean[])this.used.clone());
+    return local_c;
+  }
+  
+  public int hashCode()
+  {
+    int local_h = 0;
+    int local_j = this.size;
+    int local_i = 0;
+    int local_t = 0;
+    while (local_j-- != 0)
+    {
+      while (this.used[local_i] == 0) {
+        local_i++;
+      }
+      if (this != this.key[local_i]) {
+        local_t = this.key[local_i] == null ? 0 : System.identityHashCode(this.key[local_i]);
+      }
+      local_t ^= HashCommon.long2int(this.value[local_i]);
+      local_h += local_t;
+      local_i++;
+    }
+    return local_h;
+  }
+  
+  private void writeObject(ObjectOutputStream local_s)
+    throws IOException
+  {
+    K[] key = this.key;
+    long[] value = this.value;
+    Reference2LongOpenHashMap<K>.MapIterator local_i = new MapIterator(null);
+    local_s.defaultWriteObject();
+    int local_j = this.size;
+    while (local_j-- != 0)
+    {
+      int local_e = local_i.nextEntry();
+      local_s.writeObject(key[local_e]);
+      local_s.writeLong(value[local_e]);
+    }
+  }
+  
+  private void readObject(ObjectInputStream local_s)
+    throws IOException, ClassNotFoundException
+  {
+    local_s.defaultReadObject();
+    this.field_49 = HashCommon.arraySize(this.size, this.field_48);
+    this.maxFill = HashCommon.maxFill(this.field_49, this.field_48);
+    this.mask = (this.field_49 - 1);
+    K[] key = this.key = (Object[])new Object[this.field_49];
+    long[] value = this.value = new long[this.field_49];
+    boolean[] used = this.used = new boolean[this.field_49];
+    int local_i = this.size;
+    int pos = 0;
+    while (local_i-- != 0)
+    {
+      K local_k = local_s.readObject();
+      long local_v = local_s.readLong();
+      for (pos = (local_k == null ? 142593372 : HashCommon.murmurHash3(System.identityHashCode(local_k))) & this.mask; used[pos] != 0; pos = pos + 1 & this.mask) {}
+      used[pos] = true;
+      key[pos] = local_k;
+      value[pos] = local_v;
+    }
+  }
+  
+  private void checkTable() {}
+  
+  private final class ValueIterator
+    extends Reference2LongOpenHashMap.MapIterator
+    implements LongIterator
+  {
+    public ValueIterator()
+    {
+      super(null);
+    }
+    
+    public long nextLong()
+    {
+      return Reference2LongOpenHashMap.this.value[nextEntry()];
+    }
+    
+    public Long next()
+    {
+      return Long.valueOf(Reference2LongOpenHashMap.this.value[nextEntry()]);
+    }
+  }
+  
+  private final class KeySet
+    extends AbstractReferenceSet<K>
+  {
+    private KeySet() {}
+    
+    public ObjectIterator<K> iterator()
+    {
+      return new Reference2LongOpenHashMap.KeyIterator(Reference2LongOpenHashMap.this);
+    }
+    
+    public int size()
+    {
+      return Reference2LongOpenHashMap.this.size;
+    }
+    
+    public boolean contains(Object local_k)
+    {
+      return Reference2LongOpenHashMap.this.containsKey(local_k);
+    }
+    
+    public boolean remove(Object local_k)
+    {
+      int oldSize = Reference2LongOpenHashMap.this.size;
+      Reference2LongOpenHashMap.this.remove(local_k);
+      return Reference2LongOpenHashMap.this.size != oldSize;
+    }
+    
+    public void clear()
+    {
+      Reference2LongOpenHashMap.this.clear();
+    }
+  }
+  
+  private final class KeyIterator
+    extends Reference2LongOpenHashMap<K>.MapIterator
+    implements ObjectIterator<K>
+  {
+    public KeyIterator()
+    {
+      super(null);
+    }
+    
+    public K next()
+    {
+      return Reference2LongOpenHashMap.this.key[nextEntry()];
+    }
+  }
+  
+  private final class MapEntrySet
+    extends AbstractObjectSet<Reference2LongMap.Entry<K>>
+    implements Reference2LongMap.FastEntrySet<K>
+  {
+    private MapEntrySet() {}
+    
+    public ObjectIterator<Reference2LongMap.Entry<K>> iterator()
+    {
+      return new Reference2LongOpenHashMap.EntryIterator(Reference2LongOpenHashMap.this, null);
+    }
+    
+    public ObjectIterator<Reference2LongMap.Entry<K>> fastIterator()
+    {
+      return new Reference2LongOpenHashMap.FastEntryIterator(Reference2LongOpenHashMap.this, null);
+    }
+    
+    public boolean contains(Object local_o)
+    {
+      if (!(local_o instanceof Map.Entry)) {
+        return false;
+      }
+      Map.Entry<K, Long> local_e = (Map.Entry)local_o;
+      K local_k = local_e.getKey();
+      for (int pos = (local_k == null ? 142593372 : HashCommon.murmurHash3(System.identityHashCode(local_k))) & Reference2LongOpenHashMap.this.mask; Reference2LongOpenHashMap.this.used[pos] != 0; pos = pos + 1 & Reference2LongOpenHashMap.this.mask) {
+        if (Reference2LongOpenHashMap.this.key[pos] == local_k) {
+          return Reference2LongOpenHashMap.this.value[pos] == ((Long)local_e.getValue()).longValue();
+        }
+      }
+      return false;
+    }
+    
+    public boolean remove(Object local_o)
+    {
+      if (!(local_o instanceof Map.Entry)) {
+        return false;
+      }
+      Map.Entry<K, Long> local_e = (Map.Entry)local_o;
+      K local_k = local_e.getKey();
+      for (int pos = (local_k == null ? 142593372 : HashCommon.murmurHash3(System.identityHashCode(local_k))) & Reference2LongOpenHashMap.this.mask; Reference2LongOpenHashMap.this.used[pos] != 0; pos = pos + 1 & Reference2LongOpenHashMap.this.mask) {
+        if (Reference2LongOpenHashMap.this.key[pos] == local_k)
+        {
+          Reference2LongOpenHashMap.this.remove(local_e.getKey());
+          return true;
+        }
+      }
+      return false;
+    }
+    
+    public int size()
+    {
+      return Reference2LongOpenHashMap.this.size;
+    }
+    
+    public void clear()
+    {
+      Reference2LongOpenHashMap.this.clear();
+    }
+  }
+  
+  private class FastEntryIterator
+    extends Reference2LongOpenHashMap<K>.MapIterator
+    implements ObjectIterator<Reference2LongMap.Entry<K>>
+  {
+    final AbstractReference2LongMap.BasicEntry<K> entry = new AbstractReference2LongMap.BasicEntry(null, 0L);
+    
+    private FastEntryIterator()
+    {
+      super(null);
+    }
+    
+    public AbstractReference2LongMap.BasicEntry<K> next()
+    {
+      int local_e = nextEntry();
+      this.entry.key = Reference2LongOpenHashMap.this.key[local_e];
+      this.entry.value = Reference2LongOpenHashMap.this.value[local_e];
+      return this.entry;
+    }
+  }
+  
+  private class EntryIterator
+    extends Reference2LongOpenHashMap<K>.MapIterator
+    implements ObjectIterator<Reference2LongMap.Entry<K>>
+  {
+    private Reference2LongOpenHashMap<K>.MapEntry entry;
+    
+    private EntryIterator()
+    {
+      super(null);
+    }
+    
+    public Reference2LongMap.Entry<K> next()
+    {
+      return this.entry = new Reference2LongOpenHashMap.MapEntry(Reference2LongOpenHashMap.this, nextEntry());
+    }
+    
+    public void remove()
+    {
+      super.remove();
+      Reference2LongOpenHashMap.MapEntry.access$102(this.entry, -1);
+    }
+  }
+  
+  private class MapIterator
+  {
+    int pos = Reference2LongOpenHashMap.this.field_49;
+    int last = -1;
+    int field_1025 = Reference2LongOpenHashMap.this.size;
+    ReferenceArrayList<K> wrapped;
+    
+    private MapIterator()
+    {
+      boolean[] used = Reference2LongOpenHashMap.this.used;
+      while ((this.field_1025 != 0) && (used[(--this.pos)] == 0)) {}
+    }
+    
+    public boolean hasNext()
+    {
+      return this.field_1025 != 0;
+    }
+    
+    public int nextEntry()
+    {
+      if (!hasNext()) {
+        throw new NoSuchElementException();
+      }
+      this.field_1025 -= 1;
+      if (this.pos < 0)
+      {
+        Object local_k = this.wrapped.get(-(this.last = --this.pos) - 2);
+        for (int pos = (local_k == null ? 142593372 : HashCommon.murmurHash3(System.identityHashCode(local_k))) & Reference2LongOpenHashMap.this.mask; Reference2LongOpenHashMap.this.used[pos] != 0; pos = pos + 1 & Reference2LongOpenHashMap.this.mask) {
+          if (Reference2LongOpenHashMap.this.key[pos] == local_k) {
+            return pos;
+          }
+        }
+      }
+      this.last = this.pos;
+      if (this.field_1025 != 0)
+      {
+        boolean[] local_k = Reference2LongOpenHashMap.this.used;
+        while ((this.pos-- != 0) && (local_k[this.pos] == 0)) {}
+      }
+      return this.last;
+    }
+    
+    protected final int shiftKeys(int pos)
+    {
+      int last;
+      for (;;)
+      {
+        for (pos = (last = pos) + 1 & Reference2LongOpenHashMap.this.mask; Reference2LongOpenHashMap.this.used[pos] != 0; pos = pos + 1 & Reference2LongOpenHashMap.this.mask)
+        {
+          int slot = (Reference2LongOpenHashMap.this.key[pos] == null ? 142593372 : HashCommon.murmurHash3(System.identityHashCode(Reference2LongOpenHashMap.this.key[pos]))) & Reference2LongOpenHashMap.this.mask;
+          if (last <= pos ? (last < slot) && (slot <= pos) : (last >= slot) && (slot > pos)) {
+            break;
+          }
+        }
+        if (Reference2LongOpenHashMap.this.used[pos] == 0) {
+          break;
+        }
+        if (pos < last)
+        {
+          if (this.wrapped == null) {
+            this.wrapped = new ReferenceArrayList();
+          }
+          this.wrapped.add(Reference2LongOpenHashMap.this.key[pos]);
+        }
+        Reference2LongOpenHashMap.this.key[last] = Reference2LongOpenHashMap.this.key[pos];
+        Reference2LongOpenHashMap.this.value[last] = Reference2LongOpenHashMap.this.value[pos];
+      }
+      Reference2LongOpenHashMap.this.used[last] = false;
+      Reference2LongOpenHashMap.this.key[last] = null;
+      return last;
+    }
+    
+    public void remove()
+    {
+      if (this.last == -1) {
+        throw new IllegalStateException();
+      }
+      if (this.pos < -1)
+      {
+        Reference2LongOpenHashMap.this.remove(this.wrapped.set(-this.pos - 2, null));
+        this.last = -1;
+        return;
+      }
+      Reference2LongOpenHashMap.this.size -= 1;
+      if ((shiftKeys(this.last) == this.pos) && (this.field_1025 > 0))
+      {
+        this.field_1025 += 1;
+        nextEntry();
+      }
+      this.last = -1;
+    }
+    
+    public int skip(int local_n)
+    {
+      int local_i = local_n;
+      while ((local_i-- != 0) && (hasNext())) {
+        nextEntry();
+      }
+      return local_n - local_i - 1;
+    }
+  }
+  
+  private final class MapEntry
+    implements Reference2LongMap.Entry<K>, Map.Entry<K, Long>
+  {
+    private int index;
+    
+    MapEntry(int index)
+    {
+      this.index = index;
+    }
+    
+    public K getKey()
+    {
+      return Reference2LongOpenHashMap.this.key[this.index];
+    }
+    
+    public Long getValue()
+    {
+      return Long.valueOf(Reference2LongOpenHashMap.this.value[this.index]);
+    }
+    
+    public long getLongValue()
+    {
+      return Reference2LongOpenHashMap.this.value[this.index];
+    }
+    
+    public long setValue(long local_v)
+    {
+      long oldValue = Reference2LongOpenHashMap.this.value[this.index];
+      Reference2LongOpenHashMap.this.value[this.index] = local_v;
+      return oldValue;
+    }
+    
+    public Long setValue(Long local_v)
+    {
+      return Long.valueOf(setValue(local_v.longValue()));
+    }
+    
+    public boolean equals(Object local_o)
+    {
+      if (!(local_o instanceof Map.Entry)) {
+        return false;
+      }
+      Map.Entry<K, Long> local_e = (Map.Entry)local_o;
+      return (Reference2LongOpenHashMap.this.key[this.index] == local_e.getKey()) && (Reference2LongOpenHashMap.this.value[this.index] == ((Long)local_e.getValue()).longValue());
+    }
+    
+    public int hashCode()
+    {
+      return (Reference2LongOpenHashMap.this.key[this.index] == null ? 0 : System.identityHashCode(Reference2LongOpenHashMap.this.key[this.index])) ^ HashCommon.long2int(Reference2LongOpenHashMap.this.value[this.index]);
+    }
+    
+    public String toString()
+    {
+      return Reference2LongOpenHashMap.this.key[this.index] + "=>" + Reference2LongOpenHashMap.this.value[this.index];
+    }
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.objects.Reference2LongOpenHashMap
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

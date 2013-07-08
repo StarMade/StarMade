@@ -988,7 +988,7 @@ public final class NumberType
         return "0E0/0E0";
       }
       String str = Double.toString(d);
-      if (str.indexOf(69) < 0) {
+      if (str.indexOf('E') < 0) {
         str = str.concat("E0");
       }
       return str;
@@ -1583,7 +1583,7 @@ public final class NumberType
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.types.NumberType
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -1,84 +1,79 @@
-/*   1:    */package org.newdawn.slick.geom;
-/*   2:    */
-/*   6:    */public class Curve
-/*   7:    */  extends Shape
-/*   8:    */{
-/*   9:    */  private Vector2f p1;
-/*  10:    */  
-/*  13:    */  private Vector2f c1;
-/*  14:    */  
-/*  17:    */  private Vector2f c2;
-/*  18:    */  
-/*  21:    */  private Vector2f p2;
-/*  22:    */  
-/*  25:    */  private int segments;
-/*  26:    */  
-/*  29:    */  public Curve(Vector2f p1, Vector2f c1, Vector2f c2, Vector2f p2)
-/*  30:    */  {
-/*  31: 31 */    this(p1, c1, c2, p2, 20);
-/*  32:    */  }
-/*  33:    */  
-/*  42:    */  public Curve(Vector2f p1, Vector2f c1, Vector2f c2, Vector2f p2, int segments)
-/*  43:    */  {
-/*  44: 44 */    this.p1 = new Vector2f(p1);
-/*  45: 45 */    this.c1 = new Vector2f(c1);
-/*  46: 46 */    this.c2 = new Vector2f(c2);
-/*  47: 47 */    this.p2 = new Vector2f(p2);
-/*  48:    */    
-/*  49: 49 */    this.segments = segments;
-/*  50: 50 */    this.pointsDirty = true;
-/*  51:    */  }
-/*  52:    */  
-/*  58:    */  public Vector2f pointAt(float t)
-/*  59:    */  {
-/*  60: 60 */    float a = 1.0F - t;
-/*  61: 61 */    float b = t;
-/*  62:    */    
-/*  63: 63 */    float f1 = a * a * a;
-/*  64: 64 */    float f2 = 3.0F * a * a * b;
-/*  65: 65 */    float f3 = 3.0F * a * b * b;
-/*  66: 66 */    float f4 = b * b * b;
-/*  67:    */    
-/*  68: 68 */    float nx = this.p1.x * f1 + this.c1.x * f2 + this.c2.x * f3 + this.p2.x * f4;
-/*  69: 69 */    float ny = this.p1.y * f1 + this.c1.y * f2 + this.c2.y * f3 + this.p2.y * f4;
-/*  70:    */    
-/*  71: 71 */    return new Vector2f(nx, ny);
-/*  72:    */  }
-/*  73:    */  
-/*  76:    */  protected void createPoints()
-/*  77:    */  {
-/*  78: 78 */    float step = 1.0F / this.segments;
-/*  79: 79 */    this.points = new float[(this.segments + 1) * 2];
-/*  80: 80 */    for (int i = 0; i < this.segments + 1; i++) {
-/*  81: 81 */      float t = i * step;
-/*  82:    */      
-/*  83: 83 */      Vector2f p = pointAt(t);
-/*  84: 84 */      this.points[(i * 2)] = p.x;
-/*  85: 85 */      this.points[(i * 2 + 1)] = p.y;
-/*  86:    */    }
-/*  87:    */  }
-/*  88:    */  
-/*  91:    */  public Shape transform(Transform transform)
-/*  92:    */  {
-/*  93: 93 */    float[] pts = new float[8];
-/*  94: 94 */    float[] dest = new float[8];
-/*  95: 95 */    pts[0] = this.p1.x;pts[1] = this.p1.y;
-/*  96: 96 */    pts[2] = this.c1.x;pts[3] = this.c1.y;
-/*  97: 97 */    pts[4] = this.c2.x;pts[5] = this.c2.y;
-/*  98: 98 */    pts[6] = this.p2.x;pts[7] = this.p2.y;
-/*  99: 99 */    transform.transform(pts, 0, dest, 0, 4);
-/* 100:    */    
-/* 101:101 */    return new Curve(new Vector2f(dest[0], dest[1]), new Vector2f(dest[2], dest[3]), new Vector2f(dest[4], dest[5]), new Vector2f(dest[6], dest[7]));
-/* 102:    */  }
-/* 103:    */  
-/* 109:    */  public boolean closed()
-/* 110:    */  {
-/* 111:111 */    return false;
-/* 112:    */  }
-/* 113:    */}
+package org.newdawn.slick.geom;
+
+public class Curve
+  extends Shape
+{
+  private Vector2f field_407;
+  private Vector2f field_408;
+  private Vector2f field_409;
+  private Vector2f field_410;
+  private int segments;
+  
+  public Curve(Vector2f local_p1, Vector2f local_c1, Vector2f local_c2, Vector2f local_p2)
+  {
+    this(local_p1, local_c1, local_c2, local_p2, 20);
+  }
+  
+  public Curve(Vector2f local_p1, Vector2f local_c1, Vector2f local_c2, Vector2f local_p2, int segments)
+  {
+    this.field_407 = new Vector2f(local_p1);
+    this.field_408 = new Vector2f(local_c1);
+    this.field_409 = new Vector2f(local_c2);
+    this.field_410 = new Vector2f(local_p2);
+    this.segments = segments;
+    this.pointsDirty = true;
+  }
+  
+  public Vector2f pointAt(float local_t)
+  {
+    float local_a = 1.0F - local_t;
+    float local_b = local_t;
+    float local_f1 = local_a * local_a * local_a;
+    float local_f2 = 3.0F * local_a * local_a * local_b;
+    float local_f3 = 3.0F * local_a * local_b * local_b;
+    float local_f4 = local_b * local_b * local_b;
+    float local_nx = this.field_407.field_1680 * local_f1 + this.field_408.field_1680 * local_f2 + this.field_409.field_1680 * local_f3 + this.field_410.field_1680 * local_f4;
+    float local_ny = this.field_407.field_1681 * local_f1 + this.field_408.field_1681 * local_f2 + this.field_409.field_1681 * local_f3 + this.field_410.field_1681 * local_f4;
+    return new Vector2f(local_nx, local_ny);
+  }
+  
+  protected void createPoints()
+  {
+    float step = 1.0F / this.segments;
+    this.points = new float[(this.segments + 1) * 2];
+    for (int local_i = 0; local_i < this.segments + 1; local_i++)
+    {
+      float local_t = local_i * step;
+      Vector2f local_p = pointAt(local_t);
+      this.points[(local_i * 2)] = local_p.field_1680;
+      this.points[(local_i * 2 + 1)] = local_p.field_1681;
+    }
+  }
+  
+  public Shape transform(Transform transform)
+  {
+    float[] pts = new float[8];
+    float[] dest = new float[8];
+    pts[0] = this.field_407.field_1680;
+    pts[1] = this.field_407.field_1681;
+    pts[2] = this.field_408.field_1680;
+    pts[3] = this.field_408.field_1681;
+    pts[4] = this.field_409.field_1680;
+    pts[5] = this.field_409.field_1681;
+    pts[6] = this.field_410.field_1680;
+    pts[7] = this.field_410.field_1681;
+    transform.transform(pts, 0, dest, 0, 4);
+    return new Curve(new Vector2f(dest[0], dest[1]), new Vector2f(dest[2], dest[3]), new Vector2f(dest[4], dest[5]), new Vector2f(dest[6], dest[7]));
+  }
+  
+  public boolean closed()
+  {
+    return false;
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.newdawn.slick.geom.Curve
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -1,107 +1,137 @@
-/*   1:    */package it.unimi.dsi.fastutil.doubles;
-/*   2:    */
-/*   3:    */import it.unimi.dsi.fastutil.ints.IntArrays;
-/*   4:    */
-/*  62:    */public class DoubleSemiIndirectHeaps
-/*  63:    */{
-/*  64:    */  public static int downHeap(double[] refArray, int[] heap, int size, int i, DoubleComparator c)
-/*  65:    */  {
-/*  66: 66 */    if (i >= size) throw new IllegalArgumentException("Heap position (" + i + ") is larger than or equal to heap size (" + size + ")");
-/*  67: 67 */    int e = heap[i];
-/*  68: 68 */    double E = refArray[e];
-/*  69:    */    
-/*  70: 70 */    if (c == null) { int child;
-/*  71: 71 */      while ((child = 2 * i + 1) < size) {
-/*  72: 72 */        if ((child + 1 < size) && (refArray[heap[(child + 1)]] < refArray[heap[child]])) child++;
-/*  73: 73 */        if (E <= refArray[heap[child]]) break;
-/*  74: 74 */        heap[i] = heap[child];
-/*  75: 75 */        i = child;
-/*  76:    */      } }
-/*  77:    */    int child;
-/*  78: 78 */    while ((child = 2 * i + 1) < size) {
-/*  79: 79 */      if ((child + 1 < size) && (c.compare(refArray[heap[(child + 1)]], refArray[heap[child]]) < 0)) child++;
-/*  80: 80 */      if (c.compare(E, refArray[heap[child]]) <= 0) break;
-/*  81: 81 */      heap[i] = heap[child];
-/*  82: 82 */      i = child;
-/*  83:    */    }
-/*  84: 84 */    heap[i] = e;
-/*  85: 85 */    return i;
-/*  86:    */  }
-/*  87:    */  
-/*  96:    */  public static int upHeap(double[] refArray, int[] heap, int size, int i, DoubleComparator c)
-/*  97:    */  {
-/*  98: 98 */    if (i >= size) throw new IllegalArgumentException("Heap position (" + i + ") is larger than or equal to heap size (" + size + ")");
-/*  99: 99 */    int e = heap[i];
-/* 100:    */    
-/* 101:101 */    double E = refArray[e];
-/* 102:102 */    if (c == null) { int parent;
-/* 103:103 */      while ((i != 0) && ((parent = (i - 1) / 2) >= 0) && 
-/* 104:104 */        (refArray[heap[parent]] > E)) {
-/* 105:105 */        heap[i] = heap[parent];
-/* 106:106 */        i = parent;
-/* 107:    */      } }
-/* 108:    */    int parent;
-/* 109:109 */    while ((i != 0) && ((parent = (i - 1) / 2) >= 0) && 
-/* 110:110 */      (c.compare(refArray[heap[parent]], E) > 0)) {
-/* 111:111 */      heap[i] = heap[parent];
-/* 112:112 */      i = parent;
-/* 113:    */    }
-/* 114:114 */    heap[i] = e;
-/* 115:115 */    return i;
-/* 116:    */  }
-/* 117:    */  
-/* 124:    */  public static void makeHeap(double[] refArray, int offset, int length, int[] heap, DoubleComparator c)
-/* 125:    */  {
-/* 126:126 */    DoubleArrays.ensureOffsetLength(refArray, offset, length);
-/* 127:127 */    if (heap.length < length) throw new IllegalArgumentException("The heap length (" + heap.length + ") is smaller than the number of elements (" + length + ")");
-/* 128:128 */    int i = length;
-/* 129:129 */    while (i-- != 0) heap[i] = (offset + i);
-/* 130:130 */    i = length / 2;
-/* 131:131 */    while (i-- != 0) { downHeap(refArray, heap, length, i, c);
-/* 132:    */    }
-/* 133:    */  }
-/* 134:    */  
-/* 142:    */  public static int[] makeHeap(double[] refArray, int offset, int length, DoubleComparator c)
-/* 143:    */  {
-/* 144:144 */    int[] heap = length <= 0 ? IntArrays.EMPTY_ARRAY : new int[length];
-/* 145:145 */    makeHeap(refArray, offset, length, heap, c);
-/* 146:146 */    return heap;
-/* 147:    */  }
-/* 148:    */  
-/* 158:    */  public static void makeHeap(double[] refArray, int[] heap, int size, DoubleComparator c)
-/* 159:    */  {
-/* 160:160 */    int i = size / 2;
-/* 161:161 */    while (i-- != 0) { downHeap(refArray, heap, size, i, c);
-/* 162:    */    }
-/* 163:    */  }
-/* 164:    */  
-/* 180:    */  public static int front(double[] refArray, int[] heap, int size, int[] a)
-/* 181:    */  {
-/* 182:182 */    double top = refArray[heap[0]];
-/* 183:183 */    int j = 0;
-/* 184:184 */    int l = 0;
-/* 185:185 */    int r = 1;
-/* 186:186 */    int f = 0;
-/* 187:187 */    for (int i = 0; i < r; i++) {
-/* 188:188 */      if (i == f) {
-/* 189:189 */        if (l >= r) break;
-/* 190:190 */        f = (f << 1) + 1;
-/* 191:191 */        i = l;
-/* 192:192 */        l = -1;
-/* 193:    */      }
-/* 194:194 */      if (top == refArray[heap[i]]) {
-/* 195:195 */        a[(j++)] = heap[i];
-/* 196:196 */        if (l == -1) l = i * 2 + 1;
-/* 197:197 */        r = Math.min(size, i * 2 + 3);
-/* 198:    */      }
-/* 199:    */    }
-/* 200:    */    
-/* 201:201 */    return j;
-/* 202:    */  }
-/* 203:    */}
+package it.unimi.dsi.fastutil.doubles;
+
+import it.unimi.dsi.fastutil.ints.IntArrays;
+
+public class DoubleSemiIndirectHeaps
+{
+  public static int downHeap(double[] refArray, int[] heap, int size, int local_i, DoubleComparator local_c)
+  {
+    if (local_i >= size) {
+      throw new IllegalArgumentException("Heap position (" + local_i + ") is larger than or equal to heap size (" + size + ")");
+    }
+    int local_e = heap[local_i];
+    double local_E = refArray[local_e];
+    if (local_c == null)
+    {
+      int child;
+      while ((child = 2 * local_i + 1) < size)
+      {
+        if ((child + 1 < size) && (refArray[heap[(child + 1)]] < refArray[heap[child]])) {
+          child++;
+        }
+        if (local_E <= refArray[heap[child]]) {
+          break;
+        }
+        heap[local_i] = heap[child];
+        local_i = child;
+      }
+    }
+    int child;
+    while ((child = 2 * local_i + 1) < size)
+    {
+      if ((child + 1 < size) && (local_c.compare(refArray[heap[(child + 1)]], refArray[heap[child]]) < 0)) {
+        child++;
+      }
+      if (local_c.compare(local_E, refArray[heap[child]]) <= 0) {
+        break;
+      }
+      heap[local_i] = heap[child];
+      local_i = child;
+    }
+    heap[local_i] = local_e;
+    return local_i;
+  }
+  
+  public static int upHeap(double[] refArray, int[] heap, int size, int local_i, DoubleComparator local_c)
+  {
+    if (local_i >= size) {
+      throw new IllegalArgumentException("Heap position (" + local_i + ") is larger than or equal to heap size (" + size + ")");
+    }
+    int local_e = heap[local_i];
+    double local_E = refArray[local_e];
+    if (local_c == null)
+    {
+      int parent;
+      while ((local_i != 0) && ((parent = (local_i - 1) / 2) >= 0) && (refArray[heap[parent]] > local_E))
+      {
+        heap[local_i] = heap[parent];
+        local_i = parent;
+      }
+    }
+    int parent;
+    while ((local_i != 0) && ((parent = (local_i - 1) / 2) >= 0) && (local_c.compare(refArray[heap[parent]], local_E) > 0))
+    {
+      heap[local_i] = heap[parent];
+      local_i = parent;
+    }
+    heap[local_i] = local_e;
+    return local_i;
+  }
+  
+  public static void makeHeap(double[] refArray, int offset, int length, int[] heap, DoubleComparator local_c)
+  {
+    DoubleArrays.ensureOffsetLength(refArray, offset, length);
+    if (heap.length < length) {
+      throw new IllegalArgumentException("The heap length (" + heap.length + ") is smaller than the number of elements (" + length + ")");
+    }
+    int local_i = length;
+    while (local_i-- != 0) {
+      heap[local_i] = (offset + local_i);
+    }
+    local_i = length / 2;
+    while (local_i-- != 0) {
+      downHeap(refArray, heap, length, local_i, local_c);
+    }
+  }
+  
+  public static int[] makeHeap(double[] refArray, int offset, int length, DoubleComparator local_c)
+  {
+    int[] heap = length <= 0 ? IntArrays.EMPTY_ARRAY : new int[length];
+    makeHeap(refArray, offset, length, heap, local_c);
+    return heap;
+  }
+  
+  public static void makeHeap(double[] refArray, int[] heap, int size, DoubleComparator local_c)
+  {
+    int local_i = size / 2;
+    while (local_i-- != 0) {
+      downHeap(refArray, heap, size, local_i, local_c);
+    }
+  }
+  
+  public static int front(double[] refArray, int[] heap, int size, int[] local_a)
+  {
+    double top = refArray[heap[0]];
+    int local_j = 0;
+    int local_l = 0;
+    int local_r = 1;
+    int local_f = 0;
+    for (int local_i = 0; local_i < local_r; local_i++)
+    {
+      if (local_i == local_f)
+      {
+        if (local_l >= local_r) {
+          break;
+        }
+        local_f = (local_f << 1) + 1;
+        local_i = local_l;
+        local_l = -1;
+      }
+      if (top == refArray[heap[local_i]])
+      {
+        local_a[(local_j++)] = heap[local_i];
+        if (local_l == -1) {
+          local_l = local_i * 2 + 1;
+        }
+        local_r = Math.min(size, local_i * 2 + 3);
+      }
+    }
+    return local_j;
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.doubles.DoubleSemiIndirectHeaps
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

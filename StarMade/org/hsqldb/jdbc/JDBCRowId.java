@@ -10,7 +10,7 @@ public final class JDBCRowId
   implements RowId
 {
   private int hash;
-  private final byte[] id;
+  private final byte[] field_1874;
   
   public JDBCRowId(byte[] paramArrayOfByte)
     throws SQLException
@@ -18,7 +18,7 @@ public final class JDBCRowId
     if (paramArrayOfByte == null) {
       throw Util.nullArgument("id");
     }
-    this.id = paramArrayOfByte;
+    this.field_1874 = paramArrayOfByte;
   }
   
   public JDBCRowId(RowId paramRowId)
@@ -35,7 +35,7 @@ public final class JDBCRowId
     }
     try
     {
-      this.id = StringConverter.hexStringToByteArray(paramString);
+      this.field_1874 = StringConverter.hexStringToByteArray(paramString);
     }
     catch (IOException localIOException)
     {
@@ -45,35 +45,35 @@ public final class JDBCRowId
   
   public boolean equals(Object paramObject)
   {
-    return ((paramObject instanceof JDBCRowId)) && (Arrays.equals(this.id, ((JDBCRowId)paramObject).id));
+    return ((paramObject instanceof JDBCRowId)) && (Arrays.equals(this.field_1874, ((JDBCRowId)paramObject).field_1874));
   }
   
   public byte[] getBytes()
   {
-    return (byte[])this.id.clone();
+    return (byte[])this.field_1874.clone();
   }
   
   public String toString()
   {
-    return StringConverter.byteArrayToHexString(this.id);
+    return StringConverter.byteArrayToHexString(this.field_1874);
   }
   
   public int hashCode()
   {
     if (this.hash == 0) {
-      this.hash = Arrays.hashCode(this.id);
+      this.hash = Arrays.hashCode(this.field_1874);
     }
     return this.hash;
   }
   
   Object id()
   {
-    return this.id;
+    return this.field_1874;
   }
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.jdbc.JDBCRowId
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

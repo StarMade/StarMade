@@ -152,11 +152,11 @@ class ServerConnection
     }
     catch (Exception localException)
     {
-      Object localObject = new StringBuffer(new StringBuilder().append(this.mThread).append(":Failed to connect client.").toString());
+      Object localObject = new StringBuffer(this.mThread + ":Failed to connect client.");
       if (this.user != null) {
-        ((StringBuffer)localObject).append(new StringBuilder().append("  User '").append(this.user).append("'.").toString());
+        ((StringBuffer)localObject).append("  User '" + this.user + "'.");
       }
-      this.server.printWithThread(new StringBuilder().append(((StringBuffer)localObject).toString()).append("  Stack trace follows.").toString());
+      this.server.printWithThread(((StringBuffer)localObject).toString() + "  Stack trace follows.");
       this.server.printStackTrace(localException);
     }
   }
@@ -205,20 +205,20 @@ class ServerConnection
     try
     {
       localOdbcPacketInputStream = OdbcPacketInputStream.newOdbcPacketInputStream(paramChar, this.dataInput);
-      this.server.printWithThread(new StringBuilder().append("Got op (").append(localOdbcPacketInputStream.packetType).append(')').toString());
-      this.server.printWithThread(new StringBuilder().append("Got packet length of ").append(localOdbcPacketInputStream.available()).append(" + type byte + 4 size header").toString());
+      this.server.printWithThread("Got op (" + localOdbcPacketInputStream.packetType + ')');
+      this.server.printWithThread("Got packet length of " + localOdbcPacketInputStream.available() + " + type byte + 4 size header");
       if (localOdbcPacketInputStream.available() >= 1000000000) {
-        throw new IOException(new StringBuilder().append("Insane packet length: ").append(localOdbcPacketInputStream.available()).append(" + type byte + 4 size header").toString());
+        throw new IOException("Insane packet length: " + localOdbcPacketInputStream.available() + " + type byte + 4 size header");
       }
     }
     catch (SocketException localSocketException)
     {
-      this.server.printWithThread(new StringBuilder().append("Ungraceful client exit: ").append(localSocketException).toString());
+      this.server.printWithThread("Ungraceful client exit: " + localSocketException);
       throw this.cleanExit;
     }
     catch (IOException localIOException)
     {
-      this.server.printWithThread(new StringBuilder().append("Fatal ODBC protocol failure: ").append(localIOException).toString());
+      this.server.printWithThread("Fatal ODBC protocol failure: " + localIOException);
       try
       {
         OdbcUtil.alertClient(1, localIOException.toString(), "08P01", this.dataOutput);
@@ -232,7 +232,7 @@ class ServerConnection
       if (localOdbcPacketInputStream.packetType != 'S')
       {
         if (this.server.isTrace()) {
-          this.server.printWithThread(new StringBuilder().append("Ignoring a '").append(localOdbcPacketInputStream.packetType).append("'").toString());
+          this.server.printWithThread("Ignoring a '" + localOdbcPacketInputStream.packetType + "'");
         }
         return;
       }
@@ -262,7 +262,7 @@ class ServerConnection
       }
       break;
     default: 
-      throw new RuntimeException(new StringBuilder().append("Unexpected ODBC comm mode value: ").append(this.odbcCommMode).toString());
+      throw new RuntimeException("Unexpected ODBC comm mode value: " + this.odbcCommMode);
     }
     this.outPacket.reset();
     try
@@ -296,7 +296,7 @@ class ServerConnection
           }
           catch (HsqlException localHsqlException1)
           {
-            throw new RecoverableOdbcFailure(new StringBuilder().append("Failed to change transaction state: ").append(localHsqlException1.getMessage()).toString(), localHsqlException1.getSQLState());
+            throw new RecoverableOdbcFailure("Failed to change transaction state: " + localHsqlException1.getMessage(), localHsqlException1.getSQLState());
           }
           this.outPacket.write("BEGIN");
           this.outPacket.xmit('C', this.dataOutput);
@@ -306,14 +306,14 @@ class ServerConnection
             break;
           }
         }
-        if ((str6.startsWith("SAVEPOINT ")) && (str6.indexOf(59) > 0))
+        if ((str6.startsWith("SAVEPOINT ")) && (str6.indexOf(';') > 0))
         {
-          int m = str6.indexOf(59);
-          this.server.printWithThread(new StringBuilder().append("Interposing BEFORE primary statement: ").append(str6.substring(0, m)).toString());
+          int m = str6.indexOf(';');
+          this.server.printWithThread("Interposing BEFORE primary statement: " + str6.substring(0, m));
           odbcExecDirect(str6.substring(0, m));
           str6 = str6.substring(m + 1);
         }
-        int k = str6.lastIndexOf(59);
+        int k = str6.lastIndexOf(';');
         if (k > 0)
         {
           localObject2 = str6.substring(k + 1);
@@ -325,7 +325,7 @@ class ServerConnection
         }
         localObject2 = str6.trim().toLowerCase();
         if (this.server.isTrace()) {
-          this.server.printWithThread(new StringBuilder().append("Received query (").append(str6).append(')').toString());
+          this.server.printWithThread("Received query (" + str6 + ')');
         }
         if (((String)localObject2).startsWith("select current_schema()"))
         {
@@ -384,7 +384,7 @@ class ServerConnection
           case 2: 
             throw new RecoverableOdbcFailure(localResult2);
           default: 
-            throw new RecoverableOdbcFailure(new StringBuilder().append("Output Result from Query execution is of unexpected type: ").append(localResult2.getType()).toString());
+            throw new RecoverableOdbcFailure("Output Result from Query execution is of unexpected type: " + localResult2.getType());
           }
           RowSetNavigator localRowSetNavigator1 = localResult2.getNavigator();
           ResultMetaData localResultMetaData2 = localResult2.metaData;
@@ -424,7 +424,7 @@ class ServerConnection
               throw new RecoverableOdbcFailure("Null row?");
             }
             if (arrayOfObject1.length < i1) {
-              throw new RecoverableOdbcFailure(new StringBuilder().append("Data element mismatch. ").append(i1).append(" metadata cols, yet ").append(arrayOfObject1.length).append(" data elements for row ").append(i4).toString());
+              throw new RecoverableOdbcFailure("Data element mismatch. " + i1 + " metadata cols, yet " + arrayOfObject1.length + " data elements for row " + i4);
             }
             this.outPacket.writeShort(i1);
             for (int i6 = 0; i6 < i1; i6++) {
@@ -437,7 +437,7 @@ class ServerConnection
                 str4 = arrayOfPgType[i6].valueString(arrayOfObject1[i6]);
                 this.outPacket.writeSized(str4);
                 if (this.server.isTrace()) {
-                  this.server.printWithThread(new StringBuilder().append("R").append(i4).append("C").append(i6 + 1).append(" => (").append(arrayOfObject1[i6].getClass().getName()).append(") [").append(str4).append(']').toString());
+                  this.server.printWithThread("R" + i4 + "C" + (i6 + 1) + " => (" + arrayOfObject1[i6].getClass().getName() + ") [" + str4 + ']');
                 }
               }
             }
@@ -463,7 +463,7 @@ class ServerConnection
             this.server.printWithThread("Ignoring bad 'DEALLOCATE' cmd");
           }
           if (this.server.isTrace()) {
-            this.server.printWithThread(new StringBuilder().append("Deallocated PS/Portal '").append(str3).append("'").toString());
+            this.server.printWithThread("Deallocated PS/Portal '" + str3 + "'");
           }
           this.outPacket.write("DEALLOCATE");
           this.outPacket.xmit('C', this.dataOutput);
@@ -471,7 +471,7 @@ class ServerConnection
         }
         else if (((String)localObject2).startsWith("set client_encoding to "))
         {
-          this.server.printWithThread(new StringBuilder().append("Stubbing EXECDIR for: ").append(str6).toString());
+          this.server.printWithThread("Stubbing EXECDIR for: " + str6);
           this.outPacket.write("SET");
           this.outPacket.xmit('C', this.dataOutput);
           i = 1;
@@ -485,10 +485,10 @@ class ServerConnection
         break;
       case 'X': 
         if (this.sessionOdbcPsMap.size() > (this.sessionOdbcPsMap.containsKey("") ? 1 : 0)) {
-          this.server.printWithThread(new StringBuilder().append("Client left ").append(this.sessionOdbcPsMap.size()).append(" PS objects open").toString());
+          this.server.printWithThread("Client left " + this.sessionOdbcPsMap.size() + " PS objects open");
         }
         if (this.sessionOdbcPortalMap.size() > (this.sessionOdbcPortalMap.containsKey("") ? 1 : 0)) {
-          this.server.printWithThread(new StringBuilder().append("Client left ").append(this.sessionOdbcPortalMap.size()).append(" Portal objects open").toString());
+          this.server.printWithThread("Client left " + this.sessionOdbcPortalMap.size() + " Portal objects open");
         }
         OdbcUtil.validateInputPacketSize(localOdbcPacketInputStream);
         throw this.cleanExit;
@@ -503,7 +503,7 @@ class ServerConnection
           }
           catch (HsqlException localHsqlException2)
           {
-            this.server.printWithThread(new StringBuilder().append("Implicit commit failed: ").append(localHsqlException2).toString());
+            this.server.printWithThread("Implicit commit failed: " + localHsqlException2);
             OdbcUtil.alertClient(2, "Implicit commit failed", localHsqlException2.getSQLState(), this.dataOutput);
           }
         }
@@ -519,10 +519,10 @@ class ServerConnection
           }
         }
         if (this.server.isTrace()) {
-          this.server.printWithThread(new StringBuilder().append("Received Prepare request for query (").append(str7).append(") with handle '").append(str1).append("'").toString());
+          this.server.printWithThread("Received Prepare request for query (" + str7 + ") with handle '" + str1 + "'");
         }
         if ((str1.length() > 0) && (this.sessionOdbcPsMap.containsKey(str1))) {
-          throw new RecoverableOdbcFailure(null, new StringBuilder().append("PS handle '").append(str1).append("' already in use.  ").append("You must close it before recreating").toString(), "08P01");
+          throw new RecoverableOdbcFailure(null, "PS handle '" + str1 + "' already in use.  " + "You must close it before recreating", "08P01");
         }
         new OdbcPreparedStatement(str1, str7, this.sessionOdbcPsMap, this.session);
         this.outPacket.xmit('1', this.dataOutput);
@@ -537,20 +537,20 @@ class ServerConnection
         } else if (c == 'P') {
           localStatementPortal = (StatementPortal)this.sessionOdbcPortalMap.get(str3);
         } else {
-          throw new RecoverableOdbcFailure(null, new StringBuilder().append("Description packet request type invalid: ").append(c).toString(), "08P01");
+          throw new RecoverableOdbcFailure(null, "Description packet request type invalid: " + c, "08P01");
         }
         if (this.server.isTrace()) {
-          this.server.printWithThread(new StringBuilder().append("Received Describe request for ").append(c).append(" of  handle '").append(str3).append("'").toString());
+          this.server.printWithThread("Received Describe request for " + c + " of  handle '" + str3 + "'");
         }
         if ((localOdbcPreparedStatement == null) && (localStatementPortal == null)) {
-          throw new RecoverableOdbcFailure(null, new StringBuilder().append("No object present for ").append(c).append(" handle: ").append(str3).toString(), "08P01");
+          throw new RecoverableOdbcFailure(null, "No object present for " + c + " handle: " + str3, "08P01");
         }
         localObject3 = localOdbcPreparedStatement == null ? localStatementPortal.ackResult : localOdbcPreparedStatement.ackResult;
         localResultMetaData1 = ((Result)localObject3).parameterMetaData;
         j = localResultMetaData1.getColumnCount();
         localObject4 = localResultMetaData1.getParameterTypes();
         if (j != localObject4.length) {
-          throw new RecoverableOdbcFailure(new StringBuilder().append("Parameter count mismatch.  Count of ").append(j).append(" reported, but there are ").append(localObject4.length).append(" param md objects").toString());
+          throw new RecoverableOdbcFailure("Parameter count mismatch.  Count of " + j + " reported, but there are " + localObject4.length + " param md objects");
         }
         if (c == 'S')
         {
@@ -572,7 +572,7 @@ class ServerConnection
         {
           localObject5 = localResultMetaData3.getGeneratedColumnNames();
           if (localResultMetaData3.getColumnCount() != localObject5.length) {
-            throw new RecoverableOdbcFailure(new StringBuilder().append("Couldn't get all column names: ").append(localResultMetaData3.getColumnCount()).append(" cols. but only got ").append(localObject5.length).append(" col. names").toString());
+            throw new RecoverableOdbcFailure("Couldn't get all column names: " + localResultMetaData3.getColumnCount() + " cols. but only got " + localObject5.length + " col. names");
           }
           arrayOfType = localResultMetaData3.columnTypes;
           arrayOfPgType = new PgType[localObject5.length];
@@ -581,7 +581,7 @@ class ServerConnection
             arrayOfPgType[i5] = PgType.getPgType(arrayOfType[i5], localResultMetaData3.isTableColumn(i5));
           }
           if (localObject5.length != arrayOfColumnBase.length) {
-            throw new RecoverableOdbcFailure(new StringBuilder().append("Col data mismatch.  ").append(arrayOfColumnBase.length).append(" col instances but ").append(localObject5.length).append(" col names").toString());
+            throw new RecoverableOdbcFailure("Col data mismatch.  " + arrayOfColumnBase.length + " col instances but " + localObject5.length + " col names");
           }
           this.outPacket.writeShort(localObject5.length);
           for (i5 = 0; i5 < localObject5.length; i5++)
@@ -606,7 +606,7 @@ class ServerConnection
         {
           arrayOfBoolean[i7] = (localOdbcPacketInputStream.readUnsignedShort() != 0 ? 1 : false);
           if ((this.server.isTrace()) && (arrayOfBoolean[i7] != 0)) {
-            this.server.printWithThread(new StringBuilder().append("Binary param #").append(i7).toString());
+            this.server.printWithThread("Binary param #" + i7);
           }
         }
         j = localOdbcPacketInputStream.readUnsignedShort();
@@ -625,18 +625,18 @@ class ServerConnection
           }
         }
         if (this.server.isTrace()) {
-          this.server.printWithThread(new StringBuilder().append("Received Bind request to make Portal from (").append(str1).append(")' with handle '").append(str2).append("'").toString());
+          this.server.printWithThread("Received Bind request to make Portal from (" + str1 + ")' with handle '" + str2 + "'");
         }
         localOdbcPreparedStatement = (OdbcPreparedStatement)this.sessionOdbcPsMap.get(str1);
         if (localOdbcPreparedStatement == null) {
-          throw new RecoverableOdbcFailure(null, new StringBuilder().append("No object present for PS handle: ").append(str1).toString(), "08P01");
+          throw new RecoverableOdbcFailure(null, "No object present for PS handle: " + str1, "08P01");
         }
         if ((str2.length() > 0) && (this.sessionOdbcPortalMap.containsKey(str2))) {
-          throw new RecoverableOdbcFailure(null, new StringBuilder().append("Portal handle '").append(str2).append("' already in use.  ").append("You must close it before recreating").toString(), "08P01");
+          throw new RecoverableOdbcFailure(null, "Portal handle '" + str2 + "' already in use.  " + "You must close it before recreating", "08P01");
         }
         localResultMetaData1 = localOdbcPreparedStatement.ackResult.parameterMetaData;
         if (j != localResultMetaData1.getColumnCount()) {
-          throw new RecoverableOdbcFailure(null, new StringBuilder().append("Client didn't specify all ").append(localResultMetaData1.getColumnCount()).append(" parameters (").append(j).append(')').toString(), "08P01");
+          throw new RecoverableOdbcFailure(null, "Client didn't specify all " + localResultMetaData1.getColumnCount() + " parameters (" + j + ')', "08P01");
         }
         new StatementPortal(str2, localOdbcPreparedStatement, arrayOfObject2, this.sessionOdbcPortalMap);
         this.outPacket.xmit('2', this.dataOutput);
@@ -645,11 +645,11 @@ class ServerConnection
         str2 = localOdbcPacketInputStream.readString();
         i9 = localOdbcPacketInputStream.readInt();
         if (this.server.isTrace()) {
-          this.server.printWithThread(new StringBuilder().append("Received Exec request for ").append(i9).append(" rows from portal handle '").append(str2).append("'").toString());
+          this.server.printWithThread("Received Exec request for " + i9 + " rows from portal handle '" + str2 + "'");
         }
         localStatementPortal = (StatementPortal)this.sessionOdbcPortalMap.get(str2);
         if (localStatementPortal == null) {
-          throw new RecoverableOdbcFailure(null, new StringBuilder().append("No object present for Portal handle: ").append(str2).toString(), "08P01");
+          throw new RecoverableOdbcFailure(null, "No object present for Portal handle: " + str2, "08P01");
         }
         localStatementPortal.bindResult.setPreparedExecuteProperties(localStatementPortal.parameters, i9, 0, 0);
         localResult2 = this.session.execute(localStatementPortal.bindResult);
@@ -659,7 +659,7 @@ class ServerConnection
           this.outPacket.write(OdbcUtil.echoBackReplyString(localStatementPortal.lcQuery, localResult2.getUpdateCount()));
           this.outPacket.xmit('C', this.dataOutput);
           if ((!localStatementPortal.lcQuery.equals("commit")) && (!localStatementPortal.lcQuery.startsWith("commit ")) && (!localStatementPortal.lcQuery.equals("rollback")) && (!localStatementPortal.lcQuery.startsWith("rollback "))) {
-            break label4939;
+            break label5064;
           }
           try
           {
@@ -667,14 +667,14 @@ class ServerConnection
           }
           catch (HsqlException localHsqlException3)
           {
-            throw new RecoverableOdbcFailure(new StringBuilder().append("Failed to change transaction state: ").append(localHsqlException3.getMessage()).toString(), localHsqlException3.getSQLState());
+            throw new RecoverableOdbcFailure("Failed to change transaction state: " + localHsqlException3.getMessage(), localHsqlException3.getSQLState());
           }
         case 3: 
           break;
         case 2: 
           throw new RecoverableOdbcFailure(localResult2);
         default: 
-          throw new RecoverableOdbcFailure(new StringBuilder().append("Output Result from Portal execution is of unexpected type: ").append(localResult2.getType()).toString());
+          throw new RecoverableOdbcFailure("Output Result from Portal execution is of unexpected type: " + localResult2.getType());
         }
         RowSetNavigator localRowSetNavigator2 = localResult2.getNavigator();
         int i10 = 0;
@@ -687,7 +687,7 @@ class ServerConnection
             throw new RecoverableOdbcFailure("Null row?");
           }
           if (arrayOfObject3.length < i11) {
-            throw new RecoverableOdbcFailure(new StringBuilder().append("Data element mismatch. ").append(i11).append(" metadata cols, yet ").append(arrayOfObject3.length).append(" data elements for row ").append(i10).toString());
+            throw new RecoverableOdbcFailure("Data element mismatch. " + i11 + " metadata cols, yet " + arrayOfObject3.length + " data elements for row " + i10);
           }
           this.outPacket.writeShort(i11);
           arrayOfType = localStatementPortal.ackResult.metaData.columnTypes;
@@ -705,7 +705,7 @@ class ServerConnection
               str4 = arrayOfPgType[i12].valueString(arrayOfObject3[i12]);
               this.outPacket.writeSized(str4);
               if (this.server.isTrace()) {
-                this.server.printWithThread(new StringBuilder().append("R").append(i10).append("C").append(i12 + 1).append(" => (").append(arrayOfObject3[i12].getClass().getName()).append(") [").append(str4).append(']').toString());
+                this.server.printWithThread("R" + i10 + "C" + (i12 + 1) + " => (" + arrayOfObject3[i12].getClass().getName() + ") [" + str4 + ']');
               }
             }
           }
@@ -742,10 +742,10 @@ class ServerConnection
         }
         else
         {
-          throw new RecoverableOdbcFailure(null, new StringBuilder().append("Description packet request type invalid: ").append(c).toString(), "08P01");
+          throw new RecoverableOdbcFailure(null, "Description packet request type invalid: " + c, "08P01");
         }
         if (this.server.isTrace()) {
-          this.server.printWithThread(new StringBuilder().append("Closed ").append(c).append(" '").append(str3).append("'? ").append((localOdbcPreparedStatement != null) || (localStatementPortal != null)).toString());
+          this.server.printWithThread("Closed " + c + " '" + str3 + "'? " + ((localOdbcPreparedStatement != null) || (localStatementPortal != null)));
         }
         this.outPacket.xmit('3', this.dataOutput);
         break;
@@ -764,13 +764,13 @@ class ServerConnection
       case 'V': 
       case 'W': 
       default: 
-        throw new RecoverableOdbcFailure(null, new StringBuilder().append("Unsupported operation type (").append(localOdbcPacketInputStream.packetType).append(')').toString(), "0A000");
+        throw new RecoverableOdbcFailure(null, "Unsupported operation type (" + localOdbcPacketInputStream.packetType + ')', "0A000");
       }
-      label4939:
+      label5064:
       OdbcUtil.validateInputPacketSize(localOdbcPacketInputStream);
       if (localObject1 != null)
       {
-        this.server.printWithThread(new StringBuilder().append("Interposing AFTER primary statement: ").append(localObject1).toString());
+        this.server.printWithThread("Interposing AFTER primary statement: " + localObject1);
         odbcExecDirect(localObject1);
       }
       if (i != 0)
@@ -794,7 +794,7 @@ class ServerConnection
         if (localObject3 != null) {
           this.server.printWithThread((String)localObject3);
         } else if (this.server.isTrace()) {
-          this.server.printWithThread(new StringBuilder().append("Client error: ").append((String)localObject4).toString());
+          this.server.printWithThread("Client error: " + (String)localObject4);
         }
         if (localObject4 != null) {
           OdbcUtil.alertClient(2, (String)localObject4, str7, this.dataOutput);
@@ -803,7 +803,7 @@ class ServerConnection
       else
       {
         if (this.server.isTrace()) {
-          this.server.printWithThread(new StringBuilder().append("Result object error: ").append(((Result)localObject2).getMainString()).toString());
+          this.server.printWithThread("Result object error: " + ((Result)localObject2).getMainString());
         }
         OdbcUtil.alertClient(2, ((Result)localObject2).getMainString(), ((Result)localObject2).getSubString(), this.dataOutput);
       }
@@ -841,7 +841,7 @@ class ServerConnection
       }
       catch (IOException localIOException)
       {
-        this.server.printWithThread(new StringBuilder().append(this.mThread).append(":disconnected ").append(this.user).toString());
+        this.server.printWithThread(this.mThread + ":disconnected " + this.user);
       }
       catch (HsqlException localHsqlException)
       {
@@ -868,11 +868,11 @@ class ServerConnection
       this.dbID = this.server.dbID[this.dbIndex];
       this.user = paramResult.getMainString();
       if (!this.server.isSilent()) {
-        this.server.printWithThread(new StringBuilder().append(this.mThread).append(":Trying to connect user '").append(this.user).append("' to DB (").append(str).append(')').toString());
+        this.server.printWithThread(this.mThread + ":Trying to connect user '" + this.user + "' to DB (" + str + ')');
       }
       this.session = DatabaseManager.newSession(this.dbID, this.user, paramResult.getSubString(), paramResult.getZoneString(), paramResult.getUpdateCount());
       if (!this.server.isSilent()) {
-        this.server.printWithThread(new StringBuilder().append(this.mThread).append(":Connected user '").append(this.user).append("'").toString());
+        this.server.printWithThread(this.mThread + ":Connected user '" + this.user + "'");
       }
       return Result.newConnectionAcknowledgeResponse(this.session.getDatabase(), this.session.getId(), this.session.getDatabase().getDatabaseID());
     }
@@ -890,7 +890,7 @@ class ServerConnection
   
   String getConnectionThreadName()
   {
-    return new StringBuilder().append("HSQLDB Connection @").append(Integer.toString(hashCode(), 16)).toString();
+    return "HSQLDB Connection @" + Integer.toString(hashCode(), 16);
   }
   
   public int handshake()
@@ -909,7 +909,7 @@ class ServerConnection
       } while ((this.dataInput.available() < 5) && (new Date().getTime() < l));
       if (this.dataInput.available() < 1)
       {
-        this.dataOutput.write(new StringBuilder().append(TEXTBANNER_PART1).append("2.1.0.0").append(TEXTBANNER_PART2).append('\n').toString().getBytes());
+        this.dataOutput.write((TEXTBANNER_PART1 + "2.1.0.0" + TEXTBANNER_PART2 + '\n').getBytes());
         this.dataOutput.flush();
         throw Error.error(404);
       }
@@ -948,16 +948,16 @@ class ServerConnection
     if ((i == 1234) && (j == 5678))
     {
       if (paramInt != 16) {
-        this.server.print(new StringBuilder().append("ODBC cancellation request sent wrong packet length: ").append(paramInt).toString());
+        this.server.print("ODBC cancellation request sent wrong packet length: " + paramInt);
       }
-      this.server.print(new StringBuilder().append("Got an ODBC cancelation request for thread ID ").append(this.dataInput.readInt()).append(", but we don't support ").append("OOB cancellation yet.  ").append("Ignoring this request and closing the connection.").toString());
+      this.server.print("Got an ODBC cancelation request for thread ID " + this.dataInput.readInt() + ", but we don't support " + "OOB cancellation yet.  " + "Ignoring this request and closing the connection.");
       return;
     }
-    this.server.printWithThread(new StringBuilder().append("ODBC client connected.  ODBC Protocol Compatibility Version ").append(i).append('.').append(j).toString());
+    this.server.printWithThread("ODBC client connected.  ODBC Protocol Compatibility Version " + i + '.' + j);
     OdbcPacketInputStream localOdbcPacketInputStream = OdbcPacketInputStream.newOdbcPacketInputStream('\000', this.dataInput, paramInt - 8);
     Map localMap = localOdbcPacketInputStream.readStringPairs();
     if (this.server.isTrace()) {
-      this.server.print(new StringBuilder().append("String Pairs from ODBC client: ").append(localMap).toString());
+      this.server.print("String Pairs from ODBC client: " + localMap);
     }
     try
     {
@@ -996,17 +996,17 @@ class ServerConnection
         return;
       }
       if (c != 'p') {
-        throw new ClientFailure(new StringBuilder().append("Expected password prefix 'p', but got '").append(c).append("'").toString(), "Password value not prefixed with 'p'");
+        throw new ClientFailure("Expected password prefix 'p', but got '" + c + "'", "Password value not prefixed with 'p'");
       }
       int m = this.dataInput.readInt() - 5;
       if (m < 0) {
-        throw new ClientFailure(new StringBuilder().append("Client submitted invalid password length ").append(m).toString(), new StringBuilder().append("Invalid password length ").append(m).toString());
+        throw new ClientFailure("Client submitted invalid password length " + m, "Invalid password length " + m);
       }
       String str2 = readNullTermdUTF(m, this.dataInput);
       this.dbIndex = this.server.getDBIndex(str1);
       this.dbID = this.server.dbID[this.dbIndex];
       if (!this.server.isSilent()) {
-        this.server.printWithThread(new StringBuilder().append(this.mThread).append(":Trying to connect user '").append(this.user).append("' to DB (").append(str1).append(')').toString());
+        this.server.printWithThread(this.mThread + ":Trying to connect user '" + this.user + "' to DB (" + str1 + ')');
       }
       try
       {
@@ -1014,7 +1014,7 @@ class ServerConnection
       }
       catch (Exception localException)
       {
-        throw new ClientFailure(new StringBuilder().append("User name or password denied: ").append(localException).toString(), "Login attempt rejected");
+        throw new ClientFailure("User name or password denied: " + localException, "Login attempt rejected");
       }
     }
     catch (ClientFailure localClientFailure)
@@ -1050,7 +1050,7 @@ class ServerConnection
     }
     for (int j = 2; j < arrayOfByte.length - 1; j++) {
       if (arrayOfByte[j] == 0) {
-        throw new RuntimeException(new StringBuilder().append("Null internal to String at offset ").append(j - 2).toString());
+        throw new RuntimeException("Null internal to String at offset " + (j - 2));
       }
     }
     DataInputStream localDataInputStream = new DataInputStream(new ByteArrayInputStream(arrayOfByte));
@@ -1067,7 +1067,7 @@ class ServerConnection
     if ((str2.startsWith("release ")) && (!str2.startsWith("release savepoint")))
     {
       this.server.printWithThread("Transmogrifying 'RELEASE ...' to 'RELEASE SAVEPOINT...");
-      str1 = new StringBuilder().append(str1.trim().substring(0, "release ".length())).append("SAVEPOINT ").append(str1.trim().substring("release ".length())).toString();
+      str1 = str1.trim().substring(0, "release ".length()) + "SAVEPOINT " + str1.trim().substring("release ".length());
     }
     Result localResult1 = Result.newExecuteDirectRequest();
     localResult1.setPrepareOrExecuteProperties(str1, 0, 0, 1, 0, 0, 2, null, null);
@@ -1079,7 +1079,7 @@ class ServerConnection
     case 2: 
       throw new RecoverableOdbcFailure(localResult2);
     default: 
-      throw new RecoverableOdbcFailure(new StringBuilder().append("Output Result from execution is of unexpected type: ").append(localResult2.getType()).toString());
+      throw new RecoverableOdbcFailure("Output Result from execution is of unexpected type: " + localResult2.getType());
     }
     this.outPacket.reset();
     this.outPacket.write(OdbcUtil.echoBackReplyString(str2, localResult2.getUpdateCount()));
@@ -1091,7 +1091,7 @@ class ServerConnection
       }
       catch (HsqlException localHsqlException)
       {
-        throw new RecoverableOdbcFailure(new StringBuilder().append("Failed to change transaction state: ").append(localHsqlException.getMessage()).toString(), localHsqlException.getSQLState());
+        throw new RecoverableOdbcFailure("Failed to change transaction state: " + localHsqlException.getMessage(), localHsqlException.getSQLState());
       }
     }
   }
@@ -1132,7 +1132,7 @@ class ServerConnection
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.server.ServerConnection
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

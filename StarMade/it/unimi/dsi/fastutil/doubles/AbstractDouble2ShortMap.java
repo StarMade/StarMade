@@ -1,218 +1,266 @@
-/*   1:    */package it.unimi.dsi.fastutil.doubles;
-/*   2:    */
-/*   3:    */import it.unimi.dsi.fastutil.HashCommon;
-/*   4:    */import it.unimi.dsi.fastutil.objects.ObjectIterator;
-/*   5:    */import it.unimi.dsi.fastutil.objects.ObjectSet;
-/*   6:    */import it.unimi.dsi.fastutil.shorts.AbstractShortCollection;
-/*   7:    */import it.unimi.dsi.fastutil.shorts.AbstractShortIterator;
-/*   8:    */import it.unimi.dsi.fastutil.shorts.ShortCollection;
-/*   9:    */import it.unimi.dsi.fastutil.shorts.ShortIterator;
-/*  10:    */import java.io.Serializable;
-/*  11:    */import java.util.Iterator;
-/*  12:    */import java.util.Map;
-/*  13:    */import java.util.Map.Entry;
-/*  14:    */import java.util.Set;
-/*  15:    */
-/*  62:    */public abstract class AbstractDouble2ShortMap
-/*  63:    */  extends AbstractDouble2ShortFunction
-/*  64:    */  implements Double2ShortMap, Serializable
-/*  65:    */{
-/*  66:    */  public static final long serialVersionUID = -4940583368468432370L;
-/*  67:    */  
-/*  68:    */  public boolean containsValue(Object ov)
-/*  69:    */  {
-/*  70: 70 */    return containsValue(((Short)ov).shortValue());
-/*  71:    */  }
-/*  72:    */  
-/*  73:    */  public boolean containsValue(short v) {
-/*  74: 74 */    return values().contains(v);
-/*  75:    */  }
-/*  76:    */  
-/*  77:    */  public boolean containsKey(double k) {
-/*  78: 78 */    return keySet().contains(k);
-/*  79:    */  }
-/*  80:    */  
-/*  86:    */  public void putAll(Map<? extends Double, ? extends Short> m)
-/*  87:    */  {
-/*  88: 88 */    int n = m.size();
-/*  89: 89 */    Iterator<? extends Map.Entry<? extends Double, ? extends Short>> i = m.entrySet().iterator();
-/*  90: 90 */    if ((m instanceof Double2ShortMap))
-/*  91:    */    {
-/*  92: 92 */      while (n-- != 0) {
-/*  93: 93 */        Double2ShortMap.Entry e = (Double2ShortMap.Entry)i.next();
-/*  94: 94 */        put(e.getDoubleKey(), e.getShortValue());
-/*  95:    */      }
-/*  96:    */      
-/*  97:    */    }
-/*  98:    */    else
-/*  99: 99 */      while (n-- != 0) {
-/* 100:100 */        Map.Entry<? extends Double, ? extends Short> e = (Map.Entry)i.next();
-/* 101:101 */        put((Double)e.getKey(), (Short)e.getValue());
-/* 102:    */      }
-/* 103:    */  }
-/* 104:    */  
-/* 105:    */  public boolean isEmpty() {
-/* 106:106 */    return size() == 0;
-/* 107:    */  }
-/* 108:    */  
-/* 110:    */  public static class BasicEntry
-/* 111:    */    implements Double2ShortMap.Entry
-/* 112:    */  {
-/* 113:    */    protected double key;
-/* 114:    */    protected short value;
-/* 115:    */    
-/* 116:    */    public BasicEntry(Double key, Short value)
-/* 117:    */    {
-/* 118:118 */      this.key = key.doubleValue();
-/* 119:119 */      this.value = value.shortValue();
-/* 120:    */    }
-/* 121:    */    
-/* 122:122 */    public BasicEntry(double key, short value) { this.key = key;
-/* 123:123 */      this.value = value;
-/* 124:    */    }
-/* 125:    */    
-/* 126:    */    public Double getKey()
-/* 127:    */    {
-/* 128:128 */      return Double.valueOf(this.key);
-/* 129:    */    }
-/* 130:    */    
-/* 131:    */    public double getDoubleKey()
-/* 132:    */    {
-/* 133:133 */      return this.key;
-/* 134:    */    }
-/* 135:    */    
-/* 136:    */    public Short getValue()
-/* 137:    */    {
-/* 138:138 */      return Short.valueOf(this.value);
-/* 139:    */    }
-/* 140:    */    
-/* 141:    */    public short getShortValue()
-/* 142:    */    {
-/* 143:143 */      return this.value;
-/* 144:    */    }
-/* 145:    */    
-/* 146:    */    public short setValue(short value)
-/* 147:    */    {
-/* 148:148 */      throw new UnsupportedOperationException();
-/* 149:    */    }
-/* 150:    */    
-/* 152:    */    public Short setValue(Short value)
-/* 153:    */    {
-/* 154:154 */      return Short.valueOf(setValue(value.shortValue()));
-/* 155:    */    }
-/* 156:    */    
-/* 158:    */    public boolean equals(Object o)
-/* 159:    */    {
-/* 160:160 */      if (!(o instanceof Map.Entry)) return false;
-/* 161:161 */      Map.Entry<?, ?> e = (Map.Entry)o;
-/* 162:    */      
-/* 163:163 */      return (this.key == ((Double)e.getKey()).doubleValue()) && (this.value == ((Short)e.getValue()).shortValue());
-/* 164:    */    }
-/* 165:    */    
-/* 166:    */    public int hashCode() {
-/* 167:167 */      return HashCommon.double2int(this.key) ^ this.value;
-/* 168:    */    }
-/* 169:    */    
-/* 170:    */    public String toString()
-/* 171:    */    {
-/* 172:172 */      return this.key + "->" + this.value;
-/* 173:    */    }
-/* 174:    */  }
-/* 175:    */  
-/* 189:    */  public DoubleSet keySet()
-/* 190:    */  {
-/* 191:191 */    new AbstractDoubleSet()
-/* 192:    */    {
-/* 193:193 */      public boolean contains(double k) { return AbstractDouble2ShortMap.this.containsKey(k); }
-/* 194:    */      
-/* 195:195 */      public int size() { return AbstractDouble2ShortMap.this.size(); }
-/* 196:196 */      public void clear() { AbstractDouble2ShortMap.this.clear(); }
-/* 197:    */      
-/* 198:    */      public DoubleIterator iterator() {
-/* 199:199 */        new AbstractDoubleIterator() {
-/* 200:200 */          final ObjectIterator<Map.Entry<Double, Short>> i = AbstractDouble2ShortMap.this.entrySet().iterator();
-/* 201:    */          
-/* 202:202 */          public double nextDouble() { return ((Double2ShortMap.Entry)this.i.next()).getDoubleKey(); }
-/* 203:    */          
-/* 204:204 */          public boolean hasNext() { return this.i.hasNext(); }
-/* 205:    */        };
-/* 206:    */      }
-/* 207:    */    };
-/* 208:    */  }
-/* 209:    */  
-/* 222:    */  public ShortCollection values()
-/* 223:    */  {
-/* 224:224 */    new AbstractShortCollection()
-/* 225:    */    {
-/* 226:226 */      public boolean contains(short k) { return AbstractDouble2ShortMap.this.containsValue(k); }
-/* 227:    */      
-/* 228:228 */      public int size() { return AbstractDouble2ShortMap.this.size(); }
-/* 229:229 */      public void clear() { AbstractDouble2ShortMap.this.clear(); }
-/* 230:    */      
-/* 231:    */      public ShortIterator iterator() {
-/* 232:232 */        new AbstractShortIterator() {
-/* 233:233 */          final ObjectIterator<Map.Entry<Double, Short>> i = AbstractDouble2ShortMap.this.entrySet().iterator();
-/* 234:    */          
-/* 235:235 */          public short nextShort() { return ((Double2ShortMap.Entry)this.i.next()).getShortValue(); }
-/* 236:    */          
-/* 237:237 */          public boolean hasNext() { return this.i.hasNext(); }
-/* 238:    */        };
-/* 239:    */      }
-/* 240:    */    };
-/* 241:    */  }
-/* 242:    */  
-/* 244:    */  public ObjectSet<Map.Entry<Double, Short>> entrySet()
-/* 245:    */  {
-/* 246:246 */    return double2ShortEntrySet();
-/* 247:    */  }
-/* 248:    */  
-/* 257:    */  public int hashCode()
-/* 258:    */  {
-/* 259:259 */    int h = 0;int n = size();
-/* 260:260 */    ObjectIterator<? extends Map.Entry<Double, Short>> i = entrySet().iterator();
-/* 261:    */    
-/* 262:262 */    while (n-- != 0) h += ((Map.Entry)i.next()).hashCode();
-/* 263:263 */    return h;
-/* 264:    */  }
-/* 265:    */  
-/* 266:    */  public boolean equals(Object o) {
-/* 267:267 */    if (o == this) return true;
-/* 268:268 */    if (!(o instanceof Map)) { return false;
-/* 269:    */    }
-/* 270:270 */    Map<?, ?> m = (Map)o;
-/* 271:271 */    if (m.size() != size()) return false;
-/* 272:272 */    return entrySet().containsAll(m.entrySet());
-/* 273:    */  }
-/* 274:    */  
-/* 275:    */  public String toString()
-/* 276:    */  {
-/* 277:277 */    StringBuilder s = new StringBuilder();
-/* 278:278 */    ObjectIterator<? extends Map.Entry<Double, Short>> i = entrySet().iterator();
-/* 279:279 */    int n = size();
-/* 280:    */    
-/* 281:281 */    boolean first = true;
-/* 282:    */    
-/* 283:283 */    s.append("{");
-/* 284:    */    
-/* 285:285 */    while (n-- != 0) {
-/* 286:286 */      if (first) first = false; else {
-/* 287:287 */        s.append(", ");
-/* 288:    */      }
-/* 289:289 */      Double2ShortMap.Entry e = (Double2ShortMap.Entry)i.next();
-/* 290:    */      
-/* 294:294 */      s.append(String.valueOf(e.getDoubleKey()));
-/* 295:295 */      s.append("=>");
-/* 296:    */      
-/* 299:299 */      s.append(String.valueOf(e.getShortValue()));
-/* 300:    */    }
-/* 301:    */    
-/* 302:302 */    s.append("}");
-/* 303:303 */    return s.toString();
-/* 304:    */  }
-/* 305:    */}
+package it.unimi.dsi.fastutil.doubles;
+
+import it.unimi.dsi.fastutil.HashCommon;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
+import it.unimi.dsi.fastutil.shorts.AbstractShortCollection;
+import it.unimi.dsi.fastutil.shorts.AbstractShortIterator;
+import it.unimi.dsi.fastutil.shorts.ShortCollection;
+import it.unimi.dsi.fastutil.shorts.ShortIterator;
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+public abstract class AbstractDouble2ShortMap
+  extends AbstractDouble2ShortFunction
+  implements Double2ShortMap, Serializable
+{
+  public static final long serialVersionUID = -4940583368468432370L;
+  
+  public boolean containsValue(Object local_ov)
+  {
+    return containsValue(((Short)local_ov).shortValue());
+  }
+  
+  public boolean containsValue(short local_v)
+  {
+    return values().contains(local_v);
+  }
+  
+  public boolean containsKey(double local_k)
+  {
+    return keySet().contains(local_k);
+  }
+  
+  public void putAll(Map<? extends Double, ? extends Short> local_m)
+  {
+    int local_n = local_m.size();
+    Iterator<? extends Map.Entry<? extends Double, ? extends Short>> local_i = local_m.entrySet().iterator();
+    if ((local_m instanceof Double2ShortMap)) {
+      while (local_n-- != 0)
+      {
+        Double2ShortMap.Entry local_e = (Double2ShortMap.Entry)local_i.next();
+        put(local_e.getDoubleKey(), local_e.getShortValue());
+      }
+    } else {
+      while (local_n-- != 0)
+      {
+        Map.Entry<? extends Double, ? extends Short> local_e = (Map.Entry)local_i.next();
+        put((Double)local_e.getKey(), (Short)local_e.getValue());
+      }
+    }
+  }
+  
+  public boolean isEmpty()
+  {
+    return size() == 0;
+  }
+  
+  public DoubleSet keySet()
+  {
+    new AbstractDoubleSet()
+    {
+      public boolean contains(double local_k)
+      {
+        return AbstractDouble2ShortMap.this.containsKey(local_k);
+      }
+      
+      public int size()
+      {
+        return AbstractDouble2ShortMap.this.size();
+      }
+      
+      public void clear()
+      {
+        AbstractDouble2ShortMap.this.clear();
+      }
+      
+      public DoubleIterator iterator()
+      {
+        new AbstractDoubleIterator()
+        {
+          final ObjectIterator<Map.Entry<Double, Short>> field_68 = AbstractDouble2ShortMap.this.entrySet().iterator();
+          
+          public double nextDouble()
+          {
+            return ((Double2ShortMap.Entry)this.field_68.next()).getDoubleKey();
+          }
+          
+          public boolean hasNext()
+          {
+            return this.field_68.hasNext();
+          }
+        };
+      }
+    };
+  }
+  
+  public ShortCollection values()
+  {
+    new AbstractShortCollection()
+    {
+      public boolean contains(short local_k)
+      {
+        return AbstractDouble2ShortMap.this.containsValue(local_k);
+      }
+      
+      public int size()
+      {
+        return AbstractDouble2ShortMap.this.size();
+      }
+      
+      public void clear()
+      {
+        AbstractDouble2ShortMap.this.clear();
+      }
+      
+      public ShortIterator iterator()
+      {
+        new AbstractShortIterator()
+        {
+          final ObjectIterator<Map.Entry<Double, Short>> field_53 = AbstractDouble2ShortMap.this.entrySet().iterator();
+          
+          public short nextShort()
+          {
+            return ((Double2ShortMap.Entry)this.field_53.next()).getShortValue();
+          }
+          
+          public boolean hasNext()
+          {
+            return this.field_53.hasNext();
+          }
+        };
+      }
+    };
+  }
+  
+  public ObjectSet<Map.Entry<Double, Short>> entrySet()
+  {
+    return double2ShortEntrySet();
+  }
+  
+  public int hashCode()
+  {
+    int local_h = 0;
+    int local_n = size();
+    ObjectIterator<? extends Map.Entry<Double, Short>> local_i = entrySet().iterator();
+    while (local_n-- != 0) {
+      local_h += ((Map.Entry)local_i.next()).hashCode();
+    }
+    return local_h;
+  }
+  
+  public boolean equals(Object local_o)
+  {
+    if (local_o == this) {
+      return true;
+    }
+    if (!(local_o instanceof Map)) {
+      return false;
+    }
+    Map<?, ?> local_m = (Map)local_o;
+    if (local_m.size() != size()) {
+      return false;
+    }
+    return entrySet().containsAll(local_m.entrySet());
+  }
+  
+  public String toString()
+  {
+    StringBuilder local_s = new StringBuilder();
+    ObjectIterator<? extends Map.Entry<Double, Short>> local_i = entrySet().iterator();
+    int local_n = size();
+    boolean first = true;
+    local_s.append("{");
+    while (local_n-- != 0)
+    {
+      if (first) {
+        first = false;
+      } else {
+        local_s.append(", ");
+      }
+      Double2ShortMap.Entry local_e = (Double2ShortMap.Entry)local_i.next();
+      local_s.append(String.valueOf(local_e.getDoubleKey()));
+      local_s.append("=>");
+      local_s.append(String.valueOf(local_e.getShortValue()));
+    }
+    local_s.append("}");
+    return local_s.toString();
+  }
+  
+  public static class BasicEntry
+    implements Double2ShortMap.Entry
+  {
+    protected double key;
+    protected short value;
+    
+    public BasicEntry(Double key, Short value)
+    {
+      this.key = key.doubleValue();
+      this.value = value.shortValue();
+    }
+    
+    public BasicEntry(double key, short value)
+    {
+      this.key = key;
+      this.value = value;
+    }
+    
+    public Double getKey()
+    {
+      return Double.valueOf(this.key);
+    }
+    
+    public double getDoubleKey()
+    {
+      return this.key;
+    }
+    
+    public Short getValue()
+    {
+      return Short.valueOf(this.value);
+    }
+    
+    public short getShortValue()
+    {
+      return this.value;
+    }
+    
+    public short setValue(short value)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public Short setValue(Short value)
+    {
+      return Short.valueOf(setValue(value.shortValue()));
+    }
+    
+    public boolean equals(Object local_o)
+    {
+      if (!(local_o instanceof Map.Entry)) {
+        return false;
+      }
+      Map.Entry<?, ?> local_e = (Map.Entry)local_o;
+      return (this.key == ((Double)local_e.getKey()).doubleValue()) && (this.value == ((Short)local_e.getValue()).shortValue());
+    }
+    
+    public int hashCode()
+    {
+      return HashCommon.double2int(this.key) ^ this.value;
+    }
+    
+    public String toString()
+    {
+      return this.key + "->" + this.value;
+    }
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.doubles.AbstractDouble2ShortMap
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

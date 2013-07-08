@@ -41,11 +41,11 @@ public class DatabaseManager
   extends Applet
   implements ActionListener, WindowListener, KeyListener
 {
-  static final String NL = System.getProperty("line.separator");
+  static final String field_1661 = System.getProperty("line.separator");
   static final int iMaxRecent = 24;
   private static boolean TT_AVAILABLE = false;
-  private static final String HELP_TEXT = new StringBuilder().append("See the forums, mailing lists, and HSQLDB User Guide\nat http://hsqldb.org.\n\nPlease paste the following version identifier with any\nproblem reports or help requests:  $Revision: 4818 $").append(TT_AVAILABLE ? "" : "\n\nTransferTool classes are not in CLASSPATH.\nTo enable the Tools menu, add 'transfer.jar' to your class path.").toString();
-  private static final String ABOUT_TEXT = new StringBuilder().append("$Revision: 4818 $ of DatabaseManager\n\nCopyright (c) 1995-2000, The Hypersonic SQL Group.\nCopyright (c) 2001-2011, The HSQL Development Group.\nhttp://hsqldb.org  (User Guide available at this site).\n\n\nYou may use and redistribute according to the HSQLDB\nlicense documented in the source code and at the web\nsite above.").append(TT_AVAILABLE ? "\n\nTransferTool options are available." : "").toString();
+  private static final String HELP_TEXT = "See the forums, mailing lists, and HSQLDB User Guide\nat http://hsqldb.org.\n\nPlease paste the following version identifier with any\nproblem reports or help requests:  $Revision: 4818 $" + (TT_AVAILABLE ? "" : "\n\nTransferTool classes are not in CLASSPATH.\nTo enable the Tools menu, add 'transfer.jar' to your class path.");
+  private static final String ABOUT_TEXT = "$Revision: 4818 $ of DatabaseManager\n\nCopyright (c) 1995-2000, The Hypersonic SQL Group.\nCopyright (c) 2001-2011, The HSQL Development Group.\nhttp://hsqldb.org  (User Guide available at this site).\n\n\nYou may use and redistribute according to the HSQLDB\nlicense documented in the source code and at the web\nsite above." + (TT_AVAILABLE ? "\n\nTransferTool options are available." : "");
   Connection cConn;
   DatabaseMetaData dMeta;
   Statement sStatement;
@@ -155,7 +155,7 @@ public class DatabaseManager
         str2 = str2.substring(1);
       }
       if ((!str2.equals("-noexit")) && (!str2.equals("-help")) && (k == paramArrayOfString.length - 1)) {
-        throw new IllegalArgumentException(new StringBuilder().append("No value for argument ").append(str1).toString());
+        throw new IllegalArgumentException("No value for argument " + str1);
       }
       k++;
       if (str2.equals("-driver"))
@@ -208,7 +208,7 @@ public class DatabaseManager
           showUsage();
           return;
         }
-        throw new IllegalArgumentException(new StringBuilder().append("invalid argrument ").append(str1).append(" try:  java... ").append(DatabaseManagerSwing.class.getName()).append(" --help").toString());
+        throw new IllegalArgumentException("invalid argrument " + str1 + " try:  java... " + DatabaseManagerSwing.class.getName() + " --help");
       }
     }
     DatabaseManager localDatabaseManager = new DatabaseManager();
@@ -230,7 +230,7 @@ public class DatabaseManager
         }
         i = 1;
         if (str4 == null) {
-          str4 = new StringBuilder().append(System.getProperty("user.home")).append("/dbmanager.rc").toString();
+          str4 = System.getProperty("user.home") + "/dbmanager.rc";
         }
         localConnection = new RCData(new File(str4), str3).getConnection(null, System.getProperty("javax.net.ssl.trustStore"));
       }
@@ -322,7 +322,7 @@ public class DatabaseManager
     if (defScript != null)
     {
       if (defDirectory != null) {
-        defScript = new StringBuilder().append(defDirectory).append(File.separator).append(defScript).toString();
+        defScript = defDirectory + File.separator + defScript;
       }
       this.txtCommand.setText(DatabaseManagerCommon.readFile(defScript));
     }
@@ -451,7 +451,7 @@ public class DatabaseManager
           if (str2 != null)
           {
             localObject = new StringBuffer();
-            this.ifHuge = DatabaseManagerCommon.readFile(new StringBuilder().append(localFileDialog.getDirectory()).append(str2).toString());
+            this.ifHuge = DatabaseManagerCommon.readFile(localFileDialog.getDirectory() + str2);
             if (4096 <= this.ifHuge.length())
             {
               ((StringBuffer)localObject).append("This huge file cannot be edited.\n Please execute or clear\n");
@@ -472,7 +472,7 @@ public class DatabaseManager
           localFileDialog.show();
           str2 = localFileDialog.getFile();
           if (str2 != null) {
-            DatabaseManagerCommon.writeFile(new StringBuilder().append(localFileDialog.getDirectory()).append(str2).toString(), this.txtCommand.getText());
+            DatabaseManagerCommon.writeFile(localFileDialog.getDirectory() + str2, this.txtCommand.getText());
           }
         }
         else if (str1.equals("Save Result csv..."))
@@ -485,7 +485,7 @@ public class DatabaseManager
           str2 = localFileDialog.getDirectory();
           localObject = localFileDialog.getFile();
           if (str2 != null) {
-            localObject = new StringBuilder().append(str2).append("/").append((String)localObject).toString();
+            localObject = str2 + "/" + (String)localObject;
           }
           if (localObject != null)
           {
@@ -504,7 +504,7 @@ public class DatabaseManager
           if (str2 != null)
           {
             showResultInText();
-            DatabaseManagerCommon.writeFile(new StringBuilder().append(localFileDialog.getDirectory()).append(str2).toString(), this.txtResult.getText());
+            DatabaseManagerCommon.writeFile(localFileDialog.getDirectory() + str2, this.txtResult.getText());
           }
         }
         else if (str1.equals("Results in Text"))
@@ -753,8 +753,8 @@ public class DatabaseManager
       arrayOfString[0] = "SQL Error";
       this.gResult.setHead(arrayOfString);
       Object localObject = localSQLException.getMessage();
-      localObject = new StringBuilder().append((String)localObject).append(" / Error Code: ").append(localSQLException.getErrorCode()).toString();
-      localObject = new StringBuilder().append((String)localObject).append(" / State: ").append(localSQLException.getSQLState()).toString();
+      localObject = (String)localObject + " / Error Code: " + localSQLException.getErrorCode();
+      localObject = (String)localObject + " / State: " + localSQLException.getSQLState();
       arrayOfString[0] = localObject;
       this.gResult.addRow(arrayOfString);
     }
@@ -850,7 +850,7 @@ public class DatabaseManager
     this.lTime = (System.currentTimeMillis() - this.lTime);
     while (!str1.equals(""))
     {
-      int k = str1.indexOf(59);
+      int k = str1.indexOf(';');
       String str2;
       if (k != -1)
       {
@@ -887,10 +887,10 @@ public class DatabaseManager
           arrayOfString[3] = localSQLException.toString();
         }
         this.gResult.addRow(arrayOfString);
-        System.out.println(new StringBuilder().append(l2).append(" ms : ").append(str2).toString());
+        System.out.println(l2 + " ms : " + str2);
       }
     }
-    arrayOfString[0] = new StringBuilder().append("").append(l1).toString();
+    arrayOfString[0] = ("" + l1);
     arrayOfString[1] = "total";
     arrayOfString[2] = "";
     this.gResult.addRow(arrayOfString);
@@ -927,7 +927,7 @@ public class DatabaseManager
     }
     catch (IOException localIOException)
     {
-      throw new RuntimeException(new StringBuilder().append("IOError: ").append(localIOException.getMessage()).toString());
+      throw new RuntimeException("IOError: " + localIOException.getMessage());
     }
   }
   
@@ -962,7 +962,7 @@ public class DatabaseManager
         localStringBuffer.append(' ');
       }
     }
-    localStringBuffer.append(NL);
+    localStringBuffer.append(field_1661);
     for (m = 0; m < i; m++)
     {
       for (n = 0; n < arrayOfInt[m]; n++) {
@@ -970,7 +970,7 @@ public class DatabaseManager
       }
       localStringBuffer.append(' ');
     }
-    localStringBuffer.append(NL);
+    localStringBuffer.append(field_1661);
     for (m = 0; m < j; m++)
     {
       arrayOfString2 = (String[])localVector.elementAt(m);
@@ -981,9 +981,9 @@ public class DatabaseManager
           localStringBuffer.append(' ');
         }
       }
-      localStringBuffer.append(NL);
+      localStringBuffer.append(field_1661);
     }
-    localStringBuffer.append(new StringBuilder().append(NL).append(j).append(" row(s) in ").append(this.lTime).append(" ms").toString());
+    localStringBuffer.append(field_1661 + j + " row(s) in " + this.lTime + " ms");
     this.txtResult.setText(localStringBuffer.toString());
   }
   
@@ -999,10 +999,10 @@ public class DatabaseManager
     }
     this.sRecent[this.iRecent] = paramString;
     if (paramString.length() > 43) {
-      paramString = new StringBuilder().append(paramString.substring(0, 40)).append("...").toString();
+      paramString = paramString.substring(0, 40) + "...";
     }
     MenuItem localMenuItem = new MenuItem(paramString);
-    localMenuItem.setActionCommand(new StringBuilder().append("#").append(this.iRecent).toString());
+    localMenuItem.setActionCommand("#" + this.iRecent);
     localMenuItem.addActionListener(this);
     this.mRecent.insert(localMenuItem, this.iRecent);
     this.iRecent = ((this.iRecent + 1) % 24);
@@ -1082,14 +1082,14 @@ public class DatabaseManager
       {
         String str1 = (String)localVector2.elementAt(m);
         String str2 = (String)localVector1.elementAt(m);
-        String str3 = new StringBuilder().append("tab-").append(str1).append("-").toString();
+        String str3 = "tab-" + str1 + "-";
         this.tTree.addRow(str3, str1, "+", i);
         String str4 = (String)localVector3.elementAt(m);
         if ((str2 != null) && (!str2.trim().equals(""))) {
-          this.tTree.addRow(new StringBuilder().append(str3).append("s").toString(), new StringBuilder().append("schema: ").append(str2).toString());
+          this.tTree.addRow(str3 + "s", "schema: " + str2);
         }
         if ((str4 != null) && (!str4.trim().equals(""))) {
-          this.tTree.addRow(new StringBuilder().append(str3).append("r").toString(), new StringBuilder().append(" ").append(str4).toString());
+          this.tTree.addRow(str3 + "r", " " + str4);
         }
         ResultSet localResultSet2 = this.dMeta.getColumns(null, str2, str1, null);
         try
@@ -1097,19 +1097,19 @@ public class DatabaseManager
           while (localResultSet2.next())
           {
             localObject2 = localResultSet2.getString(4);
-            localObject3 = new StringBuilder().append(str3).append("col-").append((String)localObject2).append("-").toString();
+            localObject3 = str3 + "col-" + (String)localObject2 + "-";
             this.tTree.addRow((String)localObject3, (String)localObject2, "+", j);
             String str5 = localResultSet2.getString(6);
-            this.tTree.addRow(new StringBuilder().append((String)localObject3).append("t").toString(), new StringBuilder().append("Type: ").append(str5).toString());
+            this.tTree.addRow((String)localObject3 + "t", "Type: " + str5);
             boolean bool3 = localResultSet2.getInt(11) != 0;
-            this.tTree.addRow(new StringBuilder().append((String)localObject3).append("n").toString(), new StringBuilder().append("Nullable: ").append(bool3).toString());
+            this.tTree.addRow((String)localObject3 + "n", "Nullable: " + bool3);
           }
         }
         finally
         {
           localResultSet2.close();
         }
-        this.tTree.addRow(new StringBuilder().append(str3).append("ind").toString(), "Indices", "+", 0);
+        this.tTree.addRow(str3 + "ind", "Indices", "+", 0);
         Object localObject2 = this.dMeta.getIndexInfo(null, str2, str1, false, false);
         Object localObject3 = null;
         try
@@ -1118,15 +1118,15 @@ public class DatabaseManager
           {
             boolean bool2 = ((ResultSet)localObject2).getBoolean(4);
             String str6 = ((ResultSet)localObject2).getString(6);
-            String str7 = new StringBuilder().append(str3).append("ind-").append(str6).append("-").toString();
+            String str7 = str3 + "ind-" + str6 + "-";
             if ((localObject3 == null) || (!((String)localObject3).equals(str6)))
             {
               this.tTree.addRow(str7, str6, "+", k);
-              this.tTree.addRow(new StringBuilder().append(str7).append("u").toString(), new StringBuilder().append("Unique: ").append(!bool2).toString());
+              this.tTree.addRow(str7 + "u", "Unique: " + (!bool2));
               localObject3 = str6;
             }
             String str8 = ((ResultSet)localObject2).getString(9);
-            this.tTree.addRow(new StringBuilder().append(str7).append("c-").append(str8).append("-").toString(), str8);
+            this.tTree.addRow(str7 + "c-" + str8 + "-", str8);
           }
         }
         finally
@@ -1135,12 +1135,12 @@ public class DatabaseManager
         }
       }
       this.tTree.addRow("p", "Properties", "+", 0);
-      this.tTree.addRow("pu", new StringBuilder().append("User: ").append(this.dMeta.getUserName()).toString());
-      this.tTree.addRow("pr", new StringBuilder().append("ReadOnly: ").append(this.cConn.isReadOnly()).toString());
-      this.tTree.addRow("pa", new StringBuilder().append("AutoCommit: ").append(this.cConn.getAutoCommit()).toString());
-      this.tTree.addRow("pd", new StringBuilder().append("Driver: ").append(this.dMeta.getDriverName()).toString());
-      this.tTree.addRow("pp", new StringBuilder().append("Product: ").append(this.dMeta.getDatabaseProductName()).toString());
-      this.tTree.addRow("pv", new StringBuilder().append("Version: ").append(this.dMeta.getDatabaseProductVersion()).toString());
+      this.tTree.addRow("pu", "User: " + this.dMeta.getUserName());
+      this.tTree.addRow("pr", "ReadOnly: " + this.cConn.isReadOnly());
+      this.tTree.addRow("pa", "AutoCommit: " + this.cConn.getAutoCommit());
+      this.tTree.addRow("pd", "Driver: " + this.dMeta.getDriverName());
+      this.tTree.addRow("pp", "Product: " + this.dMeta.getDatabaseProductName());
+      this.tTree.addRow("pv", "Version: " + this.dMeta.getDatabaseProductVersion());
       try
       {
         this.cConn.setAutoCommit(bool1);
@@ -1168,7 +1168,7 @@ public class DatabaseManager
   {
     try
     {
-      Class.forName(new StringBuilder().append(DatabaseManager.class.getPackage().getName()).append(".Transfer").toString());
+      Class.forName(DatabaseManager.class.getPackage().getName() + ".Transfer");
       TT_AVAILABLE = true;
     }
     catch (Throwable localThrowable) {}
@@ -1176,7 +1176,7 @@ public class DatabaseManager
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.util.DatabaseManager
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

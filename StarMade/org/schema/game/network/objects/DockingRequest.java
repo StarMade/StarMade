@@ -1,29 +1,30 @@
-/*  1:   */package org.schema.game.network.objects;
-/*  2:   */
-/*  3:   */import q;
-/*  4:   */
-/*  5:   */public class DockingRequest
-/*  6:   */{
-/*  7:   */  public boolean dock;
-/*  8:   */  public String id;
-/*  9:   */  public q pos;
-/* 10:   */  
-/* 11:   */  public DockingRequest() {}
-/* 12:   */  
-/* 13:   */  public DockingRequest(boolean paramBoolean, String paramString, q paramq)
-/* 14:   */  {
-/* 15:15 */    set(paramBoolean, paramString, paramq);
-/* 16:   */  }
-/* 17:   */  
-/* 18:   */  public void set(boolean paramBoolean, String paramString, q paramq) {
-/* 19:19 */    this.dock = paramBoolean;
-/* 20:20 */    this.id = paramString;
-/* 21:21 */    this.pos = paramq;
-/* 22:   */  }
-/* 23:   */}
+package org.schema.game.network.objects;
+
+import class_48;
+
+public class DockingRequest
+{
+  public boolean dock;
+  public String field_1858;
+  public class_48 pos;
+  
+  public DockingRequest() {}
+  
+  public DockingRequest(boolean paramBoolean, String paramString, class_48 paramclass_48)
+  {
+    set(paramBoolean, paramString, paramclass_48);
+  }
+  
+  public void set(boolean paramBoolean, String paramString, class_48 paramclass_48)
+  {
+    this.dock = paramBoolean;
+    this.field_1858 = paramString;
+    this.pos = paramclass_48;
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.game.network.objects.DockingRequest
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

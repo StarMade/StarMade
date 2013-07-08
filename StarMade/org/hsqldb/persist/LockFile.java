@@ -607,8 +607,8 @@ public class LockFile
     
     public String getMessage()
     {
-      String str = new StringBuilder().append(super.getMessage()).append(" magic: ").toString();
-      str = new StringBuilder().append(str).append(this.magic == null ? "null" : new StringBuilder().append("'").append(StringConverter.byteArrayToHexString(this.magic)).append("'").toString()).toString();
+      String str = super.getMessage() + " magic: ";
+      str = str + (this.magic == null ? "null" : new StringBuilder().append("'").append(StringConverter.byteArrayToHexString(this.magic)).append("'").toString());
       return str;
     }
     
@@ -833,7 +833,7 @@ public class LockFile
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.persist.LockFile
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

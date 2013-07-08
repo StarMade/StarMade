@@ -6,7 +6,7 @@ import java.sql.Savepoint;
 public class JDBCSavepoint
   implements Savepoint
 {
-  int id;
+  int field_2148;
   String name;
   JDBCConnection connection;
   
@@ -20,7 +20,7 @@ public class JDBCSavepoint
       throw Util.nullArgument("conn");
     }
     this.name = paramString;
-    this.id = -1;
+    this.field_2148 = -1;
     this.connection = paramJDBCConnection;
   }
   
@@ -30,16 +30,16 @@ public class JDBCSavepoint
     if (paramJDBCConnection == null) {
       throw Util.nullArgument("conn");
     }
-    this.id = paramJDBCConnection.getSavepointID();
-    this.name = ("SYSTEM_SAVEPOINT_" + this.id);
+    this.field_2148 = paramJDBCConnection.getSavepointID();
+    this.name = ("SYSTEM_SAVEPOINT_" + this.field_2148);
     this.connection = paramJDBCConnection;
   }
   
   public int getSavepointId()
     throws SQLException
   {
-    if (this.id != -1) {
-      return this.id;
+    if (this.field_2148 != -1) {
+      return this.field_2148;
     }
     throw Util.notSupported();
   }
@@ -47,7 +47,7 @@ public class JDBCSavepoint
   public String getSavepointName()
     throws SQLException
   {
-    if (this.id == -1) {
+    if (this.field_2148 == -1) {
       return this.name;
     }
     throw Util.notSupported();
@@ -60,7 +60,7 @@ public class JDBCSavepoint
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.jdbc.JDBCSavepoint
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

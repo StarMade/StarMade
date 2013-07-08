@@ -1,20 +1,20 @@
-/*  1:   */package de.jarnbjo.ogg;
-/*  2:   */
-/*  3:   */import java.io.IOException;
-/*  4:   */
-/* 31:   */public class OggFormatException
-/* 32:   */  extends IOException
-/* 33:   */{
-/* 34:   */  public OggFormatException() {}
-/* 35:   */  
-/* 36:   */  public OggFormatException(String message)
-/* 37:   */  {
-/* 38:38 */    super(message);
-/* 39:   */  }
-/* 40:   */}
+package de.jarnbjo.ogg;
+
+import java.io.IOException;
+
+public class OggFormatException
+  extends IOException
+{
+  public OggFormatException() {}
+  
+  public OggFormatException(String message)
+  {
+    super(message);
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     de.jarnbjo.ogg.OggFormatException
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

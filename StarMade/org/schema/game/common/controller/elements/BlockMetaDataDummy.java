@@ -1,27 +1,29 @@
-/*  1:   */package org.schema.game.common.controller.elements;
-/*  2:   */
-/*  3:   */import q;
-/*  4:   */
-/*  5:   */public abstract class BlockMetaDataDummy
-/*  6:   */{
-/*  7:   */  public q pos;
-/*  8:   */  
-/*  9:   */  public void fromTagStructure(Ah paramAh)
-/* 10:   */  {
-/* 11:11 */    paramAh = (Ah[])paramAh.a();
-/* 12:12 */    this.pos = ((q)paramAh[0].a());
-/* 13:13 */    fromTagStructrePriv(paramAh[1]);
-/* 14:   */  }
-/* 15:   */  
-/* 16:   */  protected abstract void fromTagStructrePriv(Ah paramAh);
-/* 17:   */  
-/* 18:   */  public q getControllerPos() {
-/* 19:19 */    return this.pos;
-/* 20:   */  }
-/* 21:   */}
+package org.schema.game.common.controller.elements;
+
+import class_48;
+import class_69;
+
+public abstract class BlockMetaDataDummy
+{
+  public class_48 pos;
+  
+  public void fromTagStructure(class_69 paramclass_69)
+  {
+    paramclass_69 = (class_69[])paramclass_69.a4();
+    this.pos = ((class_48)paramclass_69[0].a4());
+    fromTagStructrePriv(paramclass_69[1]);
+  }
+  
+  protected abstract void fromTagStructrePriv(class_69 paramclass_69);
+  
+  public class_48 getControllerPos()
+  {
+    return this.pos;
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.game.common.controller.elements.BlockMetaDataDummy
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

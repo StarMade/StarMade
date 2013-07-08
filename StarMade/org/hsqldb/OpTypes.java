@@ -46,11 +46,11 @@ public abstract interface OpTypes
   public static final int IS_NULL = 47;
   public static final int NOT = 48;
   public static final int AND = 49;
-  public static final int OR = 50;
+  public static final int field_2025 = 50;
   public static final int ALL_QUANTIFIED = 51;
   public static final int ANY_QUANTIFIED = 52;
   public static final int LIKE = 53;
-  public static final int IN = 54;
+  public static final int field_2026 = 54;
   public static final int EXISTS = 55;
   public static final int OVERLAPS = 56;
   public static final int UNIQUE = 57;
@@ -90,7 +90,7 @@ public abstract interface OpTypes
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.OpTypes
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

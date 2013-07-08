@@ -35,7 +35,7 @@ public class Result
   public byte mode;
   int databaseID;
   long sessionID;
-  private long id;
+  private long field_1712;
   private String databaseName;
   private String mainString;
   private String subString;
@@ -207,7 +207,7 @@ public class Result
       }
       break;
     case 40: 
-      localResult.id = paramRowInputBinary.readLong();
+      localResult.field_1712 = paramRowInputBinary.readLong();
       break;
     case 36: 
       localResult.statementID = paramRowInputBinary.readLong();
@@ -314,7 +314,7 @@ public class Result
       }
       break;
     case 41: 
-      localResult.id = paramRowInputBinary.readLong();
+      localResult.field_1712 = paramRowInputBinary.readLong();
       int k = paramRowInputBinary.readInt();
       localResult.setActionType(k);
       localResult.metaData = new ResultMetaData(paramRowInputBinary);
@@ -336,14 +336,14 @@ public class Result
       localResult.navigator.read(paramRowInputBinary, localResult.metaData);
       break;
     case 13: 
-      localResult.id = paramRowInputBinary.readLong();
+      localResult.field_1712 = paramRowInputBinary.readLong();
       localResult.updateCount = paramRowInputBinary.readInt();
       localResult.fetchSize = paramRowInputBinary.readInt();
       break;
     case 3: 
     case 15: 
     case 20: 
-      localResult.id = paramRowInputBinary.readLong();
+      localResult.field_1712 = paramRowInputBinary.readLong();
       localResult.updateCount = paramRowInputBinary.readInt();
       localResult.fetchSize = paramRowInputBinary.readInt();
       localResult.rsProperties = paramRowInputBinary.readByte();
@@ -419,7 +419,7 @@ public class Result
   {
     Result localResult = newResult(41);
     localResult.metaData = ResultMetaData.newUpdateResultMetaData(paramArrayOfType);
-    localResult.id = paramLong;
+    localResult.field_1712 = paramLong;
     localResult.valueData = new Object[0];
     return localResult;
   }
@@ -607,7 +607,7 @@ public class Result
   public static Result newRequestDataResult(long paramLong, int paramInt1, int paramInt2)
   {
     Result localResult = newResult(13);
-    localResult.id = paramLong;
+    localResult.field_1712 = paramLong;
     localResult.updateCount = paramInt1;
     localResult.fetchSize = paramInt2;
     return localResult;
@@ -655,7 +655,7 @@ public class Result
       paramInt2 = paramResult.navigator.getSize() - paramInt1;
     }
     Result localResult = newResult(14);
-    localResult.id = paramResult.id;
+    localResult.field_1712 = paramResult.field_1712;
     localResult.metaData = paramResult.metaData;
     localResult.navigator = new RowSetNavigatorClient(paramResult.navigator, paramInt1, paramInt2);
     return localResult;
@@ -722,8 +722,8 @@ public class Result
       localResult.errorCode = localResult.exception.getErrorCode();
       if (paramString != null)
       {
-        Result tmp233_232 = localResult;
-        tmp233_232.mainString = (tmp233_232.mainString + " in statement [" + paramString + "]");
+        Result tmp236_235 = localResult;
+        tmp236_235.mainString = (tmp236_235.mainString + " in statement [" + paramString + "]");
       }
     }
     return localResult;
@@ -758,7 +758,7 @@ public class Result
       paramRowOutputInterface.writeLong(this.statementID);
       break;
     case 40: 
-      paramRowOutputInterface.writeLong(this.id);
+      paramRowOutputInterface.writeLong(this.field_1712);
       break;
     case 34: 
       paramRowOutputInterface.writeInt(this.updateCount);
@@ -839,7 +839,7 @@ public class Result
       writeSimple(paramRowOutputInterface, this.metaData, (Object[])this.valueData);
       break;
     case 41: 
-      paramRowOutputInterface.writeLong(this.id);
+      paramRowOutputInterface.writeLong(this.field_1712);
       paramRowOutputInterface.writeInt(getActionType());
       this.metaData.write(paramRowOutputInterface);
       writeSimple(paramRowOutputInterface, this.metaData, (Object[])this.valueData);
@@ -872,7 +872,7 @@ public class Result
       }
       break;
     case 13: 
-      paramRowOutputInterface.writeLong(this.id);
+      paramRowOutputInterface.writeLong(this.field_1712);
       paramRowOutputInterface.writeInt(this.updateCount);
       paramRowOutputInterface.writeInt(this.fetchSize);
       break;
@@ -883,7 +883,7 @@ public class Result
     case 3: 
     case 15: 
     case 20: 
-      paramRowOutputInterface.writeLong(this.id);
+      paramRowOutputInterface.writeLong(this.field_1712);
       paramRowOutputInterface.writeInt(this.updateCount);
       paramRowOutputInterface.writeInt(this.fetchSize);
       paramRowOutputInterface.writeByte(this.rsProperties);
@@ -1094,12 +1094,12 @@ public class Result
   
   public long getResultId()
   {
-    return this.id;
+    return this.field_1712;
   }
   
   public void setResultId(long paramLong)
   {
-    this.id = paramLong;
+    this.field_1712 = paramLong;
     if (this.navigator != null) {
       this.navigator.setId(paramLong);
     }
@@ -1268,7 +1268,7 @@ public class Result
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.result.Result
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

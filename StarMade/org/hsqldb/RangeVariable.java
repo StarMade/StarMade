@@ -1112,8 +1112,8 @@ public class RangeVariable
     
     public void release()
     {
-      if (this.it != null) {
-        this.it.release();
+      if (this.field_366 != null) {
+        this.field_366.release();
       }
       for (int i = 0; i < this.rangeIterators.length; i++) {
         this.rangeIterators[i].reset();
@@ -1158,7 +1158,7 @@ public class RangeVariable
     {
       if (this.isOnRightOuterRows)
       {
-        if (this.it == null) {
+        if (this.field_366 == null) {
           return false;
         }
         return findNextRight();
@@ -1171,7 +1171,7 @@ public class RangeVariable
       boolean bool = false;
       do
       {
-        this.currentRow = this.it.getNextRow();
+        this.currentRow = this.field_366.getNextRow();
         if (this.currentRow == null) {
           break;
         }
@@ -1184,7 +1184,7 @@ public class RangeVariable
       if (bool) {
         return true;
       }
-      this.it.release();
+      this.field_366.release();
       this.currentRow = null;
       this.currentData = this.rangeVar.emptyData;
       return bool;
@@ -1270,10 +1270,10 @@ public class RangeVariable
     
     public void reset()
     {
-      if (this.it != null) {
-        this.it.release();
+      if (this.field_366 != null) {
+        this.field_366.release();
       }
-      this.it = null;
+      this.field_366 = null;
       this.currentData = this.rangeVar.emptyData;
       this.currentRow = null;
       this.isBeforeFirst = true;
@@ -1291,16 +1291,16 @@ public class RangeVariable
       }
       if (this.conditions[this.condIndex].isFalse)
       {
-        this.it = this.conditions[this.condIndex].rangeIndex.emptyIterator();
+        this.field_366 = this.conditions[this.condIndex].rangeIndex.emptyIterator();
         return;
       }
       this.rangeVar.rangeTable.materialiseCorrelated(this.session);
       if (this.conditions[this.condIndex].indexCond == null)
       {
         if (this.conditions[this.condIndex].reversed) {
-          this.it = this.conditions[this.condIndex].rangeIndex.lastRow(this.session, this.store);
+          this.field_366 = this.conditions[this.condIndex].rangeIndex.lastRow(this.session, this.store);
         } else {
-          this.it = this.conditions[this.condIndex].rangeIndex.firstRow(this.session, this.store);
+          this.field_366 = this.conditions[this.condIndex].rangeIndex.firstRow(this.session, this.store);
         }
       }
       else
@@ -1348,7 +1348,7 @@ public class RangeVariable
                 localObject = null;
                 break;
               default: 
-                this.it = this.conditions[this.condIndex].rangeIndex.emptyIterator();
+                this.field_366 = this.conditions[this.condIndex].rangeIndex.emptyIterator();
                 return;
               }
             } else if (j > 0) {
@@ -1358,7 +1358,7 @@ public class RangeVariable
                 localObject = null;
                 break;
               default: 
-                this.it = this.conditions[this.condIndex].rangeIndex.emptyIterator();
+                this.field_366 = this.conditions[this.condIndex].rangeIndex.emptyIterator();
                 return;
               }
             }
@@ -1366,7 +1366,7 @@ public class RangeVariable
           this.currentJoinData[i] = localObject;
         }
       }
-      this.it = this.conditions[this.condIndex].rangeIndex.findFirstRow(this.session, this.store, this.currentJoinData, this.conditions[this.condIndex].indexedColumnCount, this.rangeVar.indexDistinctCount, this.conditions[this.condIndex].opType, this.conditions[this.condIndex].reversed, null);
+      this.field_366 = this.conditions[this.condIndex].rangeIndex.findFirstRow(this.session, this.store, this.currentJoinData, this.conditions[this.condIndex].indexedColumnCount, this.rangeVar.indexDistinctCount, this.conditions[this.condIndex].opType, this.conditions[this.condIndex].reversed, null);
     }
     
     private boolean findNext()
@@ -1377,7 +1377,7 @@ public class RangeVariable
       {
         for (;;)
         {
-          this.currentRow = this.it.getNextRow();
+          this.currentRow = this.field_366.getNextRow();
           if (this.currentRow == null) {
             break label267;
           }
@@ -1408,7 +1408,7 @@ public class RangeVariable
       this.hasLeftOuterRow = false;
       return true;
       label267:
-      this.it.release();
+      this.field_366.release();
       this.currentRow = null;
       this.currentData = this.rangeVar.emptyData;
       if ((this.hasLeftOuterRow) && (this.condIndex == this.conditions.length - 1))
@@ -1432,7 +1432,7 @@ public class RangeVariable
   {
     Session session;
     int rangePosition;
-    RowIterator it;
+    RowIterator field_366;
     PersistentStore store;
     Object[] currentData;
     Row currentRow;
@@ -1448,10 +1448,10 @@ public class RangeVariable
     {
       if (this.isBeforeFirst) {
         this.isBeforeFirst = false;
-      } else if (this.it == null) {
+      } else if (this.field_366 == null) {
         return false;
       }
-      this.currentRow = this.it.getNextRow();
+      this.currentRow = this.field_366.getNextRow();
       if (this.currentRow == null) {
         return false;
       }
@@ -1493,10 +1493,10 @@ public class RangeVariable
     
     public void reset()
     {
-      if (this.it != null) {
-        this.it.release();
+      if (this.field_366 != null) {
+        this.field_366.release();
       }
-      this.it = null;
+      this.field_366 = null;
       this.currentRow = null;
       this.isBeforeFirst = true;
     }
@@ -1528,15 +1528,15 @@ public class RangeVariable
     
     public void release()
     {
-      if (this.it != null) {
-        this.it.release();
+      if (this.field_366 != null) {
+        this.field_366.release();
       }
     }
   }
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.RangeVariable
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

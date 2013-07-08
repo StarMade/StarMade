@@ -13,7 +13,7 @@ public final class TagCheckImpl
   public static final TagCheck STYLE = new CheckSTYLE();
   public static final TagCheck TABLECELL = new CheckTableCell();
   public static final TagCheck LINK = new CheckLINK();
-  public static final TagCheck HR = new CheckHR();
+  public static final TagCheck field_1907 = new CheckHR();
   public static final TagCheck FORM = new CheckForm();
   public static final TagCheck META = new CheckMeta();
   
@@ -326,7 +326,7 @@ public final class TagCheckImpl
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.w3c.tidy.TagCheckImpl
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

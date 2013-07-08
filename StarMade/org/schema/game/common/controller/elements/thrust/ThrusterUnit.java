@@ -1,103 +1,97 @@
-/*   1:    */package org.schema.game.common.controller.elements.thrust;
-/*   2:    */
-/*   3:    */import java.awt.Point;
-/*   4:    */import java.util.Collection;
-/*   5:    */import java.util.HashMap;
-/*   6:    */import org.schema.game.common.data.element.ElementCollection;
-/*   7:    */import q;
-/*   8:    */
-/*  12:    */public class ThrusterUnit
-/*  13:    */  extends ElementCollection
-/*  14:    */{
-/*  15: 15 */  private final q significator = new q();
-/*  16:    */  
-/*  17:    */  float thrust;
-/*  18:    */  
-/*  19: 19 */  private final HashMap lastElements = new HashMap();
-/*  20:    */  
-/*  22: 22 */  private final Point pointTmp = new Point();
-/*  23: 23 */  private final q abspos = new q();
-/*  24:    */  
-/*  26:    */  protected void onAdd(long paramLong)
-/*  27:    */  {
-/*  28: 28 */    long l1 = paramLong / 4294705156L;
-/*  29:    */    
-/*  31: 31 */    long l2 = (paramLong = paramLong - l1 * 4294705156L) / 65534L;
-/*  32:    */    
-/*  34: 34 */    paramLong = (int)(paramLong - l2 * 65534L - 32767L);
-/*  35:    */    
-/*  37: 37 */    int i = (int)(l2 - 32767L);
-/*  38: 38 */    int j = (int)(l1 - 32767L);
-/*  39:    */    
-/*  40: 40 */    this.pointTmp.setLocation(paramLong, i);
-/*  41: 41 */    if (!getLastElements().containsKey(this.pointTmp)) {
-/*  42: 42 */      localObject = new Point(paramLong, i);
-/*  43: 43 */      getLastElements().put(localObject, new q(paramLong, i, j));
-/*  44: 44 */      return; }
-/*  45: 45 */    Object localObject = (q)getLastElements().get(this.pointTmp);
-/*  46: 46 */    if (j < ((q)localObject).c) {
-/*  47: 47 */      ((q)getLastElements().get(this.pointTmp)).b(paramLong, i, j);
-/*  48:    */    }
-/*  49:    */  }
-/*  50:    */  
-/*  54:    */  public boolean addElement(long paramLong)
-/*  55:    */  {
-/*  56:    */    boolean bool;
-/*  57:    */    
-/*  59: 59 */    if ((bool = super.addElement(paramLong))) {
-/*  60: 60 */      getPosFromIndex(paramLong, this.abspos);
-/*  61:    */      
-/*  62: 62 */      onAdd(paramLong);
-/*  63:    */    }
-/*  64: 64 */    return bool;
-/*  65:    */  }
-/*  66:    */  
-/*  71:    */  protected void onRemove(q paramq)
-/*  72:    */  {
-/*  73: 73 */    super.onRemove(paramq);
-/*  74: 74 */    paramq = new Point(paramq.a, paramq.b);
-/*  75: 75 */    q localq1 = (q)getLastElements().remove(paramq);
-/*  76: 76 */    q localq2 = new q(localq1);
-/*  77: 77 */    for (int i = localq1.c - 1; i > getMin().c; i--) {
-/*  78: 78 */      localq2.c = i;
-/*  79:    */      
-/*  80: 80 */      long l = ElementCollection.getIndex(localq2);
-/*  81: 81 */      if (getNeighboringCollection().contains(Long.valueOf(l))) {
-/*  82: 82 */        getLastElements().put(paramq, localq2);
-/*  83:    */      }
-/*  84:    */    }
-/*  85:    */  }
-/*  86:    */  
-/*  88:    */  public q getSignificator()
-/*  89:    */  {
-/*  90: 90 */    return this.significator;
-/*  91:    */  }
-/*  92:    */  
-/*  93:    */  public void refreshThrusterCapabilities() {
-/*  94: 94 */    this.thrust = Math.max(0.0F, getMax().c - getMin().c);
-/*  95: 95 */    this.thrust += Math.max(0.0F, getMax().a - getMin().a);
-/*  96: 96 */    this.thrust += Math.max(0.0F, getMax().b - getMin().b);
-/*  97: 97 */    float f = (float)Math.pow(size(), 1.125D);
-/*  98:    */    
-/*  99: 99 */    this.thrust += f;
-/* 100:100 */    this.thrust = Math.max(1.0F, this.thrust);
-/* 101:    */  }
-/* 102:    */  
-/* 108:    */  protected void significatorUpdate(int paramInt1, int paramInt2, int paramInt3)
-/* 109:    */  {
-/* 110:110 */    if ((paramInt1 <= this.significator.a) && (paramInt2 <= this.significator.b) && (paramInt3 < this.significator.c)) {
-/* 111:111 */      this.significator.b(paramInt1, paramInt2, paramInt3);
-/* 112:    */    }
-/* 113:    */  }
-/* 114:    */  
-/* 118:    */  public HashMap getLastElements()
-/* 119:    */  {
-/* 120:120 */    return this.lastElements;
-/* 121:    */  }
-/* 122:    */}
+package org.schema.game.common.controller.elements.thrust;
+
+import class_48;
+import java.awt.Point;
+import java.util.Collection;
+import java.util.HashMap;
+import org.schema.game.common.data.element.ElementCollection;
+
+public class ThrusterUnit
+  extends ElementCollection
+{
+  private final class_48 significator = new class_48();
+  float thrust;
+  private final HashMap lastElements = new HashMap();
+  private final Point pointTmp = new Point();
+  private final class_48 abspos = new class_48();
+  
+  protected void onAdd(long paramLong)
+  {
+    long l1 = paramLong / 4294705156L;
+    long l2 = (paramLong -= l1 * 4294705156L) / 65534L;
+    paramLong = (int)(paramLong - l2 * 65534L - 32767L);
+    int i = (int)(l2 - 32767L);
+    int j = (int)(l1 - 32767L);
+    this.pointTmp.setLocation(paramLong, i);
+    if (!getLastElements().containsKey(this.pointTmp))
+    {
+      localObject = new Point(paramLong, i);
+      getLastElements().put(localObject, new class_48(paramLong, i, j));
+      return;
+    }
+    Object localObject = (class_48)getLastElements().get(this.pointTmp);
+    if (j < ((class_48)localObject).field_477) {
+      ((class_48)getLastElements().get(this.pointTmp)).b(paramLong, i, j);
+    }
+  }
+  
+  public boolean addElement(long paramLong)
+  {
+    boolean bool;
+    if ((bool = super.addElement(paramLong)))
+    {
+      getPosFromIndex(paramLong, this.abspos);
+      onAdd(paramLong);
+    }
+    return bool;
+  }
+  
+  protected void onRemove(class_48 paramclass_48)
+  {
+    super.onRemove(paramclass_48);
+    paramclass_48 = new Point(paramclass_48.field_475, paramclass_48.field_476);
+    class_48 localclass_481 = (class_48)getLastElements().remove(paramclass_48);
+    class_48 localclass_482 = new class_48(localclass_481);
+    for (int i = localclass_481.field_477 - 1; i > getMin().field_477; i--)
+    {
+      localclass_482.field_477 = i;
+      long l = ElementCollection.getIndex(localclass_482);
+      if (getNeighboringCollection().contains(Long.valueOf(l))) {
+        getLastElements().put(paramclass_48, localclass_482);
+      }
+    }
+  }
+  
+  public class_48 getSignificator()
+  {
+    return this.significator;
+  }
+  
+  public void refreshThrusterCapabilities()
+  {
+    this.thrust = Math.max(0.0F, getMax().field_477 - getMin().field_477);
+    this.thrust += Math.max(0.0F, getMax().field_475 - getMin().field_475);
+    this.thrust += Math.max(0.0F, getMax().field_476 - getMin().field_476);
+    float f = (float)Math.pow(size(), 1.125D);
+    this.thrust += f;
+    this.thrust = Math.max(1.0F, this.thrust);
+  }
+  
+  protected void significatorUpdate(int paramInt1, int paramInt2, int paramInt3)
+  {
+    if ((paramInt1 <= this.significator.field_475) && (paramInt2 <= this.significator.field_476) && (paramInt3 < this.significator.field_477)) {
+      this.significator.b(paramInt1, paramInt2, paramInt3);
+    }
+  }
+  
+  public HashMap getLastElements()
+  {
+    return this.lastElements;
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.game.common.controller.elements.thrust.ThrusterUnit
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

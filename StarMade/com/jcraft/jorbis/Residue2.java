@@ -1,23 +1,33 @@
-/*  1:   */package com.jcraft.jorbis;
-/*  2:   */
-/* 27:   */class Residue2
-/* 28:   */  extends Residue0
-/* 29:   */{
-/* 30:   */  int inverse(Block vb, Object vl, float[][] in, int[] nonzero, int ch)
-/* 31:   */  {
-/* 32:32 */    int i = 0;
-/* 33:33 */    for (i = 0; i < ch; i++)
-/* 34:34 */      if (nonzero[i] != 0)
-/* 35:   */        break;
-/* 36:36 */    if (i == ch) {
-/* 37:37 */      return 0;
-/* 38:   */    }
-/* 39:39 */    return _2inverse(vb, vl, in, ch);
-/* 40:   */  }
-/* 41:   */}
+package com.jcraft.jorbis;
+
+import java.io.PrintStream;
+
+class Residue2
+  extends Residue0
+{
+  int forward(Block paramBlock, Object paramObject, float[][] paramArrayOfFloat, int paramInt)
+  {
+    System.err.println("Residue0.forward: not implemented");
+    return 0;
+  }
+  
+  int inverse(Block paramBlock, Object paramObject, float[][] paramArrayOfFloat, int[] paramArrayOfInt, int paramInt)
+  {
+    int i = 0;
+    for (i = 0; i < paramInt; i++) {
+      if (paramArrayOfInt[i] != 0) {
+        break;
+      }
+    }
+    if (i == paramInt) {
+      return 0;
+    }
+    return Residue0._2inverse(paramBlock, paramObject, paramArrayOfFloat, paramInt);
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     com.jcraft.jorbis.Residue2
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

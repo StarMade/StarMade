@@ -1,308 +1,304 @@
-/*   1:    */package com.jcraft.jorbis;
-/*   2:    */
-/*   3:    */import com.jcraft.jogg.Buffer;
-/*   4:    */
-/*  27:    */class Floor0
-/*  28:    */  extends FuncFloor
-/*  29:    */{
-/*  30:    */  float[] lsp;
-/*  31:    */  
-/*  32:    */  void pack(Object i, Buffer opb)
-/*  33:    */  {
-/*  34: 34 */    InfoFloor0 info = (InfoFloor0)i;
-/*  35: 35 */    opb.write(info.order, 8);
-/*  36: 36 */    opb.write(info.rate, 16);
-/*  37: 37 */    opb.write(info.barkmap, 16);
-/*  38: 38 */    opb.write(info.ampbits, 6);
-/*  39: 39 */    opb.write(info.ampdB, 8);
-/*  40: 40 */    opb.write(info.numbooks - 1, 4);
-/*  41: 41 */    for (int j = 0; j < info.numbooks; j++)
-/*  42: 42 */      opb.write(info.books[j], 8);
-/*  43:    */  }
-/*  44:    */  
-/*  45:    */  Object unpack(Info vi, Buffer opb) {
-/*  46: 46 */    InfoFloor0 info = new InfoFloor0();
-/*  47: 47 */    info.order = opb.read(8);
-/*  48: 48 */    info.rate = opb.read(16);
-/*  49: 49 */    info.barkmap = opb.read(16);
-/*  50: 50 */    info.ampbits = opb.read(6);
-/*  51: 51 */    info.ampdB = opb.read(8);
-/*  52: 52 */    info.numbooks = (opb.read(4) + 1);
-/*  53:    */    
-/*  54: 54 */    if ((info.order < 1) || (info.rate < 1) || (info.barkmap < 1) || (info.numbooks < 1)) {
-/*  55: 55 */      return null;
-/*  56:    */    }
-/*  57:    */    
-/*  58: 58 */    for (int j = 0; j < info.numbooks; j++) {
-/*  59: 59 */      info.books[j] = opb.read(8);
-/*  60: 60 */      if ((info.books[j] < 0) || (info.books[j] >= vi.books)) {
-/*  61: 61 */        return null;
-/*  62:    */      }
-/*  63:    */    }
-/*  64: 64 */    return info;
-/*  65:    */  }
-/*  66:    */  
-/*  67:    */  Object look(DspState vd, InfoMode mi, Object i)
-/*  68:    */  {
-/*  69: 69 */    Info vi = vd.vi;
-/*  70: 70 */    InfoFloor0 info = (InfoFloor0)i;
-/*  71: 71 */    LookFloor0 look = new LookFloor0();
-/*  72: 72 */    look.m = info.order;
-/*  73: 73 */    look.n = (vi.blocksizes[mi.blockflag] / 2);
-/*  74: 74 */    look.ln = info.barkmap;
-/*  75: 75 */    look.vi = info;
-/*  76: 76 */    look.lpclook.init(look.ln, look.m);
-/*  77:    */    
-/*  79: 79 */    float scale = look.ln / toBARK((float)(info.rate / 2.0D));
-/*  80:    */    
-/*  87: 87 */    look.linearmap = new int[look.n];
-/*  88: 88 */    for (int j = 0; j < look.n; j++) {
-/*  89: 89 */      int val = (int)Math.floor(toBARK((float)(info.rate / 2.0D / look.n * j)) * scale);
-/*  90: 90 */      if (val >= look.ln)
-/*  91: 91 */        val = look.ln;
-/*  92: 92 */      look.linearmap[j] = val;
-/*  93:    */    }
-/*  94: 94 */    return look;
-/*  95:    */  }
-/*  96:    */  
-/*  97:    */  static float toBARK(float f) {
-/*  98: 98 */    return (float)(13.1D * Math.atan(0.00074D * f) + 2.24D * Math.atan(f * f * 1.85E-008D) + 0.0001D * f);
-/*  99:    */  }
-/* 100:    */  
-/* 101:    */  Object state(Object i) {
-/* 102:102 */    EchstateFloor0 state = new EchstateFloor0();
-/* 103:103 */    InfoFloor0 info = (InfoFloor0)i;
-/* 104:    */    
-/* 106:106 */    state.codewords = new int[info.order];
-/* 107:107 */    state.curve = new float[info.barkmap];
-/* 108:108 */    state.frameno = -1L;
-/* 109:109 */    return state;
-/* 110:    */  }
-/* 111:    */  
-/* 120:    */  int forward(Block vb, Object i, float[] in, float[] out, Object vs)
-/* 121:    */  {
-/* 122:122 */    return 0;
-/* 123:    */  }
-/* 124:    */  
-/* 125:125 */  Floor0() { this.lsp = null; }
-/* 126:    */  
-/* 127:    */  int inverse(Block vb, Object i, float[] out)
-/* 128:    */  {
-/* 129:129 */    LookFloor0 look = (LookFloor0)i;
-/* 130:130 */    InfoFloor0 info = look.vi;
-/* 131:131 */    int ampraw = vb.opb.read(info.ampbits);
-/* 132:132 */    if (ampraw > 0) {
-/* 133:133 */      int maxval = (1 << info.ampbits) - 1;
-/* 134:134 */      float amp = ampraw / maxval * info.ampdB;
-/* 135:135 */      int booknum = vb.opb.read(Util.ilog(info.numbooks));
-/* 136:    */      
-/* 137:137 */      if ((booknum != -1) && (booknum < info.numbooks))
-/* 138:    */      {
-/* 139:139 */        synchronized (this) {
-/* 140:140 */          if ((this.lsp == null) || (this.lsp.length < look.m)) {
-/* 141:141 */            this.lsp = new float[look.m];
-/* 142:    */          }
-/* 143:    */          else {
-/* 144:144 */            for (int j = 0; j < look.m; j++) {
-/* 145:145 */              this.lsp[j] = 0.0F;
-/* 146:    */            }
-/* 147:    */          }
-/* 148:148 */          CodeBook b = vb.vd.fullbooks[info.books[booknum]];
-/* 149:149 */          float last = 0.0F;
-/* 150:    */          
-/* 151:151 */          for (int j = 0; j < look.m; j++) {
-/* 152:152 */            out[j] = 0.0F;
-/* 153:    */          }
-/* 154:154 */          for (int j = 0; j < look.m; j += b.dim) {
-/* 155:155 */            if (b.decodevs(this.lsp, j, vb.opb, 1, -1) == -1) {
-/* 156:156 */              for (int k = 0; k < look.n; k++)
-/* 157:157 */                out[k] = 0.0F;
-/* 158:158 */              return 0;
-/* 159:    */            }
-/* 160:    */          }
-/* 161:161 */          for (int j = 0; j < look.m;) {
-/* 162:162 */            for (int k = 0; k < b.dim; j++) {
-/* 163:163 */              this.lsp[j] += last;k++;
-/* 164:    */            }
-/* 165:164 */            last = this.lsp[(j - 1)];
-/* 166:    */          }
-/* 167:    */          
-/* 168:167 */          Lsp.lsp_to_curve(out, look.linearmap, look.n, look.ln, this.lsp, look.m, amp, info.ampdB);
-/* 169:    */          
-/* 171:170 */          return 1;
-/* 172:    */        }
-/* 173:    */      }
-/* 174:    */    }
-/* 175:174 */    return 0;
-/* 176:    */  }
-/* 177:    */  
-/* 178:    */  Object inverse1(Block vb, Object i, Object memo) {
-/* 179:178 */    LookFloor0 look = (LookFloor0)i;
-/* 180:179 */    InfoFloor0 info = look.vi;
-/* 181:180 */    float[] lsp = null;
-/* 182:181 */    if ((memo instanceof float[])) {
-/* 183:182 */      lsp = (float[])memo;
-/* 184:    */    }
-/* 185:    */    
-/* 186:185 */    int ampraw = vb.opb.read(info.ampbits);
-/* 187:186 */    if (ampraw > 0) {
-/* 188:187 */      int maxval = (1 << info.ampbits) - 1;
-/* 189:188 */      float amp = ampraw / maxval * info.ampdB;
-/* 190:189 */      int booknum = vb.opb.read(Util.ilog(info.numbooks));
-/* 191:    */      
-/* 192:191 */      if ((booknum != -1) && (booknum < info.numbooks)) {
-/* 193:192 */        CodeBook b = vb.vd.fullbooks[info.books[booknum]];
-/* 194:193 */        float last = 0.0F;
-/* 195:    */        
-/* 196:195 */        if ((lsp == null) || (lsp.length < look.m + 1)) {
-/* 197:196 */          lsp = new float[look.m + 1];
-/* 198:    */        }
-/* 199:    */        else {
-/* 200:199 */          for (int j = 0; j < lsp.length; j++) {
-/* 201:200 */            lsp[j] = 0.0F;
-/* 202:    */          }
-/* 203:    */        }
-/* 204:203 */        for (int j = 0; j < look.m; j += b.dim) {
-/* 205:204 */          if (b.decodev_set(lsp, j, vb.opb, b.dim) == -1) {
-/* 206:205 */            return null;
-/* 207:    */          }
-/* 208:    */        }
-/* 209:    */        
-/* 210:209 */        for (int j = 0; j < look.m;) {
-/* 211:210 */          for (int k = 0; k < b.dim; j++) {
-/* 212:211 */            lsp[j] += last;k++;
-/* 213:    */          }
-/* 214:212 */          last = lsp[(j - 1)];
-/* 215:    */        }
-/* 216:214 */        lsp[look.m] = amp;
-/* 217:215 */        return lsp;
-/* 218:    */      }
-/* 219:    */    }
-/* 220:218 */    return null;
-/* 221:    */  }
-/* 222:    */  
-/* 223:    */  int inverse2(Block vb, Object i, Object memo, float[] out) {
-/* 224:222 */    LookFloor0 look = (LookFloor0)i;
-/* 225:223 */    InfoFloor0 info = look.vi;
-/* 226:    */    
-/* 227:225 */    if (memo != null) {
-/* 228:226 */      float[] lsp = (float[])memo;
-/* 229:227 */      float amp = lsp[look.m];
-/* 230:    */      
-/* 231:229 */      Lsp.lsp_to_curve(out, look.linearmap, look.n, look.ln, lsp, look.m, amp, info.ampdB);
-/* 232:    */      
-/* 233:231 */      return 1;
-/* 234:    */    }
-/* 235:233 */    for (int j = 0; j < look.n; j++) {
-/* 236:234 */      out[j] = 0.0F;
-/* 237:    */    }
-/* 238:236 */    return 0;
-/* 239:    */  }
-/* 240:    */  
-/* 241:    */  static float fromdB(float x) {
-/* 242:240 */    return (float)Math.exp(x * 0.11512925D);
-/* 243:    */  }
-/* 244:    */  
-/* 245:    */  static void lsp_to_lpc(float[] lsp, float[] lpc, int m) {
-/* 246:244 */    int m2 = m / 2;
-/* 247:245 */    float[] O = new float[m2];
-/* 248:246 */    float[] E = new float[m2];
-/* 249:    */    
-/* 250:248 */    float[] Ae = new float[m2 + 1];
-/* 251:249 */    float[] Ao = new float[m2 + 1];
-/* 252:    */    
-/* 253:251 */    float[] Be = new float[m2];
-/* 254:252 */    float[] Bo = new float[m2];
-/* 255:    */    
-/* 258:256 */    for (int i = 0; i < m2; i++) {
-/* 259:257 */      O[i] = ((float)(-2.0D * Math.cos(lsp[(i * 2)])));
-/* 260:258 */      E[i] = ((float)(-2.0D * Math.cos(lsp[(i * 2 + 1)])));
-/* 261:    */    }
-/* 262:    */    
-/* 264:262 */    for (int j = 0; j < m2; j++) {
-/* 265:263 */      Ae[j] = 0.0F;
-/* 266:264 */      Ao[j] = 1.0F;
-/* 267:265 */      Be[j] = 0.0F;
-/* 268:266 */      Bo[j] = 1.0F;
-/* 269:    */    }
-/* 270:268 */    Ao[j] = 1.0F;
-/* 271:269 */    Ae[j] = 1.0F;
-/* 272:    */    
-/* 274:272 */    for (i = 1; i < m + 1; i++) { float B;
-/* 275:273 */      float A = B = 0.0F;
-/* 276:274 */      for (j = 0; j < m2; j++) {
-/* 277:275 */        float temp = O[j] * Ao[j] + Ae[j];
-/* 278:276 */        Ae[j] = Ao[j];
-/* 279:277 */        Ao[j] = A;
-/* 280:278 */        A += temp;
-/* 281:    */        
-/* 282:280 */        temp = E[j] * Bo[j] + Be[j];
-/* 283:281 */        Be[j] = Bo[j];
-/* 284:282 */        Bo[j] = B;
-/* 285:283 */        B += temp;
-/* 286:    */      }
-/* 287:285 */      lpc[(i - 1)] = ((A + Ao[j] + B - Ae[j]) / 2.0F);
-/* 288:286 */      Ao[j] = A;
-/* 289:287 */      Ae[j] = B;
-/* 290:    */    }
-/* 291:    */  }
-/* 292:    */  
-/* 294:    */  static void lpc_to_curve(float[] curve, float[] lpc, float amp, LookFloor0 l, String name, int frameno)
-/* 295:    */  {
-/* 296:294 */    float[] lcurve = new float[Math.max(l.ln * 2, l.m * 2 + 2)];
-/* 297:    */    
-/* 298:296 */    if (amp == 0.0F) {
-/* 299:297 */      for (int j = 0; j < l.n; j++)
-/* 300:298 */        curve[j] = 0.0F;
-/* 301:299 */      return;
-/* 302:    */    }
-/* 303:301 */    l.lpclook.lpc_to_curve(lcurve, lpc, amp);
-/* 304:    */    
-/* 305:303 */    for (int i = 0; i < l.n; i++)
-/* 306:304 */      curve[i] = lcurve[l.linearmap[i]];
-/* 307:    */  }
-/* 308:    */  
-/* 309:    */  void free_info(Object i) {}
-/* 310:    */  
-/* 311:    */  class InfoFloor0 {
-/* 312:    */    int order;
-/* 313:    */    int rate;
-/* 314:    */    int barkmap;
-/* 315:    */    int ampbits;
-/* 316:    */    int ampdB;
-/* 317:    */    int numbooks;
-/* 318:316 */    int[] books = new int[16];
-/* 319:    */    
-/* 320:    */    InfoFloor0() {}
-/* 321:    */  }
-/* 322:    */  
-/* 323:    */  class LookFloor0 { int n;
-/* 324:    */    int ln;
-/* 325:    */    int m;
-/* 326:    */    int[] linearmap;
-/* 327:    */    Floor0.InfoFloor0 vi;
-/* 328:326 */    Lpc lpclook = new Lpc();
-/* 329:    */    
-/* 330:    */    LookFloor0() {}
-/* 331:    */  }
-/* 332:    */  
-/* 333:    */  void free_look(Object i) {}
-/* 334:    */  
-/* 335:    */  void free_state(Object vs) {}
-/* 336:    */  
-/* 337:    */  class EchstateFloor0
-/* 338:    */  {
-/* 339:    */    int[] codewords;
-/* 340:    */    float[] curve;
-/* 341:    */    long frameno;
-/* 342:    */    long codes;
-/* 343:    */    
-/* 344:    */    EchstateFloor0() {}
-/* 345:    */  }
-/* 346:    */}
+package com.jcraft.jorbis;
+
+import com.jcraft.jogg.Buffer;
+
+class Floor0
+  extends FuncFloor
+{
+  float[] lsp = null;
+  
+  void pack(Object paramObject, Buffer paramBuffer)
+  {
+    InfoFloor0 localInfoFloor0 = (InfoFloor0)paramObject;
+    paramBuffer.write(localInfoFloor0.order, 8);
+    paramBuffer.write(localInfoFloor0.rate, 16);
+    paramBuffer.write(localInfoFloor0.barkmap, 16);
+    paramBuffer.write(localInfoFloor0.ampbits, 6);
+    paramBuffer.write(localInfoFloor0.ampdB, 8);
+    paramBuffer.write(localInfoFloor0.numbooks - 1, 4);
+    for (int i = 0; i < localInfoFloor0.numbooks; i++) {
+      paramBuffer.write(localInfoFloor0.books[i], 8);
+    }
+  }
+  
+  Object unpack(Info paramInfo, Buffer paramBuffer)
+  {
+    InfoFloor0 localInfoFloor0 = new InfoFloor0();
+    localInfoFloor0.order = paramBuffer.read(8);
+    localInfoFloor0.rate = paramBuffer.read(16);
+    localInfoFloor0.barkmap = paramBuffer.read(16);
+    localInfoFloor0.ampbits = paramBuffer.read(6);
+    localInfoFloor0.ampdB = paramBuffer.read(8);
+    localInfoFloor0.numbooks = (paramBuffer.read(4) + 1);
+    if ((localInfoFloor0.order < 1) || (localInfoFloor0.rate < 1) || (localInfoFloor0.barkmap < 1) || (localInfoFloor0.numbooks < 1)) {
+      return null;
+    }
+    for (int i = 0; i < localInfoFloor0.numbooks; i++)
+    {
+      localInfoFloor0.books[i] = paramBuffer.read(8);
+      if ((localInfoFloor0.books[i] < 0) || (localInfoFloor0.books[i] >= paramInfo.books)) {
+        return null;
+      }
+    }
+    return localInfoFloor0;
+  }
+  
+  Object look(DspState paramDspState, InfoMode paramInfoMode, Object paramObject)
+  {
+    Info localInfo = paramDspState.field_2242;
+    InfoFloor0 localInfoFloor0 = (InfoFloor0)paramObject;
+    LookFloor0 localLookFloor0 = new LookFloor0();
+    localLookFloor0.field_1896 = localInfoFloor0.order;
+    localLookFloor0.field_1894 = (localInfo.blocksizes[paramInfoMode.blockflag] / 2);
+    localLookFloor0.field_1895 = localInfoFloor0.barkmap;
+    localLookFloor0.field_1897 = localInfoFloor0;
+    localLookFloor0.lpclook.init(localLookFloor0.field_1895, localLookFloor0.field_1896);
+    float f = localLookFloor0.field_1895 / toBARK((float)(localInfoFloor0.rate / 2.0D));
+    localLookFloor0.linearmap = new int[localLookFloor0.field_1894];
+    for (int i = 0; i < localLookFloor0.field_1894; i++)
+    {
+      int j = (int)Math.floor(toBARK((float)(localInfoFloor0.rate / 2.0D / localLookFloor0.field_1894 * i)) * f);
+      if (j >= localLookFloor0.field_1895) {
+        j = localLookFloor0.field_1895;
+      }
+      localLookFloor0.linearmap[i] = j;
+    }
+    return localLookFloor0;
+  }
+  
+  static float toBARK(float paramFloat)
+  {
+    return (float)(13.1D * Math.atan(0.00074D * paramFloat) + 2.24D * Math.atan(paramFloat * paramFloat * 1.85E-008D) + 0.0001D * paramFloat);
+  }
+  
+  Object state(Object paramObject)
+  {
+    EchstateFloor0 localEchstateFloor0 = new EchstateFloor0();
+    InfoFloor0 localInfoFloor0 = (InfoFloor0)paramObject;
+    localEchstateFloor0.codewords = new int[localInfoFloor0.order];
+    localEchstateFloor0.curve = new float[localInfoFloor0.barkmap];
+    localEchstateFloor0.frameno = -1L;
+    return localEchstateFloor0;
+  }
+  
+  void free_info(Object paramObject) {}
+  
+  void free_look(Object paramObject) {}
+  
+  void free_state(Object paramObject) {}
+  
+  int forward(Block paramBlock, Object paramObject1, float[] paramArrayOfFloat1, float[] paramArrayOfFloat2, Object paramObject2)
+  {
+    return 0;
+  }
+  
+  int inverse(Block paramBlock, Object paramObject, float[] paramArrayOfFloat)
+  {
+    LookFloor0 localLookFloor0 = (LookFloor0)paramObject;
+    InfoFloor0 localInfoFloor0 = localLookFloor0.field_1897;
+    int i = paramBlock.opb.read(localInfoFloor0.ampbits);
+    if (i > 0)
+    {
+      int j = (1 << localInfoFloor0.ampbits) - 1;
+      float f1 = i / j * localInfoFloor0.ampdB;
+      int k = paramBlock.opb.read(ilog(localInfoFloor0.numbooks));
+      if ((k != -1) && (k < localInfoFloor0.numbooks)) {
+        synchronized (this)
+        {
+          if ((this.lsp == null) || (this.lsp.length < localLookFloor0.field_1896)) {
+            this.lsp = new float[localLookFloor0.field_1896];
+          } else {
+            for (int m = 0; m < localLookFloor0.field_1896; m++) {
+              this.lsp[m] = 0.0F;
+            }
+          }
+          CodeBook localCodeBook = paramBlock.field_2098.fullbooks[localInfoFloor0.books[k]];
+          float f2 = 0.0F;
+          for (int n = 0; n < localLookFloor0.field_1896; n++) {
+            paramArrayOfFloat[n] = 0.0F;
+          }
+          int i1 = 0;
+          while (i1 < localLookFloor0.field_1896)
+          {
+            if (localCodeBook.decodevs(this.lsp, i1, paramBlock.opb, 1, -1) == -1)
+            {
+              for (i2 = 0; i2 < localLookFloor0.field_1894; i2++) {
+                paramArrayOfFloat[i2] = 0.0F;
+              }
+              i3 = 0;
+              return i3;
+            }
+            i1 += localCodeBook.dim;
+          }
+          int i2 = 0;
+          while (i2 < localLookFloor0.field_1896)
+          {
+            i3 = 0;
+            while (i3 < localCodeBook.dim)
+            {
+              this.lsp[i2] += f2;
+              i3++;
+              i2++;
+            }
+            f2 = this.lsp[(i2 - 1)];
+          }
+          Lsp.lsp_to_curve(paramArrayOfFloat, localLookFloor0.linearmap, localLookFloor0.field_1894, localLookFloor0.field_1895, this.lsp, localLookFloor0.field_1896, f1, localInfoFloor0.ampdB);
+          int i3 = 1;
+          return i3;
+        }
+      }
+    }
+    return 0;
+  }
+  
+  Object inverse1(Block paramBlock, Object paramObject1, Object paramObject2)
+  {
+    LookFloor0 localLookFloor0 = (LookFloor0)paramObject1;
+    InfoFloor0 localInfoFloor0 = localLookFloor0.field_1897;
+    float[] arrayOfFloat = null;
+    if ((paramObject2 instanceof float[])) {
+      arrayOfFloat = (float[])paramObject2;
+    }
+    int i = paramBlock.opb.read(localInfoFloor0.ampbits);
+    if (i > 0)
+    {
+      int j = (1 << localInfoFloor0.ampbits) - 1;
+      float f1 = i / j * localInfoFloor0.ampdB;
+      int k = paramBlock.opb.read(ilog(localInfoFloor0.numbooks));
+      if ((k != -1) && (k < localInfoFloor0.numbooks))
+      {
+        CodeBook localCodeBook = paramBlock.field_2098.fullbooks[localInfoFloor0.books[k]];
+        float f2 = 0.0F;
+        if ((arrayOfFloat == null) || (arrayOfFloat.length < localLookFloor0.field_1896 + 1)) {
+          arrayOfFloat = new float[localLookFloor0.field_1896 + 1];
+        } else {
+          for (m = 0; m < arrayOfFloat.length; m++) {
+            arrayOfFloat[m] = 0.0F;
+          }
+        }
+        int m = 0;
+        while (m < localLookFloor0.field_1896)
+        {
+          if (localCodeBook.decodev_set(arrayOfFloat, m, paramBlock.opb, localCodeBook.dim) == -1) {
+            return null;
+          }
+          m += localCodeBook.dim;
+        }
+        int n = 0;
+        while (n < localLookFloor0.field_1896)
+        {
+          int i1 = 0;
+          while (i1 < localCodeBook.dim)
+          {
+            arrayOfFloat[n] += f2;
+            i1++;
+            n++;
+          }
+          f2 = arrayOfFloat[(n - 1)];
+        }
+        arrayOfFloat[localLookFloor0.field_1896] = f1;
+        return arrayOfFloat;
+      }
+    }
+    return null;
+  }
+  
+  int inverse2(Block paramBlock, Object paramObject1, Object paramObject2, float[] paramArrayOfFloat)
+  {
+    LookFloor0 localLookFloor0 = (LookFloor0)paramObject1;
+    InfoFloor0 localInfoFloor0 = localLookFloor0.field_1897;
+    if (paramObject2 != null)
+    {
+      float[] arrayOfFloat = (float[])paramObject2;
+      float f = arrayOfFloat[localLookFloor0.field_1896];
+      Lsp.lsp_to_curve(paramArrayOfFloat, localLookFloor0.linearmap, localLookFloor0.field_1894, localLookFloor0.field_1895, arrayOfFloat, localLookFloor0.field_1896, f, localInfoFloor0.ampdB);
+      return 1;
+    }
+    for (int i = 0; i < localLookFloor0.field_1894; i++) {
+      paramArrayOfFloat[i] = 0.0F;
+    }
+    return 0;
+  }
+  
+  static float fromdB(float paramFloat)
+  {
+    return (float)Math.exp(paramFloat * 0.11512925D);
+  }
+  
+  private static int ilog(int paramInt)
+  {
+    int i = 0;
+    while (paramInt != 0)
+    {
+      i++;
+      paramInt >>>= 1;
+    }
+    return i;
+  }
+  
+  static void lsp_to_lpc(float[] paramArrayOfFloat1, float[] paramArrayOfFloat2, int paramInt)
+  {
+    int k = paramInt / 2;
+    float[] arrayOfFloat1 = new float[k];
+    float[] arrayOfFloat2 = new float[k];
+    float[] arrayOfFloat3 = new float[k + 1];
+    float[] arrayOfFloat4 = new float[k + 1];
+    float[] arrayOfFloat5 = new float[k];
+    float[] arrayOfFloat6 = new float[k];
+    for (int i = 0; i < k; i++)
+    {
+      arrayOfFloat1[i] = ((float)(-2.0D * Math.cos(paramArrayOfFloat1[(i * 2)])));
+      arrayOfFloat2[i] = ((float)(-2.0D * Math.cos(paramArrayOfFloat1[(i * 2 + 1)])));
+    }
+    for (int j = 0; j < k; j++)
+    {
+      arrayOfFloat3[j] = 0.0F;
+      arrayOfFloat4[j] = 1.0F;
+      arrayOfFloat5[j] = 0.0F;
+      arrayOfFloat6[j] = 1.0F;
+    }
+    arrayOfFloat4[j] = 1.0F;
+    arrayOfFloat3[j] = 1.0F;
+    for (i = 1; i < paramInt + 1; i++)
+    {
+      float f2;
+      float f1 = f2 = 0.0F;
+      for (j = 0; j < k; j++)
+      {
+        float f3 = arrayOfFloat1[j] * arrayOfFloat4[j] + arrayOfFloat3[j];
+        arrayOfFloat3[j] = arrayOfFloat4[j];
+        arrayOfFloat4[j] = f1;
+        f1 += f3;
+        f3 = arrayOfFloat2[j] * arrayOfFloat6[j] + arrayOfFloat5[j];
+        arrayOfFloat5[j] = arrayOfFloat6[j];
+        arrayOfFloat6[j] = f2;
+        f2 += f3;
+      }
+      paramArrayOfFloat2[(i - 1)] = ((f1 + arrayOfFloat4[j] + f2 - arrayOfFloat3[j]) / 2.0F);
+      arrayOfFloat4[j] = f1;
+      arrayOfFloat3[j] = f2;
+    }
+  }
+  
+  static void lpc_to_curve(float[] paramArrayOfFloat1, float[] paramArrayOfFloat2, float paramFloat, LookFloor0 paramLookFloor0, String paramString, int paramInt)
+  {
+    float[] arrayOfFloat = new float[Math.max(paramLookFloor0.field_1895 * 2, paramLookFloor0.field_1896 * 2 + 2)];
+    if (paramFloat == 0.0F)
+    {
+      for (i = 0; i < paramLookFloor0.field_1894; i++) {
+        paramArrayOfFloat1[i] = 0.0F;
+      }
+      return;
+    }
+    paramLookFloor0.lpclook.lpc_to_curve(arrayOfFloat, paramArrayOfFloat2, paramFloat);
+    for (int i = 0; i < paramLookFloor0.field_1894; i++) {
+      paramArrayOfFloat1[i] = arrayOfFloat[paramLookFloor0.linearmap[i]];
+    }
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     com.jcraft.jorbis.Floor0
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

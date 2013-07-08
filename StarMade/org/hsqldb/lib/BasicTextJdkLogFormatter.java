@@ -11,7 +11,7 @@ public class BasicTextJdkLogFormatter
   extends Formatter
 {
   protected boolean withTime = true;
-  public static String LS = System.getProperty("line.separator");
+  public static String field_1773 = System.getProperty("line.separator");
   protected SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
   
   public BasicTextJdkLogFormatter(boolean paramBoolean)
@@ -25,21 +25,21 @@ public class BasicTextJdkLogFormatter
   {
     StringBuilder localStringBuilder = new StringBuilder();
     if (this.withTime) {
-      localStringBuilder.append(new StringBuilder().append(this.sdf.format(new Date(paramLogRecord.getMillis()))).append("  ").toString());
+      localStringBuilder.append(this.sdf.format(new Date(paramLogRecord.getMillis())) + "  ");
     }
-    localStringBuilder.append(new StringBuilder().append(paramLogRecord.getLevel()).append("  ").append(formatMessage(paramLogRecord)).toString());
+    localStringBuilder.append(paramLogRecord.getLevel() + "  " + formatMessage(paramLogRecord));
     if (paramLogRecord.getThrown() != null)
     {
       StringWriter localStringWriter = new StringWriter();
       paramLogRecord.getThrown().printStackTrace(new PrintWriter(localStringWriter));
-      localStringBuilder.append(new StringBuilder().append(LS).append(localStringWriter).toString());
+      localStringBuilder.append(field_1773 + localStringWriter);
     }
-    return new StringBuilder().append(localStringBuilder.toString()).append(LS).toString();
+    return localStringBuilder.toString() + field_1773;
   }
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.lib.BasicTextJdkLogFormatter
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -119,7 +119,7 @@ class DatabaseManagerCommon
     throws SQLException
   {
     long l = System.currentTimeMillis();
-    if (paramString.indexOf(35) == -1) {
+    if (paramString.indexOf('#') == -1) {
       paramInt = 1;
     }
     for (int i = 0; i < paramInt; i++)
@@ -134,7 +134,7 @@ class DatabaseManagerCommon
       }
       for (;;)
       {
-        j = str.indexOf(35);
+        j = str.indexOf('#');
         if (j == -1) {
           break;
         }
@@ -147,7 +147,7 @@ class DatabaseManagerCommon
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.util.DatabaseManagerCommon
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

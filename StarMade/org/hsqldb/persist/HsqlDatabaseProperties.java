@@ -223,7 +223,7 @@ public class HsqlDatabaseProperties
       if ((this.database.logger.isStoredFileAccess()) && (!this.database.logger.isNewStoredFileAccess())) {}
       localHsqlProperties.setProperty("modified", getProperty("modified"));
       localHsqlProperties.save(this.fileName + ".properties" + ".new");
-      this.fa.renameElement(this.fileName + ".properties" + ".new", this.fileName + ".properties");
+      this.field_1710.renameElement(this.fileName + ".properties" + ".new", this.fileName + ".properties");
     }
     catch (Throwable localThrowable)
     {
@@ -607,7 +607,7 @@ public class HsqlDatabaseProperties
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.persist.HsqlDatabaseProperties
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

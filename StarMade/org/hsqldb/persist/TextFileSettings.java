@@ -5,9 +5,9 @@ import org.hsqldb.error.Error;
 
 public class TextFileSettings
 {
-  public static final String NL = System.getProperty("line.separator");
-  public String fs;
-  public String vs;
+  public static final String field_1927 = System.getProperty("line.separator");
+  public String field_1928;
+  public String field_1929;
   public String lvs;
   public String stringEncoding;
   public boolean isQuoted;
@@ -17,7 +17,7 @@ public class TextFileSettings
   String dataFileName;
   int maxCacheRows;
   int maxCacheBytes;
-  static final byte[] BYTES_LINE_SEP = NL.getBytes();
+  static final byte[] BYTES_LINE_SEP = field_1927.getBytes();
   static final char DOUBLE_QUOTE_CHAR = '"';
   static final char BACKSLASH_CHAR = '\\';
   static final char LF_CHAR = '\n';
@@ -38,22 +38,22 @@ public class TextFileSettings
     default: 
       throw Error.error(302);
     }
-    this.fs = localHsqlDatabaseProperties.getStringProperty("textdb.fs");
-    this.fs = localHsqlProperties.getProperty("textdb.fs", this.fs);
-    this.vs = localHsqlDatabaseProperties.getStringProperty("textdb.vs");
-    this.vs = localHsqlProperties.getProperty("textdb.vs", this.vs);
+    this.field_1928 = localHsqlDatabaseProperties.getStringProperty("textdb.fs");
+    this.field_1928 = localHsqlProperties.getProperty("textdb.fs", this.field_1928);
+    this.field_1929 = localHsqlDatabaseProperties.getStringProperty("textdb.vs");
+    this.field_1929 = localHsqlProperties.getProperty("textdb.vs", this.field_1929);
     this.lvs = localHsqlDatabaseProperties.getStringProperty("textdb.lvs");
     this.lvs = localHsqlProperties.getProperty("textdb.lvs", this.lvs);
-    if (this.vs == null) {
-      this.vs = this.fs;
+    if (this.field_1929 == null) {
+      this.field_1929 = this.field_1928;
     }
     if (this.lvs == null) {
-      this.lvs = this.fs;
+      this.lvs = this.field_1928;
     }
-    this.fs = translateSep(this.fs);
-    this.vs = translateSep(this.vs);
+    this.field_1928 = translateSep(this.field_1928);
+    this.field_1929 = translateSep(this.field_1929);
     this.lvs = translateSep(this.lvs);
-    if ((this.fs.length() == 0) || (this.vs.length() == 0) || (this.lvs.length() == 0)) {
+    if ((this.field_1928.length() == 0) || (this.field_1929.length() == 0) || (this.lvs.length() == 0)) {
       throw Error.error(303);
     }
     this.ignoreFirst = localHsqlDatabaseProperties.isPropertyTrue("textdb.ignore_first");
@@ -187,7 +187,7 @@ public class TextFileSettings
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.persist.TextFileSettings
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

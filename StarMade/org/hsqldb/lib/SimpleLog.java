@@ -20,7 +20,7 @@ public class SimpleLog
   private boolean isSQL;
   String[] logTypeNames;
   private String filePath;
-  private StringBuffer sb;
+  private StringBuffer field_2103;
   
   public SimpleLog(String paramString, int paramInt, boolean paramBoolean)
   {
@@ -28,7 +28,7 @@ public class SimpleLog
     this.filePath = paramString;
     this.isSQL = paramBoolean;
     this.logTypeNames = (paramBoolean ? sqlLogTypeNames : appLogTypeNames);
-    this.sb = new StringBuffer(256);
+    this.field_2103 = new StringBuffer(256);
     setLevel(paramInt);
   }
   
@@ -87,10 +87,10 @@ public class SimpleLog
     if (this.level < paramInt) {
       return;
     }
-    this.sb.append(HsqlDateTime.getSystemTimeString()).append(' ');
-    this.sb.append(this.logTypeNames[paramInt]).append(' ').append(paramString);
-    this.writer.println(this.sb.toString());
-    this.sb.setLength(0);
+    this.field_2103.append(HsqlDateTime.getSystemTimeString()).append(' ');
+    this.field_2103.append(this.logTypeNames[paramInt]).append(' ').append(paramString);
+    this.writer.println(this.field_2103.toString());
+    this.field_2103.setLength(0);
   }
   
   public synchronized void logContext(int paramInt, String paramString1, String paramString2, String paramString3)
@@ -98,11 +98,11 @@ public class SimpleLog
     if (this.level < paramInt) {
       return;
     }
-    this.sb.append(HsqlDateTime.getSystemTimeString()).append(' ');
-    this.sb.append(this.logTypeNames[paramInt]).append(' ').append(paramString1);
-    this.sb.append(' ').append(paramString2).append(' ').append(paramString3);
-    this.writer.println(this.sb.toString());
-    this.sb.setLength(0);
+    this.field_2103.append(HsqlDateTime.getSystemTimeString()).append(' ');
+    this.field_2103.append(this.logTypeNames[paramInt]).append(' ').append(paramString1);
+    this.field_2103.append(' ').append(paramString2).append(' ').append(paramString3);
+    this.writer.println(this.field_2103.toString());
+    this.field_2103.setLength(0);
   }
   
   public synchronized void logContext(Throwable paramThrowable, String paramString, int paramInt)
@@ -113,26 +113,26 @@ public class SimpleLog
     if (this.writer == null) {
       return;
     }
-    this.sb.append(HsqlDateTime.getSystemTimeString()).append(' ');
-    this.sb.append(this.logTypeNames[paramInt]).append(' ').append(paramString);
+    this.field_2103.append(HsqlDateTime.getSystemTimeString()).append(' ');
+    this.field_2103.append(this.logTypeNames[paramInt]).append(' ').append(paramString);
     Throwable localThrowable = new Throwable();
     StackTraceElement[] arrayOfStackTraceElement = localThrowable.getStackTrace();
     if (arrayOfStackTraceElement.length > 1)
     {
-      this.sb.append(' ');
-      this.sb.append(arrayOfStackTraceElement[1].getClassName()).append('.');
-      this.sb.append(arrayOfStackTraceElement[1].getMethodName());
+      this.field_2103.append(' ');
+      this.field_2103.append(arrayOfStackTraceElement[1].getClassName()).append('.');
+      this.field_2103.append(arrayOfStackTraceElement[1].getMethodName());
     }
     arrayOfStackTraceElement = paramThrowable.getStackTrace();
     if (arrayOfStackTraceElement.length > 0)
     {
-      this.sb.append(' ');
-      this.sb.append(arrayOfStackTraceElement[0].getClassName()).append('.');
-      this.sb.append(' ').append(arrayOfStackTraceElement[0].getMethodName());
+      this.field_2103.append(' ');
+      this.field_2103.append(arrayOfStackTraceElement[0].getClassName()).append('.');
+      this.field_2103.append(' ').append(arrayOfStackTraceElement[0].getMethodName());
     }
-    this.sb.append(' ').append(paramThrowable.toString());
-    this.writer.println(this.sb.toString());
-    this.sb.setLength(0);
+    this.field_2103.append(' ').append(paramThrowable.toString());
+    this.writer.println(this.field_2103.toString());
+    this.field_2103.setLength(0);
   }
   
   public void flush()
@@ -154,7 +154,7 @@ public class SimpleLog
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.lib.SimpleLog
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

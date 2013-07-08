@@ -283,32 +283,32 @@ public final class Report
       }
       else if ((paramInt1 & 0xFFFFFFFE) == 76)
       {
-        Lexer tmp125_124 = paramLexer;
-        tmp125_124.badChars = ((short)(tmp125_124.badChars | 0x4C));
+        Lexer tmp126_125 = paramLexer;
+        tmp126_125.badChars = ((short)(tmp126_125.badChars | 0x4C));
         printMessage(paramInt1, paramLexer, "invalid_char", new Object[] { new Integer(paramInt1 & 0x1), str }, TidyMessage.Level.WARNING);
       }
       else if ((paramInt1 & 0xFFFFFFFE) == 77)
       {
-        Lexer tmp182_181 = paramLexer;
-        tmp182_181.badChars = ((short)(tmp182_181.badChars | 0x4D));
+        Lexer tmp184_183 = paramLexer;
+        tmp184_183.badChars = ((short)(tmp184_183.badChars | 0x4D));
         printMessage(paramInt1, paramLexer, "invalid_char", new Object[] { new Integer(paramInt1 & 0x1), str }, TidyMessage.Level.WARNING);
       }
       else if ((paramInt1 & 0xFFFFFFFE) == 78)
       {
-        Lexer tmp239_238 = paramLexer;
-        tmp239_238.badChars = ((short)(tmp239_238.badChars | 0x4E));
+        Lexer tmp242_241 = paramLexer;
+        tmp242_241.badChars = ((short)(tmp242_241.badChars | 0x4E));
         printMessage(paramInt1, paramLexer, "invalid_utf8", new Object[] { new Integer(paramInt1 & 0x1), str }, TidyMessage.Level.WARNING);
       }
       else if ((paramInt1 & 0xFFFFFFFE) == 79)
       {
-        Lexer tmp296_295 = paramLexer;
-        tmp296_295.badChars = ((short)(tmp296_295.badChars | 0x4F));
+        Lexer tmp300_299 = paramLexer;
+        tmp300_299.badChars = ((short)(tmp300_299.badChars | 0x4F));
         printMessage(paramInt1, paramLexer, "invalid_utf16", new Object[] { new Integer(paramInt1 & 0x1), str }, TidyMessage.Level.WARNING);
       }
       else if ((paramInt1 & 0xFFFFFFFE) == 82)
       {
-        Lexer tmp353_352 = paramLexer;
-        tmp353_352.badChars = ((short)(tmp353_352.badChars | 0x52));
+        Lexer tmp358_357 = paramLexer;
+        tmp358_357.badChars = ((short)(tmp358_357.badChars | 0x52));
         printMessage(paramInt1, paramLexer, "invalid_ncr", new Object[] { new Integer(paramInt1 & 0x1), str }, TidyMessage.Level.WARNING);
       }
     }
@@ -377,8 +377,8 @@ public final class Report
       break;
     case 56: 
       printMessage(paramShort, paramLexer, "missing_imagemap", new Object[] { getTagName(paramNode) }, TidyMessage.Level.WARNING);
-      Lexer tmp367_366 = paramLexer;
-      tmp367_366.badAccess = ((short)(tmp367_366.badAccess | 0x8));
+      Lexer tmp375_374 = paramLexer;
+      tmp375_374.badAccess = ((short)(tmp375_374.badAccess | 0x8));
       break;
     case 51: 
       printMessage(paramShort, paramLexer, "bad_attribute_value", new Object[] { getTagName(paramNode), paramAttVal.attribute, paramAttVal.value }, TidyMessage.Level.WARNING);
@@ -405,8 +405,8 @@ public final class Report
       printMessage(paramShort, paramLexer, "proprietary_attribute", new Object[] { getTagName(paramNode), paramAttVal.attribute }, TidyMessage.Level.WARNING);
       break;
     case 36: 
-      paramLexer.lines = paramLexer.in.getCurline();
-      paramLexer.columns = paramLexer.in.getCurcol();
+      paramLexer.lines = paramLexer.field_1662.getCurline();
+      paramLexer.columns = paramLexer.field_1662.getCurcol();
       printMessage(paramShort, paramLexer, "unexpected_end_of_file", new Object[] { getTagName(paramNode) }, TidyMessage.Level.WARNING);
       break;
     case 60: 
@@ -447,7 +447,7 @@ public final class Report
   
   public void warning(Lexer paramLexer, Node paramNode1, Node paramNode2, short paramShort)
   {
-    TagTable localTagTable = paramLexer.configuration.tt;
+    TagTable localTagTable = paramLexer.configuration.field_1881;
     if ((paramShort != 8) || (paramLexer.badForm == 0))
     {
       Lexer tmp24_23 = paramLexer;
@@ -515,18 +515,18 @@ public final class Report
         printMessage(paramShort, paramLexer, "proprietary_element", new Object[] { getTagName(paramNode2) }, TidyMessage.Level.WARNING);
         if (paramNode2.tag == localTagTable.tagLayer)
         {
-          Lexer tmp732_731 = paramLexer;
-          tmp732_731.badLayout = ((short)(tmp732_731.badLayout | 0x2));
+          Lexer tmp749_748 = paramLexer;
+          tmp749_748.badLayout = ((short)(tmp749_748.badLayout | 0x2));
         }
         else if (paramNode2.tag == localTagTable.tagSpacer)
         {
-          Lexer tmp758_757 = paramLexer;
-          tmp758_757.badLayout = ((short)(tmp758_757.badLayout | 0x1));
+          Lexer tmp775_774 = paramLexer;
+          tmp775_774.badLayout = ((short)(tmp775_774.badLayout | 0x1));
         }
         else if (paramNode2.tag == localTagTable.tagNobr)
         {
-          Lexer tmp784_783 = paramLexer;
-          tmp784_783.badLayout = ((short)(tmp784_783.badLayout | 0x4));
+          Lexer tmp801_800 = paramLexer;
+          tmp801_800.badLayout = ((short)(tmp801_800.badLayout | 0x4));
         }
         break;
       case 20: 
@@ -579,8 +579,8 @@ public final class Report
         printMessage(paramShort, paramLexer, "dtype_not_upper_case", null, TidyMessage.Level.WARNING);
         break;
       case 36: 
-        paramLexer.lines = paramLexer.in.getCurline();
-        paramLexer.columns = paramLexer.in.getCurcol();
+        paramLexer.lines = paramLexer.field_1662.getCurline();
+        paramLexer.columns = paramLexer.field_1662.getCurcol();
         printMessage(paramShort, paramLexer, "unexpected_end_of_file", new Object[] { getTagName(paramNode1) }, TidyMessage.Level.WARNING);
         break;
       case 40: 
@@ -805,7 +805,7 @@ public final class Report
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.w3c.tidy.Report
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

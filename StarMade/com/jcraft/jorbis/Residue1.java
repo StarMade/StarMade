@@ -1,26 +1,33 @@
-/*  1:   */package com.jcraft.jorbis;
-/*  2:   */
-/* 27:   */class Residue1
-/* 28:   */  extends Residue0
-/* 29:   */{
-/* 30:   */  int inverse(Block vb, Object vl, float[][] in, int[] nonzero, int ch)
-/* 31:   */  {
-/* 32:32 */    int used = 0;
-/* 33:33 */    for (int i = 0; i < ch; i++) {
-/* 34:34 */      if (nonzero[i] != 0) {
-/* 35:35 */        in[(used++)] = in[i];
-/* 36:   */      }
-/* 37:   */    }
-/* 38:38 */    if (used != 0) {
-/* 39:39 */      return _01inverse(vb, vl, in, used, 1);
-/* 40:   */    }
-/* 41:   */    
-/* 42:42 */    return 0;
-/* 43:   */  }
-/* 44:   */}
+package com.jcraft.jorbis;
+
+import java.io.PrintStream;
+
+class Residue1
+  extends Residue0
+{
+  int forward(Block paramBlock, Object paramObject, float[][] paramArrayOfFloat, int paramInt)
+  {
+    System.err.println("Residue0.forward: not implemented");
+    return 0;
+  }
+  
+  int inverse(Block paramBlock, Object paramObject, float[][] paramArrayOfFloat, int[] paramArrayOfInt, int paramInt)
+  {
+    int i = 0;
+    for (int j = 0; j < paramInt; j++) {
+      if (paramArrayOfInt[j] != 0) {
+        paramArrayOfFloat[(i++)] = paramArrayOfFloat[j];
+      }
+    }
+    if (i != 0) {
+      return Residue0._01inverse(paramBlock, paramObject, paramArrayOfFloat, i, 1);
+    }
+    return 0;
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     com.jcraft.jorbis.Residue1
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

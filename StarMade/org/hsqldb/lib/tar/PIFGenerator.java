@@ -73,7 +73,7 @@ public class PIFGenerator
     throws TarMalformatException, IOException
   {
     if ((paramString1 == null) || (paramString2 == null) || (paramString1.length() < 1) || (paramString2.length() < 1)) {
-      throw new TarMalformatException(RB.zero_write.getString());
+      throw new TarMalformatException(class_1436.zero_write.getString());
     }
     int i = paramString1.length() + paramString2.length() + 3;
     int j = 0;
@@ -88,7 +88,7 @@ public class PIFGenerator
     } else if (i < 99994) {
       j = i + 5;
     } else {
-      throw new TarMalformatException(RB.pif_toobig.getString(99991));
+      throw new TarMalformatException(class_1436.pif_toobig.getString(99991));
     }
     this.writer.write(Integer.toString(j));
     this.writer.write(32);
@@ -101,7 +101,7 @@ public class PIFGenerator
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.lib.tar.PIFGenerator
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

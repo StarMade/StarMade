@@ -31,7 +31,7 @@ final class ScaledRAFile
   private final boolean readOnly;
   final String fileName;
   final byte[] buffer;
-  final HsqlByteArrayInputStream ba;
+  final HsqlByteArrayInputStream field_80;
   final byte[] valueBuffer;
   final HsqlByteArrayOutputStream vbao;
   final HsqlByteArrayInputStream vbai;
@@ -125,7 +125,7 @@ final class ScaledRAFile
     String str = paramBoolean3 ? "rws" : paramBoolean1 ? "r" : "rw";
     this.file = new RandomAccessFile(paramString, str);
     this.buffer = new byte[4096];
-    this.ba = new HsqlByteArrayInputStream(this.buffer);
+    this.field_80 = new HsqlByteArrayInputStream(this.buffer);
     this.valueBuffer = new byte[8];
     this.vbao = new HsqlByteArrayOutputStream(this.valueBuffer);
     this.vbai = new HsqlByteArrayInputStream(this.valueBuffer);
@@ -241,11 +241,11 @@ final class ScaledRAFile
       } else {
         this.cacheHit += 1;
       }
-      this.ba.reset();
-      if (this.seekPosition - this.bufferOffset != this.ba.skip(this.seekPosition - this.bufferOffset)) {
+      this.field_80.reset();
+      if (this.seekPosition - this.bufferOffset != this.field_80.skip(this.seekPosition - this.bufferOffset)) {
         throw new EOFException();
       }
-      int i = this.ba.read(paramArrayOfByte, paramInt1, paramInt2);
+      int i = this.field_80.read(paramArrayOfByte, paramInt1, paramInt2);
       this.seekPosition += i;
       if (i < paramInt2)
       {
@@ -435,7 +435,7 @@ final class ScaledRAFile
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.persist.ScaledRAFile
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

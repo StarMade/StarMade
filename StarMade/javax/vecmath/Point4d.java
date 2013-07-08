@@ -40,61 +40,61 @@ public class Point4d
   
   public Point4d(Tuple3d paramTuple3d)
   {
-    super(paramTuple3d.x, paramTuple3d.y, paramTuple3d.z, 1.0D);
+    super(paramTuple3d.field_612, paramTuple3d.field_613, paramTuple3d.field_614, 1.0D);
   }
   
   public Point4d() {}
   
   public final void set(Tuple3d paramTuple3d)
   {
-    this.x = paramTuple3d.x;
-    this.y = paramTuple3d.y;
-    this.z = paramTuple3d.z;
-    this.w = 1.0D;
+    this.field_600 = paramTuple3d.field_612;
+    this.field_601 = paramTuple3d.field_613;
+    this.field_602 = paramTuple3d.field_614;
+    this.field_603 = 1.0D;
   }
   
   public final double distanceSquared(Point4d paramPoint4d)
   {
-    double d1 = this.x - paramPoint4d.x;
-    double d2 = this.y - paramPoint4d.y;
-    double d3 = this.z - paramPoint4d.z;
-    double d4 = this.w - paramPoint4d.w;
+    double d1 = this.field_600 - paramPoint4d.field_600;
+    double d2 = this.field_601 - paramPoint4d.field_601;
+    double d3 = this.field_602 - paramPoint4d.field_602;
+    double d4 = this.field_603 - paramPoint4d.field_603;
     return d1 * d1 + d2 * d2 + d3 * d3 + d4 * d4;
   }
   
   public final double distance(Point4d paramPoint4d)
   {
-    double d1 = this.x - paramPoint4d.x;
-    double d2 = this.y - paramPoint4d.y;
-    double d3 = this.z - paramPoint4d.z;
-    double d4 = this.w - paramPoint4d.w;
+    double d1 = this.field_600 - paramPoint4d.field_600;
+    double d2 = this.field_601 - paramPoint4d.field_601;
+    double d3 = this.field_602 - paramPoint4d.field_602;
+    double d4 = this.field_603 - paramPoint4d.field_603;
     return Math.sqrt(d1 * d1 + d2 * d2 + d3 * d3 + d4 * d4);
   }
   
   public final double distanceL1(Point4d paramPoint4d)
   {
-    return Math.abs(this.x - paramPoint4d.x) + Math.abs(this.y - paramPoint4d.y) + Math.abs(this.z - paramPoint4d.z) + Math.abs(this.w - paramPoint4d.w);
+    return Math.abs(this.field_600 - paramPoint4d.field_600) + Math.abs(this.field_601 - paramPoint4d.field_601) + Math.abs(this.field_602 - paramPoint4d.field_602) + Math.abs(this.field_603 - paramPoint4d.field_603);
   }
   
   public final double distanceLinf(Point4d paramPoint4d)
   {
-    double d1 = Math.max(Math.abs(this.x - paramPoint4d.x), Math.abs(this.y - paramPoint4d.y));
-    double d2 = Math.max(Math.abs(this.z - paramPoint4d.z), Math.abs(this.w - paramPoint4d.w));
+    double d1 = Math.max(Math.abs(this.field_600 - paramPoint4d.field_600), Math.abs(this.field_601 - paramPoint4d.field_601));
+    double d2 = Math.max(Math.abs(this.field_602 - paramPoint4d.field_602), Math.abs(this.field_603 - paramPoint4d.field_603));
     return Math.max(d1, d2);
   }
   
   public final void project(Point4d paramPoint4d)
   {
-    double d = 1.0D / paramPoint4d.w;
-    paramPoint4d.x *= d;
-    paramPoint4d.y *= d;
-    paramPoint4d.z *= d;
-    this.w = 1.0D;
+    double d = 1.0D / paramPoint4d.field_603;
+    paramPoint4d.field_600 *= d;
+    paramPoint4d.field_601 *= d;
+    paramPoint4d.field_602 *= d;
+    this.field_603 = 1.0D;
   }
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     javax.vecmath.Point4d
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

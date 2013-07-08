@@ -1,34 +1,34 @@
-/*  1:   */package com.bulletphysics.collision.broadphase;
-/*  2:   */
-/* 17:   */public class DbvtTreeCollider
-/* 18:   */  extends Dbvt.ICollide
-/* 19:   */{
-/* 20:   */  public DbvtBroadphase pbp;
-/* 21:   */  
-/* 35:   */  public DbvtTreeCollider(DbvtBroadphase p)
-/* 36:   */  {
-/* 37:37 */    this.pbp = p;
-/* 38:   */  }
-/* 39:   */  
-/* 40:   */  public void Process(Dbvt.Node na, Dbvt.Node nb)
-/* 41:   */  {
-/* 42:42 */    DbvtProxy pa = (DbvtProxy)na.data;
-/* 43:43 */    DbvtProxy pb = (DbvtProxy)nb.data;
-/* 44:   */    
-/* 45:45 */    if (DbvtAabbMm.Intersect(pa.aabb, pb.aabb))
-/* 46:   */    {
-/* 49:49 */      if (pa.hashCode() > pb.hashCode()) {
-/* 50:50 */        DbvtProxy tmp = pa;
-/* 51:51 */        pa = pb;
-/* 52:52 */        pb = tmp;
-/* 53:   */      }
-/* 54:54 */      this.pbp.paircache.addOverlappingPair(pa, pb);
-/* 55:   */    }
-/* 56:   */  }
-/* 57:   */}
+package com.bulletphysics.collision.broadphase;
+
+public class DbvtTreeCollider
+  extends Dbvt.ICollide
+{
+  public DbvtBroadphase pbp;
+  
+  public DbvtTreeCollider(DbvtBroadphase local_p)
+  {
+    this.pbp = local_p;
+  }
+  
+  public void Process(Dbvt.Node local_na, Dbvt.Node local_nb)
+  {
+    DbvtProxy local_pa = (DbvtProxy)local_na.data;
+    DbvtProxy local_pb = (DbvtProxy)local_nb.data;
+    if (DbvtAabbMm.Intersect(local_pa.aabb, local_pb.aabb))
+    {
+      if (local_pa.hashCode() > local_pb.hashCode())
+      {
+        DbvtProxy tmp = local_pa;
+        local_pa = local_pb;
+        local_pb = tmp;
+      }
+      this.pbp.paircache.addOverlappingPair(local_pa, local_pb);
+    }
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     com.bulletphysics.collision.broadphase.DbvtTreeCollider
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

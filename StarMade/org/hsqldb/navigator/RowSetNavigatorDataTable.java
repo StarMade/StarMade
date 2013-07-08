@@ -238,7 +238,7 @@ public class RowSetNavigatorDataTable
     throws IOException
   {
     reset();
-    paramRowOutputInterface.writeLong(this.id);
+    paramRowOutputInterface.writeLong(this.field_385);
     paramRowOutputInterface.writeInt(this.size);
     paramRowOutputInterface.writeInt(0);
     paramRowOutputInterface.writeInt(this.size);
@@ -486,7 +486,7 @@ public class RowSetNavigatorDataTable
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.navigator.RowSetNavigatorDataTable
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

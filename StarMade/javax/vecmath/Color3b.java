@@ -38,22 +38,22 @@ public class Color3b
   
   public final void set(Color paramColor)
   {
-    this.x = ((byte)paramColor.getRed());
-    this.y = ((byte)paramColor.getGreen());
-    this.z = ((byte)paramColor.getBlue());
+    this.field_607 = ((byte)paramColor.getRed());
+    this.field_608 = ((byte)paramColor.getGreen());
+    this.field_609 = ((byte)paramColor.getBlue());
   }
   
   public final Color get()
   {
-    int i = this.x & 0xFF;
-    int j = this.y & 0xFF;
-    int k = this.z & 0xFF;
+    int i = this.field_607 & 0xFF;
+    int j = this.field_608 & 0xFF;
+    int k = this.field_609 & 0xFF;
     return new Color(i, j, k);
   }
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     javax.vecmath.Color3b
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

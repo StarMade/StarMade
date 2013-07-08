@@ -1,19 +1,23 @@
-/*  1:   */package org.schema.game.common.data.physics;
-/*  2:   */
-/*  3:   */import o;
-/*  4:   */
-/*  5:   */public class AABBb { o min;
-/*  6:   */  o max;
-/*  7:   */  
-/*  8:   */  public AABBb() {}
-/*  9:   */  
-/* 10:10 */  public AABBb(o paramo1, o paramo2) { this.min = paramo1;
-/* 11:11 */    this.max = paramo2;
-/* 12:   */  }
-/* 13:   */}
+package org.schema.game.common.data.physics;
+
+import class_35;
+
+public class AABBb
+{
+  class_35 min;
+  class_35 max;
+  
+  public AABBb() {}
+  
+  public AABBb(class_35 paramclass_351, class_35 paramclass_352)
+  {
+    this.min = paramclass_351;
+    this.max = paramclass_352;
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.game.common.data.physics.AABBb
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

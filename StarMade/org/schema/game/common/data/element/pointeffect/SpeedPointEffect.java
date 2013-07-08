@@ -1,33 +1,35 @@
-/*  1:   */package org.schema.game.common.data.element.pointeffect;
-/*  2:   */
-/*  3:   */import org.schema.game.common.data.element.PointDistributionUnit;
-/*  4:   */
-/*  5:   */public class SpeedPointEffect extends PointEffect
-/*  6:   */{
-/*  7: 7 */  private static int speedUnit = 8;
-/*  8:   */  
-/*  9:   */  public SpeedPointEffect(PointDistributionUnit paramPointDistributionUnit) {
-/* 10:10 */    super(paramPointDistributionUnit);
-/* 11:   */  }
-/* 12:   */  
-/* 13:   */  public int getEffectId()
-/* 14:   */  {
-/* 15:15 */    return 3;
-/* 16:   */  }
-/* 17:   */  
-/* 18:   */  public String getName()
-/* 19:   */  {
-/* 20:20 */    return "Speed";
-/* 21:   */  }
-/* 22:   */  
-/* 23:   */  protected void recalculate()
-/* 24:   */  {
-/* 25:25 */    this.value = ((float)Math.max(1.0D, 15.0D + Math.pow(getPointsSpend() * 0.1D, 0.5D) * speedUnit));
-/* 26:   */  }
-/* 27:   */}
+package org.schema.game.common.data.element.pointeffect;
+
+import org.schema.game.common.data.element.PointDistributionUnit;
+
+public class SpeedPointEffect
+  extends PointEffect
+{
+  private static int speedUnit = 8;
+  
+  public SpeedPointEffect(PointDistributionUnit paramPointDistributionUnit)
+  {
+    super(paramPointDistributionUnit);
+  }
+  
+  public int getEffectId()
+  {
+    return 3;
+  }
+  
+  public String getName()
+  {
+    return "Speed";
+  }
+  
+  protected void recalculate()
+  {
+    this.value = ((float)Math.max(1.0D, 15.0D + Math.pow(getPointsSpend() * 0.1D, 0.5D) * speedUnit));
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.game.common.data.element.pointeffect.SpeedPointEffect
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

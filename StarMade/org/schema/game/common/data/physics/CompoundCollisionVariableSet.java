@@ -1,29 +1,26 @@
-/*  1:   */package org.schema.game.common.data.physics;
-/*  2:   */
-/*  3:   */import com.bulletphysics.linearmath.Transform;
-/*  4:   */import com.bulletphysics.util.ObjectPool;
-/*  5:   */
-/*  6:   */public class CompoundCollisionVariableSet
-/*  7:   */{
-/*  8: 8 */  public Transform tmpTrans = new Transform();
-/*  9: 9 */  public Transform orgTrans = new Transform();
-/* 10:10 */  public Transform chieldTrans = new Transform();
-/* 11:11 */  public Transform interpolationTrans = new Transform();
-/* 12:12 */  public Transform newChildWorldTrans = new Transform();
-/* 13:   */  
-/* 15:15 */  public Transform tmpTransO = new Transform();
-/* 16:16 */  public Transform orgTransO = new Transform();
-/* 17:17 */  public Transform chieldTransO = new Transform();
-/* 18:18 */  public Transform interpolationTransO = new Transform();
-/* 19:19 */  public Transform newChildWorldTransO = new Transform();
-/* 20:   */  
-/* 21:   */  public int instances;
-/* 22:   */  
-/* 23:23 */  public final ObjectPool pool = new ObjectPool(CompoundCollisionAlgorithmExt.class);
-/* 24:   */}
+package org.schema.game.common.data.physics;
+
+import com.bulletphysics.linearmath.Transform;
+import com.bulletphysics.util.ObjectPool;
+
+public class CompoundCollisionVariableSet
+{
+  public Transform tmpTrans = new Transform();
+  public Transform orgTrans = new Transform();
+  public Transform chieldTrans = new Transform();
+  public Transform interpolationTrans = new Transform();
+  public Transform newChildWorldTrans = new Transform();
+  public Transform tmpTransO = new Transform();
+  public Transform orgTransO = new Transform();
+  public Transform chieldTransO = new Transform();
+  public Transform interpolationTransO = new Transform();
+  public Transform newChildWorldTransO = new Transform();
+  public int instances;
+  public final ObjectPool pool = new ObjectPool(CompoundCollisionAlgorithmExt.class);
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.game.common.data.physics.CompoundCollisionVariableSet
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

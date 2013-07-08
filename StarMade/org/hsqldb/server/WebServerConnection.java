@@ -64,7 +64,7 @@ class WebServerConnection
     if (paramString == null) {
       return "text/html";
     }
-    int i = paramString.lastIndexOf(46);
+    int i = paramString.lastIndexOf('.');
     String str1 = null;
     String str2 = null;
     if (i >= 0)
@@ -382,7 +382,7 @@ class WebServerConnection
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.server.WebServerConnection
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

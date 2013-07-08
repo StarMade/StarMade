@@ -6,13 +6,13 @@ import java.io.InputStream;
 public class InputStreamWrapper
   implements InputStreamInterface
 {
-  InputStream is;
+  InputStream field_429;
   long limitSize = -1L;
   long fetchedSize = 0L;
   
   public InputStreamWrapper(InputStream paramInputStream)
   {
-    this.is = paramInputStream;
+    this.field_429 = paramInputStream;
   }
   
   public int read()
@@ -21,7 +21,7 @@ public class InputStreamWrapper
     if (this.fetchedSize == this.limitSize) {
       return -1;
     }
-    int i = this.is.read();
+    int i = this.field_429.read();
     if (i < 0)
     {
       if (this.limitSize == -1L) {
@@ -48,7 +48,7 @@ public class InputStreamWrapper
     if ((this.limitSize >= 0L) && (this.limitSize - this.fetchedSize < paramInt2)) {
       paramInt2 = (int)(this.limitSize - this.fetchedSize);
     }
-    int i = this.is.read(paramArrayOfByte, paramInt1, paramInt2);
+    int i = this.field_429.read(paramArrayOfByte, paramInt1, paramInt2);
     if (i < 0)
     {
       if (this.limitSize == -1L) {
@@ -63,19 +63,19 @@ public class InputStreamWrapper
   public long skip(long paramLong)
     throws IOException
   {
-    return this.is.skip(paramLong);
+    return this.field_429.skip(paramLong);
   }
   
   public int available()
     throws IOException
   {
-    return this.is.available();
+    return this.field_429.available();
   }
   
   public void close()
     throws IOException
   {
-    this.is.close();
+    this.field_429.close();
   }
   
   public void setSizeLimit(long paramLong)
@@ -90,7 +90,7 @@ public class InputStreamWrapper
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.lib.InputStreamWrapper
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

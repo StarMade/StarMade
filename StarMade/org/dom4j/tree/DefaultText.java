@@ -1,46 +1,51 @@
-/*  1:   */package org.dom4j.tree;
-/*  2:   */
-/*  3:   */import org.dom4j.Element;
-/*  4:   */
-/* 26:   */public class DefaultText
-/* 27:   */  extends FlyweightText
-/* 28:   */{
-/* 29:   */  private Element parent;
-/* 30:   */  
-/* 31:   */  public DefaultText(String text)
-/* 32:   */  {
-/* 33:33 */    super(text);
-/* 34:   */  }
-/* 35:   */  
-/* 43:   */  public DefaultText(Element parent, String text)
-/* 44:   */  {
-/* 45:45 */    super(text);
-/* 46:46 */    this.parent = parent;
-/* 47:   */  }
-/* 48:   */  
-/* 49:   */  public void setText(String text) {
-/* 50:50 */    this.text = text;
-/* 51:   */  }
-/* 52:   */  
-/* 53:   */  public Element getParent() {
-/* 54:54 */    return this.parent;
-/* 55:   */  }
-/* 56:   */  
-/* 57:   */  public void setParent(Element parent) {
-/* 58:58 */    this.parent = parent;
-/* 59:   */  }
-/* 60:   */  
-/* 61:   */  public boolean supportsParent() {
-/* 62:62 */    return true;
-/* 63:   */  }
-/* 64:   */  
-/* 65:   */  public boolean isReadOnly() {
-/* 66:66 */    return false;
-/* 67:   */  }
-/* 68:   */}
+package org.dom4j.tree;
+
+import org.dom4j.Element;
+
+public class DefaultText
+  extends FlyweightText
+{
+  private Element parent;
+  
+  public DefaultText(String text)
+  {
+    super(text);
+  }
+  
+  public DefaultText(Element parent, String text)
+  {
+    super(text);
+    this.parent = parent;
+  }
+  
+  public void setText(String text)
+  {
+    this.text = text;
+  }
+  
+  public Element getParent()
+  {
+    return this.parent;
+  }
+  
+  public void setParent(Element parent)
+  {
+    this.parent = parent;
+  }
+  
+  public boolean supportsParent()
+  {
+    return true;
+  }
+  
+  public boolean isReadOnly()
+  {
+    return false;
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.dom4j.tree.DefaultText
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -1,1097 +1,1312 @@
-/*    1:     */package it.unimi.dsi.fastutil.floats;
-/*    2:     */
-/*    3:     */import it.unimi.dsi.fastutil.HashCommon;
-/*    4:     */import java.io.IOException;
-/*    5:     */import java.io.ObjectInputStream;
-/*    6:     */import java.io.ObjectOutputStream;
-/*    7:     */import java.io.Serializable;
-/*    8:     */import java.util.Collection;
-/*    9:     */import java.util.Comparator;
-/*   10:     */import java.util.Iterator;
-/*   11:     */import java.util.NoSuchElementException;
-/*   12:     */import java.util.SortedSet;
-/*   13:     */
-/*   57:     */public class FloatRBTreeSet
-/*   58:     */  extends AbstractFloatSortedSet
-/*   59:     */  implements Serializable, Cloneable, FloatSortedSet
-/*   60:     */{
-/*   61:     */  protected transient Entry tree;
-/*   62:     */  protected int count;
-/*   63:     */  protected transient Entry firstEntry;
-/*   64:     */  protected transient Entry lastEntry;
-/*   65:     */  protected Comparator<? super Float> storedComparator;
-/*   66:     */  protected transient FloatComparator actualComparator;
-/*   67:     */  public static final long serialVersionUID = -7046029254386353130L;
-/*   68:     */  private static final boolean ASSERTS = false;
-/*   69:     */  private transient boolean[] dirPath;
-/*   70:     */  private transient Entry[] nodePath;
-/*   71:     */  
-/*   72:     */  public FloatRBTreeSet()
-/*   73:     */  {
-/*   74:  74 */    allocatePaths();
-/*   75:     */    
-/*   79:  79 */    this.tree = null;
-/*   80:  80 */    this.count = 0;
-/*   81:     */  }
-/*   82:     */  
-/*   92:     */  private void setActualComparator()
-/*   93:     */  {
-/*   94:  94 */    if ((this.storedComparator == null) || ((this.storedComparator instanceof FloatComparator))) this.actualComparator = ((FloatComparator)this.storedComparator); else {
-/*   95:  95 */      this.actualComparator = new FloatComparator() {
-/*   96:     */        public int compare(float k1, float k2) {
-/*   97:  97 */          return FloatRBTreeSet.this.storedComparator.compare(Float.valueOf(k1), Float.valueOf(k2));
-/*   98:     */        }
-/*   99:     */        
-/*  100: 100 */        public int compare(Float ok1, Float ok2) { return FloatRBTreeSet.this.storedComparator.compare(ok1, ok2); }
-/*  101:     */      };
-/*  102:     */    }
-/*  103:     */  }
-/*  104:     */  
-/*  107:     */  public FloatRBTreeSet(Comparator<? super Float> c)
-/*  108:     */  {
-/*  109: 109 */    this();
-/*  110: 110 */    this.storedComparator = c;
-/*  111: 111 */    setActualComparator();
-/*  112:     */  }
-/*  113:     */  
-/*  117:     */  public FloatRBTreeSet(Collection<? extends Float> c)
-/*  118:     */  {
-/*  119: 119 */    this();
-/*  120: 120 */    addAll(c);
-/*  121:     */  }
-/*  122:     */  
-/*  127:     */  public FloatRBTreeSet(SortedSet<Float> s)
-/*  128:     */  {
-/*  129: 129 */    this(s.comparator());
-/*  130: 130 */    addAll(s);
-/*  131:     */  }
-/*  132:     */  
-/*  137:     */  public FloatRBTreeSet(FloatCollection c)
-/*  138:     */  {
-/*  139: 139 */    this();
-/*  140: 140 */    addAll(c);
-/*  141:     */  }
-/*  142:     */  
-/*  147:     */  public FloatRBTreeSet(FloatSortedSet s)
-/*  148:     */  {
-/*  149: 149 */    this(s.comparator());
-/*  150: 150 */    addAll(s);
-/*  151:     */  }
-/*  152:     */  
-/*  153:     */  public FloatRBTreeSet(FloatIterator i)
-/*  154:     */  {
-/*  155:  74 */    allocatePaths();
-/*  156:     */    
-/*  241: 160 */    while (i.hasNext()) { add(i.nextFloat());
-/*  242:     */    }
-/*  243:     */  }
-/*  244:     */  
-/*  250:     */  public FloatRBTreeSet(Iterator<? extends Float> i)
-/*  251:     */  {
-/*  252: 171 */    this(FloatIterators.asFloatIterator(i));
-/*  253:     */  }
-/*  254:     */  
-/*  263:     */  public FloatRBTreeSet(float[] a, int offset, int length, Comparator<? super Float> c)
-/*  264:     */  {
-/*  265: 184 */    this(c);
-/*  266: 185 */    FloatArrays.ensureOffsetLength(a, offset, length);
-/*  267: 186 */    for (int i = 0; i < length; i++) { add(a[(offset + i)]);
-/*  268:     */    }
-/*  269:     */  }
-/*  270:     */  
-/*  277:     */  public FloatRBTreeSet(float[] a, int offset, int length)
-/*  278:     */  {
-/*  279: 198 */    this(a, offset, length, null);
-/*  280:     */  }
-/*  281:     */  
-/*  287:     */  public FloatRBTreeSet(float[] a)
-/*  288:     */  {
-/*  289: 208 */    this();
-/*  290: 209 */    int i = a.length;
-/*  291: 210 */    while (i-- != 0) { add(a[i]);
-/*  292:     */    }
-/*  293:     */  }
-/*  294:     */  
-/*  300:     */  public FloatRBTreeSet(float[] a, Comparator<? super Float> c)
-/*  301:     */  {
-/*  302: 221 */    this(c);
-/*  303: 222 */    int i = a.length;
-/*  304: 223 */    while (i-- != 0) { add(a[i]);
-/*  305:     */    }
-/*  306:     */  }
-/*  307:     */  
-/*  332:     */  final int compare(float k1, float k2)
-/*  333:     */  {
-/*  334: 253 */    return this.actualComparator == null ? 1 : k1 == k2 ? 0 : k1 < k2 ? -1 : this.actualComparator.compare(k1, k2);
-/*  335:     */  }
-/*  336:     */  
-/*  344:     */  private Entry findKey(float k)
-/*  345:     */  {
-/*  346: 265 */    Entry e = this.tree;
-/*  347:     */    
-/*  348:     */    int cmp;
-/*  349: 268 */    while ((e != null) && ((cmp = compare(k, e.key)) != 0)) {
-/*  350: 269 */      e = cmp < 0 ? e.left() : e.right();
-/*  351:     */    }
-/*  352: 271 */    return e;
-/*  353:     */  }
-/*  354:     */  
-/*  361:     */  final Entry locateKey(float k)
-/*  362:     */  {
-/*  363: 282 */    Entry e = this.tree;Entry last = this.tree;
-/*  364: 283 */    int cmp = 0;
-/*  365:     */    
-/*  366: 285 */    while ((e != null) && ((cmp = compare(k, e.key)) != 0)) {
-/*  367: 286 */      last = e;
-/*  368: 287 */      e = cmp < 0 ? e.left() : e.right();
-/*  369:     */    }
-/*  370:     */    
-/*  371: 290 */    return cmp == 0 ? e : last;
-/*  372:     */  }
-/*  373:     */  
-/*  379:     */  private void allocatePaths()
-/*  380:     */  {
-/*  381: 300 */    this.dirPath = new boolean[64];
-/*  382:     */    
-/*  385: 304 */    this.nodePath = new Entry[64];
-/*  386:     */  }
-/*  387:     */  
-/*  389:     */  public boolean add(float k)
-/*  390:     */  {
-/*  391: 310 */    int maxDepth = 0;
-/*  392:     */    
-/*  393: 312 */    if (this.tree == null) {
-/*  394: 313 */      this.count += 1;
-/*  395: 314 */      this.tree = (this.lastEntry = this.firstEntry = new Entry(k));
-/*  396:     */    }
-/*  397:     */    else {
-/*  398: 317 */      Entry p = this.tree;
-/*  399: 318 */      int i = 0;
-/*  400:     */      for (;;) {
-/*  401:     */        int cmp;
-/*  402: 321 */        if ((cmp = compare(k, p.key)) == 0)
-/*  403:     */        {
-/*  404: 323 */          while (i-- != 0) this.nodePath[i] = null;
-/*  405: 324 */          return false;
-/*  406:     */        }
-/*  407:     */        
-/*  408: 327 */        this.nodePath[i] = p;
-/*  409:     */        
-/*  410: 329 */        if ((this.dirPath[(i++)] = cmp > 0 ? 1 : 0) != 0) {
-/*  411: 330 */          if (p.succ()) {
-/*  412: 331 */            this.count += 1;
-/*  413: 332 */            Entry e = new Entry(k);
-/*  414:     */            
-/*  415: 334 */            if (p.right == null) { this.lastEntry = e;
-/*  416:     */            }
-/*  417: 336 */            e.left = p;
-/*  418: 337 */            e.right = p.right;
-/*  419:     */            
-/*  420: 339 */            p.right(e);
-/*  421:     */            
-/*  422: 341 */            break;
-/*  423:     */          }
-/*  424:     */          
-/*  425: 344 */          p = p.right;
-/*  426:     */        }
-/*  427:     */        else {
-/*  428: 347 */          if (p.pred()) {
-/*  429: 348 */            this.count += 1;
-/*  430: 349 */            Entry e = new Entry(k);
-/*  431:     */            
-/*  432: 351 */            if (p.left == null) { this.firstEntry = e;
-/*  433:     */            }
-/*  434: 353 */            e.right = p;
-/*  435: 354 */            e.left = p.left;
-/*  436:     */            
-/*  437: 356 */            p.left(e);
-/*  438:     */            
-/*  439: 358 */            break;
-/*  440:     */          }
-/*  441:     */          
-/*  442: 361 */          p = p.left;
-/*  443:     */        }
-/*  444:     */      }
-/*  445:     */      Entry e;
-/*  446: 365 */      maxDepth = i--;
-/*  447:     */      
-/*  448: 367 */      while ((i > 0) && (!this.nodePath[i].black())) {
-/*  449: 368 */        if (this.dirPath[(i - 1)] == 0) {
-/*  450: 369 */          Entry y = this.nodePath[(i - 1)].right;
-/*  451:     */          
-/*  452: 371 */          if ((!this.nodePath[(i - 1)].succ()) && (!y.black())) {
-/*  453: 372 */            this.nodePath[i].black(true);
-/*  454: 373 */            y.black(true);
-/*  455: 374 */            this.nodePath[(i - 1)].black(false);
-/*  456: 375 */            i -= 2;
-/*  458:     */          }
-/*  459:     */          else
-/*  460:     */          {
-/*  461: 380 */            if (this.dirPath[i] == 0) { y = this.nodePath[i];
-/*  462:     */            } else {
-/*  463: 382 */              Entry x = this.nodePath[i];
-/*  464: 383 */              y = x.right;
-/*  465: 384 */              x.right = y.left;
-/*  466: 385 */              y.left = x;
-/*  467: 386 */              this.nodePath[(i - 1)].left = y;
-/*  468:     */              
-/*  469: 388 */              if (y.pred()) {
-/*  470: 389 */                y.pred(false);
-/*  471: 390 */                x.succ(y);
-/*  472:     */              }
-/*  473:     */            }
-/*  474:     */            
-/*  475: 394 */            Entry x = this.nodePath[(i - 1)];
-/*  476: 395 */            x.black(false);
-/*  477: 396 */            y.black(true);
-/*  478:     */            
-/*  479: 398 */            x.left = y.right;
-/*  480: 399 */            y.right = x;
-/*  481: 400 */            if (i < 2) { this.tree = y;
-/*  482:     */            }
-/*  483: 402 */            else if (this.dirPath[(i - 2)] != 0) this.nodePath[(i - 2)].right = y; else {
-/*  484: 403 */              this.nodePath[(i - 2)].left = y;
-/*  485:     */            }
-/*  486:     */            
-/*  487: 406 */            if (!y.succ()) break;
-/*  488: 407 */            y.succ(false);
-/*  489: 408 */            x.pred(y);break;
-/*  490:     */          }
-/*  491:     */          
-/*  492:     */        }
-/*  493:     */        else
-/*  494:     */        {
-/*  495: 414 */          Entry y = this.nodePath[(i - 1)].left;
-/*  496:     */          
-/*  497: 416 */          if ((!this.nodePath[(i - 1)].pred()) && (!y.black())) {
-/*  498: 417 */            this.nodePath[i].black(true);
-/*  499: 418 */            y.black(true);
-/*  500: 419 */            this.nodePath[(i - 1)].black(false);
-/*  501: 420 */            i -= 2;
-/*  503:     */          }
-/*  504:     */          else
-/*  505:     */          {
-/*  506: 425 */            if (this.dirPath[i] != 0) { y = this.nodePath[i];
-/*  507:     */            } else {
-/*  508: 427 */              Entry x = this.nodePath[i];
-/*  509: 428 */              y = x.left;
-/*  510: 429 */              x.left = y.right;
-/*  511: 430 */              y.right = x;
-/*  512: 431 */              this.nodePath[(i - 1)].right = y;
-/*  513:     */              
-/*  514: 433 */              if (y.succ()) {
-/*  515: 434 */                y.succ(false);
-/*  516: 435 */                x.pred(y);
-/*  517:     */              }
-/*  518:     */            }
-/*  519:     */            
-/*  521: 440 */            Entry x = this.nodePath[(i - 1)];
-/*  522: 441 */            x.black(false);
-/*  523: 442 */            y.black(true);
-/*  524:     */            
-/*  525: 444 */            x.right = y.left;
-/*  526: 445 */            y.left = x;
-/*  527: 446 */            if (i < 2) { this.tree = y;
-/*  528:     */            }
-/*  529: 448 */            else if (this.dirPath[(i - 2)] != 0) this.nodePath[(i - 2)].right = y; else {
-/*  530: 449 */              this.nodePath[(i - 2)].left = y;
-/*  531:     */            }
-/*  532:     */            
-/*  533: 452 */            if (!y.pred()) break;
-/*  534: 453 */            y.pred(false);
-/*  535: 454 */            x.succ(y);break;
-/*  536:     */          }
-/*  537:     */        }
-/*  538:     */      }
-/*  539:     */    }
-/*  540:     */    
-/*  543: 462 */    this.tree.black(true);
-/*  544:     */    
-/*  545: 464 */    while (maxDepth-- != 0) { this.nodePath[maxDepth] = null;
-/*  546:     */    }
-/*  547:     */    
-/*  550: 469 */    return true;
-/*  551:     */  }
-/*  552:     */  
-/*  554:     */  public boolean remove(float k)
-/*  555:     */  {
-/*  556: 475 */    if (this.tree == null) { return false;
-/*  557:     */    }
-/*  558: 477 */    Entry p = this.tree;
-/*  559:     */    
-/*  560: 479 */    int i = 0;
-/*  561: 480 */    float kk = k;
-/*  562:     */    
-/*  563:     */    int cmp;
-/*  564: 483 */    while ((cmp = compare(kk, p.key)) != 0)
-/*  565:     */    {
-/*  566: 485 */      this.dirPath[i] = (cmp > 0 ? 1 : false);
-/*  567: 486 */      this.nodePath[i] = p;
-/*  568:     */      
-/*  569: 488 */      if (this.dirPath[(i++)] != 0) {
-/*  570: 489 */        if ((p = p.right()) == null)
-/*  571:     */        {
-/*  572: 491 */          while (i-- != 0) this.nodePath[i] = null;
-/*  573: 492 */          return false;
-/*  574:     */        }
-/*  575:     */        
-/*  576:     */      }
-/*  577: 496 */      else if ((p = p.left()) == null)
-/*  578:     */      {
-/*  579: 498 */        while (i-- != 0) this.nodePath[i] = null;
-/*  580: 499 */        return false;
-/*  581:     */      }
-/*  582:     */    }
-/*  583:     */    
-/*  585: 504 */    if (p.left == null) this.firstEntry = p.next();
-/*  586: 505 */    if (p.right == null) { this.lastEntry = p.prev();
-/*  587:     */    }
-/*  588: 507 */    if (p.succ()) {
-/*  589: 508 */      if (p.pred()) {
-/*  590: 509 */        if (i == 0) { this.tree = p.left;
-/*  591:     */        }
-/*  592: 511 */        else if (this.dirPath[(i - 1)] != 0) this.nodePath[(i - 1)].succ(p.right); else {
-/*  593: 512 */          this.nodePath[(i - 1)].pred(p.left);
-/*  594:     */        }
-/*  595:     */      }
-/*  596:     */      else {
-/*  597: 516 */        p.prev().right = p.right;
-/*  598:     */        
-/*  599: 518 */        if (i == 0) { this.tree = p.left;
-/*  600:     */        }
-/*  601: 520 */        else if (this.dirPath[(i - 1)] != 0) this.nodePath[(i - 1)].right = p.left; else {
-/*  602: 521 */          this.nodePath[(i - 1)].left = p.left;
-/*  603:     */        }
-/*  604:     */      }
-/*  605:     */    }
-/*  606:     */    else
-/*  607:     */    {
-/*  608: 527 */      Entry r = p.right;
-/*  609:     */      
-/*  610: 529 */      if (r.pred()) {
-/*  611: 530 */        r.left = p.left;
-/*  612: 531 */        r.pred(p.pred());
-/*  613: 532 */        if (!r.pred()) r.prev().right = r;
-/*  614: 533 */        if (i == 0) { this.tree = r;
-/*  615:     */        }
-/*  616: 535 */        else if (this.dirPath[(i - 1)] != 0) this.nodePath[(i - 1)].right = r; else {
-/*  617: 536 */          this.nodePath[(i - 1)].left = r;
-/*  618:     */        }
-/*  619:     */        
-/*  620: 539 */        boolean color = r.black();
-/*  621: 540 */        r.black(p.black());
-/*  622: 541 */        p.black(color);
-/*  623: 542 */        this.dirPath[i] = true;
-/*  624: 543 */        this.nodePath[(i++)] = r;
-/*  625:     */      }
-/*  626:     */      else
-/*  627:     */      {
-/*  628: 547 */        int j = i++;
-/*  629:     */        Entry s;
-/*  630:     */        for (;;) {
-/*  631: 550 */          this.dirPath[i] = false;
-/*  632: 551 */          this.nodePath[(i++)] = r;
-/*  633: 552 */          s = r.left;
-/*  634: 553 */          if (s.pred()) break;
-/*  635: 554 */          r = s;
-/*  636:     */        }
-/*  637:     */        
-/*  638: 557 */        this.dirPath[j] = true;
-/*  639: 558 */        this.nodePath[j] = s;
-/*  640:     */        
-/*  641: 560 */        if (s.succ()) r.pred(s); else {
-/*  642: 561 */          r.left = s.right;
-/*  643:     */        }
-/*  644: 563 */        s.left = p.left;
-/*  645:     */        
-/*  646: 565 */        if (!p.pred()) {
-/*  647: 566 */          p.prev().right = s;
-/*  648: 567 */          s.pred(false);
-/*  649:     */        }
-/*  650:     */        
-/*  651: 570 */        s.right(p.right);
-/*  652:     */        
-/*  653: 572 */        boolean color = s.black();
-/*  654: 573 */        s.black(p.black());
-/*  655: 574 */        p.black(color);
-/*  656:     */        
-/*  657: 576 */        if (j == 0) { this.tree = s;
-/*  658:     */        }
-/*  659: 578 */        else if (this.dirPath[(j - 1)] != 0) this.nodePath[(j - 1)].right = s; else {
-/*  660: 579 */          this.nodePath[(j - 1)].left = s;
-/*  661:     */        }
-/*  662:     */      }
-/*  663:     */    }
-/*  664:     */    
-/*  665: 584 */    int maxDepth = i;
-/*  666:     */    
-/*  667: 586 */    if (p.black()) {
-/*  668: 587 */      for (; i > 0; i--) {
-/*  669: 588 */        if (((this.dirPath[(i - 1)] != 0) && (!this.nodePath[(i - 1)].succ())) || ((this.dirPath[(i - 1)] == 0) && (!this.nodePath[(i - 1)].pred())))
-/*  670:     */        {
-/*  671: 590 */          Entry x = this.dirPath[(i - 1)] != 0 ? this.nodePath[(i - 1)].right : this.nodePath[(i - 1)].left;
-/*  672:     */          
-/*  673: 592 */          if (!x.black()) {
-/*  674: 593 */            x.black(true);
-/*  675: 594 */            break;
-/*  676:     */          }
-/*  677:     */        }
-/*  678:     */        
-/*  679: 598 */        if (this.dirPath[(i - 1)] == 0) {
-/*  680: 599 */          Entry w = this.nodePath[(i - 1)].right;
-/*  681:     */          
-/*  682: 601 */          if (!w.black()) {
-/*  683: 602 */            w.black(true);
-/*  684: 603 */            this.nodePath[(i - 1)].black(false);
-/*  685:     */            
-/*  686: 605 */            this.nodePath[(i - 1)].right = w.left;
-/*  687: 606 */            w.left = this.nodePath[(i - 1)];
-/*  688:     */            
-/*  689: 608 */            if (i < 2) { this.tree = w;
-/*  690:     */            }
-/*  691: 610 */            else if (this.dirPath[(i - 2)] != 0) this.nodePath[(i - 2)].right = w; else {
-/*  692: 611 */              this.nodePath[(i - 2)].left = w;
-/*  693:     */            }
-/*  694:     */            
-/*  695: 614 */            this.nodePath[i] = this.nodePath[(i - 1)];
-/*  696: 615 */            this.dirPath[i] = false;
-/*  697: 616 */            this.nodePath[(i - 1)] = w;
-/*  698: 617 */            if (maxDepth == i++) { maxDepth++;
-/*  699:     */            }
-/*  700: 619 */            w = this.nodePath[(i - 1)].right;
-/*  701:     */          }
-/*  702:     */          
-/*  703: 622 */          if (((w.pred()) || (w.left.black())) && ((w.succ()) || (w.right.black())))
-/*  704:     */          {
-/*  705: 624 */            w.black(false);
-/*  706:     */          }
-/*  707:     */          else {
-/*  708: 627 */            if ((w.succ()) || (w.right.black())) {
-/*  709: 628 */              Entry y = w.left;
-/*  710:     */              
-/*  711: 630 */              y.black(true);
-/*  712: 631 */              w.black(false);
-/*  713: 632 */              w.left = y.right;
-/*  714: 633 */              y.right = w;
-/*  715: 634 */              w = this.nodePath[(i - 1)].right = y;
-/*  716:     */              
-/*  717: 636 */              if (w.succ()) {
-/*  718: 637 */                w.succ(false);
-/*  719: 638 */                w.right.pred(w);
-/*  720:     */              }
-/*  721:     */            }
-/*  722:     */            
-/*  723: 642 */            w.black(this.nodePath[(i - 1)].black());
-/*  724: 643 */            this.nodePath[(i - 1)].black(true);
-/*  725: 644 */            w.right.black(true);
-/*  726:     */            
-/*  727: 646 */            this.nodePath[(i - 1)].right = w.left;
-/*  728: 647 */            w.left = this.nodePath[(i - 1)];
-/*  729:     */            
-/*  730: 649 */            if (i < 2) { this.tree = w;
-/*  731:     */            }
-/*  732: 651 */            else if (this.dirPath[(i - 2)] != 0) this.nodePath[(i - 2)].right = w; else {
-/*  733: 652 */              this.nodePath[(i - 2)].left = w;
-/*  734:     */            }
-/*  735:     */            
-/*  736: 655 */            if (!w.pred()) break;
-/*  737: 656 */            w.pred(false);
-/*  738: 657 */            this.nodePath[(i - 1)].succ(w);break;
-/*  739:     */          }
-/*  740:     */          
-/*  741:     */        }
-/*  742:     */        else
-/*  743:     */        {
-/*  744: 663 */          Entry w = this.nodePath[(i - 1)].left;
-/*  745:     */          
-/*  746: 665 */          if (!w.black()) {
-/*  747: 666 */            w.black(true);
-/*  748: 667 */            this.nodePath[(i - 1)].black(false);
-/*  749:     */            
-/*  750: 669 */            this.nodePath[(i - 1)].left = w.right;
-/*  751: 670 */            w.right = this.nodePath[(i - 1)];
-/*  752:     */            
-/*  753: 672 */            if (i < 2) { this.tree = w;
-/*  754:     */            }
-/*  755: 674 */            else if (this.dirPath[(i - 2)] != 0) this.nodePath[(i - 2)].right = w; else {
-/*  756: 675 */              this.nodePath[(i - 2)].left = w;
-/*  757:     */            }
-/*  758:     */            
-/*  759: 678 */            this.nodePath[i] = this.nodePath[(i - 1)];
-/*  760: 679 */            this.dirPath[i] = true;
-/*  761: 680 */            this.nodePath[(i - 1)] = w;
-/*  762: 681 */            if (maxDepth == i++) { maxDepth++;
-/*  763:     */            }
-/*  764: 683 */            w = this.nodePath[(i - 1)].left;
-/*  765:     */          }
-/*  766:     */          
-/*  767: 686 */          if (((w.pred()) || (w.left.black())) && ((w.succ()) || (w.right.black())))
-/*  768:     */          {
-/*  769: 688 */            w.black(false);
-/*  770:     */          }
-/*  771:     */          else {
-/*  772: 691 */            if ((w.pred()) || (w.left.black())) {
-/*  773: 692 */              Entry y = w.right;
-/*  774:     */              
-/*  775: 694 */              y.black(true);
-/*  776: 695 */              w.black(false);
-/*  777: 696 */              w.right = y.left;
-/*  778: 697 */              y.left = w;
-/*  779: 698 */              w = this.nodePath[(i - 1)].left = y;
-/*  780:     */              
-/*  781: 700 */              if (w.pred()) {
-/*  782: 701 */                w.pred(false);
-/*  783: 702 */                w.left.succ(w);
-/*  784:     */              }
-/*  785:     */            }
-/*  786:     */            
-/*  787: 706 */            w.black(this.nodePath[(i - 1)].black());
-/*  788: 707 */            this.nodePath[(i - 1)].black(true);
-/*  789: 708 */            w.left.black(true);
-/*  790:     */            
-/*  791: 710 */            this.nodePath[(i - 1)].left = w.right;
-/*  792: 711 */            w.right = this.nodePath[(i - 1)];
-/*  793:     */            
-/*  794: 713 */            if (i < 2) { this.tree = w;
-/*  795:     */            }
-/*  796: 715 */            else if (this.dirPath[(i - 2)] != 0) this.nodePath[(i - 2)].right = w; else {
-/*  797: 716 */              this.nodePath[(i - 2)].left = w;
-/*  798:     */            }
-/*  799:     */            
-/*  800: 719 */            if (!w.succ()) break;
-/*  801: 720 */            w.succ(false);
-/*  802: 721 */            this.nodePath[(i - 1)].pred(w);break;
-/*  803:     */          }
-/*  804:     */        }
-/*  805:     */      }
-/*  806:     */      
-/*  809: 728 */      if (this.tree != null) { this.tree.black(true);
-/*  810:     */      }
-/*  811:     */    }
-/*  812: 731 */    this.count -= 1;
-/*  813:     */    
-/*  814: 733 */    while (maxDepth-- != 0) { this.nodePath[maxDepth] = null;
-/*  815:     */    }
-/*  816:     */    
-/*  819: 738 */    return true;
-/*  820:     */  }
-/*  821:     */  
-/*  824: 743 */  public boolean contains(float k) { return findKey(k) != null; }
-/*  825:     */  
-/*  826:     */  public void clear() {
-/*  827: 746 */    this.count = 0;
-/*  828: 747 */    this.tree = null;
-/*  829: 748 */    this.firstEntry = (this.lastEntry = null);
-/*  830:     */  }
-/*  831:     */  
-/*  834:     */  private static final class Entry
-/*  835:     */    implements Cloneable
-/*  836:     */  {
-/*  837:     */    private static final int BLACK_MASK = 1;
-/*  838:     */    
-/*  840:     */    private static final int SUCC_MASK = -2147483648;
-/*  841:     */    
-/*  842:     */    private static final int PRED_MASK = 1073741824;
-/*  843:     */    
-/*  844:     */    float key;
-/*  845:     */    
-/*  846:     */    Entry left;
-/*  847:     */    
-/*  848:     */    Entry right;
-/*  849:     */    
-/*  850:     */    int info;
-/*  851:     */    
-/*  853:     */    Entry() {}
-/*  854:     */    
-/*  856:     */    Entry(float k)
-/*  857:     */    {
-/*  858: 777 */      this.key = k;
-/*  859: 778 */      this.info = -1073741824;
-/*  860:     */    }
-/*  861:     */    
-/*  865:     */    Entry left()
-/*  866:     */    {
-/*  867: 786 */      return (this.info & 0x40000000) != 0 ? null : this.left;
-/*  868:     */    }
-/*  869:     */    
-/*  873:     */    Entry right()
-/*  874:     */    {
-/*  875: 794 */      return (this.info & 0x80000000) != 0 ? null : this.right;
-/*  876:     */    }
-/*  877:     */    
-/*  879:     */    boolean pred()
-/*  880:     */    {
-/*  881: 800 */      return (this.info & 0x40000000) != 0;
-/*  882:     */    }
-/*  883:     */    
-/*  885:     */    boolean succ()
-/*  886:     */    {
-/*  887: 806 */      return (this.info & 0x80000000) != 0;
-/*  888:     */    }
-/*  889:     */    
-/*  891:     */    void pred(boolean pred)
-/*  892:     */    {
-/*  893: 812 */      if (pred) this.info |= 1073741824; else {
-/*  894: 813 */        this.info &= -1073741825;
-/*  895:     */      }
-/*  896:     */    }
-/*  897:     */    
-/*  898:     */    void succ(boolean succ)
-/*  899:     */    {
-/*  900: 819 */      if (succ) this.info |= -2147483648; else {
-/*  901: 820 */        this.info &= 2147483647;
-/*  902:     */      }
-/*  903:     */    }
-/*  904:     */    
-/*  905:     */    void pred(Entry pred)
-/*  906:     */    {
-/*  907: 826 */      this.info |= 1073741824;
-/*  908: 827 */      this.left = pred;
-/*  909:     */    }
-/*  910:     */    
-/*  912:     */    void succ(Entry succ)
-/*  913:     */    {
-/*  914: 833 */      this.info |= -2147483648;
-/*  915: 834 */      this.right = succ;
-/*  916:     */    }
-/*  917:     */    
-/*  919:     */    void left(Entry left)
-/*  920:     */    {
-/*  921: 840 */      this.info &= -1073741825;
-/*  922: 841 */      this.left = left;
-/*  923:     */    }
-/*  924:     */    
-/*  926:     */    void right(Entry right)
-/*  927:     */    {
-/*  928: 847 */      this.info &= 2147483647;
-/*  929: 848 */      this.right = right;
-/*  930:     */    }
-/*  931:     */    
-/*  933:     */    boolean black()
-/*  934:     */    {
-/*  935: 854 */      return (this.info & 0x1) != 0;
-/*  936:     */    }
-/*  937:     */    
-/*  939:     */    void black(boolean black)
-/*  940:     */    {
-/*  941: 860 */      if (black) this.info |= 1; else {
-/*  942: 861 */        this.info &= -2;
-/*  943:     */      }
-/*  944:     */    }
-/*  945:     */    
-/*  947:     */    Entry next()
-/*  948:     */    {
-/*  949: 868 */      Entry next = this.right;
-/*  950: 869 */      for ((this.info & 0x80000000) != 0; (next.info & 0x40000000) == 0; next = next.left) {}
-/*  951: 870 */      return next;
-/*  952:     */    }
-/*  953:     */    
-/*  956:     */    Entry prev()
-/*  957:     */    {
-/*  958: 877 */      Entry prev = this.left;
-/*  959: 878 */      for ((this.info & 0x40000000) != 0; (prev.info & 0x80000000) == 0; prev = prev.right) {}
-/*  960: 879 */      return prev;
-/*  961:     */    }
-/*  962:     */    
-/*  963:     */    public Entry clone() {
-/*  964:     */      Entry c;
-/*  965:     */      try {
-/*  966: 885 */        c = (Entry)super.clone();
-/*  967:     */      }
-/*  968:     */      catch (CloneNotSupportedException cantHappen) {
-/*  969: 888 */        throw new InternalError();
-/*  970:     */      }
-/*  971: 890 */      c.key = this.key;
-/*  972: 891 */      c.info = this.info;
-/*  973: 892 */      return c;
-/*  974:     */    }
-/*  975:     */    
-/*  976: 895 */    public boolean equals(Object o) { if (!(o instanceof Entry)) return false;
-/*  977: 896 */      Entry e = (Entry)o;
-/*  978: 897 */      return this.key == e.key;
-/*  979:     */    }
-/*  980:     */    
-/*  981: 900 */    public int hashCode() { return HashCommon.float2int(this.key); }
-/*  982:     */    
-/*  983:     */    public String toString() {
-/*  984: 903 */      return String.valueOf(this.key);
-/*  985:     */    }
-/*  986:     */  }
-/*  987:     */  
-/* 1017:     */  public int size()
-/* 1018:     */  {
-/* 1019: 938 */    return this.count;
-/* 1020:     */  }
-/* 1021:     */  
-/* 1022: 941 */  public boolean isEmpty() { return this.count == 0; }
-/* 1023:     */  
-/* 1024:     */  public float firstFloat() {
-/* 1025: 944 */    if (this.tree == null) throw new NoSuchElementException();
-/* 1026: 945 */    return this.firstEntry.key;
-/* 1027:     */  }
-/* 1028:     */  
-/* 1029: 948 */  public float lastFloat() { if (this.tree == null) throw new NoSuchElementException();
-/* 1030: 949 */    return this.lastEntry.key;
-/* 1031:     */  }
-/* 1032:     */  
-/* 1035:     */  private class SetIterator
-/* 1036:     */    extends AbstractFloatListIterator
-/* 1037:     */  {
-/* 1038:     */    FloatRBTreeSet.Entry prev;
-/* 1039:     */    
-/* 1040:     */    FloatRBTreeSet.Entry next;
-/* 1041:     */    
-/* 1042:     */    FloatRBTreeSet.Entry curr;
-/* 1043:     */    
-/* 1044: 963 */    int index = 0;
-/* 1045:     */    
-/* 1046: 965 */    SetIterator() { this.next = FloatRBTreeSet.this.firstEntry; }
-/* 1047:     */    
-/* 1048:     */    SetIterator(float k) {
-/* 1049: 968 */      if ((this.next = FloatRBTreeSet.this.locateKey(k)) != null)
-/* 1050: 969 */        if (FloatRBTreeSet.this.compare(this.next.key, k) <= 0) {
-/* 1051: 970 */          this.prev = this.next;
-/* 1052: 971 */          this.next = this.next.next();
-/* 1053:     */        } else {
-/* 1054: 973 */          this.prev = this.next.prev();
-/* 1055:     */        } }
-/* 1056:     */    
-/* 1057: 976 */    public boolean hasNext() { return this.next != null; }
-/* 1058: 977 */    public boolean hasPrevious() { return this.prev != null; }
-/* 1059:     */    
-/* 1060: 979 */    void updateNext() { this.next = this.next.next(); }
-/* 1061:     */    
-/* 1062:     */    FloatRBTreeSet.Entry nextEntry() {
-/* 1063: 982 */      if (!hasNext()) throw new NoSuchElementException();
-/* 1064: 983 */      this.curr = (this.prev = this.next);
-/* 1065: 984 */      this.index += 1;
-/* 1066: 985 */      updateNext();
-/* 1067: 986 */      return this.curr; }
-/* 1068:     */    
-/* 1069: 988 */    public float nextFloat() { return nextEntry().key; }
-/* 1070: 989 */    public float previousFloat() { return previousEntry().key; }
-/* 1071:     */    
-/* 1072: 991 */    void updatePrevious() { this.prev = this.prev.prev(); }
-/* 1073:     */    
-/* 1074:     */    FloatRBTreeSet.Entry previousEntry() {
-/* 1075: 994 */      if (!hasPrevious()) throw new NoSuchElementException();
-/* 1076: 995 */      this.curr = (this.next = this.prev);
-/* 1077: 996 */      this.index -= 1;
-/* 1078: 997 */      updatePrevious();
-/* 1079: 998 */      return this.curr;
-/* 1080:     */    }
-/* 1081:     */    
-/* 1082:1001 */    public int nextIndex() { return this.index; }
-/* 1083:     */    
-/* 1085:1004 */    public int previousIndex() { return this.index - 1; }
-/* 1086:     */    
-/* 1087:     */    public void remove() {
-/* 1088:1007 */      if (this.curr == null) { throw new IllegalStateException();
-/* 1089:     */      }
-/* 1090:     */      
-/* 1091:1010 */      if (this.curr == this.prev) this.index -= 1;
-/* 1092:1011 */      this.next = (this.prev = this.curr);
-/* 1093:1012 */      updatePrevious();
-/* 1094:1013 */      updateNext();
-/* 1095:1014 */      FloatRBTreeSet.this.remove(this.curr.key);
-/* 1096:1015 */      this.curr = null;
-/* 1097:     */    }
-/* 1098:     */  }
-/* 1099:     */  
-/* 1100:1019 */  public FloatBidirectionalIterator iterator() { return new SetIterator(); }
-/* 1101:     */  
-/* 1102:     */  public FloatBidirectionalIterator iterator(float from) {
-/* 1103:1022 */    return new SetIterator(from);
-/* 1104:     */  }
-/* 1105:     */  
-/* 1106:1025 */  public FloatComparator comparator() { return this.actualComparator; }
-/* 1107:     */  
-/* 1108:     */  public FloatSortedSet headSet(float to) {
-/* 1109:1028 */    return new Subset(0.0F, true, to, false);
-/* 1110:     */  }
-/* 1111:     */  
-/* 1112:1031 */  public FloatSortedSet tailSet(float from) { return new Subset(from, false, 0.0F, true); }
-/* 1113:     */  
-/* 1114:     */  public FloatSortedSet subSet(float from, float to) {
-/* 1115:1034 */    return new Subset(from, false, to, false);
-/* 1116:     */  }
-/* 1117:     */  
-/* 1121:     */  private final class Subset
-/* 1122:     */    extends AbstractFloatSortedSet
-/* 1123:     */    implements Serializable, FloatSortedSet
-/* 1124:     */  {
-/* 1125:     */    public static final long serialVersionUID = -7046029254386353129L;
-/* 1126:     */    
-/* 1129:     */    float from;
-/* 1130:     */    
-/* 1132:     */    float to;
-/* 1133:     */    
-/* 1135:     */    boolean bottom;
-/* 1136:     */    
-/* 1138:     */    boolean top;
-/* 1139:     */    
-/* 1142:     */    public Subset(float from, boolean bottom, float to, boolean top)
-/* 1143:     */    {
-/* 1144:1063 */      if ((!bottom) && (!top) && (FloatRBTreeSet.this.compare(from, to) > 0)) throw new IllegalArgumentException(new StringBuilder().append("Start element (").append(from).append(") is larger than end element (").append(to).append(")").toString());
-/* 1145:1064 */      this.from = from;
-/* 1146:1065 */      this.bottom = bottom;
-/* 1147:1066 */      this.to = to;
-/* 1148:1067 */      this.top = top;
-/* 1149:     */    }
-/* 1150:     */    
-/* 1151:1070 */    public void clear() { SubsetIterator i = new SubsetIterator();
-/* 1152:1071 */      while (i.hasNext()) {
-/* 1153:1072 */        i.next();
-/* 1154:1073 */        i.remove();
-/* 1155:     */      }
-/* 1156:     */    }
-/* 1157:     */    
-/* 1160:     */    final boolean in(float k)
-/* 1161:     */    {
-/* 1162:1081 */      return ((this.bottom) || (FloatRBTreeSet.this.compare(k, this.from) >= 0)) && ((this.top) || (FloatRBTreeSet.this.compare(k, this.to) < 0));
-/* 1163:     */    }
-/* 1164:     */    
-/* 1167:1086 */    public boolean contains(float k) { return (in(k)) && (FloatRBTreeSet.this.contains(k)); }
-/* 1168:     */    
-/* 1169:     */    public boolean add(float k) {
-/* 1170:1089 */      if (!in(k)) throw new IllegalArgumentException(new StringBuilder().append("Element (").append(k).append(") out of range [").append(this.bottom ? "-" : String.valueOf(this.from)).append(", ").append(this.top ? "-" : String.valueOf(this.to)).append(")").toString());
-/* 1171:1090 */      return FloatRBTreeSet.this.add(k);
-/* 1172:     */    }
-/* 1173:     */    
-/* 1174:     */    public boolean remove(float k) {
-/* 1175:1094 */      if (!in(k)) return false;
-/* 1176:1095 */      return FloatRBTreeSet.this.remove(k);
-/* 1177:     */    }
-/* 1178:     */    
-/* 1179:1098 */    public int size() { SubsetIterator i = new SubsetIterator();
-/* 1180:1099 */      int n = 0;
-/* 1181:1100 */      while (i.hasNext()) {
-/* 1182:1101 */        n++;
-/* 1183:1102 */        i.next();
-/* 1184:     */      }
-/* 1185:1104 */      return n;
-/* 1186:     */    }
-/* 1187:     */    
-/* 1188:1107 */    public boolean isEmpty() { return !new SubsetIterator().hasNext(); }
-/* 1189:     */    
-/* 1190:     */    public FloatComparator comparator() {
-/* 1191:1110 */      return FloatRBTreeSet.this.actualComparator;
-/* 1192:     */    }
-/* 1193:     */    
-/* 1194:1113 */    public FloatBidirectionalIterator iterator() { return new SubsetIterator(); }
-/* 1195:     */    
-/* 1197:1116 */    public FloatBidirectionalIterator iterator(float from) { return new SubsetIterator(from); }
-/* 1198:     */    
-/* 1199:     */    public FloatSortedSet headSet(float to) {
-/* 1200:1119 */      if (this.top) return new Subset(FloatRBTreeSet.this, this.from, this.bottom, to, false);
-/* 1201:1120 */      return FloatRBTreeSet.this.compare(to, this.to) < 0 ? new Subset(FloatRBTreeSet.this, this.from, this.bottom, to, false) : this;
-/* 1202:     */    }
-/* 1203:     */    
-/* 1204:1123 */    public FloatSortedSet tailSet(float from) { if (this.bottom) return new Subset(FloatRBTreeSet.this, from, false, this.to, this.top);
-/* 1205:1124 */      return FloatRBTreeSet.this.compare(from, this.from) > 0 ? new Subset(FloatRBTreeSet.this, from, false, this.to, this.top) : this;
-/* 1206:     */    }
-/* 1207:     */    
-/* 1208:1127 */    public FloatSortedSet subSet(float from, float to) { if ((this.top) && (this.bottom)) return new Subset(FloatRBTreeSet.this, from, false, to, false);
-/* 1209:1128 */      if (!this.top) to = FloatRBTreeSet.this.compare(to, this.to) < 0 ? to : this.to;
-/* 1210:1129 */      if (!this.bottom) from = FloatRBTreeSet.this.compare(from, this.from) > 0 ? from : this.from;
-/* 1211:1130 */      if ((!this.top) && (!this.bottom) && (from == this.from) && (to == this.to)) return this;
-/* 1212:1131 */      return new Subset(FloatRBTreeSet.this, from, false, to, false);
-/* 1213:     */    }
-/* 1214:     */    
-/* 1217:     */    public FloatRBTreeSet.Entry firstEntry()
-/* 1218:     */    {
-/* 1219:1138 */      if (FloatRBTreeSet.this.tree == null) return null;
-/* 1220:     */      FloatRBTreeSet.Entry e;
-/* 1221:     */      FloatRBTreeSet.Entry e;
-/* 1222:1141 */      if (this.bottom) { e = FloatRBTreeSet.this.firstEntry;
-/* 1223:     */      } else {
-/* 1224:1143 */        e = FloatRBTreeSet.this.locateKey(this.from);
-/* 1225:     */        
-/* 1226:1145 */        if (FloatRBTreeSet.this.compare(e.key, this.from) < 0) { e = e.next();
-/* 1227:     */        }
-/* 1228:     */      }
-/* 1229:1148 */      if ((e == null) || ((!this.top) && (FloatRBTreeSet.this.compare(e.key, this.to) >= 0))) return null;
-/* 1230:1149 */      return e;
-/* 1231:     */    }
-/* 1232:     */    
-/* 1235:     */    public FloatRBTreeSet.Entry lastEntry()
-/* 1236:     */    {
-/* 1237:1156 */      if (FloatRBTreeSet.this.tree == null) return null;
-/* 1238:     */      FloatRBTreeSet.Entry e;
-/* 1239:     */      FloatRBTreeSet.Entry e;
-/* 1240:1159 */      if (this.top) { e = FloatRBTreeSet.this.lastEntry;
-/* 1241:     */      } else {
-/* 1242:1161 */        e = FloatRBTreeSet.this.locateKey(this.to);
-/* 1243:     */        
-/* 1244:1163 */        if (FloatRBTreeSet.this.compare(e.key, this.to) >= 0) { e = e.prev();
-/* 1245:     */        }
-/* 1246:     */      }
-/* 1247:1166 */      if ((e == null) || ((!this.bottom) && (FloatRBTreeSet.this.compare(e.key, this.from) < 0))) return null;
-/* 1248:1167 */      return e;
-/* 1249:     */    }
-/* 1250:     */    
-/* 1251:1170 */    public float firstFloat() { FloatRBTreeSet.Entry e = firstEntry();
-/* 1252:1171 */      if (e == null) throw new NoSuchElementException();
-/* 1253:1172 */      return e.key;
-/* 1254:     */    }
-/* 1255:     */    
-/* 1256:1175 */    public float lastFloat() { FloatRBTreeSet.Entry e = lastEntry();
-/* 1257:1176 */      if (e == null) throw new NoSuchElementException();
-/* 1258:1177 */      return e.key;
-/* 1259:     */    }
-/* 1260:     */    
-/* 1263:     */    private final class SubsetIterator
-/* 1264:     */      extends FloatRBTreeSet.SetIterator
-/* 1265:     */    {
-/* 1266:     */      SubsetIterator()
-/* 1267:     */      {
-/* 1268:1187 */        super();
-/* 1269:1188 */        this.next = FloatRBTreeSet.Subset.this.firstEntry();
-/* 1270:     */      }
-/* 1271:     */      
-/* 1272:1191 */      SubsetIterator(float k) { this();
-/* 1273:1192 */        if (this.next != null)
-/* 1274:1193 */          if ((!FloatRBTreeSet.Subset.this.bottom) && (FloatRBTreeSet.this.compare(k, this.next.key) < 0)) { this.prev = null;
-/* 1275:1194 */          } else if ((!FloatRBTreeSet.Subset.this.top) && (FloatRBTreeSet.this.compare(k, (this.prev = FloatRBTreeSet.Subset.this.lastEntry()).key) >= 0)) { this.next = null;
-/* 1276:     */          } else {
-/* 1277:1196 */            this.next = FloatRBTreeSet.this.locateKey(k);
-/* 1278:1197 */            if (FloatRBTreeSet.this.compare(this.next.key, k) <= 0) {
-/* 1279:1198 */              this.prev = this.next;
-/* 1280:1199 */              this.next = this.next.next();
-/* 1281:     */            } else {
-/* 1282:1201 */              this.prev = this.next.prev();
-/* 1283:     */            }
-/* 1284:     */          }
-/* 1285:     */      }
-/* 1286:     */      
-/* 1287:1206 */      void updatePrevious() { this.prev = this.prev.prev();
-/* 1288:1207 */        if ((!FloatRBTreeSet.Subset.this.bottom) && (this.prev != null) && (FloatRBTreeSet.this.compare(this.prev.key, FloatRBTreeSet.Subset.this.from) < 0)) this.prev = null;
-/* 1289:     */      }
-/* 1290:     */      
-/* 1291:1210 */      void updateNext() { this.next = this.next.next();
-/* 1292:1211 */        if ((!FloatRBTreeSet.Subset.this.top) && (this.next != null) && (FloatRBTreeSet.this.compare(this.next.key, FloatRBTreeSet.Subset.this.to) >= 0)) { this.next = null;
-/* 1293:     */        }
-/* 1294:     */      }
-/* 1295:     */    }
-/* 1296:     */  }
-/* 1297:     */  
-/* 1300:     */  public Object clone()
-/* 1301:     */  {
-/* 1302:     */    FloatRBTreeSet c;
-/* 1303:     */    
-/* 1305:     */    try
-/* 1306:     */    {
-/* 1307:1226 */      c = (FloatRBTreeSet)super.clone();
-/* 1308:     */    }
-/* 1309:     */    catch (CloneNotSupportedException cantHappen) {
-/* 1310:1229 */      throw new InternalError();
-/* 1311:     */    }
-/* 1312:1231 */    c.allocatePaths();
-/* 1313:1232 */    if (this.count != 0)
-/* 1314:     */    {
-/* 1315:1234 */      Entry rp = new Entry();Entry rq = new Entry();
-/* 1316:1235 */      Entry p = rp;
-/* 1317:1236 */      rp.left(this.tree);
-/* 1318:1237 */      Entry q = rq;
-/* 1319:1238 */      rq.pred(null);
-/* 1320:     */      for (;;) {
-/* 1321:1240 */        if (!p.pred()) {
-/* 1322:1241 */          Entry e = p.left.clone();
-/* 1323:1242 */          e.pred(q.left);
-/* 1324:1243 */          e.succ(q);
-/* 1325:1244 */          q.left(e);
-/* 1326:1245 */          p = p.left;
-/* 1327:1246 */          q = q.left;
-/* 1328:     */        }
-/* 1329:     */        else {
-/* 1330:1249 */          while (p.succ()) {
-/* 1331:1250 */            p = p.right;
-/* 1332:1251 */            if (p == null) {
-/* 1333:1252 */              q.right = null;
-/* 1334:1253 */              c.tree = rq.left;
-/* 1335:1254 */              c.firstEntry = c.tree;
-/* 1336:1255 */              while (c.firstEntry.left != null) c.firstEntry = c.firstEntry.left;
-/* 1337:1256 */              c.lastEntry = c.tree;
-/* 1338:1257 */              while (c.lastEntry.right != null) c.lastEntry = c.lastEntry.right;
-/* 1339:1258 */              return c;
-/* 1340:     */            }
-/* 1341:1260 */            q = q.right;
-/* 1342:     */          }
-/* 1343:1262 */          p = p.right;
-/* 1344:1263 */          q = q.right;
-/* 1345:     */        }
-/* 1346:1265 */        if (!p.succ()) {
-/* 1347:1266 */          Entry e = p.right.clone();
-/* 1348:1267 */          e.succ(q.right);
-/* 1349:1268 */          e.pred(q);
-/* 1350:1269 */          q.right(e);
-/* 1351:     */        }
-/* 1352:     */      }
-/* 1353:     */    }
-/* 1354:1273 */    return c;
-/* 1355:     */  }
-/* 1356:     */  
-/* 1357:1276 */  private void writeObject(ObjectOutputStream s) throws IOException { int n = this.count;
-/* 1358:1277 */    SetIterator i = new SetIterator();
-/* 1359:1278 */    s.defaultWriteObject();
-/* 1360:1279 */    while (n-- != 0) { s.writeFloat(i.nextFloat());
-/* 1361:     */    }
-/* 1362:     */  }
-/* 1363:     */  
-/* 1368:     */  private Entry readTree(ObjectInputStream s, int n, Entry pred, Entry succ)
-/* 1369:     */    throws IOException, ClassNotFoundException
-/* 1370:     */  {
-/* 1371:1290 */    if (n == 1) {
-/* 1372:1291 */      Entry top = new Entry(s.readFloat());
-/* 1373:1292 */      top.pred(pred);
-/* 1374:1293 */      top.succ(succ);
-/* 1375:1294 */      top.black(true);
-/* 1376:1295 */      return top;
-/* 1377:     */    }
-/* 1378:1297 */    if (n == 2)
-/* 1379:     */    {
-/* 1381:1300 */      Entry top = new Entry(s.readFloat());
-/* 1382:1301 */      top.black(true);
-/* 1383:1302 */      top.right(new Entry(s.readFloat()));
-/* 1384:1303 */      top.right.pred(top);
-/* 1385:1304 */      top.pred(pred);
-/* 1386:1305 */      top.right.succ(succ);
-/* 1387:1306 */      return top;
-/* 1388:     */    }
-/* 1389:     */    
-/* 1390:1309 */    int rightN = n / 2;int leftN = n - rightN - 1;
-/* 1391:1310 */    Entry top = new Entry();
-/* 1392:1311 */    top.left(readTree(s, leftN, pred, top));
-/* 1393:1312 */    top.key = s.readFloat();
-/* 1394:1313 */    top.black(true);
-/* 1395:1314 */    top.right(readTree(s, rightN, top, succ));
-/* 1396:1315 */    if (n + 2 == (n + 2 & -(n + 2))) top.right.black(false);
-/* 1397:1316 */    return top;
-/* 1398:     */  }
-/* 1399:     */  
-/* 1400:1319 */  private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException { s.defaultReadObject();
-/* 1401:     */    
-/* 1403:1322 */    setActualComparator();
-/* 1404:1323 */    allocatePaths();
-/* 1405:1324 */    if (this.count != 0) {
-/* 1406:1325 */      this.tree = readTree(s, this.count, null, null);
-/* 1407:     */      
-/* 1408:1327 */      Entry e = this.tree;
-/* 1409:1328 */      while (e.left() != null) e = e.left();
-/* 1410:1329 */      this.firstEntry = e;
-/* 1411:1330 */      e = this.tree;
-/* 1412:1331 */      while (e.right() != null) e = e.right();
-/* 1413:1332 */      this.lastEntry = e;
-/* 1414:     */    }
-/* 1415:     */  }
-/* 1416:     */  
-/* 1417:     */  private void checkNodePath() {}
-/* 1418:     */  
-/* 1419:1338 */  private int checkTree(Entry e, int d, int D) { return 0; }
-/* 1420:     */}
+package it.unimi.dsi.fastutil.floats;
+
+import it.unimi.dsi.fastutil.HashCommon;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.SortedSet;
+
+public class FloatRBTreeSet
+  extends AbstractFloatSortedSet
+  implements Serializable, Cloneable, FloatSortedSet
+{
+  protected transient Entry tree;
+  protected int count;
+  protected transient Entry firstEntry;
+  protected transient Entry lastEntry;
+  protected Comparator<? super Float> storedComparator;
+  protected transient FloatComparator actualComparator;
+  public static final long serialVersionUID = -7046029254386353130L;
+  private static final boolean ASSERTS = false;
+  private transient boolean[] dirPath;
+  private transient Entry[] nodePath;
+  
+  public FloatRBTreeSet()
+  {
+    allocatePaths();
+    this.tree = null;
+    this.count = 0;
+  }
+  
+  private void setActualComparator()
+  {
+    if ((this.storedComparator == null) || ((this.storedComparator instanceof FloatComparator))) {
+      this.actualComparator = ((FloatComparator)this.storedComparator);
+    } else {
+      this.actualComparator = new FloatComparator()
+      {
+        public int compare(float local_k1, float local_k2)
+        {
+          return FloatRBTreeSet.this.storedComparator.compare(Float.valueOf(local_k1), Float.valueOf(local_k2));
+        }
+        
+        public int compare(Float ok1, Float ok2)
+        {
+          return FloatRBTreeSet.this.storedComparator.compare(ok1, ok2);
+        }
+      };
+    }
+  }
+  
+  public FloatRBTreeSet(Comparator<? super Float> local_c)
+  {
+    this();
+    this.storedComparator = local_c;
+    setActualComparator();
+  }
+  
+  public FloatRBTreeSet(Collection<? extends Float> local_c)
+  {
+    this();
+    addAll(local_c);
+  }
+  
+  public FloatRBTreeSet(SortedSet<Float> local_s)
+  {
+    this(local_s.comparator());
+    addAll(local_s);
+  }
+  
+  public FloatRBTreeSet(FloatCollection local_c)
+  {
+    this();
+    addAll(local_c);
+  }
+  
+  public FloatRBTreeSet(FloatSortedSet local_s)
+  {
+    this(local_s.comparator());
+    addAll(local_s);
+  }
+  
+  public FloatRBTreeSet(FloatIterator local_i)
+  {
+    allocatePaths();
+    while (local_i.hasNext()) {
+      add(local_i.nextFloat());
+    }
+  }
+  
+  public FloatRBTreeSet(Iterator<? extends Float> local_i)
+  {
+    this(FloatIterators.asFloatIterator(local_i));
+  }
+  
+  public FloatRBTreeSet(float[] local_a, int offset, int length, Comparator<? super Float> local_c)
+  {
+    this(local_c);
+    FloatArrays.ensureOffsetLength(local_a, offset, length);
+    for (int local_i = 0; local_i < length; local_i++) {
+      add(local_a[(offset + local_i)]);
+    }
+  }
+  
+  public FloatRBTreeSet(float[] local_a, int offset, int length)
+  {
+    this(local_a, offset, length, null);
+  }
+  
+  public FloatRBTreeSet(float[] local_a)
+  {
+    this();
+    int local_i = local_a.length;
+    while (local_i-- != 0) {
+      add(local_a[local_i]);
+    }
+  }
+  
+  public FloatRBTreeSet(float[] local_a, Comparator<? super Float> local_c)
+  {
+    this(local_c);
+    int local_i = local_a.length;
+    while (local_i-- != 0) {
+      add(local_a[local_i]);
+    }
+  }
+  
+  final int compare(float local_k1, float local_k2)
+  {
+    return this.actualComparator == null ? 1 : local_k1 == local_k2 ? 0 : local_k1 < local_k2 ? -1 : this.actualComparator.compare(local_k1, local_k2);
+  }
+  
+  private Entry findKey(float local_k)
+  {
+    int cmp;
+    for (Entry local_e = this.tree; (local_e != null) && ((cmp = compare(local_k, local_e.key)) != 0); local_e = cmp < 0 ? local_e.left() : local_e.right()) {}
+    return local_e;
+  }
+  
+  final Entry locateKey(float local_k)
+  {
+    Entry local_e = this.tree;
+    Entry last = this.tree;
+    int cmp = 0;
+    while ((local_e != null) && ((cmp = compare(local_k, local_e.key)) != 0))
+    {
+      last = local_e;
+      local_e = cmp < 0 ? local_e.left() : local_e.right();
+    }
+    return cmp == 0 ? local_e : last;
+  }
+  
+  private void allocatePaths()
+  {
+    this.dirPath = new boolean[64];
+    this.nodePath = new Entry[64];
+  }
+  
+  public boolean add(float local_k)
+  {
+    int maxDepth = 0;
+    if (this.tree == null)
+    {
+      this.count += 1;
+      this.tree = (this.lastEntry = this.firstEntry = new Entry(local_k));
+    }
+    else
+    {
+      Entry local_p = this.tree;
+      int local_i = 0;
+      for (;;)
+      {
+        int cmp;
+        if ((cmp = compare(local_k, local_p.key)) == 0)
+        {
+          while (local_i-- != 0) {
+            this.nodePath[local_i] = null;
+          }
+          return false;
+        }
+        this.nodePath[local_i] = local_p;
+        if ((this.dirPath[(local_i++)] = cmp > 0 ? 1 : 0) != 0)
+        {
+          if (local_p.succ())
+          {
+            this.count += 1;
+            Entry local_e = new Entry(local_k);
+            if (local_p.right == null) {
+              this.lastEntry = local_e;
+            }
+            local_e.left = local_p;
+            local_e.right = local_p.right;
+            local_p.right(local_e);
+            break;
+          }
+          local_p = local_p.right;
+        }
+        else
+        {
+          if (local_p.pred())
+          {
+            this.count += 1;
+            Entry local_e = new Entry(local_k);
+            if (local_p.left == null) {
+              this.firstEntry = local_e;
+            }
+            local_e.right = local_p;
+            local_e.left = local_p.left;
+            local_p.left(local_e);
+            break;
+          }
+          local_p = local_p.left;
+        }
+      }
+      Entry local_e;
+      maxDepth = local_i--;
+      while ((local_i > 0) && (!this.nodePath[local_i].black())) {
+        if (this.dirPath[(local_i - 1)] == 0)
+        {
+          Entry local_y = this.nodePath[(local_i - 1)].right;
+          if ((!this.nodePath[(local_i - 1)].succ()) && (!local_y.black()))
+          {
+            this.nodePath[local_i].black(true);
+            local_y.black(true);
+            this.nodePath[(local_i - 1)].black(false);
+            local_i -= 2;
+          }
+          else
+          {
+            if (this.dirPath[local_i] == 0)
+            {
+              local_y = this.nodePath[local_i];
+            }
+            else
+            {
+              Entry local_x = this.nodePath[local_i];
+              local_y = local_x.right;
+              local_x.right = local_y.left;
+              local_y.left = local_x;
+              this.nodePath[(local_i - 1)].left = local_y;
+              if (local_y.pred())
+              {
+                local_y.pred(false);
+                local_x.succ(local_y);
+              }
+            }
+            Entry local_x = this.nodePath[(local_i - 1)];
+            local_x.black(false);
+            local_y.black(true);
+            local_x.left = local_y.right;
+            local_y.right = local_x;
+            if (local_i < 2) {
+              this.tree = local_y;
+            } else if (this.dirPath[(local_i - 2)] != 0) {
+              this.nodePath[(local_i - 2)].right = local_y;
+            } else {
+              this.nodePath[(local_i - 2)].left = local_y;
+            }
+            if (!local_y.succ()) {
+              break;
+            }
+            local_y.succ(false);
+            local_x.pred(local_y);
+            break;
+          }
+        }
+        else
+        {
+          Entry local_y = this.nodePath[(local_i - 1)].left;
+          if ((!this.nodePath[(local_i - 1)].pred()) && (!local_y.black()))
+          {
+            this.nodePath[local_i].black(true);
+            local_y.black(true);
+            this.nodePath[(local_i - 1)].black(false);
+            local_i -= 2;
+          }
+          else
+          {
+            if (this.dirPath[local_i] != 0)
+            {
+              local_y = this.nodePath[local_i];
+            }
+            else
+            {
+              Entry local_x = this.nodePath[local_i];
+              local_y = local_x.left;
+              local_x.left = local_y.right;
+              local_y.right = local_x;
+              this.nodePath[(local_i - 1)].right = local_y;
+              if (local_y.succ())
+              {
+                local_y.succ(false);
+                local_x.pred(local_y);
+              }
+            }
+            Entry local_x = this.nodePath[(local_i - 1)];
+            local_x.black(false);
+            local_y.black(true);
+            local_x.right = local_y.left;
+            local_y.left = local_x;
+            if (local_i < 2) {
+              this.tree = local_y;
+            } else if (this.dirPath[(local_i - 2)] != 0) {
+              this.nodePath[(local_i - 2)].right = local_y;
+            } else {
+              this.nodePath[(local_i - 2)].left = local_y;
+            }
+            if (!local_y.pred()) {
+              break;
+            }
+            local_y.pred(false);
+            local_x.succ(local_y);
+            break;
+          }
+        }
+      }
+    }
+    this.tree.black(true);
+    while (maxDepth-- != 0) {
+      this.nodePath[maxDepth] = null;
+    }
+    return true;
+  }
+  
+  public boolean remove(float local_k)
+  {
+    if (this.tree == null) {
+      return false;
+    }
+    Entry local_p = this.tree;
+    int local_i = 0;
+    float local_kk = local_k;
+    int cmp;
+    while ((cmp = compare(local_kk, local_p.key)) != 0)
+    {
+      this.dirPath[local_i] = (cmp > 0 ? 1 : false);
+      this.nodePath[local_i] = local_p;
+      if (this.dirPath[(local_i++)] != 0)
+      {
+        if ((local_p = local_p.right()) == null)
+        {
+          while (local_i-- != 0) {
+            this.nodePath[local_i] = null;
+          }
+          return false;
+        }
+      }
+      else if ((local_p = local_p.left()) == null)
+      {
+        while (local_i-- != 0) {
+          this.nodePath[local_i] = null;
+        }
+        return false;
+      }
+    }
+    if (local_p.left == null) {
+      this.firstEntry = local_p.next();
+    }
+    if (local_p.right == null) {
+      this.lastEntry = local_p.prev();
+    }
+    if (local_p.succ())
+    {
+      if (local_p.pred())
+      {
+        if (local_i == 0) {
+          this.tree = local_p.left;
+        } else if (this.dirPath[(local_i - 1)] != 0) {
+          this.nodePath[(local_i - 1)].succ(local_p.right);
+        } else {
+          this.nodePath[(local_i - 1)].pred(local_p.left);
+        }
+      }
+      else
+      {
+        local_p.prev().right = local_p.right;
+        if (local_i == 0) {
+          this.tree = local_p.left;
+        } else if (this.dirPath[(local_i - 1)] != 0) {
+          this.nodePath[(local_i - 1)].right = local_p.left;
+        } else {
+          this.nodePath[(local_i - 1)].left = local_p.left;
+        }
+      }
+    }
+    else
+    {
+      Entry local_r = local_p.right;
+      if (local_r.pred())
+      {
+        local_r.left = local_p.left;
+        local_r.pred(local_p.pred());
+        if (!local_r.pred()) {
+          local_r.prev().right = local_r;
+        }
+        if (local_i == 0) {
+          this.tree = local_r;
+        } else if (this.dirPath[(local_i - 1)] != 0) {
+          this.nodePath[(local_i - 1)].right = local_r;
+        } else {
+          this.nodePath[(local_i - 1)].left = local_r;
+        }
+        boolean color = local_r.black();
+        local_r.black(local_p.black());
+        local_p.black(color);
+        this.dirPath[local_i] = true;
+        this.nodePath[(local_i++)] = local_r;
+      }
+      else
+      {
+        int local_j = local_i++;
+        Entry local_s;
+        for (;;)
+        {
+          this.dirPath[local_i] = false;
+          this.nodePath[(local_i++)] = local_r;
+          local_s = local_r.left;
+          if (local_s.pred()) {
+            break;
+          }
+          local_r = local_s;
+        }
+        this.dirPath[local_j] = true;
+        this.nodePath[local_j] = local_s;
+        if (local_s.succ()) {
+          local_r.pred(local_s);
+        } else {
+          local_r.left = local_s.right;
+        }
+        local_s.left = local_p.left;
+        if (!local_p.pred())
+        {
+          local_p.prev().right = local_s;
+          local_s.pred(false);
+        }
+        local_s.right(local_p.right);
+        boolean color = local_s.black();
+        local_s.black(local_p.black());
+        local_p.black(color);
+        if (local_j == 0) {
+          this.tree = local_s;
+        } else if (this.dirPath[(local_j - 1)] != 0) {
+          this.nodePath[(local_j - 1)].right = local_s;
+        } else {
+          this.nodePath[(local_j - 1)].left = local_s;
+        }
+      }
+    }
+    int color = local_i;
+    if (local_p.black())
+    {
+      while (local_i > 0)
+      {
+        if (((this.dirPath[(local_i - 1)] != 0) && (!this.nodePath[(local_i - 1)].succ())) || ((this.dirPath[(local_i - 1)] == 0) && (!this.nodePath[(local_i - 1)].pred())))
+        {
+          Entry local_r = this.dirPath[(local_i - 1)] != 0 ? this.nodePath[(local_i - 1)].right : this.nodePath[(local_i - 1)].left;
+          if (!local_r.black())
+          {
+            local_r.black(true);
+            break;
+          }
+        }
+        if (this.dirPath[(local_i - 1)] == 0)
+        {
+          Entry local_r = this.nodePath[(local_i - 1)].right;
+          if (!local_r.black())
+          {
+            local_r.black(true);
+            this.nodePath[(local_i - 1)].black(false);
+            this.nodePath[(local_i - 1)].right = local_r.left;
+            local_r.left = this.nodePath[(local_i - 1)];
+            if (local_i < 2) {
+              this.tree = local_r;
+            } else if (this.dirPath[(local_i - 2)] != 0) {
+              this.nodePath[(local_i - 2)].right = local_r;
+            } else {
+              this.nodePath[(local_i - 2)].left = local_r;
+            }
+            this.nodePath[local_i] = this.nodePath[(local_i - 1)];
+            this.dirPath[local_i] = false;
+            this.nodePath[(local_i - 1)] = local_r;
+            if (color == local_i++) {
+              color++;
+            }
+            local_r = this.nodePath[(local_i - 1)].right;
+          }
+          if (((local_r.pred()) || (local_r.left.black())) && ((local_r.succ()) || (local_r.right.black())))
+          {
+            local_r.black(false);
+          }
+          else
+          {
+            if ((local_r.succ()) || (local_r.right.black()))
+            {
+              Entry local_s = local_r.left;
+              local_s.black(true);
+              local_r.black(false);
+              local_r.left = local_s.right;
+              local_s.right = local_r;
+              local_r = this.nodePath[(local_i - 1)].right = local_s;
+              if (local_r.succ())
+              {
+                local_r.succ(false);
+                local_r.right.pred(local_r);
+              }
+            }
+            local_r.black(this.nodePath[(local_i - 1)].black());
+            this.nodePath[(local_i - 1)].black(true);
+            local_r.right.black(true);
+            this.nodePath[(local_i - 1)].right = local_r.left;
+            local_r.left = this.nodePath[(local_i - 1)];
+            if (local_i < 2) {
+              this.tree = local_r;
+            } else if (this.dirPath[(local_i - 2)] != 0) {
+              this.nodePath[(local_i - 2)].right = local_r;
+            } else {
+              this.nodePath[(local_i - 2)].left = local_r;
+            }
+            if (!local_r.pred()) {
+              break;
+            }
+            local_r.pred(false);
+            this.nodePath[(local_i - 1)].succ(local_r);
+            break;
+          }
+        }
+        else
+        {
+          Entry local_r = this.nodePath[(local_i - 1)].left;
+          if (!local_r.black())
+          {
+            local_r.black(true);
+            this.nodePath[(local_i - 1)].black(false);
+            this.nodePath[(local_i - 1)].left = local_r.right;
+            local_r.right = this.nodePath[(local_i - 1)];
+            if (local_i < 2) {
+              this.tree = local_r;
+            } else if (this.dirPath[(local_i - 2)] != 0) {
+              this.nodePath[(local_i - 2)].right = local_r;
+            } else {
+              this.nodePath[(local_i - 2)].left = local_r;
+            }
+            this.nodePath[local_i] = this.nodePath[(local_i - 1)];
+            this.dirPath[local_i] = true;
+            this.nodePath[(local_i - 1)] = local_r;
+            if (color == local_i++) {
+              color++;
+            }
+            local_r = this.nodePath[(local_i - 1)].left;
+          }
+          if (((local_r.pred()) || (local_r.left.black())) && ((local_r.succ()) || (local_r.right.black())))
+          {
+            local_r.black(false);
+          }
+          else
+          {
+            if ((local_r.pred()) || (local_r.left.black()))
+            {
+              Entry local_s = local_r.right;
+              local_s.black(true);
+              local_r.black(false);
+              local_r.right = local_s.left;
+              local_s.left = local_r;
+              local_r = this.nodePath[(local_i - 1)].left = local_s;
+              if (local_r.pred())
+              {
+                local_r.pred(false);
+                local_r.left.succ(local_r);
+              }
+            }
+            local_r.black(this.nodePath[(local_i - 1)].black());
+            this.nodePath[(local_i - 1)].black(true);
+            local_r.left.black(true);
+            this.nodePath[(local_i - 1)].left = local_r.right;
+            local_r.right = this.nodePath[(local_i - 1)];
+            if (local_i < 2) {
+              this.tree = local_r;
+            } else if (this.dirPath[(local_i - 2)] != 0) {
+              this.nodePath[(local_i - 2)].right = local_r;
+            } else {
+              this.nodePath[(local_i - 2)].left = local_r;
+            }
+            if (!local_r.succ()) {
+              break;
+            }
+            local_r.succ(false);
+            this.nodePath[(local_i - 1)].pred(local_r);
+            break;
+          }
+        }
+        local_i--;
+      }
+      if (this.tree != null) {
+        this.tree.black(true);
+      }
+    }
+    this.count -= 1;
+    while (color-- != 0) {
+      this.nodePath[color] = null;
+    }
+    return true;
+  }
+  
+  public boolean contains(float local_k)
+  {
+    return findKey(local_k) != null;
+  }
+  
+  public void clear()
+  {
+    this.count = 0;
+    this.tree = null;
+    this.firstEntry = (this.lastEntry = null);
+  }
+  
+  public int size()
+  {
+    return this.count;
+  }
+  
+  public boolean isEmpty()
+  {
+    return this.count == 0;
+  }
+  
+  public float firstFloat()
+  {
+    if (this.tree == null) {
+      throw new NoSuchElementException();
+    }
+    return this.firstEntry.key;
+  }
+  
+  public float lastFloat()
+  {
+    if (this.tree == null) {
+      throw new NoSuchElementException();
+    }
+    return this.lastEntry.key;
+  }
+  
+  public FloatBidirectionalIterator iterator()
+  {
+    return new SetIterator();
+  }
+  
+  public FloatBidirectionalIterator iterator(float from)
+  {
+    return new SetIterator(from);
+  }
+  
+  public FloatComparator comparator()
+  {
+    return this.actualComparator;
+  }
+  
+  public FloatSortedSet headSet(float local_to)
+  {
+    return new Subset(0.0F, true, local_to, false);
+  }
+  
+  public FloatSortedSet tailSet(float from)
+  {
+    return new Subset(from, false, 0.0F, true);
+  }
+  
+  public FloatSortedSet subSet(float from, float local_to)
+  {
+    return new Subset(from, false, local_to, false);
+  }
+  
+  public Object clone()
+  {
+    FloatRBTreeSet local_c;
+    try
+    {
+      local_c = (FloatRBTreeSet)super.clone();
+    }
+    catch (CloneNotSupportedException cantHappen)
+    {
+      throw new InternalError();
+    }
+    local_c.allocatePaths();
+    if (this.count != 0)
+    {
+      Entry local_rp = new Entry();
+      Entry local_rq = new Entry();
+      Entry local_p = local_rp;
+      local_rp.left(this.tree);
+      Entry local_q = local_rq;
+      local_rq.pred(null);
+      for (;;)
+      {
+        if (!local_p.pred())
+        {
+          Entry cantHappen = local_p.left.clone();
+          cantHappen.pred(local_q.left);
+          cantHappen.succ(local_q);
+          local_q.left(cantHappen);
+          local_p = local_p.left;
+          local_q = local_q.left;
+        }
+        else
+        {
+          while (local_p.succ())
+          {
+            local_p = local_p.right;
+            if (local_p == null)
+            {
+              local_q.right = null;
+              local_c.tree = local_rq.left;
+              for (local_c.firstEntry = local_c.tree; local_c.firstEntry.left != null; local_c.firstEntry = local_c.firstEntry.left) {}
+              for (local_c.lastEntry = local_c.tree; local_c.lastEntry.right != null; local_c.lastEntry = local_c.lastEntry.right) {}
+              return local_c;
+            }
+            local_q = local_q.right;
+          }
+          local_p = local_p.right;
+          local_q = local_q.right;
+        }
+        if (!local_p.succ())
+        {
+          Entry cantHappen = local_p.right.clone();
+          cantHappen.succ(local_q.right);
+          cantHappen.pred(local_q);
+          local_q.right(cantHappen);
+        }
+      }
+    }
+    return local_c;
+  }
+  
+  private void writeObject(ObjectOutputStream local_s)
+    throws IOException
+  {
+    int local_n = this.count;
+    SetIterator local_i = new SetIterator();
+    local_s.defaultWriteObject();
+    while (local_n-- != 0) {
+      local_s.writeFloat(local_i.nextFloat());
+    }
+  }
+  
+  private Entry readTree(ObjectInputStream local_s, int local_n, Entry pred, Entry succ)
+    throws IOException, ClassNotFoundException
+  {
+    if (local_n == 1)
+    {
+      Entry top = new Entry(local_s.readFloat());
+      top.pred(pred);
+      top.succ(succ);
+      top.black(true);
+      return top;
+    }
+    if (local_n == 2)
+    {
+      Entry top = new Entry(local_s.readFloat());
+      top.black(true);
+      top.right(new Entry(local_s.readFloat()));
+      top.right.pred(top);
+      top.pred(pred);
+      top.right.succ(succ);
+      return top;
+    }
+    int top = local_n / 2;
+    int leftN = local_n - top - 1;
+    Entry top = new Entry();
+    top.left(readTree(local_s, leftN, pred, top));
+    top.key = local_s.readFloat();
+    top.black(true);
+    top.right(readTree(local_s, top, top, succ));
+    if (local_n + 2 == (local_n + 2 & -(local_n + 2))) {
+      top.right.black(false);
+    }
+    return top;
+  }
+  
+  private void readObject(ObjectInputStream local_s)
+    throws IOException, ClassNotFoundException
+  {
+    local_s.defaultReadObject();
+    setActualComparator();
+    allocatePaths();
+    if (this.count != 0)
+    {
+      this.tree = readTree(local_s, this.count, null, null);
+      for (Entry local_e = this.tree; local_e.left() != null; local_e = local_e.left()) {}
+      this.firstEntry = local_e;
+      for (local_e = this.tree; local_e.right() != null; local_e = local_e.right()) {}
+      this.lastEntry = local_e;
+    }
+  }
+  
+  private void checkNodePath() {}
+  
+  private int checkTree(Entry local_e, int local_d, int local_D)
+  {
+    return 0;
+  }
+  
+  private final class Subset
+    extends AbstractFloatSortedSet
+    implements Serializable, FloatSortedSet
+  {
+    public static final long serialVersionUID = -7046029254386353129L;
+    float from;
+    float field_82;
+    boolean bottom;
+    boolean top;
+    
+    public Subset(float from, boolean bottom, float local_to, boolean top)
+    {
+      if ((!bottom) && (!top) && (FloatRBTreeSet.this.compare(from, local_to) > 0)) {
+        throw new IllegalArgumentException("Start element (" + from + ") is larger than end element (" + local_to + ")");
+      }
+      this.from = from;
+      this.bottom = bottom;
+      this.field_82 = local_to;
+      this.top = top;
+    }
+    
+    public void clear()
+    {
+      SubsetIterator local_i = new SubsetIterator();
+      while (local_i.hasNext())
+      {
+        local_i.next();
+        local_i.remove();
+      }
+    }
+    
+    final boolean in(float local_k)
+    {
+      return ((this.bottom) || (FloatRBTreeSet.this.compare(local_k, this.from) >= 0)) && ((this.top) || (FloatRBTreeSet.this.compare(local_k, this.field_82) < 0));
+    }
+    
+    public boolean contains(float local_k)
+    {
+      return (in(local_k)) && (FloatRBTreeSet.this.contains(local_k));
+    }
+    
+    public boolean add(float local_k)
+    {
+      if (!in(local_k)) {
+        throw new IllegalArgumentException("Element (" + local_k + ") out of range [" + (this.bottom ? "-" : String.valueOf(this.from)) + ", " + (this.top ? "-" : String.valueOf(this.field_82)) + ")");
+      }
+      return FloatRBTreeSet.this.add(local_k);
+    }
+    
+    public boolean remove(float local_k)
+    {
+      if (!in(local_k)) {
+        return false;
+      }
+      return FloatRBTreeSet.this.remove(local_k);
+    }
+    
+    public int size()
+    {
+      SubsetIterator local_i = new SubsetIterator();
+      int local_n = 0;
+      while (local_i.hasNext())
+      {
+        local_n++;
+        local_i.next();
+      }
+      return local_n;
+    }
+    
+    public boolean isEmpty()
+    {
+      return !new SubsetIterator().hasNext();
+    }
+    
+    public FloatComparator comparator()
+    {
+      return FloatRBTreeSet.this.actualComparator;
+    }
+    
+    public FloatBidirectionalIterator iterator()
+    {
+      return new SubsetIterator();
+    }
+    
+    public FloatBidirectionalIterator iterator(float from)
+    {
+      return new SubsetIterator(from);
+    }
+    
+    public FloatSortedSet headSet(float local_to)
+    {
+      if (this.top) {
+        return new Subset(FloatRBTreeSet.this, this.from, this.bottom, local_to, false);
+      }
+      return FloatRBTreeSet.this.compare(local_to, this.field_82) < 0 ? new Subset(FloatRBTreeSet.this, this.from, this.bottom, local_to, false) : this;
+    }
+    
+    public FloatSortedSet tailSet(float from)
+    {
+      if (this.bottom) {
+        return new Subset(FloatRBTreeSet.this, from, false, this.field_82, this.top);
+      }
+      return FloatRBTreeSet.this.compare(from, this.from) > 0 ? new Subset(FloatRBTreeSet.this, from, false, this.field_82, this.top) : this;
+    }
+    
+    public FloatSortedSet subSet(float from, float local_to)
+    {
+      if ((this.top) && (this.bottom)) {
+        return new Subset(FloatRBTreeSet.this, from, false, local_to, false);
+      }
+      if (!this.top) {
+        local_to = FloatRBTreeSet.this.compare(local_to, this.field_82) < 0 ? local_to : this.field_82;
+      }
+      if (!this.bottom) {
+        from = FloatRBTreeSet.this.compare(from, this.from) > 0 ? from : this.from;
+      }
+      if ((!this.top) && (!this.bottom) && (from == this.from) && (local_to == this.field_82)) {
+        return this;
+      }
+      return new Subset(FloatRBTreeSet.this, from, false, local_to, false);
+    }
+    
+    public FloatRBTreeSet.Entry firstEntry()
+    {
+      if (FloatRBTreeSet.this.tree == null) {
+        return null;
+      }
+      FloatRBTreeSet.Entry local_e;
+      FloatRBTreeSet.Entry local_e;
+      if (this.bottom)
+      {
+        local_e = FloatRBTreeSet.this.firstEntry;
+      }
+      else
+      {
+        local_e = FloatRBTreeSet.this.locateKey(this.from);
+        if (FloatRBTreeSet.this.compare(local_e.key, this.from) < 0) {
+          local_e = local_e.next();
+        }
+      }
+      if ((local_e == null) || ((!this.top) && (FloatRBTreeSet.this.compare(local_e.key, this.field_82) >= 0))) {
+        return null;
+      }
+      return local_e;
+    }
+    
+    public FloatRBTreeSet.Entry lastEntry()
+    {
+      if (FloatRBTreeSet.this.tree == null) {
+        return null;
+      }
+      FloatRBTreeSet.Entry local_e;
+      FloatRBTreeSet.Entry local_e;
+      if (this.top)
+      {
+        local_e = FloatRBTreeSet.this.lastEntry;
+      }
+      else
+      {
+        local_e = FloatRBTreeSet.this.locateKey(this.field_82);
+        if (FloatRBTreeSet.this.compare(local_e.key, this.field_82) >= 0) {
+          local_e = local_e.prev();
+        }
+      }
+      if ((local_e == null) || ((!this.bottom) && (FloatRBTreeSet.this.compare(local_e.key, this.from) < 0))) {
+        return null;
+      }
+      return local_e;
+    }
+    
+    public float firstFloat()
+    {
+      FloatRBTreeSet.Entry local_e = firstEntry();
+      if (local_e == null) {
+        throw new NoSuchElementException();
+      }
+      return local_e.key;
+    }
+    
+    public float lastFloat()
+    {
+      FloatRBTreeSet.Entry local_e = lastEntry();
+      if (local_e == null) {
+        throw new NoSuchElementException();
+      }
+      return local_e.key;
+    }
+    
+    private final class SubsetIterator
+      extends FloatRBTreeSet.SetIterator
+    {
+      SubsetIterator()
+      {
+        super();
+        this.next = FloatRBTreeSet.Subset.this.firstEntry();
+      }
+      
+      SubsetIterator(float local_k)
+      {
+        this();
+        if (this.next != null) {
+          if ((!FloatRBTreeSet.Subset.this.bottom) && (FloatRBTreeSet.this.compare(local_k, this.next.key) < 0))
+          {
+            this.prev = null;
+          }
+          else if ((!FloatRBTreeSet.Subset.this.top) && (FloatRBTreeSet.this.compare(local_k, (this.prev = FloatRBTreeSet.Subset.this.lastEntry()).key) >= 0))
+          {
+            this.next = null;
+          }
+          else
+          {
+            this.next = FloatRBTreeSet.this.locateKey(local_k);
+            if (FloatRBTreeSet.this.compare(this.next.key, local_k) <= 0)
+            {
+              this.prev = this.next;
+              this.next = this.next.next();
+            }
+            else
+            {
+              this.prev = this.next.prev();
+            }
+          }
+        }
+      }
+      
+      void updatePrevious()
+      {
+        this.prev = this.prev.prev();
+        if ((!FloatRBTreeSet.Subset.this.bottom) && (this.prev != null) && (FloatRBTreeSet.this.compare(this.prev.key, FloatRBTreeSet.Subset.this.from) < 0)) {
+          this.prev = null;
+        }
+      }
+      
+      void updateNext()
+      {
+        this.next = this.next.next();
+        if ((!FloatRBTreeSet.Subset.this.top) && (this.next != null) && (FloatRBTreeSet.this.compare(this.next.key, FloatRBTreeSet.Subset.this.field_82) >= 0)) {
+          this.next = null;
+        }
+      }
+    }
+  }
+  
+  private class SetIterator
+    extends AbstractFloatListIterator
+  {
+    FloatRBTreeSet.Entry prev;
+    FloatRBTreeSet.Entry next;
+    FloatRBTreeSet.Entry curr;
+    int index = 0;
+    
+    SetIterator()
+    {
+      this.next = FloatRBTreeSet.this.firstEntry;
+    }
+    
+    SetIterator(float local_k)
+    {
+      if ((this.next = FloatRBTreeSet.this.locateKey(local_k)) != null) {
+        if (FloatRBTreeSet.this.compare(this.next.key, local_k) <= 0)
+        {
+          this.prev = this.next;
+          this.next = this.next.next();
+        }
+        else
+        {
+          this.prev = this.next.prev();
+        }
+      }
+    }
+    
+    public boolean hasNext()
+    {
+      return this.next != null;
+    }
+    
+    public boolean hasPrevious()
+    {
+      return this.prev != null;
+    }
+    
+    void updateNext()
+    {
+      this.next = this.next.next();
+    }
+    
+    FloatRBTreeSet.Entry nextEntry()
+    {
+      if (!hasNext()) {
+        throw new NoSuchElementException();
+      }
+      this.curr = (this.prev = this.next);
+      this.index += 1;
+      updateNext();
+      return this.curr;
+    }
+    
+    public float nextFloat()
+    {
+      return nextEntry().key;
+    }
+    
+    public float previousFloat()
+    {
+      return previousEntry().key;
+    }
+    
+    void updatePrevious()
+    {
+      this.prev = this.prev.prev();
+    }
+    
+    FloatRBTreeSet.Entry previousEntry()
+    {
+      if (!hasPrevious()) {
+        throw new NoSuchElementException();
+      }
+      this.curr = (this.next = this.prev);
+      this.index -= 1;
+      updatePrevious();
+      return this.curr;
+    }
+    
+    public int nextIndex()
+    {
+      return this.index;
+    }
+    
+    public int previousIndex()
+    {
+      return this.index - 1;
+    }
+    
+    public void remove()
+    {
+      if (this.curr == null) {
+        throw new IllegalStateException();
+      }
+      if (this.curr == this.prev) {
+        this.index -= 1;
+      }
+      this.next = (this.prev = this.curr);
+      updatePrevious();
+      updateNext();
+      FloatRBTreeSet.this.remove(this.curr.key);
+      this.curr = null;
+    }
+  }
+  
+  private static final class Entry
+    implements Cloneable
+  {
+    private static final int BLACK_MASK = 1;
+    private static final int SUCC_MASK = -2147483648;
+    private static final int PRED_MASK = 1073741824;
+    float key;
+    Entry left;
+    Entry right;
+    int info;
+    
+    Entry() {}
+    
+    Entry(float local_k)
+    {
+      this.key = local_k;
+      this.info = -1073741824;
+    }
+    
+    Entry left()
+    {
+      return (this.info & 0x40000000) != 0 ? null : this.left;
+    }
+    
+    Entry right()
+    {
+      return (this.info & 0x80000000) != 0 ? null : this.right;
+    }
+    
+    boolean pred()
+    {
+      return (this.info & 0x40000000) != 0;
+    }
+    
+    boolean succ()
+    {
+      return (this.info & 0x80000000) != 0;
+    }
+    
+    void pred(boolean pred)
+    {
+      if (pred) {
+        this.info |= 1073741824;
+      } else {
+        this.info &= -1073741825;
+      }
+    }
+    
+    void succ(boolean succ)
+    {
+      if (succ) {
+        this.info |= -2147483648;
+      } else {
+        this.info &= 2147483647;
+      }
+    }
+    
+    void pred(Entry pred)
+    {
+      this.info |= 1073741824;
+      this.left = pred;
+    }
+    
+    void succ(Entry succ)
+    {
+      this.info |= -2147483648;
+      this.right = succ;
+    }
+    
+    void left(Entry left)
+    {
+      this.info &= -1073741825;
+      this.left = left;
+    }
+    
+    void right(Entry right)
+    {
+      this.info &= 2147483647;
+      this.right = right;
+    }
+    
+    boolean black()
+    {
+      return (this.info & 0x1) != 0;
+    }
+    
+    void black(boolean black)
+    {
+      if (black) {
+        this.info |= 1;
+      } else {
+        this.info &= -2;
+      }
+    }
+    
+    Entry next()
+    {
+      Entry next = this.right;
+      if ((this.info & 0x80000000) == 0) {
+        while ((next.info & 0x40000000) == 0) {
+          next = next.left;
+        }
+      }
+      return next;
+    }
+    
+    Entry prev()
+    {
+      Entry prev = this.left;
+      if ((this.info & 0x40000000) == 0) {
+        while ((prev.info & 0x80000000) == 0) {
+          prev = prev.right;
+        }
+      }
+      return prev;
+    }
+    
+    public Entry clone()
+    {
+      Entry local_c;
+      try
+      {
+        local_c = (Entry)super.clone();
+      }
+      catch (CloneNotSupportedException cantHappen)
+      {
+        throw new InternalError();
+      }
+      local_c.key = this.key;
+      local_c.info = this.info;
+      return local_c;
+    }
+    
+    public boolean equals(Object local_o)
+    {
+      if (!(local_o instanceof Entry)) {
+        return false;
+      }
+      Entry local_e = (Entry)local_o;
+      return this.key == local_e.key;
+    }
+    
+    public int hashCode()
+    {
+      return HashCommon.float2int(this.key);
+    }
+    
+    public String toString()
+    {
+      return String.valueOf(this.key);
+    }
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.floats.FloatRBTreeSet
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

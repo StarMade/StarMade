@@ -1,16 +1,16 @@
-/*  1:   */package org.jaxen.util;
-/*  2:   */
-/* 65:   */public class SelfAxisIterator
-/* 66:   */  extends SingleObjectIterator
-/* 67:   */{
-/* 68:   */  public SelfAxisIterator(Object node)
-/* 69:   */  {
-/* 70:70 */    super(node);
-/* 71:   */  }
-/* 72:   */}
+package org.jaxen.util;
+
+public class SelfAxisIterator
+  extends SingleObjectIterator
+{
+  public SelfAxisIterator(Object node)
+  {
+    super(node);
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.jaxen.util.SelfAxisIterator
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

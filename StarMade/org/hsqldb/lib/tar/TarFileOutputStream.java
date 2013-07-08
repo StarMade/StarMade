@@ -37,20 +37,20 @@ public class TarFileOutputStream
     this.targetFile = paramFile;
     this.writeFile = new File(paramFile.getParentFile(), paramFile.getName() + "-partial");
     if (this.writeFile.exists()) {
-      throw new IOException(RB.move_work_file.getString(new String[] { this.writeFile.getAbsolutePath() }));
+      throw new IOException(class_1436.move_work_file.getString(new String[] { this.writeFile.getAbsolutePath() }));
     }
     if ((paramFile.exists()) && (!paramFile.canWrite())) {
-      throw new IOException(RB.cant_overwrite.getString(new String[] { paramFile.getAbsolutePath() }));
+      throw new IOException(class_1436.cant_overwrite.getString(new String[] { paramFile.getAbsolutePath() }));
     }
     File localFile = paramFile.getAbsoluteFile().getParentFile();
     if ((localFile.exists()) && (localFile.isDirectory()))
     {
       if (!localFile.canWrite()) {
-        throw new IOException(RB.cant_write_dir.getString(new String[] { localFile.getAbsolutePath() }));
+        throw new IOException(class_1436.cant_write_dir.getString(new String[] { localFile.getAbsolutePath() }));
       }
     }
     else {
-      throw new IOException(RB.no_parent_dir.getString(new String[] { localFile.getAbsolutePath() }));
+      throw new IOException(class_1436.no_parent_dir.getString(new String[] { localFile.getAbsolutePath() }));
     }
     this.writeBuffer = new byte[paramInt2 * 512];
     switch (paramInt1)
@@ -62,7 +62,7 @@ public class TarFileOutputStream
       this.writeStream = new GZIPOutputStream(new FileOutputStream(this.writeFile), this.writeBuffer.length);
       break;
     default: 
-      throw new IllegalArgumentException(RB.compression_unknown.getString(paramInt1));
+      throw new IllegalArgumentException(class_1436.compression_unknown.getString(paramInt1));
     }
     this.writeFile.setExecutable(false, true);
     this.writeFile.setExecutable(false, false);
@@ -89,7 +89,7 @@ public class TarFileOutputStream
     throws IOException
   {
     if (paramArrayOfByte.length != 512) {
-      throw new IllegalArgumentException(RB.bad_block_write_len.getString(paramArrayOfByte.length));
+      throw new IllegalArgumentException(class_1436.bad_block_write_len.getString(paramArrayOfByte.length));
     }
     write(paramArrayOfByte, paramArrayOfByte.length);
   }
@@ -120,7 +120,7 @@ public class TarFileOutputStream
   public void assertAtBlockBoundary()
   {
     if (bytesLeftInBlock() != 0) {
-      throw new IllegalArgumentException(RB.illegal_block_boundary.getString(new String[] { Long.toString(this.bytesWritten) }));
+      throw new IllegalArgumentException(class_1436.illegal_block_boundary.getString(new String[] { Long.toString(this.bytesWritten) }));
     }
   }
   
@@ -151,7 +151,7 @@ public class TarFileOutputStream
     {
       this.writeStream.close();
       if (!this.writeFile.delete()) {
-        throw new IOException(RB.workfile_delete_fail.getString(new String[] { this.writeFile.getAbsolutePath() }));
+        throw new IOException(class_1436.workfile_delete_fail.getString(new String[] { this.writeFile.getAbsolutePath() }));
       }
     }
     finally
@@ -176,7 +176,7 @@ public class TarFileOutputStream
       }
       int i = (int)(l - this.bytesWritten / 512L);
       if (debug) {
-        System.out.println(RB.pad_block_write.getString(i));
+        System.out.println(class_1436.pad_block_write.getString(i));
       }
       writePadBlocks(i);
     }
@@ -203,7 +203,7 @@ public class TarFileOutputStream
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.lib.tar.TarFileOutputStream
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

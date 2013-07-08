@@ -26,14 +26,14 @@ public class TarReader
   {
     if (paramArrayOfString.length < 1)
     {
-      System.out.println(RB.TarReader_syntax.getString(new String[] { TarReader.class.getName() }));
-      System.out.println(RB.listing_format.getString());
+      System.out.println(class_1436.TarReader_syntax.getString(new String[] { TarReader.class.getName() }));
+      System.out.println(class_1436.listing_format.getString());
       System.exit(0);
     }
     File localFile = (paramArrayOfString.length > 1) && (paramArrayOfString[1].startsWith("--directory=")) ? new File(paramArrayOfString[1].substring("--directory=".length())) : null;
     int i = localFile == null ? 2 : 3;
     if ((paramArrayOfString.length < i) || ((!paramArrayOfString[0].equals("t")) && (!paramArrayOfString[0].equals("x")))) {
-      throw new IllegalArgumentException(RB.tarreader_syntaxerr.getString(new String[] { TarReader.class.getName() }));
+      throw new IllegalArgumentException(class_1436.tarreader_syntaxerr.getString(new String[] { TarReader.class.getName() }));
     }
     String[] arrayOfString = null;
     if (paramArrayOfString.length > i)
@@ -44,7 +44,7 @@ public class TarReader
       }
     }
     if ((paramArrayOfString[0].equals("t")) && (localFile != null)) {
-      throw new IllegalArgumentException(RB.dir_x_conflict.getString());
+      throw new IllegalArgumentException(class_1436.dir_x_conflict.getString());
     }
     int j = localFile == null ? 1 : 2;
     int k = paramArrayOfString[0].equals("t") ? 0 : 1;
@@ -138,14 +138,14 @@ public class TarReader
               }
               break;
             default: 
-              throw new IllegalArgumentException(RB.unsupported_mode.getString(this.mode));
+              throw new IllegalArgumentException(class_1436.unsupported_mode.getString(this.mode));
             }
             str = null;
           }
         }
       }
       if (i != 0) {
-        System.out.println(RB.unsupported_entry_present.getString());
+        System.out.println(class_1436.unsupported_entry_present.getString());
       }
     }
     catch (IOException localIOException)
@@ -160,10 +160,10 @@ public class TarReader
   {
     long l = paramTarEntryHeader.getDataSize();
     if (l < 1L) {
-      throw new TarMalformatException(RB.pif_unknown_datasize.getString());
+      throw new TarMalformatException(class_1436.pif_unknown_datasize.getString());
     }
     if (l > 2147483647L) {
-      throw new TarMalformatException(RB.pif_data_toobig.getString(Long.toString(l), 2147483647));
+      throw new TarMalformatException(class_1436.pif_data_toobig.getString(Long.toString(l), 2147483647));
     }
     int j = (int)(l / 512L);
     int k = (int)(l % 512L);
@@ -211,7 +211,7 @@ public class TarReader
     throws IOException, TarMalformatException
   {
     if (paramTarEntryHeader.getDataSize() < 1L) {
-      throw new TarMalformatException(RB.data_size_unknown.getString());
+      throw new TarMalformatException(class_1436.data_size_unknown.getString());
     }
     int j = (int)(paramTarEntryHeader.getDataSize() / 512L);
     int k = (int)(paramTarEntryHeader.getDataSize() % 512L);
@@ -223,24 +223,24 @@ public class TarReader
     if (localFile1.exists())
     {
       if (this.mode != 2) {
-        throw new IOException(RB.extraction_exists.getString(new String[] { localFile1.getAbsolutePath() }));
+        throw new IOException(class_1436.extraction_exists.getString(new String[] { localFile1.getAbsolutePath() }));
       }
       if (!localFile1.isFile()) {
-        throw new IOException(RB.extraction_exists_notfile.getString(new String[] { localFile1.getAbsolutePath() }));
+        throw new IOException(class_1436.extraction_exists_notfile.getString(new String[] { localFile1.getAbsolutePath() }));
       }
     }
     if (localFile2.exists())
     {
       if (!localFile2.isDirectory()) {
-        throw new IOException(RB.extraction_parent_not_dir.getString(new String[] { localFile2.getAbsolutePath() }));
+        throw new IOException(class_1436.extraction_parent_not_dir.getString(new String[] { localFile2.getAbsolutePath() }));
       }
       if (!localFile2.canWrite()) {
-        throw new IOException(RB.extraction_parent_not_writable.getString(new String[] { localFile2.getAbsolutePath() }));
+        throw new IOException(class_1436.extraction_parent_not_writable.getString(new String[] { localFile2.getAbsolutePath() }));
       }
     }
     else if (!localFile2.mkdirs())
     {
-      throw new IOException(RB.extraction_parent_mkfail.getString(new String[] { localFile2.getAbsolutePath() }));
+      throw new IOException(class_1436.extraction_parent_mkfail.getString(new String[] { localFile2.getAbsolutePath() }));
     }
     int m = paramTarEntryHeader.getFileMode();
     FileOutputStream localFileOutputStream = new FileOutputStream(localFile1);
@@ -279,7 +279,7 @@ public class TarReader
     }
     localFile1.setLastModified(paramTarEntryHeader.getModTime() * 1000L);
     if (localFile1.length() != paramTarEntryHeader.getDataSize()) {
-      throw new IOException(RB.write_count_mismatch.getString(new String[] { Long.toString(paramTarEntryHeader.getDataSize()), localFile1.getAbsolutePath(), Long.toString(localFile1.length()) }));
+      throw new IOException(class_1436.write_count_mismatch.getString(new String[] { Long.toString(paramTarEntryHeader.getDataSize()), localFile1.getAbsolutePath(), Long.toString(localFile1.length()) }));
     }
   }
   
@@ -290,7 +290,7 @@ public class TarReader
       return;
     }
     if (paramTarEntryHeader.getDataSize() < 0L) {
-      throw new TarMalformatException(RB.data_size_unknown.getString());
+      throw new TarMalformatException(class_1436.data_size_unknown.getString());
     }
     int j = paramTarEntryHeader.getDataSize() % 512L == 0L ? 0 : 1;
     int k = (int)(paramTarEntryHeader.getDataSize() / 512L) + j;
@@ -326,7 +326,7 @@ public class TarReader
         }
         long l = headerChecksum();
         if (localLong1.longValue() != l) {
-          throw new TarMalformatException(RB.checksum_mismatch.getString(new String[] { localLong1.toString(), Long.toString(l) }));
+          throw new TarMalformatException(class_1436.checksum_mismatch.getString(new String[] { localLong1.toString(), Long.toString(l) }));
         }
         this.path = readString(TarHeaderField.name);
         if (this.path == null) {
@@ -363,7 +363,7 @@ public class TarReader
     public File generateFile()
     {
       if ((this.entryType != 0) && (this.entryType != '0')) {
-        throw new IllegalStateException(RB.create_only_normal.getString());
+        throw new IllegalStateException(class_1436.create_only_normal.getString());
       }
       return new File(this.path);
     }
@@ -452,7 +452,7 @@ public class TarReader
       }
       catch (Throwable localThrowable)
       {
-        throw new TarMalformatException(RB.bad_header_value.getString(new String[] { paramTarHeaderField.toString() }));
+        throw new TarMalformatException(class_1436.bad_header_value.getString(new String[] { paramTarHeaderField.toString() }));
       }
     }
     
@@ -469,7 +469,7 @@ public class TarReader
       }
       catch (NumberFormatException localNumberFormatException)
       {
-        throw new TarMalformatException(RB.bad_numeric_header_value.getString(new String[] { paramTarHeaderField.toString(), localNumberFormatException.toString() }));
+        throw new TarMalformatException(class_1436.bad_numeric_header_value.getString(new String[] { paramTarHeaderField.toString(), localNumberFormatException.toString() }));
       }
     }
     
@@ -496,14 +496,14 @@ public class TarReader
       
       public String getMessage()
       {
-        return RB.header_field_missing.getString(new String[] { this.field.toString() });
+        return class_1436.header_field_missing.getString(new String[] { this.field.toString() });
       }
     }
   }
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.lib.tar.TarReader
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

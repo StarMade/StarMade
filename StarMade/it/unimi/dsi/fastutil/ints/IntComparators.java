@@ -1,31 +1,38 @@
-/*  1:   */package it.unimi.dsi.fastutil.ints;
-/*  2:   */
-/* 49:   */public class IntComparators
-/* 50:   */{
-/* 51:51 */  public static final IntComparator NATURAL_COMPARATOR = new AbstractIntComparator() {
-/* 52:   */    public final int compare(int a, int b) {
-/* 53:53 */      return a == b ? 0 : a < b ? -1 : 1;
-/* 54:   */    }
-/* 55:   */  };
-/* 56:   */  
-/* 58:58 */  public static final IntComparator OPPOSITE_COMPARATOR = new AbstractIntComparator() {
-/* 59:   */    public final int compare(int a, int b) {
-/* 60:60 */      return b == a ? 0 : b < a ? -1 : 1;
-/* 61:   */    }
-/* 62:   */  };
-/* 63:   */  
-/* 67:   */  public static IntComparator oppositeComparator(IntComparator c)
-/* 68:   */  {
-/* 69:69 */    new AbstractIntComparator() {
-/* 70:70 */      private final IntComparator comparator = this.val$c;
-/* 71:   */      
-/* 72:72 */      public final int compare(int a, int b) { return -this.comparator.compare(a, b); }
-/* 73:   */    };
-/* 74:   */  }
-/* 75:   */}
+package it.unimi.dsi.fastutil.ints;
+
+public class IntComparators
+{
+  public static final IntComparator NATURAL_COMPARATOR = new AbstractIntComparator()
+  {
+    public final int compare(int local_a, int local_b)
+    {
+      return local_a == local_b ? 0 : local_a < local_b ? -1 : 1;
+    }
+  };
+  public static final IntComparator OPPOSITE_COMPARATOR = new AbstractIntComparator()
+  {
+    public final int compare(int local_a, int local_b)
+    {
+      return local_b == local_a ? 0 : local_b < local_a ? -1 : 1;
+    }
+  };
+  
+  public static IntComparator oppositeComparator(IntComparator local_c)
+  {
+    new AbstractIntComparator()
+    {
+      private final IntComparator comparator = this.val$c;
+      
+      public final int compare(int local_a, int local_b)
+      {
+        return -this.comparator.compare(local_a, local_b);
+      }
+    };
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.ints.IntComparators
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

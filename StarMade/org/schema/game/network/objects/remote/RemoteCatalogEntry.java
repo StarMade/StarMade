@@ -1,61 +1,62 @@
-/*  1:   */package org.schema.game.network.objects.remote;
-/*  2:   */
-/*  3:   */import java.io.DataInputStream;
-/*  4:   */import java.io.DataOutputStream;
-/*  5:   */import lL;
-/*  6:   */import org.schema.schine.network.objects.NetworkObject;
-/*  7:   */import org.schema.schine.network.objects.remote.RemoteField;
-/*  8:   */
-/* 11:   */public class RemoteCatalogEntry
-/* 12:   */  extends RemoteField
-/* 13:   */{
-/* 14:   */  public RemoteCatalogEntry(lL paramlL, NetworkObject paramNetworkObject)
-/* 15:   */  {
-/* 16:16 */    super(paramlL, paramNetworkObject);
-/* 17:   */  }
-/* 18:   */  
-/* 19:19 */  public RemoteCatalogEntry(lL paramlL, boolean paramBoolean) { super(paramlL, paramBoolean); }
-/* 20:   */  
-/* 22:   */  public int byteLength()
-/* 23:   */  {
-/* 24:24 */    return 1;
-/* 25:   */  }
-/* 26:   */  
-/* 27:   */  public void fromByteStream(DataInputStream paramDataInputStream, int paramInt)
-/* 28:   */  {
-/* 29:29 */    paramInt = paramDataInputStream.readUTF();
-/* 30:30 */    String str1 = paramDataInputStream.readUTF();
-/* 31:31 */    String str2 = paramDataInputStream.readUTF();
-/* 32:32 */    int i = paramDataInputStream.readInt();
-/* 33:33 */    int j = paramDataInputStream.readInt();
-/* 34:34 */    boolean bool = paramDataInputStream.readBoolean();
-/* 35:35 */    paramDataInputStream = paramDataInputStream.readFloat();
-/* 36:   */    
-/* 38:38 */    ((lL)get()).jdField_a_of_type_JavaLangString = paramInt;
-/* 39:39 */    ((lL)get()).jdField_b_of_type_JavaLangString = str1;
-/* 40:40 */    ((lL)get()).jdField_c_of_type_Int = i;
-/* 41:41 */    ((lL)get()).jdField_c_of_type_JavaLangString = str2;
-/* 42:42 */    ((lL)get()).jdField_b_of_type_Int = j;
-/* 43:43 */    ((lL)get()).jdField_a_of_type_Boolean = bool;
-/* 44:44 */    ((lL)get()).jdField_a_of_type_Float = paramDataInputStream;
-/* 45:   */  }
-/* 46:   */  
-/* 49:   */  public int toByteStream(DataOutputStream paramDataOutputStream)
-/* 50:   */  {
-/* 51:51 */    paramDataOutputStream.writeUTF(((lL)get()).jdField_a_of_type_JavaLangString);
-/* 52:52 */    paramDataOutputStream.writeUTF(((lL)get()).jdField_b_of_type_JavaLangString);
-/* 53:53 */    paramDataOutputStream.writeUTF(((lL)get()).jdField_c_of_type_JavaLangString);
-/* 54:54 */    paramDataOutputStream.writeInt(((lL)get()).jdField_c_of_type_Int);
-/* 55:55 */    paramDataOutputStream.writeInt(((lL)get()).jdField_b_of_type_Int);
-/* 56:56 */    paramDataOutputStream.writeBoolean(((lL)get()).jdField_a_of_type_Boolean);
-/* 57:57 */    paramDataOutputStream.writeFloat(((lL)get()).jdField_a_of_type_Float);
-/* 58:   */    
-/* 59:59 */    return byteLength();
-/* 60:   */  }
-/* 61:   */}
+package org.schema.game.network.objects.remote;
+
+import class_781;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import org.schema.schine.network.objects.NetworkObject;
+import org.schema.schine.network.objects.remote.RemoteField;
+
+public class RemoteCatalogEntry
+  extends RemoteField
+{
+  public RemoteCatalogEntry(class_781 paramclass_781, NetworkObject paramNetworkObject)
+  {
+    super(paramclass_781, paramNetworkObject);
+  }
+  
+  public RemoteCatalogEntry(class_781 paramclass_781, boolean paramBoolean)
+  {
+    super(paramclass_781, paramBoolean);
+  }
+  
+  public int byteLength()
+  {
+    return 1;
+  }
+  
+  public void fromByteStream(DataInputStream paramDataInputStream, int paramInt)
+  {
+    paramInt = paramDataInputStream.readUTF();
+    String str1 = paramDataInputStream.readUTF();
+    String str2 = paramDataInputStream.readUTF();
+    int i = paramDataInputStream.readInt();
+    int j = paramDataInputStream.readInt();
+    boolean bool = paramDataInputStream.readBoolean();
+    paramDataInputStream = paramDataInputStream.readFloat();
+    ((class_781)get()).jdField_field_136_of_type_JavaLangString = paramInt;
+    ((class_781)get()).jdField_field_139_of_type_JavaLangString = str1;
+    ((class_781)get()).jdField_field_182_of_type_Int = i;
+    ((class_781)get()).jdField_field_182_of_type_JavaLangString = str2;
+    ((class_781)get()).jdField_field_139_of_type_Int = j;
+    ((class_781)get()).jdField_field_136_of_type_Boolean = bool;
+    ((class_781)get()).jdField_field_136_of_type_Float = paramDataInputStream;
+  }
+  
+  public int toByteStream(DataOutputStream paramDataOutputStream)
+  {
+    paramDataOutputStream.writeUTF(((class_781)get()).jdField_field_136_of_type_JavaLangString);
+    paramDataOutputStream.writeUTF(((class_781)get()).jdField_field_139_of_type_JavaLangString);
+    paramDataOutputStream.writeUTF(((class_781)get()).jdField_field_182_of_type_JavaLangString);
+    paramDataOutputStream.writeInt(((class_781)get()).jdField_field_182_of_type_Int);
+    paramDataOutputStream.writeInt(((class_781)get()).jdField_field_139_of_type_Int);
+    paramDataOutputStream.writeBoolean(((class_781)get()).jdField_field_136_of_type_Boolean);
+    paramDataOutputStream.writeFloat(((class_781)get()).jdField_field_136_of_type_Float);
+    return byteLength();
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.game.network.objects.remote.RemoteCatalogEntry
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

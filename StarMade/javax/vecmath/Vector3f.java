@@ -42,42 +42,42 @@ public class Vector3f
   
   public final float lengthSquared()
   {
-    return this.x * this.x + this.y * this.y + this.z * this.z;
+    return this.field_615 * this.field_615 + this.field_616 * this.field_616 + this.field_617 * this.field_617;
   }
   
   public final float length()
   {
-    return (float)Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+    return (float)Math.sqrt(this.field_615 * this.field_615 + this.field_616 * this.field_616 + this.field_617 * this.field_617);
   }
   
   public final void cross(Vector3f paramVector3f1, Vector3f paramVector3f2)
   {
-    float f1 = paramVector3f1.y * paramVector3f2.z - paramVector3f1.z * paramVector3f2.y;
-    float f2 = paramVector3f2.x * paramVector3f1.z - paramVector3f2.z * paramVector3f1.x;
-    this.z = (paramVector3f1.x * paramVector3f2.y - paramVector3f1.y * paramVector3f2.x);
-    this.x = f1;
-    this.y = f2;
+    float f1 = paramVector3f1.field_616 * paramVector3f2.field_617 - paramVector3f1.field_617 * paramVector3f2.field_616;
+    float f2 = paramVector3f2.field_615 * paramVector3f1.field_617 - paramVector3f2.field_617 * paramVector3f1.field_615;
+    this.field_617 = (paramVector3f1.field_615 * paramVector3f2.field_616 - paramVector3f1.field_616 * paramVector3f2.field_615);
+    this.field_615 = f1;
+    this.field_616 = f2;
   }
   
   public final float dot(Vector3f paramVector3f)
   {
-    return this.x * paramVector3f.x + this.y * paramVector3f.y + this.z * paramVector3f.z;
+    return this.field_615 * paramVector3f.field_615 + this.field_616 * paramVector3f.field_616 + this.field_617 * paramVector3f.field_617;
   }
   
   public final void normalize(Vector3f paramVector3f)
   {
-    float f = (float)(1.0D / Math.sqrt(paramVector3f.x * paramVector3f.x + paramVector3f.y * paramVector3f.y + paramVector3f.z * paramVector3f.z));
-    paramVector3f.x *= f;
-    paramVector3f.y *= f;
-    paramVector3f.z *= f;
+    float f = (float)(1.0D / Math.sqrt(paramVector3f.field_615 * paramVector3f.field_615 + paramVector3f.field_616 * paramVector3f.field_616 + paramVector3f.field_617 * paramVector3f.field_617));
+    paramVector3f.field_615 *= f;
+    paramVector3f.field_616 *= f;
+    paramVector3f.field_617 *= f;
   }
   
   public final void normalize()
   {
-    float f = (float)(1.0D / Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z));
-    this.x *= f;
-    this.y *= f;
-    this.z *= f;
+    float f = (float)(1.0D / Math.sqrt(this.field_615 * this.field_615 + this.field_616 * this.field_616 + this.field_617 * this.field_617));
+    this.field_615 *= f;
+    this.field_616 *= f;
+    this.field_617 *= f;
   }
   
   public final float angle(Vector3f paramVector3f)
@@ -94,7 +94,7 @@ public class Vector3f
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     javax.vecmath.Vector3f
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

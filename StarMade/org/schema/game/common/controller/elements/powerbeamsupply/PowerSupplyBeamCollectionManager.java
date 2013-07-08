@@ -1,73 +1,72 @@
-/*  1:   */package org.schema.game.common.controller.elements.powerbeamsupply;
-/*  2:   */
-/*  3:   */import ct;
-/*  4:   */import dj;
-/*  5:   */import fe;
-/*  6:   */import java.util.Iterator;
-/*  7:   */import java.util.List;
-/*  8:   */import jq;
-/*  9:   */import le;
-/* 10:   */import org.schema.game.common.controller.SegmentController;
-/* 11:   */import org.schema.game.common.controller.elements.ControlBlockElementCollectionManager;
-/* 12:   */import xq;
-/* 13:   */
-/* 16:   */public class PowerSupplyBeamCollectionManager
-/* 17:   */  extends ControlBlockElementCollectionManager
-/* 18:   */  implements jq
-/* 19:   */{
-/* 20:   */  private final PowerSupplyBeamHandler handler;
-/* 21:   */  
-/* 22:   */  public PowerSupplyBeamCollectionManager(le paramle, SegmentController paramSegmentController)
-/* 23:   */  {
-/* 24:24 */    super(paramle, (short)335, paramSegmentController);
-/* 25:   */    
-/* 26:26 */    this.handler = new PowerSupplyBeamHandler(paramSegmentController, this);
-/* 27:   */  }
-/* 28:   */  
-/* 33:   */  public PowerSupplyBeamHandler getHandler()
-/* 34:   */  {
-/* 35:35 */    return this.handler;
-/* 36:   */  }
-/* 37:   */  
-/* 40:   */  public int getMargin()
-/* 41:   */  {
-/* 42:42 */    return 0;
-/* 43:   */  }
-/* 44:   */  
-/* 45:   */  protected Class getType()
-/* 46:   */  {
-/* 47:47 */    return PowerSupplyUnit.class;
-/* 48:   */  }
-/* 49:   */  
-/* 50:   */  protected void onChangedCollection()
-/* 51:   */  {
-/* 52:52 */    refreshBeamCapabiities();
-/* 53:53 */    getHandler().clearStates();
-/* 54:   */    
-/* 56:56 */    if (!getSegmentController().isOnServer()) {
-/* 57:57 */      ((ct)getSegmentController().getState()).a().a().a(this);
-/* 58:   */    }
-/* 59:   */  }
-/* 60:   */  
-/* 61:   */  public void refreshBeamCapabiities()
-/* 62:   */  {
-/* 63:63 */    for (Iterator localIterator = getCollection().iterator(); localIterator.hasNext();) {
-/* 64:64 */      ((PowerSupplyUnit)localIterator.next()).refreshSupplyCapabilities();
-/* 65:   */    }
-/* 66:   */  }
-/* 67:   */  
-/* 69:   */  public boolean needsUpdate()
-/* 70:   */  {
-/* 71:71 */    return true;
-/* 72:   */  }
-/* 73:   */  
-/* 74:   */  public void update(xq paramxq) {
-/* 75:75 */    this.handler.update(paramxq);
-/* 76:   */  }
-/* 77:   */}
+package org.schema.game.common.controller.elements.powerbeamsupply;
+
+import class_227;
+import class_261;
+import class_371;
+import class_721;
+import class_796;
+import class_941;
+import java.util.Iterator;
+import java.util.List;
+import org.schema.game.common.controller.SegmentController;
+import org.schema.game.common.controller.elements.ControlBlockElementCollectionManager;
+
+public class PowerSupplyBeamCollectionManager
+  extends ControlBlockElementCollectionManager
+  implements class_721
+{
+  private final PowerSupplyBeamHandler handler = new PowerSupplyBeamHandler(paramSegmentController, this);
+  
+  public PowerSupplyBeamCollectionManager(class_796 paramclass_796, SegmentController paramSegmentController)
+  {
+    super(paramclass_796, (short)335, paramSegmentController);
+  }
+  
+  public PowerSupplyBeamHandler getHandler()
+  {
+    return this.handler;
+  }
+  
+  public int getMargin()
+  {
+    return 0;
+  }
+  
+  protected Class getType()
+  {
+    return PowerSupplyUnit.class;
+  }
+  
+  protected void onChangedCollection()
+  {
+    refreshBeamCapabiities();
+    getHandler().clearStates();
+    if (!getSegmentController().isOnServer()) {
+      ((class_371)getSegmentController().getState()).a27().a92().a17(this);
+    }
+  }
+  
+  public void refreshBeamCapabiities()
+  {
+    Iterator localIterator = getCollection().iterator();
+    while (localIterator.hasNext()) {
+      ((PowerSupplyUnit)localIterator.next()).refreshSupplyCapabilities();
+    }
+  }
+  
+  public boolean needsUpdate()
+  {
+    return true;
+  }
+  
+  public void update(class_941 paramclass_941)
+  {
+    this.handler.update(paramclass_941);
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.game.common.controller.elements.powerbeamsupply.PowerSupplyBeamCollectionManager
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

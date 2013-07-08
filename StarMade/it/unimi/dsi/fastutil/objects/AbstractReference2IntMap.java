@@ -1,213 +1,262 @@
-/*   1:    */package it.unimi.dsi.fastutil.objects;
-/*   2:    */
-/*   3:    */import it.unimi.dsi.fastutil.ints.AbstractIntCollection;
-/*   4:    */import it.unimi.dsi.fastutil.ints.AbstractIntIterator;
-/*   5:    */import it.unimi.dsi.fastutil.ints.IntCollection;
-/*   6:    */import it.unimi.dsi.fastutil.ints.IntIterator;
-/*   7:    */import java.io.Serializable;
-/*   8:    */import java.util.Iterator;
-/*   9:    */import java.util.Map;
-/*  10:    */import java.util.Map.Entry;
-/*  11:    */import java.util.Set;
-/*  12:    */
-/*  60:    */public abstract class AbstractReference2IntMap<K>
-/*  61:    */  extends AbstractReference2IntFunction<K>
-/*  62:    */  implements Reference2IntMap<K>, Serializable
-/*  63:    */{
-/*  64:    */  public static final long serialVersionUID = -4940583368468432370L;
-/*  65:    */  
-/*  66:    */  public boolean containsValue(Object ov)
-/*  67:    */  {
-/*  68: 68 */    return containsValue(((Integer)ov).intValue());
-/*  69:    */  }
-/*  70:    */  
-/*  71:    */  public boolean containsValue(int v) {
-/*  72: 72 */    return values().contains(v);
-/*  73:    */  }
-/*  74:    */  
-/*  75:    */  public boolean containsKey(Object k) {
-/*  76: 76 */    return keySet().contains(k);
-/*  77:    */  }
-/*  78:    */  
-/*  84:    */  public void putAll(Map<? extends K, ? extends Integer> m)
-/*  85:    */  {
-/*  86: 86 */    int n = m.size();
-/*  87: 87 */    Iterator<? extends Map.Entry<? extends K, ? extends Integer>> i = m.entrySet().iterator();
-/*  88: 88 */    if ((m instanceof Reference2IntMap))
-/*  89:    */    {
-/*  90: 90 */      while (n-- != 0) {
-/*  91: 91 */        Reference2IntMap.Entry<? extends K> e = (Reference2IntMap.Entry)i.next();
-/*  92: 92 */        put(e.getKey(), e.getIntValue());
-/*  93:    */      }
-/*  94:    */      
-/*  95:    */    }
-/*  96:    */    else
-/*  97: 97 */      while (n-- != 0) {
-/*  98: 98 */        Map.Entry<? extends K, ? extends Integer> e = (Map.Entry)i.next();
-/*  99: 99 */        put(e.getKey(), (Integer)e.getValue());
-/* 100:    */      }
-/* 101:    */  }
-/* 102:    */  
-/* 103:    */  public boolean isEmpty() {
-/* 104:104 */    return size() == 0;
-/* 105:    */  }
-/* 106:    */  
-/* 108:    */  public static class BasicEntry<K>
-/* 109:    */    implements Reference2IntMap.Entry<K>
-/* 110:    */  {
-/* 111:    */    protected K key;
-/* 112:    */    protected int value;
-/* 113:    */    
-/* 114:    */    public BasicEntry(K key, Integer value)
-/* 115:    */    {
-/* 116:116 */      this.key = key;
-/* 117:117 */      this.value = value.intValue();
-/* 118:    */    }
-/* 119:    */    
-/* 120:    */    public BasicEntry(K key, int value) {
-/* 121:121 */      this.key = key;
-/* 122:122 */      this.value = value;
-/* 123:    */    }
-/* 124:    */    
-/* 126:    */    public K getKey()
-/* 127:    */    {
-/* 128:128 */      return this.key;
-/* 129:    */    }
-/* 130:    */    
-/* 136:    */    public Integer getValue()
-/* 137:    */    {
-/* 138:138 */      return Integer.valueOf(this.value);
-/* 139:    */    }
-/* 140:    */    
-/* 141:    */    public int getIntValue()
-/* 142:    */    {
-/* 143:143 */      return this.value;
-/* 144:    */    }
-/* 145:    */    
-/* 146:    */    public int setValue(int value)
-/* 147:    */    {
-/* 148:148 */      throw new UnsupportedOperationException();
-/* 149:    */    }
-/* 150:    */    
-/* 152:    */    public Integer setValue(Integer value)
-/* 153:    */    {
-/* 154:154 */      return Integer.valueOf(setValue(value.intValue()));
-/* 155:    */    }
-/* 156:    */    
-/* 158:    */    public boolean equals(Object o)
-/* 159:    */    {
-/* 160:160 */      if (!(o instanceof Map.Entry)) return false;
-/* 161:161 */      Map.Entry<?, ?> e = (Map.Entry)o;
-/* 162:    */      
-/* 163:163 */      return (this.key == e.getKey()) && (this.value == ((Integer)e.getValue()).intValue());
-/* 164:    */    }
-/* 165:    */    
-/* 166:    */    public int hashCode() {
-/* 167:167 */      return (this.key == null ? 0 : System.identityHashCode(this.key)) ^ this.value;
-/* 168:    */    }
-/* 169:    */    
-/* 170:    */    public String toString()
-/* 171:    */    {
-/* 172:172 */      return this.key + "->" + this.value;
-/* 173:    */    }
-/* 174:    */  }
-/* 175:    */  
-/* 189:    */  public ReferenceSet<K> keySet()
-/* 190:    */  {
-/* 191:191 */    new AbstractReferenceSet()
-/* 192:    */    {
-/* 193:193 */      public boolean contains(Object k) { return AbstractReference2IntMap.this.containsKey(k); }
-/* 194:    */      
-/* 195:195 */      public int size() { return AbstractReference2IntMap.this.size(); }
-/* 196:196 */      public void clear() { AbstractReference2IntMap.this.clear(); }
-/* 197:    */      
-/* 198:    */      public ObjectIterator<K> iterator() {
-/* 199:199 */        new AbstractObjectIterator() {
-/* 200:200 */          final ObjectIterator<Map.Entry<K, Integer>> i = AbstractReference2IntMap.this.entrySet().iterator();
-/* 201:    */          
-/* 202:202 */          public K next() { return ((Reference2IntMap.Entry)this.i.next()).getKey(); }
-/* 203:    */          
-/* 204:204 */          public boolean hasNext() { return this.i.hasNext(); }
-/* 205:    */        };
-/* 206:    */      }
-/* 207:    */    };
-/* 208:    */  }
-/* 209:    */  
-/* 222:    */  public IntCollection values()
-/* 223:    */  {
-/* 224:224 */    new AbstractIntCollection()
-/* 225:    */    {
-/* 226:226 */      public boolean contains(int k) { return AbstractReference2IntMap.this.containsValue(k); }
-/* 227:    */      
-/* 228:228 */      public int size() { return AbstractReference2IntMap.this.size(); }
-/* 229:229 */      public void clear() { AbstractReference2IntMap.this.clear(); }
-/* 230:    */      
-/* 231:    */      public IntIterator iterator() {
-/* 232:232 */        new AbstractIntIterator() {
-/* 233:233 */          final ObjectIterator<Map.Entry<K, Integer>> i = AbstractReference2IntMap.this.entrySet().iterator();
-/* 234:    */          
-/* 235:235 */          public int nextInt() { return ((Reference2IntMap.Entry)this.i.next()).getIntValue(); }
-/* 236:    */          
-/* 237:237 */          public boolean hasNext() { return this.i.hasNext(); }
-/* 238:    */        };
-/* 239:    */      }
-/* 240:    */    };
-/* 241:    */  }
-/* 242:    */  
-/* 244:    */  public ObjectSet<Map.Entry<K, Integer>> entrySet()
-/* 245:    */  {
-/* 246:246 */    return reference2IntEntrySet();
-/* 247:    */  }
-/* 248:    */  
-/* 257:    */  public int hashCode()
-/* 258:    */  {
-/* 259:259 */    int h = 0;int n = size();
-/* 260:260 */    ObjectIterator<? extends Map.Entry<K, Integer>> i = entrySet().iterator();
-/* 261:    */    
-/* 262:262 */    while (n-- != 0) h += ((Map.Entry)i.next()).hashCode();
-/* 263:263 */    return h;
-/* 264:    */  }
-/* 265:    */  
-/* 266:    */  public boolean equals(Object o) {
-/* 267:267 */    if (o == this) return true;
-/* 268:268 */    if (!(o instanceof Map)) { return false;
-/* 269:    */    }
-/* 270:270 */    Map<?, ?> m = (Map)o;
-/* 271:271 */    if (m.size() != size()) return false;
-/* 272:272 */    return entrySet().containsAll(m.entrySet());
-/* 273:    */  }
-/* 274:    */  
-/* 275:    */  public String toString()
-/* 276:    */  {
-/* 277:277 */    StringBuilder s = new StringBuilder();
-/* 278:278 */    ObjectIterator<? extends Map.Entry<K, Integer>> i = entrySet().iterator();
-/* 279:279 */    int n = size();
-/* 280:    */    
-/* 281:281 */    boolean first = true;
-/* 282:    */    
-/* 283:283 */    s.append("{");
-/* 284:    */    
-/* 285:285 */    while (n-- != 0) {
-/* 286:286 */      if (first) first = false; else {
-/* 287:287 */        s.append(", ");
-/* 288:    */      }
-/* 289:289 */      Reference2IntMap.Entry<K> e = (Reference2IntMap.Entry)i.next();
-/* 290:    */      
-/* 292:292 */      if (this == e.getKey()) { s.append("(this map)");
-/* 293:    */      } else
-/* 294:294 */        s.append(String.valueOf(e.getKey()));
-/* 295:295 */      s.append("=>");
-/* 296:    */      
-/* 299:299 */      s.append(String.valueOf(e.getIntValue()));
-/* 300:    */    }
-/* 301:    */    
-/* 302:302 */    s.append("}");
-/* 303:303 */    return s.toString();
-/* 304:    */  }
-/* 305:    */}
+package it.unimi.dsi.fastutil.objects;
+
+import it.unimi.dsi.fastutil.ints.AbstractIntCollection;
+import it.unimi.dsi.fastutil.ints.AbstractIntIterator;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+public abstract class AbstractReference2IntMap<K>
+  extends AbstractReference2IntFunction<K>
+  implements Reference2IntMap<K>, Serializable
+{
+  public static final long serialVersionUID = -4940583368468432370L;
+  
+  public boolean containsValue(Object local_ov)
+  {
+    return containsValue(((Integer)local_ov).intValue());
+  }
+  
+  public boolean containsValue(int local_v)
+  {
+    return values().contains(local_v);
+  }
+  
+  public boolean containsKey(Object local_k)
+  {
+    return keySet().contains(local_k);
+  }
+  
+  public void putAll(Map<? extends K, ? extends Integer> local_m)
+  {
+    int local_n = local_m.size();
+    Iterator<? extends Map.Entry<? extends K, ? extends Integer>> local_i = local_m.entrySet().iterator();
+    if ((local_m instanceof Reference2IntMap)) {
+      while (local_n-- != 0)
+      {
+        Reference2IntMap.Entry<? extends K> local_e = (Reference2IntMap.Entry)local_i.next();
+        put(local_e.getKey(), local_e.getIntValue());
+      }
+    } else {
+      while (local_n-- != 0)
+      {
+        Map.Entry<? extends K, ? extends Integer> local_e = (Map.Entry)local_i.next();
+        put(local_e.getKey(), (Integer)local_e.getValue());
+      }
+    }
+  }
+  
+  public boolean isEmpty()
+  {
+    return size() == 0;
+  }
+  
+  public ReferenceSet<K> keySet()
+  {
+    new AbstractReferenceSet()
+    {
+      public boolean contains(Object local_k)
+      {
+        return AbstractReference2IntMap.this.containsKey(local_k);
+      }
+      
+      public int size()
+      {
+        return AbstractReference2IntMap.this.size();
+      }
+      
+      public void clear()
+      {
+        AbstractReference2IntMap.this.clear();
+      }
+      
+      public ObjectIterator<K> iterator()
+      {
+        new AbstractObjectIterator()
+        {
+          final ObjectIterator<Map.Entry<K, Integer>> field_3 = AbstractReference2IntMap.this.entrySet().iterator();
+          
+          public K next()
+          {
+            return ((Reference2IntMap.Entry)this.field_3.next()).getKey();
+          }
+          
+          public boolean hasNext()
+          {
+            return this.field_3.hasNext();
+          }
+        };
+      }
+    };
+  }
+  
+  public IntCollection values()
+  {
+    new AbstractIntCollection()
+    {
+      public boolean contains(int local_k)
+      {
+        return AbstractReference2IntMap.this.containsValue(local_k);
+      }
+      
+      public int size()
+      {
+        return AbstractReference2IntMap.this.size();
+      }
+      
+      public void clear()
+      {
+        AbstractReference2IntMap.this.clear();
+      }
+      
+      public IntIterator iterator()
+      {
+        new AbstractIntIterator()
+        {
+          final ObjectIterator<Map.Entry<K, Integer>> field_70 = AbstractReference2IntMap.this.entrySet().iterator();
+          
+          public int nextInt()
+          {
+            return ((Reference2IntMap.Entry)this.field_70.next()).getIntValue();
+          }
+          
+          public boolean hasNext()
+          {
+            return this.field_70.hasNext();
+          }
+        };
+      }
+    };
+  }
+  
+  public ObjectSet<Map.Entry<K, Integer>> entrySet()
+  {
+    return reference2IntEntrySet();
+  }
+  
+  public int hashCode()
+  {
+    int local_h = 0;
+    int local_n = size();
+    ObjectIterator<? extends Map.Entry<K, Integer>> local_i = entrySet().iterator();
+    while (local_n-- != 0) {
+      local_h += ((Map.Entry)local_i.next()).hashCode();
+    }
+    return local_h;
+  }
+  
+  public boolean equals(Object local_o)
+  {
+    if (local_o == this) {
+      return true;
+    }
+    if (!(local_o instanceof Map)) {
+      return false;
+    }
+    Map<?, ?> local_m = (Map)local_o;
+    if (local_m.size() != size()) {
+      return false;
+    }
+    return entrySet().containsAll(local_m.entrySet());
+  }
+  
+  public String toString()
+  {
+    StringBuilder local_s = new StringBuilder();
+    ObjectIterator<? extends Map.Entry<K, Integer>> local_i = entrySet().iterator();
+    int local_n = size();
+    boolean first = true;
+    local_s.append("{");
+    while (local_n-- != 0)
+    {
+      if (first) {
+        first = false;
+      } else {
+        local_s.append(", ");
+      }
+      Reference2IntMap.Entry<K> local_e = (Reference2IntMap.Entry)local_i.next();
+      if (this == local_e.getKey()) {
+        local_s.append("(this map)");
+      } else {
+        local_s.append(String.valueOf(local_e.getKey()));
+      }
+      local_s.append("=>");
+      local_s.append(String.valueOf(local_e.getIntValue()));
+    }
+    local_s.append("}");
+    return local_s.toString();
+  }
+  
+  public static class BasicEntry<K>
+    implements Reference2IntMap.Entry<K>
+  {
+    protected K key;
+    protected int value;
+    
+    public BasicEntry(K key, Integer value)
+    {
+      this.key = key;
+      this.value = value.intValue();
+    }
+    
+    public BasicEntry(K key, int value)
+    {
+      this.key = key;
+      this.value = value;
+    }
+    
+    public K getKey()
+    {
+      return this.key;
+    }
+    
+    public Integer getValue()
+    {
+      return Integer.valueOf(this.value);
+    }
+    
+    public int getIntValue()
+    {
+      return this.value;
+    }
+    
+    public int setValue(int value)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public Integer setValue(Integer value)
+    {
+      return Integer.valueOf(setValue(value.intValue()));
+    }
+    
+    public boolean equals(Object local_o)
+    {
+      if (!(local_o instanceof Map.Entry)) {
+        return false;
+      }
+      Map.Entry<?, ?> local_e = (Map.Entry)local_o;
+      return (this.key == local_e.getKey()) && (this.value == ((Integer)local_e.getValue()).intValue());
+    }
+    
+    public int hashCode()
+    {
+      return (this.key == null ? 0 : System.identityHashCode(this.key)) ^ this.value;
+    }
+    
+    public String toString()
+    {
+      return this.key + "->" + this.value;
+    }
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.objects.AbstractReference2IntMap
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

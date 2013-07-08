@@ -6,126 +6,126 @@ public abstract class Tuple2i
   implements Serializable, Cloneable
 {
   static final long serialVersionUID = -3555701650170169638L;
-  public int x;
-  public int y;
+  public int field_575;
+  public int field_576;
   
   public Tuple2i(int paramInt1, int paramInt2)
   {
-    this.x = paramInt1;
-    this.y = paramInt2;
+    this.field_575 = paramInt1;
+    this.field_576 = paramInt2;
   }
   
   public Tuple2i(int[] paramArrayOfInt)
   {
-    this.x = paramArrayOfInt[0];
-    this.y = paramArrayOfInt[1];
+    this.field_575 = paramArrayOfInt[0];
+    this.field_576 = paramArrayOfInt[1];
   }
   
   public Tuple2i(Tuple2i paramTuple2i)
   {
-    this.x = paramTuple2i.x;
-    this.y = paramTuple2i.y;
+    this.field_575 = paramTuple2i.field_575;
+    this.field_576 = paramTuple2i.field_576;
   }
   
   public Tuple2i()
   {
-    this.x = 0;
-    this.y = 0;
+    this.field_575 = 0;
+    this.field_576 = 0;
   }
   
   public final void set(int paramInt1, int paramInt2)
   {
-    this.x = paramInt1;
-    this.y = paramInt2;
+    this.field_575 = paramInt1;
+    this.field_576 = paramInt2;
   }
   
   public final void set(int[] paramArrayOfInt)
   {
-    this.x = paramArrayOfInt[0];
-    this.y = paramArrayOfInt[1];
+    this.field_575 = paramArrayOfInt[0];
+    this.field_576 = paramArrayOfInt[1];
   }
   
   public final void set(Tuple2i paramTuple2i)
   {
-    this.x = paramTuple2i.x;
-    this.y = paramTuple2i.y;
+    this.field_575 = paramTuple2i.field_575;
+    this.field_576 = paramTuple2i.field_576;
   }
   
   public final void get(int[] paramArrayOfInt)
   {
-    paramArrayOfInt[0] = this.x;
-    paramArrayOfInt[1] = this.y;
+    paramArrayOfInt[0] = this.field_575;
+    paramArrayOfInt[1] = this.field_576;
   }
   
   public final void get(Tuple2i paramTuple2i)
   {
-    paramTuple2i.x = this.x;
-    paramTuple2i.y = this.y;
+    paramTuple2i.field_575 = this.field_575;
+    paramTuple2i.field_576 = this.field_576;
   }
   
   public final void add(Tuple2i paramTuple2i1, Tuple2i paramTuple2i2)
   {
-    paramTuple2i1.x += paramTuple2i2.x;
-    paramTuple2i1.y += paramTuple2i2.y;
+    paramTuple2i1.field_575 += paramTuple2i2.field_575;
+    paramTuple2i1.field_576 += paramTuple2i2.field_576;
   }
   
   public final void add(Tuple2i paramTuple2i)
   {
-    this.x += paramTuple2i.x;
-    this.y += paramTuple2i.y;
+    this.field_575 += paramTuple2i.field_575;
+    this.field_576 += paramTuple2i.field_576;
   }
   
   public final void sub(Tuple2i paramTuple2i1, Tuple2i paramTuple2i2)
   {
-    paramTuple2i1.x -= paramTuple2i2.x;
-    paramTuple2i1.y -= paramTuple2i2.y;
+    paramTuple2i1.field_575 -= paramTuple2i2.field_575;
+    paramTuple2i1.field_576 -= paramTuple2i2.field_576;
   }
   
   public final void sub(Tuple2i paramTuple2i)
   {
-    this.x -= paramTuple2i.x;
-    this.y -= paramTuple2i.y;
+    this.field_575 -= paramTuple2i.field_575;
+    this.field_576 -= paramTuple2i.field_576;
   }
   
   public final void negate(Tuple2i paramTuple2i)
   {
-    this.x = (-paramTuple2i.x);
-    this.y = (-paramTuple2i.y);
+    this.field_575 = (-paramTuple2i.field_575);
+    this.field_576 = (-paramTuple2i.field_576);
   }
   
   public final void negate()
   {
-    this.x = (-this.x);
-    this.y = (-this.y);
+    this.field_575 = (-this.field_575);
+    this.field_576 = (-this.field_576);
   }
   
   public final void scale(int paramInt, Tuple2i paramTuple2i)
   {
-    this.x = (paramInt * paramTuple2i.x);
-    this.y = (paramInt * paramTuple2i.y);
+    this.field_575 = (paramInt * paramTuple2i.field_575);
+    this.field_576 = (paramInt * paramTuple2i.field_576);
   }
   
   public final void scale(int paramInt)
   {
-    this.x *= paramInt;
-    this.y *= paramInt;
+    this.field_575 *= paramInt;
+    this.field_576 *= paramInt;
   }
   
   public final void scaleAdd(int paramInt, Tuple2i paramTuple2i1, Tuple2i paramTuple2i2)
   {
-    this.x = (paramInt * paramTuple2i1.x + paramTuple2i2.x);
-    this.y = (paramInt * paramTuple2i1.y + paramTuple2i2.y);
+    this.field_575 = (paramInt * paramTuple2i1.field_575 + paramTuple2i2.field_575);
+    this.field_576 = (paramInt * paramTuple2i1.field_576 + paramTuple2i2.field_576);
   }
   
   public final void scaleAdd(int paramInt, Tuple2i paramTuple2i)
   {
-    this.x = (paramInt * this.x + paramTuple2i.x);
-    this.y = (paramInt * this.y + paramTuple2i.y);
+    this.field_575 = (paramInt * this.field_575 + paramTuple2i.field_575);
+    this.field_576 = (paramInt * this.field_576 + paramTuple2i.field_576);
   }
   
   public String toString()
   {
-    return "(" + this.x + ", " + this.y + ")";
+    return "(" + this.field_575 + ", " + this.field_576 + ")";
   }
   
   public boolean equals(Object paramObject)
@@ -133,7 +133,7 @@ public abstract class Tuple2i
     try
     {
       Tuple2i localTuple2i = (Tuple2i)paramObject;
-      return (this.x == localTuple2i.x) && (this.y == localTuple2i.y);
+      return (this.field_575 == localTuple2i.field_575) && (this.field_576 == localTuple2i.field_576);
     }
     catch (NullPointerException localNullPointerException)
     {
@@ -146,101 +146,101 @@ public abstract class Tuple2i
   public int hashCode()
   {
     long l = 1L;
-    l = 31L * l + this.x;
-    l = 31L * l + this.y;
+    l = 31L * l + this.field_575;
+    l = 31L * l + this.field_576;
     return (int)(l ^ l >> 32);
   }
   
   public final void clamp(int paramInt1, int paramInt2, Tuple2i paramTuple2i)
   {
-    if (paramTuple2i.x > paramInt2) {
-      this.x = paramInt2;
-    } else if (paramTuple2i.x < paramInt1) {
-      this.x = paramInt1;
+    if (paramTuple2i.field_575 > paramInt2) {
+      this.field_575 = paramInt2;
+    } else if (paramTuple2i.field_575 < paramInt1) {
+      this.field_575 = paramInt1;
     } else {
-      this.x = paramTuple2i.x;
+      this.field_575 = paramTuple2i.field_575;
     }
-    if (paramTuple2i.y > paramInt2) {
-      this.y = paramInt2;
-    } else if (paramTuple2i.y < paramInt1) {
-      this.y = paramInt1;
+    if (paramTuple2i.field_576 > paramInt2) {
+      this.field_576 = paramInt2;
+    } else if (paramTuple2i.field_576 < paramInt1) {
+      this.field_576 = paramInt1;
     } else {
-      this.y = paramTuple2i.y;
+      this.field_576 = paramTuple2i.field_576;
     }
   }
   
   public final void clampMin(int paramInt, Tuple2i paramTuple2i)
   {
-    if (paramTuple2i.x < paramInt) {
-      this.x = paramInt;
+    if (paramTuple2i.field_575 < paramInt) {
+      this.field_575 = paramInt;
     } else {
-      this.x = paramTuple2i.x;
+      this.field_575 = paramTuple2i.field_575;
     }
-    if (paramTuple2i.y < paramInt) {
-      this.y = paramInt;
+    if (paramTuple2i.field_576 < paramInt) {
+      this.field_576 = paramInt;
     } else {
-      this.y = paramTuple2i.y;
+      this.field_576 = paramTuple2i.field_576;
     }
   }
   
   public final void clampMax(int paramInt, Tuple2i paramTuple2i)
   {
-    if (paramTuple2i.x > paramInt) {
-      this.x = paramInt;
+    if (paramTuple2i.field_575 > paramInt) {
+      this.field_575 = paramInt;
     } else {
-      this.x = paramTuple2i.x;
+      this.field_575 = paramTuple2i.field_575;
     }
-    if (paramTuple2i.y > paramInt) {
-      this.y = paramInt;
+    if (paramTuple2i.field_576 > paramInt) {
+      this.field_576 = paramInt;
     } else {
-      this.y = paramTuple2i.y;
+      this.field_576 = paramTuple2i.field_576;
     }
   }
   
   public final void absolute(Tuple2i paramTuple2i)
   {
-    this.x = Math.abs(paramTuple2i.x);
-    this.y = Math.abs(paramTuple2i.y);
+    this.field_575 = Math.abs(paramTuple2i.field_575);
+    this.field_576 = Math.abs(paramTuple2i.field_576);
   }
   
   public final void clamp(int paramInt1, int paramInt2)
   {
-    if (this.x > paramInt2) {
-      this.x = paramInt2;
-    } else if (this.x < paramInt1) {
-      this.x = paramInt1;
+    if (this.field_575 > paramInt2) {
+      this.field_575 = paramInt2;
+    } else if (this.field_575 < paramInt1) {
+      this.field_575 = paramInt1;
     }
-    if (this.y > paramInt2) {
-      this.y = paramInt2;
-    } else if (this.y < paramInt1) {
-      this.y = paramInt1;
+    if (this.field_576 > paramInt2) {
+      this.field_576 = paramInt2;
+    } else if (this.field_576 < paramInt1) {
+      this.field_576 = paramInt1;
     }
   }
   
   public final void clampMin(int paramInt)
   {
-    if (this.x < paramInt) {
-      this.x = paramInt;
+    if (this.field_575 < paramInt) {
+      this.field_575 = paramInt;
     }
-    if (this.y < paramInt) {
-      this.y = paramInt;
+    if (this.field_576 < paramInt) {
+      this.field_576 = paramInt;
     }
   }
   
   public final void clampMax(int paramInt)
   {
-    if (this.x > paramInt) {
-      this.x = paramInt;
+    if (this.field_575 > paramInt) {
+      this.field_575 = paramInt;
     }
-    if (this.y > paramInt) {
-      this.y = paramInt;
+    if (this.field_576 > paramInt) {
+      this.field_576 = paramInt;
     }
   }
   
   public final void absolute()
   {
-    this.x = Math.abs(this.x);
-    this.y = Math.abs(this.y);
+    this.field_575 = Math.abs(this.field_575);
+    this.field_576 = Math.abs(this.field_576);
   }
   
   public Object clone()
@@ -257,7 +257,7 @@ public abstract class Tuple2i
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     javax.vecmath.Tuple2i
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

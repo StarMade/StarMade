@@ -16,11 +16,11 @@ public class RCData
 {
   public static final String DEFAULT_JDBC_DRIVER = "org.hsqldb.jdbc.JDBCDriver";
   private String defaultJdbcDriverName = "org.hsqldb.jdbc.JDBCDriver";
-  public String id;
+  public String field_1736;
   public String url;
   public String username;
   public String password;
-  public String ti;
+  public String field_1737;
   public String driver;
   public String charset;
   public String truststore;
@@ -90,9 +90,9 @@ public class RCData
           {
             if (str3.equals(paramString))
             {
-              if (this.id == null)
+              if (this.field_1736 == null)
               {
-                this.id = paramString;
+                this.field_1736 = paramString;
                 i = 1;
               }
               else
@@ -136,7 +136,7 @@ public class RCData
             }
             else if (str2.equals("transiso"))
             {
-              this.ti = str3;
+              this.field_1737 = str3;
             }
             else if (str2.equals("libpath"))
             {
@@ -190,11 +190,11 @@ public class RCData
   public RCData(String paramString1, String paramString2, String paramString3, String paramString4, String paramString5, String paramString6, String paramString7, String paramString8, String paramString9)
     throws Exception
   {
-    this.id = paramString1;
+    this.field_1736 = paramString1;
     this.url = paramString2;
     this.username = paramString3;
     this.password = paramString4;
-    this.ti = paramString9;
+    this.field_1737 = paramString9;
     this.driver = paramString5;
     this.charset = paramString6;
     this.truststore = paramString7;
@@ -271,8 +271,8 @@ public class RCData
     }
     Class.forName(str1);
     Connection localConnection = str4 == null ? DriverManager.getConnection(str3) : DriverManager.getConnection(str3, str4, str5);
-    if (this.ti != null) {
-      setTI(localConnection, this.ti);
+    if (this.field_1737 != null) {
+      setTI(localConnection, this.field_1737);
     }
     return localConnection;
   }
@@ -288,7 +288,7 @@ public class RCData
       if (i < 0) {
         break;
       }
-      j = str1.indexOf(125, i + 2);
+      j = str1.indexOf('}', i + 2);
       if (j < 0) {
         break;
       }
@@ -349,7 +349,7 @@ public class RCData
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.lib.RCData
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

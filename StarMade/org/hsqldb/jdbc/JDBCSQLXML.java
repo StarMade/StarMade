@@ -1085,7 +1085,7 @@ public class JDBCSQLXML
       checkClosed();
       try
       {
-        int i = paramString3.indexOf(58);
+        int i = paramString3.indexOf(':');
         String str = i > 0 ? paramString3.substring(0, i) : "";
         this.writer.writeStartElement(str, paramString2, paramString1);
         int j = this.namespaces.size();
@@ -1494,7 +1494,7 @@ public class JDBCSQLXML
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.jdbc.JDBCSQLXML
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -1,17 +1,20 @@
-/* 1:  */package org.schema.game.common.controller.elements;
-/* 2:  */
-/* 3:  */import mh;
-/* 4:  */
-/* 5:  */public class SpaceStationManagerContainer extends StationaryManagerContainer implements mh, DoorContainerInterface, LiftContainerInterface, ShieldContainerInterface
-/* 6:  */{
-/* 7:  */  public SpaceStationManagerContainer(ki paramki)
-/* 8:  */  {
-/* 9:9 */    super(paramki);
-/* 10:  */  }
-/* 11:  */}
+package org.schema.game.common.controller.elements;
+
+import class_635;
+import class_737;
+
+public class SpaceStationManagerContainer
+  extends StationaryManagerContainer
+  implements class_635, DoorContainerInterface, LiftContainerInterface, ShieldContainerInterface
+{
+  public SpaceStationManagerContainer(class_737 paramclass_737)
+  {
+    super(paramclass_737);
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.game.common.controller.elements.SpaceStationManagerContainer
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

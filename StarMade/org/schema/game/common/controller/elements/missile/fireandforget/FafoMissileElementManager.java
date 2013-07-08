@@ -1,181 +1,178 @@
-/*   1:    */package org.schema.game.common.controller.elements.missile.fireandforget;
-/*   2:    */
-/*   3:    */import com.bulletphysics.collision.dispatch.CollisionWorld.ClosestRayResultCallback;
-/*   4:    */import com.bulletphysics.linearmath.Transform;
-/*   5:    */import ct;
-/*   6:    */import jE;
-/*   7:    */import java.util.ArrayList;
-/*   8:    */import java.util.Iterator;
-/*   9:    */import java.util.List;
-/*  10:    */import javax.vecmath.Tuple3f;
-/*  11:    */import kd;
-/*  12:    */import lA;
-/*  13:    */import lE;
-/*  14:    */import le;
-/*  15:    */import mF;
-/*  16:    */import org.schema.game.common.controller.SegmentController;
-/*  17:    */import org.schema.game.common.controller.elements.ElementCollectionManager;
-/*  18:    */import org.schema.game.common.controller.elements.ManagerContainer;
-/*  19:    */import org.schema.game.common.controller.elements.missile.MissileController;
-/*  20:    */import org.schema.game.common.controller.elements.missile.MissileElementManager;
-/*  21:    */import org.schema.game.common.data.element.ControlElementMap;
-/*  22:    */import org.schema.game.common.data.physics.CubeRayCastResult;
-/*  23:    */import org.schema.game.common.data.physics.PhysicsExt;
-/*  24:    */import org.schema.game.common.data.world.Segment;
-/*  25:    */import org.schema.game.network.objects.NetworkPlayer;
-/*  26:    */import org.schema.game.server.controller.GameServerController;
-/*  27:    */import org.schema.schine.network.StateInterface;
-/*  28:    */import org.schema.schine.network.objects.NetworkEntity;
-/*  29:    */import org.schema.schine.network.objects.NetworkObject;
-/*  30:    */import org.schema.schine.network.objects.remote.RemoteBooleanArray;
-/*  31:    */import org.schema.schine.network.objects.remote.RemoteField;
-/*  32:    */import x;
-/*  33:    */import xe;
-/*  34:    */
-/*  35:    */public class FafoMissileElementManager extends MissileElementManager
-/*  36:    */{
-/*  37:    */  private Segment cachedLastWeaponFireHitSegment;
-/*  38: 38 */  private javax.vecmath.Vector3f shootingDirTemp = new javax.vecmath.Vector3f();
-/*  39: 39 */  private q controlledFromOrig = new q();
-/*  40: 40 */  private q controlledFrom = new q();
-/*  41:    */  private ArrayList missileManagers;
-/*  42:    */  
-/*  43:    */  public FafoMissileElementManager(SegmentController paramSegmentController) {
-/*  44: 44 */    super((short)54, (short)48, paramSegmentController);
-/*  45: 45 */    this.missileManagers = new ArrayList();
-/*  46:    */  }
-/*  47:    */  
-/*  48:    */  public ArrayList getCollectionManagers()
-/*  49:    */  {
-/*  50: 50 */    return this.missileManagers;
-/*  51:    */  }
-/*  52:    */  
-/*  53: 53 */  private MissileController getMissileController() { return ((GameServerController)getSegmentController().getState().getController()).a(); }
-/*  54:    */  
-/*  58:    */  public ElementCollectionManager getNewCollectionManager(le paramle)
-/*  59:    */  {
-/*  60: 60 */    return new FafoMissileCollectionManager(paramle, getSegmentController());
-/*  61:    */  }
-/*  62:    */  
-/*  63:    */  public void handle(lA paramlA)
-/*  64:    */  {
-/*  65: 65 */    if (!((Boolean)paramlA.a.a().activeControllerMask.get(1).get()).booleanValue()) {
-/*  66: 66 */      return;
-/*  67:    */    }
-/*  68: 68 */    mF localmF = paramlA.a.a();
-/*  69:    */    
-/*  70: 70 */    if (getCollectionManagers().isEmpty())
-/*  71:    */    {
-/*  72: 72 */      return;
-/*  73:    */    }
-/*  74: 74 */    if (!convertDeligateControls(paramlA, this.controlledFromOrig, this.controlledFrom)) {
-/*  75: 75 */      return;
-/*  76:    */    }
-/*  77:    */    
-/*  78: 78 */    for (int i = 0; i < getCollectionManagers().size(); 
-/*  79:    */        
-/*  80: 80 */        i++)
-/*  81:    */    {
-/*  82:    */      FafoMissileCollectionManager localFafoMissileCollectionManager;
-/*  83: 83 */      int j = 0; if ((localFafoMissileCollectionManager = (FafoMissileCollectionManager)getCollectionManagers().get(i)).equalsControllerPos(this.controlledFrom))
-/*  84:    */      {
-/*  87: 87 */        if ((this.controlledFromOrig.equals(this.controlledFrom) | getControlElementMap().isControlling(this.controlledFromOrig, localFafoMissileCollectionManager.getControllerPos(), this.controllerId)))
-/*  88:    */        {
-/*  89: 89 */          for (j = 0; j < localFafoMissileCollectionManager.getCollection().size(); j++) {
-/*  90:    */            org.schema.game.common.controller.elements.missile.MissileUnit localMissileUnit;
-/*  91: 91 */            if ((localMissileUnit = (org.schema.game.common.controller.elements.missile.MissileUnit)localFafoMissileCollectionManager.getCollection().get(j)).canShoot()) {
-/*  92: 92 */              Object localObject1 = localMissileUnit.getOutput();
-/*  93:    */              
-/*  94: 94 */              localObject1 = new javax.vecmath.Vector3f(((q)localObject1).a - 8, ((q)localObject1).b - 8, ((q)localObject1).c - 8);
-/*  95:    */              
-/* 100:100 */              getWorldTransform().transform((javax.vecmath.Vector3f)localObject1);
-/* 101:    */              
-/* 102:102 */              (
-/* 103:103 */                localObject2 = new q(this.controlledFromOrig)).c(kd.a);
-/* 104:104 */              Object localObject2 = getSegmentController().getAbsoluteElementWorldPosition((q)localObject2, new javax.vecmath.Vector3f());
-/* 105:105 */              javax.vecmath.Vector3f localVector3f = new javax.vecmath.Vector3f(paramlA.a.a());
-/* 106:106 */              PhysicsExt localPhysicsExt = getSegmentController().getPhysics();
-/* 107:107 */              localVector3f.scale(localMissileUnit.getDistance());
-/* 108:108 */              localVector3f.add((Tuple3f)localObject2);
-/* 109:    */              
-/* 113:113 */              if ((localObject2 = localPhysicsExt.testRayCollisionPoint((javax.vecmath.Vector3f)localObject2, localVector3f, false, getSegmentController(), null, true, this.cachedLastWeaponFireHitSegment, false)).hasHit()) {
-/* 114:114 */                if ((localObject2 instanceof CubeRayCastResult)) {
-/* 115:115 */                  this.cachedLastWeaponFireHitSegment = ((CubeRayCastResult)localObject2).getSegment();
-/* 116:    */                }
-/* 117:    */                
-/* 118:118 */                this.shootingDirTemp.sub(((CollisionWorld.ClosestRayResultCallback)localObject2).hitPointWorld, (Tuple3f)localObject1);
-/* 119:    */              } else {
-/* 120:120 */                this.cachedLastWeaponFireHitSegment = null;
-/* 121:121 */                this.shootingDirTemp.set(paramlA.a.a());
-/* 122:    */              }
-/* 123:    */              
-/* 127:127 */              this.shootingDirTemp.normalize();
-/* 128:128 */              localMissileUnit.updateLastShoot();
-/* 129:    */              
-/* 130:130 */              if (getSegmentController().isOnServer())
-/* 131:    */              {
-/* 132:132 */                (localObject2 = new Transform()).setIdentity();
-/* 133:133 */                ((Transform)localObject2).origin.set((Tuple3f)localObject1);
-/* 134:134 */                getMissileController().addFafoMissile(getSegmentController(), (Transform)localObject2, new javax.vecmath.Vector3f(this.shootingDirTemp), localMissileUnit.getSpeed(), localMissileUnit.getBlastRadius(), localMissileUnit.getDamage(), localMissileUnit.getDistance(), localmF);
-/* 135:    */              }
-/* 136:    */              
-/* 138:138 */              (localObject2 = new Transform()).setIdentity();
-/* 139:139 */              ((Transform)localObject2).origin.set((Tuple3f)localObject1);
-/* 140:    */              
-/* 141:141 */              if (!getSegmentController().isOnServer()) {
-/* 142:142 */                xe.a("0022_spaceship user - missile fire 1", (Transform)localObject2, 5.0F);
-/* 143:143 */                notifyObservers(localMissileUnit, "s");
-/* 144:    */              }
-/* 145:145 */              getManagerContainer().onAction();
-/* 146:    */            }
-/* 147:    */          }
-/* 148:    */          
-/* 150:150 */          if ((localFafoMissileCollectionManager.getCollection().isEmpty()) && (clientIsOwnShip())) {
-/* 151:151 */            ((ct)getState()).a().d("WARNING!\n \nNo Weapons connected \nto entry point");
-/* 152:    */          }
-/* 153:    */        }
-/* 154:    */      }
-/* 155:    */    }
-/* 156:156 */    if ((getCollectionManagers().isEmpty()) && (clientIsOwnShip()))
-/* 157:    */    {
-/* 160:160 */      ((ct)getState()).a().d("WARNING!\n \nNo weapon controllers");
-/* 161:    */    }
-/* 162:    */  }
-/* 163:    */  
-/* 165:    */  public void updateFromNT(NetworkObject paramNetworkObject) {}
-/* 166:    */  
-/* 168:    */  public void updateToFullNT(NetworkObject paramNetworkObject)
-/* 169:    */  {
-/* 170:170 */    if (getSegmentController().isOnServer())
-/* 171:    */    {
-/* 181:181 */      for (paramNetworkObject = 0; paramNetworkObject < getCollectionManagers().size(); paramNetworkObject++) {
-/* 182:182 */        ((FafoMissileCollectionManager)getCollectionManagers().get(paramNetworkObject)).sendDistribution();
-/* 183:    */      }
-/* 184:    */    }
-/* 185:    */  }
-/* 186:    */  
-/* 189:    */  public boolean receiveDistribution(jE paramjE, NetworkEntity paramNetworkEntity)
-/* 190:    */  {
-/* 191:191 */    return receiveDistribution(paramjE);
-/* 192:    */  }
-/* 193:    */  
-/* 194:    */  public void onActivate(le paramle, boolean paramBoolean)
-/* 195:    */  {
-/* 196:196 */    q localq = paramle.a(new q());
-/* 197:197 */    Iterator localIterator; for (int i = 0; i < getCollectionManagers().size(); i++) {
-/* 198:198 */      for (localIterator = ((FafoMissileCollectionManager)getCollectionManagers().get(i)).getCollection().iterator(); localIterator.hasNext();) { org.schema.game.common.controller.elements.missile.MissileUnit localMissileUnit;
-/* 199:199 */        if ((localMissileUnit = (org.schema.game.common.controller.elements.missile.MissileUnit)localIterator.next()).contains(localq)) {
-/* 200:200 */          localMissileUnit.setMainPiece(paramle, paramBoolean);
-/* 201:    */          
-/* 202:202 */          return;
-/* 203:    */        }
-/* 204:    */      }
-/* 205:    */    }
-/* 206:    */  }
-/* 207:    */}
+package org.schema.game.common.controller.elements.missile.fireandforget;
+
+import class_371;
+import class_48;
+import class_52;
+import class_747;
+import class_748;
+import class_755;
+import class_796;
+import class_797;
+import class_844;
+import class_969;
+import com.bulletphysics.collision.dispatch.CollisionWorld.ClosestRayResultCallback;
+import com.bulletphysics.linearmath.Transform;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import javax.vecmath.Tuple3f;
+import javax.vecmath.Vector3f;
+import org.schema.game.common.controller.SegmentController;
+import org.schema.game.common.controller.elements.ElementCollectionManager;
+import org.schema.game.common.controller.elements.ManagerContainer;
+import org.schema.game.common.controller.elements.missile.MissileController;
+import org.schema.game.common.controller.elements.missile.MissileElementManager;
+import org.schema.game.common.controller.elements.missile.MissileUnit;
+import org.schema.game.common.data.element.ControlElementMap;
+import org.schema.game.common.data.physics.CubeRayCastResult;
+import org.schema.game.common.data.physics.PhysicsExt;
+import org.schema.game.common.data.world.Segment;
+import org.schema.game.network.objects.NetworkPlayer;
+import org.schema.game.server.controller.GameServerController;
+import org.schema.schine.network.StateInterface;
+import org.schema.schine.network.objects.NetworkEntity;
+import org.schema.schine.network.objects.NetworkObject;
+import org.schema.schine.network.objects.remote.RemoteBooleanArray;
+import org.schema.schine.network.objects.remote.RemoteField;
+
+public class FafoMissileElementManager
+  extends MissileElementManager
+{
+  private Segment cachedLastWeaponFireHitSegment;
+  private Vector3f shootingDirTemp = new Vector3f();
+  private class_48 controlledFromOrig = new class_48();
+  private class_48 controlledFrom = new class_48();
+  private ArrayList missileManagers = new ArrayList();
+  
+  public FafoMissileElementManager(SegmentController paramSegmentController)
+  {
+    super((short)54, (short)48, paramSegmentController);
+  }
+  
+  public ArrayList getCollectionManagers()
+  {
+    return this.missileManagers;
+  }
+  
+  private MissileController getMissileController()
+  {
+    return ((GameServerController)getSegmentController().getState().getController()).a54();
+  }
+  
+  public ElementCollectionManager getNewCollectionManager(class_796 paramclass_796)
+  {
+    return new FafoMissileCollectionManager(paramclass_796, getSegmentController());
+  }
+  
+  public void handle(class_755 paramclass_755)
+  {
+    if (!((Boolean)paramclass_755.field_1015.a127().activeControllerMask.get(1).get()).booleanValue()) {
+      return;
+    }
+    class_797 localclass_797 = paramclass_755.field_1015.a120();
+    if (getCollectionManagers().isEmpty()) {
+      return;
+    }
+    if (!convertDeligateControls(paramclass_755, this.controlledFromOrig, this.controlledFrom)) {
+      return;
+    }
+    for (int i = 0; i < getCollectionManagers().size(); i++)
+    {
+      FafoMissileCollectionManager localFafoMissileCollectionManager;
+      int j = 0;
+      if (((localFafoMissileCollectionManager = (FafoMissileCollectionManager)getCollectionManagers().get(i)).equalsControllerPos(this.controlledFrom)) && ((this.controlledFromOrig.equals(this.controlledFrom) | getControlElementMap().isControlling(this.controlledFromOrig, localFafoMissileCollectionManager.getControllerPos(), this.controllerId))))
+      {
+        for (j = 0; j < localFafoMissileCollectionManager.getCollection().size(); j++)
+        {
+          MissileUnit localMissileUnit;
+          if ((localMissileUnit = (MissileUnit)localFafoMissileCollectionManager.getCollection().get(j)).canShoot())
+          {
+            Object localObject1 = localMissileUnit.getOutput();
+            localObject1 = new Vector3f(((class_48)localObject1).field_475 - 8, ((class_48)localObject1).field_476 - 8, ((class_48)localObject1).field_477 - 8);
+            getWorldTransform().transform((Vector3f)localObject1);
+            (localObject2 = new class_48(this.controlledFromOrig)).c1(class_747.field_136);
+            Object localObject2 = getSegmentController().getAbsoluteElementWorldPosition((class_48)localObject2, new Vector3f());
+            Vector3f localVector3f = new Vector3f(paramclass_755.field_1015.a8());
+            PhysicsExt localPhysicsExt = getSegmentController().getPhysics();
+            localVector3f.scale(localMissileUnit.getDistance());
+            localVector3f.add((Tuple3f)localObject2);
+            if ((localObject2 = localPhysicsExt.testRayCollisionPoint((Vector3f)localObject2, localVector3f, false, getSegmentController(), null, true, this.cachedLastWeaponFireHitSegment, false)).hasHit())
+            {
+              if ((localObject2 instanceof CubeRayCastResult)) {
+                this.cachedLastWeaponFireHitSegment = ((CubeRayCastResult)localObject2).getSegment();
+              }
+              this.shootingDirTemp.sub(((CollisionWorld.ClosestRayResultCallback)localObject2).hitPointWorld, (Tuple3f)localObject1);
+            }
+            else
+            {
+              this.cachedLastWeaponFireHitSegment = null;
+              this.shootingDirTemp.set(paramclass_755.field_1015.a8());
+            }
+            this.shootingDirTemp.normalize();
+            localMissileUnit.updateLastShoot();
+            if (getSegmentController().isOnServer())
+            {
+              (localObject2 = new Transform()).setIdentity();
+              ((Transform)localObject2).origin.set((Tuple3f)localObject1);
+              getMissileController().addFafoMissile(getSegmentController(), (Transform)localObject2, new Vector3f(this.shootingDirTemp), localMissileUnit.getSpeed(), localMissileUnit.getBlastRadius(), localMissileUnit.getDamage(), localMissileUnit.getDistance(), localclass_797);
+            }
+            (localObject2 = new Transform()).setIdentity();
+            ((Transform)localObject2).origin.set((Tuple3f)localObject1);
+            if (!getSegmentController().isOnServer())
+            {
+              class_969.a8("0022_spaceship user - missile fire 1", (Transform)localObject2, 5.0F);
+              notifyObservers(localMissileUnit, "s");
+            }
+            getManagerContainer().onAction();
+          }
+        }
+        if ((localFafoMissileCollectionManager.getCollection().isEmpty()) && (clientIsOwnShip())) {
+          ((class_371)getState()).a4().d1("WARNING!\n \nNo Weapons connected \nto entry point");
+        }
+      }
+    }
+    if ((getCollectionManagers().isEmpty()) && (clientIsOwnShip())) {
+      ((class_371)getState()).a4().d1("WARNING!\n \nNo weapon controllers");
+    }
+  }
+  
+  public void updateFromNT(NetworkObject paramNetworkObject) {}
+  
+  public void updateToFullNT(NetworkObject paramNetworkObject)
+  {
+    if (getSegmentController().isOnServer()) {
+      for (paramNetworkObject = 0; paramNetworkObject < getCollectionManagers().size(); paramNetworkObject++) {
+        ((FafoMissileCollectionManager)getCollectionManagers().get(paramNetworkObject)).sendDistribution();
+      }
+    }
+  }
+  
+  public boolean receiveDistribution(class_844 paramclass_844, NetworkEntity paramNetworkEntity)
+  {
+    return receiveDistribution(paramclass_844);
+  }
+  
+  public void onActivate(class_796 paramclass_796, boolean paramBoolean)
+  {
+    class_48 localclass_48 = paramclass_796.a2(new class_48());
+    for (int i = 0; i < getCollectionManagers().size(); i++)
+    {
+      Iterator localIterator = ((FafoMissileCollectionManager)getCollectionManagers().get(i)).getCollection().iterator();
+      while (localIterator.hasNext())
+      {
+        MissileUnit localMissileUnit;
+        if ((localMissileUnit = (MissileUnit)localIterator.next()).contains(localclass_48))
+        {
+          localMissileUnit.setMainPiece(paramclass_796, paramBoolean);
+          return;
+        }
+      }
+    }
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.game.common.controller.elements.missile.fireandforget.FafoMissileElementManager
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

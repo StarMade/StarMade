@@ -43,22 +43,22 @@ public class Color3f
   
   public final void set(Color paramColor)
   {
-    this.x = (paramColor.getRed() / 255.0F);
-    this.y = (paramColor.getGreen() / 255.0F);
-    this.z = (paramColor.getBlue() / 255.0F);
+    this.field_615 = (paramColor.getRed() / 255.0F);
+    this.field_616 = (paramColor.getGreen() / 255.0F);
+    this.field_617 = (paramColor.getBlue() / 255.0F);
   }
   
   public final Color get()
   {
-    int i = Math.round(this.x * 255.0F);
-    int j = Math.round(this.y * 255.0F);
-    int k = Math.round(this.z * 255.0F);
+    int i = Math.round(this.field_615 * 255.0F);
+    int j = Math.round(this.field_616 * 255.0F);
+    int k = Math.round(this.field_617 * 255.0F);
     return new Color(i, j, k);
   }
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     javax.vecmath.Color3f
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

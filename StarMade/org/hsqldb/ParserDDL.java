@@ -917,11 +917,11 @@ public class ParserDDL
         catch (HsqlException localHsqlException)
         {
           if (!paramSession.isProcessingScript()) {
-            break label351;
+            break label352;
           }
         }
         continue;
-        label351:
+        label352:
         throw localHsqlException;
         paramTable.addConstraint(localConstraint1);
         if (localConstraint1.isNotNull())
@@ -3526,7 +3526,7 @@ public class ParserDDL
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.ParserDDL
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

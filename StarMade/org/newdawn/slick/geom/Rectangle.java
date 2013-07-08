@@ -1,179 +1,164 @@
-/*   1:    */package org.newdawn.slick.geom;
-/*   2:    */
-/*   7:    */public class Rectangle
-/*   8:    */  extends Shape
-/*   9:    */{
-/*  10:    */  protected float width;
-/*  11:    */  
-/*  15:    */  protected float height;
-/*  16:    */  
-/*  21:    */  public Rectangle(float x, float y, float width, float height)
-/*  22:    */  {
-/*  23: 23 */    this.x = x;
-/*  24: 24 */    this.y = y;
-/*  25: 25 */    this.width = width;
-/*  26: 26 */    this.height = height;
-/*  27: 27 */    this.maxX = (x + width);
-/*  28: 28 */    this.maxY = (y + height);
-/*  29: 29 */    checkPoints();
-/*  30:    */  }
-/*  31:    */  
-/*  38:    */  public boolean contains(float xp, float yp)
-/*  39:    */  {
-/*  40: 40 */    if (xp <= getX()) {
-/*  41: 41 */      return false;
-/*  42:    */    }
-/*  43: 43 */    if (yp <= getY()) {
-/*  44: 44 */      return false;
-/*  45:    */    }
-/*  46: 46 */    if (xp >= this.maxX) {
-/*  47: 47 */      return false;
-/*  48:    */    }
-/*  49: 49 */    if (yp >= this.maxY) {
-/*  50: 50 */      return false;
-/*  51:    */    }
-/*  52:    */    
-/*  53: 53 */    return true;
-/*  54:    */  }
-/*  55:    */  
-/*  60:    */  public void setBounds(Rectangle other)
-/*  61:    */  {
-/*  62: 62 */    setBounds(other.getX(), other.getY(), other.getWidth(), other.getHeight());
-/*  63:    */  }
-/*  64:    */  
-/*  72:    */  public void setBounds(float x, float y, float width, float height)
-/*  73:    */  {
-/*  74: 74 */    setX(x);
-/*  75: 75 */    setY(y);
-/*  76: 76 */    setSize(width, height);
-/*  77:    */  }
-/*  78:    */  
-/*  84:    */  public void setSize(float width, float height)
-/*  85:    */  {
-/*  86: 86 */    setWidth(width);
-/*  87: 87 */    setHeight(height);
-/*  88:    */  }
-/*  89:    */  
-/*  95:    */  public float getWidth()
-/*  96:    */  {
-/*  97: 97 */    return this.width;
-/*  98:    */  }
-/*  99:    */  
-/* 104:    */  public float getHeight()
-/* 105:    */  {
-/* 106:106 */    return this.height;
-/* 107:    */  }
-/* 108:    */  
-/* 115:    */  public void grow(float h, float v)
-/* 116:    */  {
-/* 117:117 */    setX(getX() - h);
-/* 118:118 */    setY(getY() - v);
-/* 119:119 */    setWidth(getWidth() + h * 2.0F);
-/* 120:120 */    setHeight(getHeight() + v * 2.0F);
-/* 121:    */  }
-/* 122:    */  
-/* 128:    */  public void scaleGrow(float h, float v)
-/* 129:    */  {
-/* 130:130 */    grow(getWidth() * (h - 1.0F), getHeight() * (v - 1.0F));
-/* 131:    */  }
-/* 132:    */  
-/* 137:    */  public void setWidth(float width)
-/* 138:    */  {
-/* 139:139 */    if (width != this.width) {
-/* 140:140 */      this.pointsDirty = true;
-/* 141:141 */      this.width = width;
-/* 142:142 */      this.maxX = (this.x + width);
-/* 143:    */    }
-/* 144:    */  }
-/* 145:    */  
-/* 150:    */  public void setHeight(float height)
-/* 151:    */  {
-/* 152:152 */    if (height != this.height) {
-/* 153:153 */      this.pointsDirty = true;
-/* 154:154 */      this.height = height;
-/* 155:155 */      this.maxY = (this.y + height);
-/* 156:    */    }
-/* 157:    */  }
-/* 158:    */  
-/* 164:    */  public boolean intersects(Shape shape)
-/* 165:    */  {
-/* 166:166 */    if ((shape instanceof Rectangle)) {
-/* 167:167 */      Rectangle other = (Rectangle)shape;
-/* 168:168 */      if ((this.x > other.x + other.width) || (this.x + this.width < other.x)) {
-/* 169:169 */        return false;
-/* 170:    */      }
-/* 171:171 */      if ((this.y > other.y + other.height) || (this.y + this.height < other.y)) {
-/* 172:172 */        return false;
-/* 173:    */      }
-/* 174:174 */      return true;
-/* 175:    */    }
-/* 176:176 */    if ((shape instanceof Circle)) {
-/* 177:177 */      return intersects((Circle)shape);
-/* 178:    */    }
-/* 179:    */    
-/* 180:180 */    return super.intersects(shape);
-/* 181:    */  }
-/* 182:    */  
-/* 183:    */  protected void createPoints()
-/* 184:    */  {
-/* 185:185 */    float useWidth = this.width;
-/* 186:186 */    float useHeight = this.height;
-/* 187:187 */    this.points = new float[8];
-/* 188:    */    
-/* 189:189 */    this.points[0] = this.x;
-/* 190:190 */    this.points[1] = this.y;
-/* 191:    */    
-/* 192:192 */    this.points[2] = (this.x + useWidth);
-/* 193:193 */    this.points[3] = this.y;
-/* 194:    */    
-/* 195:195 */    this.points[4] = (this.x + useWidth);
-/* 196:196 */    this.points[5] = (this.y + useHeight);
-/* 197:    */    
-/* 198:198 */    this.points[6] = this.x;
-/* 199:199 */    this.points[7] = (this.y + useHeight);
-/* 200:    */    
-/* 201:201 */    this.maxX = this.points[2];
-/* 202:202 */    this.maxY = this.points[5];
-/* 203:203 */    this.minX = this.points[0];
-/* 204:204 */    this.minY = this.points[1];
-/* 205:    */    
-/* 206:206 */    findCenter();
-/* 207:207 */    calculateRadius();
-/* 208:    */  }
-/* 209:    */  
-/* 215:    */  private boolean intersects(Circle other)
-/* 216:    */  {
-/* 217:217 */    return other.intersects(this);
-/* 218:    */  }
-/* 219:    */  
-/* 222:    */  public String toString()
-/* 223:    */  {
-/* 224:224 */    return "[Rectangle " + this.width + "x" + this.height + "]";
-/* 225:    */  }
-/* 226:    */  
-/* 243:    */  public static boolean contains(float xp, float yp, float xr, float yr, float widthr, float heightr)
-/* 244:    */  {
-/* 245:245 */    return (xp >= xr) && (yp >= yr) && (xp <= xr + widthr) && (yp <= yr + heightr);
-/* 246:    */  }
-/* 247:    */  
-/* 255:    */  public Shape transform(Transform transform)
-/* 256:    */  {
-/* 257:257 */    checkPoints();
-/* 258:    */    
-/* 259:259 */    Polygon resultPolygon = new Polygon();
-/* 260:    */    
-/* 261:261 */    float[] result = new float[this.points.length];
-/* 262:262 */    transform.transform(this.points, 0, result, 0, this.points.length / 2);
-/* 263:263 */    resultPolygon.points = result;
-/* 264:264 */    resultPolygon.findCenter();
-/* 265:265 */    resultPolygon.checkPoints();
-/* 266:    */    
-/* 267:267 */    return resultPolygon;
-/* 268:    */  }
-/* 269:    */}
+package org.newdawn.slick.geom;
+
+public class Rectangle
+  extends Shape
+{
+  protected float width;
+  protected float height;
+  
+  public Rectangle(float local_x, float local_y, float width, float height)
+  {
+    this.field_1743 = local_x;
+    this.field_1744 = local_y;
+    this.width = width;
+    this.height = height;
+    this.maxX = (local_x + width);
+    this.maxY = (local_y + height);
+    checkPoints();
+  }
+  
+  public boolean contains(float local_xp, float local_yp)
+  {
+    if (local_xp <= getX()) {
+      return false;
+    }
+    if (local_yp <= getY()) {
+      return false;
+    }
+    if (local_xp >= this.maxX) {
+      return false;
+    }
+    return local_yp < this.maxY;
+  }
+  
+  public void setBounds(Rectangle other)
+  {
+    setBounds(other.getX(), other.getY(), other.getWidth(), other.getHeight());
+  }
+  
+  public void setBounds(float local_x, float local_y, float width, float height)
+  {
+    setX(local_x);
+    setY(local_y);
+    setSize(width, height);
+  }
+  
+  public void setSize(float width, float height)
+  {
+    setWidth(width);
+    setHeight(height);
+  }
+  
+  public float getWidth()
+  {
+    return this.width;
+  }
+  
+  public float getHeight()
+  {
+    return this.height;
+  }
+  
+  public void grow(float local_h, float local_v)
+  {
+    setX(getX() - local_h);
+    setY(getY() - local_v);
+    setWidth(getWidth() + local_h * 2.0F);
+    setHeight(getHeight() + local_v * 2.0F);
+  }
+  
+  public void scaleGrow(float local_h, float local_v)
+  {
+    grow(getWidth() * (local_h - 1.0F), getHeight() * (local_v - 1.0F));
+  }
+  
+  public void setWidth(float width)
+  {
+    if (width != this.width)
+    {
+      this.pointsDirty = true;
+      this.width = width;
+      this.maxX = (this.field_1743 + width);
+    }
+  }
+  
+  public void setHeight(float height)
+  {
+    if (height != this.height)
+    {
+      this.pointsDirty = true;
+      this.height = height;
+      this.maxY = (this.field_1744 + height);
+    }
+  }
+  
+  public boolean intersects(Shape shape)
+  {
+    if ((shape instanceof Rectangle))
+    {
+      Rectangle other = (Rectangle)shape;
+      if ((this.field_1743 > other.field_1743 + other.width) || (this.field_1743 + this.width < other.field_1743)) {
+        return false;
+      }
+      return (this.field_1744 <= other.field_1744 + other.height) && (this.field_1744 + this.height >= other.field_1744);
+    }
+    if ((shape instanceof Circle)) {
+      return intersects((Circle)shape);
+    }
+    return super.intersects(shape);
+  }
+  
+  protected void createPoints()
+  {
+    float useWidth = this.width;
+    float useHeight = this.height;
+    this.points = new float[8];
+    this.points[0] = this.field_1743;
+    this.points[1] = this.field_1744;
+    this.points[2] = (this.field_1743 + useWidth);
+    this.points[3] = this.field_1744;
+    this.points[4] = (this.field_1743 + useWidth);
+    this.points[5] = (this.field_1744 + useHeight);
+    this.points[6] = this.field_1743;
+    this.points[7] = (this.field_1744 + useHeight);
+    this.maxX = this.points[2];
+    this.maxY = this.points[5];
+    this.minX = this.points[0];
+    this.minY = this.points[1];
+    findCenter();
+    calculateRadius();
+  }
+  
+  private boolean intersects(Circle other)
+  {
+    return other.intersects(this);
+  }
+  
+  public String toString()
+  {
+    return "[Rectangle " + this.width + "x" + this.height + "]";
+  }
+  
+  public static boolean contains(float local_xp, float local_yp, float local_xr, float local_yr, float widthr, float heightr)
+  {
+    return (local_xp >= local_xr) && (local_yp >= local_yr) && (local_xp <= local_xr + widthr) && (local_yp <= local_yr + heightr);
+  }
+  
+  public Shape transform(Transform transform)
+  {
+    checkPoints();
+    Polygon resultPolygon = new Polygon();
+    float[] result = new float[this.points.length];
+    transform.transform(this.points, 0, result, 0, this.points.length / 2);
+    resultPolygon.points = result;
+    resultPolygon.findCenter();
+    resultPolygon.checkPoints();
+    return resultPolygon;
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.newdawn.slick.geom.Rectangle
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -1,119 +1,205 @@
-/*   1:    */package it.unimi.dsi.fastutil.longs;
-/*   2:    */
-/*   3:    */import java.io.Serializable;
-/*   4:    */import java.util.Collection;
-/*   5:    */
-/*  53:    */public class LongSets
-/*  54:    */{
-/*  55:    */  public static class EmptySet
-/*  56:    */    extends LongCollections.EmptyCollection
-/*  57:    */    implements LongSet, Serializable, Cloneable
-/*  58:    */  {
-/*  59:    */    public static final long serialVersionUID = -7046029254386353129L;
-/*  60:    */    
-/*  61: 61 */    public boolean remove(long ok) { throw new UnsupportedOperationException(); }
-/*  62: 62 */    public Object clone() { return LongSets.EMPTY_SET; }
-/*  63: 63 */    private Object readResolve() { return LongSets.EMPTY_SET; }
-/*  64:    */  }
-/*  65:    */  
-/*  71: 71 */  public static final EmptySet EMPTY_SET = new EmptySet();
-/*  72:    */  
-/*  73:    */  public static class Singleton
-/*  74:    */    extends AbstractLongSet
-/*  75:    */    implements Serializable, Cloneable
-/*  76:    */  {
-/*  77:    */    public static final long serialVersionUID = -7046029254386353129L;
-/*  78:    */    protected final long element;
-/*  79:    */    
-/*  80: 80 */    protected Singleton(long element) { this.element = element; }
-/*  81:    */    
-/*  82: 82 */    public boolean add(long k) { throw new UnsupportedOperationException(); }
-/*  83: 83 */    public boolean contains(long k) { return k == this.element; }
-/*  84: 84 */    public boolean addAll(Collection<? extends Long> c) { throw new UnsupportedOperationException(); }
-/*  85: 85 */    public boolean removeAll(Collection<?> c) { throw new UnsupportedOperationException(); }
-/*  86: 86 */    public boolean retainAll(Collection<?> c) { throw new UnsupportedOperationException(); }
-/*  87:    */    
-/*  88:    */    public long[] toLongArray() {
-/*  89: 89 */      long[] a = new long[1];
-/*  90: 90 */      a[0] = this.element;
-/*  91: 91 */      return a; }
-/*  92:    */    
-/*  93: 93 */    public boolean addAll(LongCollection c) { throw new UnsupportedOperationException(); }
-/*  94: 94 */    public boolean removeAll(LongCollection c) { throw new UnsupportedOperationException(); }
-/*  95: 95 */    public boolean retainAll(LongCollection c) { throw new UnsupportedOperationException(); }
-/*  96:    */    
-/*  98: 98 */    public LongListIterator iterator() { return LongIterators.singleton(this.element); }
-/*  99:    */    
-/* 100:100 */    public int size() { return 1; }
-/* 101:    */    
-/* 102:102 */    public Object clone() { return this; }
-/* 103:    */  }
-/* 104:    */  
-/* 112:    */  public static LongSet singleton(long element)
-/* 113:    */  {
-/* 114:114 */    return new Singleton(element);
-/* 115:    */  }
-/* 116:    */  
-/* 126:    */  public static LongSet singleton(Long element)
-/* 127:    */  {
-/* 128:128 */    return new Singleton(element.longValue());
-/* 129:    */  }
-/* 130:    */  
-/* 132:    */  public static class SynchronizedSet
-/* 133:    */    extends LongCollections.SynchronizedCollection
-/* 134:    */    implements LongSet, Serializable
-/* 135:    */  {
-/* 136:    */    public static final long serialVersionUID = -7046029254386353129L;
-/* 137:    */    
-/* 138:    */    protected SynchronizedSet(LongSet s, Object sync)
-/* 139:    */    {
-/* 140:140 */      super(sync);
-/* 141:    */    }
-/* 142:    */    
-/* 144:144 */    protected SynchronizedSet(LongSet s) { super(); }
-/* 145:    */    
-/* 146:    */    public boolean remove(long k) {
-/* 147:147 */      synchronized (this.sync) { return this.collection.remove(Long.valueOf(k)); } }
-/* 148:148 */    public boolean equals(Object o) { synchronized (this.sync) { return this.collection.equals(o); } }
-/* 149:149 */    public int hashCode() { synchronized (this.sync) { return this.collection.hashCode();
-/* 150:    */      }
-/* 151:    */    }
-/* 152:    */  }
-/* 153:    */  
-/* 157:    */  public static LongSet synchronize(LongSet s)
-/* 158:    */  {
-/* 159:159 */    return new SynchronizedSet(s);
-/* 160:    */  }
-/* 161:    */  
-/* 167:    */  public static LongSet synchronize(LongSet s, Object sync)
-/* 168:    */  {
-/* 169:169 */    return new SynchronizedSet(s, sync);
-/* 170:    */  }
-/* 171:    */  
-/* 172:    */  public static class UnmodifiableSet
-/* 173:    */    extends LongCollections.UnmodifiableCollection
-/* 174:    */    implements LongSet, Serializable
-/* 175:    */  {
-/* 176:    */    public static final long serialVersionUID = -7046029254386353129L;
-/* 177:    */    
-/* 178:    */    protected UnmodifiableSet(LongSet s)
-/* 179:    */    {
-/* 180:180 */      super();
-/* 181:    */    }
-/* 182:    */    
-/* 183:183 */    public boolean remove(long k) { throw new UnsupportedOperationException(); }
-/* 184:184 */    public boolean equals(Object o) { return this.collection.equals(o); }
-/* 185:185 */    public int hashCode() { return this.collection.hashCode(); }
-/* 186:    */  }
-/* 187:    */  
-/* 193:    */  public static LongSet unmodifiable(LongSet s)
-/* 194:    */  {
-/* 195:195 */    return new UnmodifiableSet(s);
-/* 196:    */  }
-/* 197:    */}
+package it.unimi.dsi.fastutil.longs;
+
+import java.io.Serializable;
+import java.util.Collection;
+
+public class LongSets
+{
+  public static final EmptySet EMPTY_SET = new EmptySet();
+  
+  public static LongSet singleton(long element)
+  {
+    return new Singleton(element);
+  }
+  
+  public static LongSet singleton(Long element)
+  {
+    return new Singleton(element.longValue());
+  }
+  
+  public static LongSet synchronize(LongSet local_s)
+  {
+    return new SynchronizedSet(local_s);
+  }
+  
+  public static LongSet synchronize(LongSet local_s, Object sync)
+  {
+    return new SynchronizedSet(local_s, sync);
+  }
+  
+  public static LongSet unmodifiable(LongSet local_s)
+  {
+    return new UnmodifiableSet(local_s);
+  }
+  
+  public static class UnmodifiableSet
+    extends LongCollections.UnmodifiableCollection
+    implements LongSet, Serializable
+  {
+    public static final long serialVersionUID = -7046029254386353129L;
+    
+    protected UnmodifiableSet(LongSet local_s)
+    {
+      super();
+    }
+    
+    public boolean remove(long local_k)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public boolean equals(Object local_o)
+    {
+      return this.collection.equals(local_o);
+    }
+    
+    public int hashCode()
+    {
+      return this.collection.hashCode();
+    }
+  }
+  
+  public static class SynchronizedSet
+    extends LongCollections.SynchronizedCollection
+    implements LongSet, Serializable
+  {
+    public static final long serialVersionUID = -7046029254386353129L;
+    
+    protected SynchronizedSet(LongSet local_s, Object sync)
+    {
+      super(sync);
+    }
+    
+    protected SynchronizedSet(LongSet local_s)
+    {
+      super();
+    }
+    
+    public boolean remove(long local_k)
+    {
+      synchronized (this.sync)
+      {
+        return this.collection.remove(Long.valueOf(local_k));
+      }
+    }
+    
+    public boolean equals(Object local_o)
+    {
+      synchronized (this.sync)
+      {
+        return this.collection.equals(local_o);
+      }
+    }
+    
+    public int hashCode()
+    {
+      synchronized (this.sync)
+      {
+        return this.collection.hashCode();
+      }
+    }
+  }
+  
+  public static class Singleton
+    extends AbstractLongSet
+    implements Serializable, Cloneable
+  {
+    public static final long serialVersionUID = -7046029254386353129L;
+    protected final long element;
+    
+    protected Singleton(long element)
+    {
+      this.element = element;
+    }
+    
+    public boolean add(long local_k)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public boolean contains(long local_k)
+    {
+      return local_k == this.element;
+    }
+    
+    public boolean addAll(Collection<? extends Long> local_c)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public boolean removeAll(Collection<?> local_c)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public boolean retainAll(Collection<?> local_c)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public long[] toLongArray()
+    {
+      long[] local_a = new long[1];
+      local_a[0] = this.element;
+      return local_a;
+    }
+    
+    public boolean addAll(LongCollection local_c)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public boolean removeAll(LongCollection local_c)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public boolean retainAll(LongCollection local_c)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public LongListIterator iterator()
+    {
+      return LongIterators.singleton(this.element);
+    }
+    
+    public int size()
+    {
+      return 1;
+    }
+    
+    public Object clone()
+    {
+      return this;
+    }
+  }
+  
+  public static class EmptySet
+    extends LongCollections.EmptyCollection
+    implements LongSet, Serializable, Cloneable
+  {
+    public static final long serialVersionUID = -7046029254386353129L;
+    
+    public boolean remove(long local_ok)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public Object clone()
+    {
+      return LongSets.EMPTY_SET;
+    }
+    
+    private Object readResolve()
+    {
+      return LongSets.EMPTY_SET;
+    }
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.longs.LongSets
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

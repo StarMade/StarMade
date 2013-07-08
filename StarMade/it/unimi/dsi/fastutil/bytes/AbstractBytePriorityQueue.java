@@ -1,24 +1,39 @@
-/*  1:   */package it.unimi.dsi.fastutil.bytes;
-/*  2:   */
-/*  3:   */import it.unimi.dsi.fastutil.AbstractPriorityQueue;
-/*  4:   */
-/* 47:   */public abstract class AbstractBytePriorityQueue
-/* 48:   */  extends AbstractPriorityQueue<Byte>
-/* 49:   */  implements BytePriorityQueue
-/* 50:   */{
-/* 51:51 */  public void enqueue(Byte x) { enqueue(x.byteValue()); }
-/* 52:   */  
-/* 53:53 */  public Byte dequeue() { return Byte.valueOf(dequeueByte()); }
-/* 54:   */  
-/* 55:55 */  public Byte first() { return Byte.valueOf(firstByte()); }
-/* 56:   */  
-/* 57:57 */  public Byte last() { return Byte.valueOf(lastByte()); }
-/* 58:   */  
-/* 59:59 */  public byte lastByte() { throw new UnsupportedOperationException(); }
-/* 60:   */}
+package it.unimi.dsi.fastutil.bytes;
+
+import it.unimi.dsi.fastutil.AbstractPriorityQueue;
+
+public abstract class AbstractBytePriorityQueue
+  extends AbstractPriorityQueue<Byte>
+  implements BytePriorityQueue
+{
+  public void enqueue(Byte local_x)
+  {
+    enqueue(local_x.byteValue());
+  }
+  
+  public Byte dequeue()
+  {
+    return Byte.valueOf(dequeueByte());
+  }
+  
+  public Byte first()
+  {
+    return Byte.valueOf(firstByte());
+  }
+  
+  public Byte last()
+  {
+    return Byte.valueOf(lastByte());
+  }
+  
+  public byte lastByte()
+  {
+    throw new UnsupportedOperationException();
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.bytes.AbstractBytePriorityQueue
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

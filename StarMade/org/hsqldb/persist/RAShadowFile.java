@@ -180,7 +180,7 @@ public class RAShadowFile
   class InputStreamShadow
     implements InputStreamInterface
   {
-    FileInputStream is;
+    FileInputStream field_429;
     long limitSize = 0L;
     long fetchedSize = 0L;
     boolean initialised = false;
@@ -196,7 +196,7 @@ public class RAShadowFile
       if (this.fetchedSize == this.limitSize) {
         return -1;
       }
-      int i = this.is.read();
+      int i = this.field_429.read();
       if (i < 0) {
         throw new IOException("backup file not complete " + this.fetchedSize + " " + this.limitSize);
       }
@@ -222,7 +222,7 @@ public class RAShadowFile
       if ((this.limitSize >= 0L) && (this.limitSize - this.fetchedSize < paramInt2)) {
         paramInt2 = (int)(this.limitSize - this.fetchedSize);
       }
-      int i = this.is.read(paramArrayOfByte, paramInt1, paramInt2);
+      int i = this.field_429.read(paramArrayOfByte, paramInt1, paramInt2);
       if (i < 0) {
         throw new IOException("backup file not complete " + this.fetchedSize + " " + this.limitSize);
       }
@@ -245,8 +245,8 @@ public class RAShadowFile
     public void close()
       throws IOException
     {
-      if (this.is != null) {
-        this.is.close();
+      if (this.field_429 != null) {
+        this.field_429.close();
       }
     }
     
@@ -270,7 +270,7 @@ public class RAShadowFile
       if (this.limitSize > 0L) {
         try
         {
-          this.is = new FileInputStream(RAShadowFile.this.pathName);
+          this.field_429 = new FileInputStream(RAShadowFile.this.pathName);
         }
         catch (FileNotFoundException localFileNotFoundException) {}
       }
@@ -280,7 +280,7 @@ public class RAShadowFile
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.persist.RAShadowFile
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

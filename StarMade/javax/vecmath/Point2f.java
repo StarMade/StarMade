@@ -42,31 +42,31 @@ public class Point2f
   
   public final float distanceSquared(Point2f paramPoint2f)
   {
-    float f1 = this.x - paramPoint2f.x;
-    float f2 = this.y - paramPoint2f.y;
+    float f1 = this.field_577 - paramPoint2f.field_577;
+    float f2 = this.field_578 - paramPoint2f.field_578;
     return f1 * f1 + f2 * f2;
   }
   
   public final float distance(Point2f paramPoint2f)
   {
-    float f1 = this.x - paramPoint2f.x;
-    float f2 = this.y - paramPoint2f.y;
+    float f1 = this.field_577 - paramPoint2f.field_577;
+    float f2 = this.field_578 - paramPoint2f.field_578;
     return (float)Math.sqrt(f1 * f1 + f2 * f2);
   }
   
   public final float distanceL1(Point2f paramPoint2f)
   {
-    return Math.abs(this.x - paramPoint2f.x) + Math.abs(this.y - paramPoint2f.y);
+    return Math.abs(this.field_577 - paramPoint2f.field_577) + Math.abs(this.field_578 - paramPoint2f.field_578);
   }
   
   public final float distanceLinf(Point2f paramPoint2f)
   {
-    return Math.max(Math.abs(this.x - paramPoint2f.x), Math.abs(this.y - paramPoint2f.y));
+    return Math.max(Math.abs(this.field_577 - paramPoint2f.field_577), Math.abs(this.field_578 - paramPoint2f.field_578));
   }
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     javax.vecmath.Point2f
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

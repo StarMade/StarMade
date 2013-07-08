@@ -11,7 +11,7 @@ public final class AttrCheckImpl
   public static final AttrCheck URL = new CheckUrl();
   public static final AttrCheck SCRIPT = new CheckScript();
   public static final AttrCheck NAME = new CheckName();
-  public static final AttrCheck ID = new CheckId();
+  public static final AttrCheck field_1759 = new CheckId();
   public static final AttrCheck ALIGN = new CheckAlign();
   public static final AttrCheck VALIGN = new CheckValign();
   public static final AttrCheck BOOL = new CheckBool();
@@ -226,14 +226,14 @@ public final class AttrCheckImpl
         paramLexer.report.attrError(paramLexer, paramNode, paramAttVal, (short)50);
         return;
       }
-      if (paramLexer.configuration.tt.isAnchorElement(paramNode))
+      if (paramLexer.configuration.field_1881.isAnchorElement(paramNode))
       {
         paramLexer.constrainVersion(-1025);
         Node localNode;
-        if (((localNode = paramLexer.configuration.tt.getNodeByAnchor(paramAttVal.value)) != null) && (localNode != paramNode)) {
+        if (((localNode = paramLexer.configuration.field_1881.getNodeByAnchor(paramAttVal.value)) != null) && (localNode != paramNode)) {
           paramLexer.report.attrError(paramLexer, paramNode, paramAttVal, (short)66);
         } else {
-          paramLexer.configuration.tt.anchorList = paramLexer.configuration.tt.addAnchor(paramAttVal.value, paramNode);
+          paramLexer.configuration.field_1881.anchorList = paramLexer.configuration.field_1881.addAnchor(paramAttVal.value, paramNode);
         }
       }
     }
@@ -276,10 +276,10 @@ public final class AttrCheckImpl
         }
       }
       Node localNode;
-      if (((localNode = paramLexer.configuration.tt.getNodeByAnchor(paramAttVal.value)) != null) && (localNode != paramNode)) {
+      if (((localNode = paramLexer.configuration.field_1881.getNodeByAnchor(paramAttVal.value)) != null) && (localNode != paramNode)) {
         paramLexer.report.attrError(paramLexer, paramNode, paramAttVal, (short)66);
       } else {
-        paramLexer.configuration.tt.anchorList = paramLexer.configuration.tt.addAnchor(paramAttVal.value, paramNode);
+        paramLexer.configuration.field_1881.anchorList = paramLexer.configuration.field_1881.addAnchor(paramAttVal.value, paramNode);
       }
     }
   }
@@ -294,12 +294,12 @@ public final class AttrCheckImpl
         paramLexer.report.attrError(paramLexer, paramNode, paramAttVal, (short)50);
         return;
       }
-      if ((("cols".equalsIgnoreCase(paramAttVal.attribute)) || ("rows".equalsIgnoreCase(paramAttVal.attribute))) && (paramNode.tag == paramLexer.configuration.tt.tagFrameset)) {
+      if ((("cols".equalsIgnoreCase(paramAttVal.attribute)) || ("rows".equalsIgnoreCase(paramAttVal.attribute))) && (paramNode.tag == paramLexer.configuration.field_1881.tagFrameset)) {
         return;
       }
       String str = paramAttVal.value;
       int i = 0;
-      if ((paramNode.tag == paramLexer.configuration.tt.tagFont) && ((str.startsWith("+")) || (str.startsWith("-")))) {
+      if ((paramNode.tag == paramLexer.configuration.field_1881.tagFont) && ((str.startsWith("+")) || (str.startsWith("-")))) {
         i++;
       }
       while (i < str.length())
@@ -425,7 +425,7 @@ public final class AttrCheckImpl
         paramLexer.report.attrError(paramLexer, paramNode, paramAttVal, (short)50);
         return;
       }
-      if (("width".equalsIgnoreCase(paramAttVal.attribute)) && ((paramNode.tag == paramLexer.configuration.tt.tagCol) || (paramNode.tag == paramLexer.configuration.tt.tagColgroup))) {
+      if (("width".equalsIgnoreCase(paramAttVal.attribute)) && ((paramNode.tag == paramLexer.configuration.field_1881.tagCol) || (paramNode.tag == paramLexer.configuration.field_1881.tagColgroup))) {
         return;
       }
       String str = paramAttVal.value;
@@ -435,7 +435,7 @@ public final class AttrCheckImpl
       }
       else
       {
-        TagTable localTagTable = paramLexer.configuration.tt;
+        TagTable localTagTable = paramLexer.configuration.field_1881;
         for (int i = 1; i < str.length(); i++) {
           if (((!Character.isDigit(str.charAt(i))) && ((paramNode.tag == localTagTable.tagTd) || (paramNode.tag == localTagTable.tagTh))) || ((!Character.isDigit(str.charAt(i))) && (str.charAt(i) != '%')))
           {
@@ -595,7 +595,7 @@ public final class AttrCheckImpl
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.w3c.tidy.AttrCheckImpl
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

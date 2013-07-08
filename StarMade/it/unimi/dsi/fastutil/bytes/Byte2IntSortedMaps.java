@@ -1,221 +1,452 @@
-/*   1:    */package it.unimi.dsi.fastutil.bytes;
-/*   2:    */
-/*   3:    */import it.unimi.dsi.fastutil.objects.ObjectSortedSet;
-/*   4:    */import it.unimi.dsi.fastutil.objects.ObjectSortedSets;
-/*   5:    */import java.io.Serializable;
-/*   6:    */import java.util.Comparator;
-/*   7:    */import java.util.Map.Entry;
-/*   8:    */import java.util.NoSuchElementException;
-/*   9:    */
-/*  60:    */public class Byte2IntSortedMaps
-/*  61:    */{
-/*  62:    */  public static Comparator<? super Map.Entry<Byte, ?>> entryComparator(ByteComparator comparator)
-/*  63:    */  {
-/*  64: 64 */    new Comparator() {
-/*  65:    */      public int compare(Map.Entry<Byte, ?> x, Map.Entry<Byte, ?> y) {
-/*  66: 66 */        return this.val$comparator.compare(x.getKey(), y.getKey());
-/*  67:    */      }
-/*  68:    */    };
-/*  69:    */  }
-/*  70:    */  
-/*  72:    */  public static class EmptySortedMap
-/*  73:    */    extends Byte2IntMaps.EmptyMap
-/*  74:    */    implements Byte2IntSortedMap, Serializable, Cloneable
-/*  75:    */  {
-/*  76:    */    public static final long serialVersionUID = -7046029254386353129L;
-/*  77:    */    
-/*  78: 78 */    public ByteComparator comparator() { return null; }
-/*  79:    */    
-/*  80: 80 */    public ObjectSortedSet<Byte2IntMap.Entry> byte2IntEntrySet() { return ObjectSortedSets.EMPTY_SET; }
-/*  81:    */    
-/*  82: 82 */    public ObjectSortedSet<Map.Entry<Byte, Integer>> entrySet() { return ObjectSortedSets.EMPTY_SET; }
-/*  83:    */    
-/*  84: 84 */    public ByteSortedSet keySet() { return ByteSortedSets.EMPTY_SET; }
-/*  85:    */    
-/*  86: 86 */    public Byte2IntSortedMap subMap(byte from, byte to) { return Byte2IntSortedMaps.EMPTY_MAP; }
-/*  87:    */    
-/*  88: 88 */    public Byte2IntSortedMap headMap(byte to) { return Byte2IntSortedMaps.EMPTY_MAP; }
-/*  89:    */    
-/*  90: 90 */    public Byte2IntSortedMap tailMap(byte from) { return Byte2IntSortedMaps.EMPTY_MAP; }
-/*  91: 91 */    public byte firstByteKey() { throw new NoSuchElementException(); }
-/*  92: 92 */    public byte lastByteKey() { throw new NoSuchElementException(); }
-/*  93: 93 */    public Byte2IntSortedMap headMap(Byte oto) { return headMap(oto.byteValue()); }
-/*  94: 94 */    public Byte2IntSortedMap tailMap(Byte ofrom) { return tailMap(ofrom.byteValue()); }
-/*  95: 95 */    public Byte2IntSortedMap subMap(Byte ofrom, Byte oto) { return subMap(ofrom.byteValue(), oto.byteValue()); }
-/*  96: 96 */    public Byte firstKey() { return Byte.valueOf(firstByteKey()); }
-/*  97: 97 */    public Byte lastKey() { return Byte.valueOf(lastByteKey()); }
-/*  98:    */  }
-/*  99:    */  
-/* 103:103 */  public static final EmptySortedMap EMPTY_MAP = new EmptySortedMap();
-/* 104:    */  
-/* 107:    */  public static class Singleton
-/* 108:    */    extends Byte2IntMaps.Singleton
-/* 109:    */    implements Byte2IntSortedMap, Serializable, Cloneable
-/* 110:    */  {
-/* 111:    */    public static final long serialVersionUID = -7046029254386353129L;
-/* 112:    */    
-/* 114:    */    protected final ByteComparator comparator;
-/* 115:    */    
-/* 117:    */    protected Singleton(byte key, int value, ByteComparator comparator)
-/* 118:    */    {
-/* 119:119 */      super(value);
-/* 120:120 */      this.comparator = comparator;
-/* 121:    */    }
-/* 122:    */    
-/* 123:    */    protected Singleton(byte key, int value) {
-/* 124:124 */      this(key, value, null);
-/* 125:    */    }
-/* 126:    */    
-/* 127:    */    final int compare(byte k1, byte k2)
-/* 128:    */    {
-/* 129:129 */      return this.comparator == null ? 1 : k1 == k2 ? 0 : k1 < k2 ? -1 : this.comparator.compare(k1, k2);
-/* 130:    */    }
-/* 131:    */    
-/* 132:132 */    public ByteComparator comparator() { return this.comparator; }
-/* 133:    */    
-/* 134:    */    public ObjectSortedSet<Byte2IntMap.Entry> byte2IntEntrySet() {
-/* 135:135 */      if (this.entries == null) this.entries = ObjectSortedSets.singleton(new Byte2IntMaps.Singleton.SingletonEntry(this), Byte2IntSortedMaps.entryComparator(this.comparator)); return (ObjectSortedSet)this.entries; }
-/* 136:    */    
-/* 137:137 */    public ObjectSortedSet<Map.Entry<Byte, Integer>> entrySet() { return byte2IntEntrySet(); }
-/* 138:    */    
-/* 139:139 */    public ByteSortedSet keySet() { if (this.keys == null) this.keys = ByteSortedSets.singleton(this.key, this.comparator); return (ByteSortedSet)this.keys;
-/* 140:    */    }
-/* 141:    */    
-/* 142:142 */    public Byte2IntSortedMap subMap(byte from, byte to) { if ((compare(from, this.key) <= 0) && (compare(this.key, to) < 0)) return this; return Byte2IntSortedMaps.EMPTY_MAP;
-/* 143:    */    }
-/* 144:    */    
-/* 145:145 */    public Byte2IntSortedMap headMap(byte to) { if (compare(this.key, to) < 0) return this; return Byte2IntSortedMaps.EMPTY_MAP;
-/* 146:    */    }
-/* 147:    */    
-/* 148:148 */    public Byte2IntSortedMap tailMap(byte from) { if (compare(from, this.key) <= 0) return this; return Byte2IntSortedMaps.EMPTY_MAP; }
-/* 149:    */    
-/* 150:150 */    public byte firstByteKey() { return this.key; }
-/* 151:151 */    public byte lastByteKey() { return this.key; }
-/* 152:    */    
-/* 154:154 */    public Byte2IntSortedMap headMap(Byte oto) { return headMap(oto.byteValue()); }
-/* 155:155 */    public Byte2IntSortedMap tailMap(Byte ofrom) { return tailMap(ofrom.byteValue()); }
-/* 156:156 */    public Byte2IntSortedMap subMap(Byte ofrom, Byte oto) { return subMap(ofrom.byteValue(), oto.byteValue()); }
-/* 157:    */    
-/* 158:158 */    public Byte firstKey() { return Byte.valueOf(firstByteKey()); }
-/* 159:159 */    public Byte lastKey() { return Byte.valueOf(lastByteKey()); }
-/* 160:    */  }
-/* 161:    */  
-/* 171:    */  public static Byte2IntSortedMap singleton(Byte key, Integer value)
-/* 172:    */  {
-/* 173:173 */    return new Singleton(key.byteValue(), value.intValue());
-/* 174:    */  }
-/* 175:    */  
-/* 185:    */  public static Byte2IntSortedMap singleton(Byte key, Integer value, ByteComparator comparator)
-/* 186:    */  {
-/* 187:187 */    return new Singleton(key.byteValue(), value.intValue(), comparator);
-/* 188:    */  }
-/* 189:    */  
-/* 200:    */  public static Byte2IntSortedMap singleton(byte key, int value)
-/* 201:    */  {
-/* 202:202 */    return new Singleton(key, value);
-/* 203:    */  }
-/* 204:    */  
-/* 214:    */  public static Byte2IntSortedMap singleton(byte key, int value, ByteComparator comparator)
-/* 215:    */  {
-/* 216:216 */    return new Singleton(key, value, comparator);
-/* 217:    */  }
-/* 218:    */  
-/* 220:    */  public static class SynchronizedSortedMap
-/* 221:    */    extends Byte2IntMaps.SynchronizedMap
-/* 222:    */    implements Byte2IntSortedMap, Serializable
-/* 223:    */  {
-/* 224:    */    public static final long serialVersionUID = -7046029254386353129L;
-/* 225:    */    
-/* 226:    */    protected final Byte2IntSortedMap sortedMap;
-/* 227:    */    
-/* 229:    */    protected SynchronizedSortedMap(Byte2IntSortedMap m, Object sync)
-/* 230:    */    {
-/* 231:231 */      super(sync);
-/* 232:232 */      this.sortedMap = m;
-/* 233:    */    }
-/* 234:    */    
-/* 235:    */    protected SynchronizedSortedMap(Byte2IntSortedMap m) {
-/* 236:236 */      super();
-/* 237:237 */      this.sortedMap = m;
-/* 238:    */    }
-/* 239:    */    
-/* 240:240 */    public ByteComparator comparator() { synchronized (this.sync) { return this.sortedMap.comparator(); } }
-/* 241:    */    
-/* 242:242 */    public ObjectSortedSet<Byte2IntMap.Entry> byte2IntEntrySet() { if (this.entries == null) this.entries = ObjectSortedSets.synchronize(this.sortedMap.byte2IntEntrySet(), this.sync); return (ObjectSortedSet)this.entries; }
-/* 243:    */    
-/* 244:244 */    public ObjectSortedSet<Map.Entry<Byte, Integer>> entrySet() { return byte2IntEntrySet(); }
-/* 245:245 */    public ByteSortedSet keySet() { if (this.keys == null) this.keys = ByteSortedSets.synchronize(this.sortedMap.keySet(), this.sync); return (ByteSortedSet)this.keys; }
-/* 246:    */    
-/* 247:247 */    public Byte2IntSortedMap subMap(byte from, byte to) { return new SynchronizedSortedMap(this.sortedMap.subMap(from, to), this.sync); }
-/* 248:248 */    public Byte2IntSortedMap headMap(byte to) { return new SynchronizedSortedMap(this.sortedMap.headMap(to), this.sync); }
-/* 249:249 */    public Byte2IntSortedMap tailMap(byte from) { return new SynchronizedSortedMap(this.sortedMap.tailMap(from), this.sync); }
-/* 250:    */    
-/* 251:251 */    public byte firstByteKey() { synchronized (this.sync) { return this.sortedMap.firstByteKey(); } }
-/* 252:252 */    public byte lastByteKey() { synchronized (this.sync) { return this.sortedMap.lastByteKey();
-/* 253:    */      } }
-/* 254:    */    
-/* 255:255 */    public Byte firstKey() { synchronized (this.sync) { return (Byte)this.sortedMap.firstKey(); } }
-/* 256:256 */    public Byte lastKey() { synchronized (this.sync) { return (Byte)this.sortedMap.lastKey(); } }
-/* 257:    */    
-/* 258:258 */    public Byte2IntSortedMap subMap(Byte from, Byte to) { return new SynchronizedSortedMap(this.sortedMap.subMap(from, to), this.sync); }
-/* 259:259 */    public Byte2IntSortedMap headMap(Byte to) { return new SynchronizedSortedMap(this.sortedMap.headMap(to), this.sync); }
-/* 260:260 */    public Byte2IntSortedMap tailMap(Byte from) { return new SynchronizedSortedMap(this.sortedMap.tailMap(from), this.sync); }
-/* 261:    */  }
-/* 262:    */  
-/* 270:    */  public static Byte2IntSortedMap synchronize(Byte2IntSortedMap m)
-/* 271:    */  {
-/* 272:272 */    return new SynchronizedSortedMap(m);
-/* 273:    */  }
-/* 274:    */  
-/* 280:    */  public static Byte2IntSortedMap synchronize(Byte2IntSortedMap m, Object sync)
-/* 281:    */  {
-/* 282:282 */    return new SynchronizedSortedMap(m, sync);
-/* 283:    */  }
-/* 284:    */  
-/* 286:    */  public static class UnmodifiableSortedMap
-/* 287:    */    extends Byte2IntMaps.UnmodifiableMap
-/* 288:    */    implements Byte2IntSortedMap, Serializable
-/* 289:    */  {
-/* 290:    */    public static final long serialVersionUID = -7046029254386353129L;
-/* 291:    */    
-/* 292:    */    protected final Byte2IntSortedMap sortedMap;
-/* 293:    */    
-/* 294:    */    protected UnmodifiableSortedMap(Byte2IntSortedMap m)
-/* 295:    */    {
-/* 296:296 */      super();
-/* 297:297 */      this.sortedMap = m;
-/* 298:    */    }
-/* 299:    */    
-/* 300:300 */    public ByteComparator comparator() { return this.sortedMap.comparator(); }
-/* 301:    */    
-/* 302:302 */    public ObjectSortedSet<Byte2IntMap.Entry> byte2IntEntrySet() { if (this.entries == null) this.entries = ObjectSortedSets.unmodifiable(this.sortedMap.byte2IntEntrySet()); return (ObjectSortedSet)this.entries; }
-/* 303:    */    
-/* 304:304 */    public ObjectSortedSet<Map.Entry<Byte, Integer>> entrySet() { return byte2IntEntrySet(); }
-/* 305:305 */    public ByteSortedSet keySet() { if (this.keys == null) this.keys = ByteSortedSets.unmodifiable(this.sortedMap.keySet()); return (ByteSortedSet)this.keys; }
-/* 306:    */    
-/* 307:307 */    public Byte2IntSortedMap subMap(byte from, byte to) { return new UnmodifiableSortedMap(this.sortedMap.subMap(from, to)); }
-/* 308:308 */    public Byte2IntSortedMap headMap(byte to) { return new UnmodifiableSortedMap(this.sortedMap.headMap(to)); }
-/* 309:309 */    public Byte2IntSortedMap tailMap(byte from) { return new UnmodifiableSortedMap(this.sortedMap.tailMap(from)); }
-/* 310:    */    
-/* 311:311 */    public byte firstByteKey() { return this.sortedMap.firstByteKey(); }
-/* 312:312 */    public byte lastByteKey() { return this.sortedMap.lastByteKey(); }
-/* 313:    */    
-/* 315:315 */    public Byte firstKey() { return (Byte)this.sortedMap.firstKey(); }
-/* 316:316 */    public Byte lastKey() { return (Byte)this.sortedMap.lastKey(); }
-/* 317:    */    
-/* 318:318 */    public Byte2IntSortedMap subMap(Byte from, Byte to) { return new UnmodifiableSortedMap(this.sortedMap.subMap(from, to)); }
-/* 319:319 */    public Byte2IntSortedMap headMap(Byte to) { return new UnmodifiableSortedMap(this.sortedMap.headMap(to)); }
-/* 320:320 */    public Byte2IntSortedMap tailMap(Byte from) { return new UnmodifiableSortedMap(this.sortedMap.tailMap(from)); }
-/* 321:    */  }
-/* 322:    */  
-/* 330:    */  public static Byte2IntSortedMap unmodifiable(Byte2IntSortedMap m)
-/* 331:    */  {
-/* 332:332 */    return new UnmodifiableSortedMap(m);
-/* 333:    */  }
-/* 334:    */}
+package it.unimi.dsi.fastutil.bytes;
+
+import it.unimi.dsi.fastutil.objects.ObjectSortedSet;
+import it.unimi.dsi.fastutil.objects.ObjectSortedSets;
+import java.io.Serializable;
+import java.util.Comparator;
+import java.util.Map.Entry;
+import java.util.NoSuchElementException;
+
+public class Byte2IntSortedMaps
+{
+  public static final EmptySortedMap EMPTY_MAP = new EmptySortedMap();
+  
+  public static Comparator<? super Map.Entry<Byte, ?>> entryComparator(ByteComparator comparator)
+  {
+    new Comparator()
+    {
+      public int compare(Map.Entry<Byte, ?> local_x, Map.Entry<Byte, ?> local_y)
+      {
+        return this.val$comparator.compare(local_x.getKey(), local_y.getKey());
+      }
+    };
+  }
+  
+  public static Byte2IntSortedMap singleton(Byte key, Integer value)
+  {
+    return new Singleton(key.byteValue(), value.intValue());
+  }
+  
+  public static Byte2IntSortedMap singleton(Byte key, Integer value, ByteComparator comparator)
+  {
+    return new Singleton(key.byteValue(), value.intValue(), comparator);
+  }
+  
+  public static Byte2IntSortedMap singleton(byte key, int value)
+  {
+    return new Singleton(key, value);
+  }
+  
+  public static Byte2IntSortedMap singleton(byte key, int value, ByteComparator comparator)
+  {
+    return new Singleton(key, value, comparator);
+  }
+  
+  public static Byte2IntSortedMap synchronize(Byte2IntSortedMap local_m)
+  {
+    return new SynchronizedSortedMap(local_m);
+  }
+  
+  public static Byte2IntSortedMap synchronize(Byte2IntSortedMap local_m, Object sync)
+  {
+    return new SynchronizedSortedMap(local_m, sync);
+  }
+  
+  public static Byte2IntSortedMap unmodifiable(Byte2IntSortedMap local_m)
+  {
+    return new UnmodifiableSortedMap(local_m);
+  }
+  
+  public static class UnmodifiableSortedMap
+    extends Byte2IntMaps.UnmodifiableMap
+    implements Byte2IntSortedMap, Serializable
+  {
+    public static final long serialVersionUID = -7046029254386353129L;
+    protected final Byte2IntSortedMap sortedMap;
+    
+    protected UnmodifiableSortedMap(Byte2IntSortedMap local_m)
+    {
+      super();
+      this.sortedMap = local_m;
+    }
+    
+    public ByteComparator comparator()
+    {
+      return this.sortedMap.comparator();
+    }
+    
+    public ObjectSortedSet<Byte2IntMap.Entry> byte2IntEntrySet()
+    {
+      if (this.entries == null) {
+        this.entries = ObjectSortedSets.unmodifiable(this.sortedMap.byte2IntEntrySet());
+      }
+      return (ObjectSortedSet)this.entries;
+    }
+    
+    public ObjectSortedSet<Map.Entry<Byte, Integer>> entrySet()
+    {
+      return byte2IntEntrySet();
+    }
+    
+    public ByteSortedSet keySet()
+    {
+      if (this.keys == null) {
+        this.keys = ByteSortedSets.unmodifiable(this.sortedMap.keySet());
+      }
+      return (ByteSortedSet)this.keys;
+    }
+    
+    public Byte2IntSortedMap subMap(byte from, byte local_to)
+    {
+      return new UnmodifiableSortedMap(this.sortedMap.subMap(from, local_to));
+    }
+    
+    public Byte2IntSortedMap headMap(byte local_to)
+    {
+      return new UnmodifiableSortedMap(this.sortedMap.headMap(local_to));
+    }
+    
+    public Byte2IntSortedMap tailMap(byte from)
+    {
+      return new UnmodifiableSortedMap(this.sortedMap.tailMap(from));
+    }
+    
+    public byte firstByteKey()
+    {
+      return this.sortedMap.firstByteKey();
+    }
+    
+    public byte lastByteKey()
+    {
+      return this.sortedMap.lastByteKey();
+    }
+    
+    public Byte firstKey()
+    {
+      return (Byte)this.sortedMap.firstKey();
+    }
+    
+    public Byte lastKey()
+    {
+      return (Byte)this.sortedMap.lastKey();
+    }
+    
+    public Byte2IntSortedMap subMap(Byte from, Byte local_to)
+    {
+      return new UnmodifiableSortedMap(this.sortedMap.subMap(from, local_to));
+    }
+    
+    public Byte2IntSortedMap headMap(Byte local_to)
+    {
+      return new UnmodifiableSortedMap(this.sortedMap.headMap(local_to));
+    }
+    
+    public Byte2IntSortedMap tailMap(Byte from)
+    {
+      return new UnmodifiableSortedMap(this.sortedMap.tailMap(from));
+    }
+  }
+  
+  public static class SynchronizedSortedMap
+    extends Byte2IntMaps.SynchronizedMap
+    implements Byte2IntSortedMap, Serializable
+  {
+    public static final long serialVersionUID = -7046029254386353129L;
+    protected final Byte2IntSortedMap sortedMap;
+    
+    protected SynchronizedSortedMap(Byte2IntSortedMap local_m, Object sync)
+    {
+      super(sync);
+      this.sortedMap = local_m;
+    }
+    
+    protected SynchronizedSortedMap(Byte2IntSortedMap local_m)
+    {
+      super();
+      this.sortedMap = local_m;
+    }
+    
+    public ByteComparator comparator()
+    {
+      synchronized (this.sync)
+      {
+        return this.sortedMap.comparator();
+      }
+    }
+    
+    public ObjectSortedSet<Byte2IntMap.Entry> byte2IntEntrySet()
+    {
+      if (this.entries == null) {
+        this.entries = ObjectSortedSets.synchronize(this.sortedMap.byte2IntEntrySet(), this.sync);
+      }
+      return (ObjectSortedSet)this.entries;
+    }
+    
+    public ObjectSortedSet<Map.Entry<Byte, Integer>> entrySet()
+    {
+      return byte2IntEntrySet();
+    }
+    
+    public ByteSortedSet keySet()
+    {
+      if (this.keys == null) {
+        this.keys = ByteSortedSets.synchronize(this.sortedMap.keySet(), this.sync);
+      }
+      return (ByteSortedSet)this.keys;
+    }
+    
+    public Byte2IntSortedMap subMap(byte from, byte local_to)
+    {
+      return new SynchronizedSortedMap(this.sortedMap.subMap(from, local_to), this.sync);
+    }
+    
+    public Byte2IntSortedMap headMap(byte local_to)
+    {
+      return new SynchronizedSortedMap(this.sortedMap.headMap(local_to), this.sync);
+    }
+    
+    public Byte2IntSortedMap tailMap(byte from)
+    {
+      return new SynchronizedSortedMap(this.sortedMap.tailMap(from), this.sync);
+    }
+    
+    public byte firstByteKey()
+    {
+      synchronized (this.sync)
+      {
+        return this.sortedMap.firstByteKey();
+      }
+    }
+    
+    public byte lastByteKey()
+    {
+      synchronized (this.sync)
+      {
+        return this.sortedMap.lastByteKey();
+      }
+    }
+    
+    public Byte firstKey()
+    {
+      synchronized (this.sync)
+      {
+        return (Byte)this.sortedMap.firstKey();
+      }
+    }
+    
+    public Byte lastKey()
+    {
+      synchronized (this.sync)
+      {
+        return (Byte)this.sortedMap.lastKey();
+      }
+    }
+    
+    public Byte2IntSortedMap subMap(Byte from, Byte local_to)
+    {
+      return new SynchronizedSortedMap(this.sortedMap.subMap(from, local_to), this.sync);
+    }
+    
+    public Byte2IntSortedMap headMap(Byte local_to)
+    {
+      return new SynchronizedSortedMap(this.sortedMap.headMap(local_to), this.sync);
+    }
+    
+    public Byte2IntSortedMap tailMap(Byte from)
+    {
+      return new SynchronizedSortedMap(this.sortedMap.tailMap(from), this.sync);
+    }
+  }
+  
+  public static class Singleton
+    extends Byte2IntMaps.Singleton
+    implements Byte2IntSortedMap, Serializable, Cloneable
+  {
+    public static final long serialVersionUID = -7046029254386353129L;
+    protected final ByteComparator comparator;
+    
+    protected Singleton(byte key, int value, ByteComparator comparator)
+    {
+      super(value);
+      this.comparator = comparator;
+    }
+    
+    protected Singleton(byte key, int value)
+    {
+      this(key, value, null);
+    }
+    
+    final int compare(byte local_k1, byte local_k2)
+    {
+      return this.comparator == null ? 1 : local_k1 == local_k2 ? 0 : local_k1 < local_k2 ? -1 : this.comparator.compare(local_k1, local_k2);
+    }
+    
+    public ByteComparator comparator()
+    {
+      return this.comparator;
+    }
+    
+    public ObjectSortedSet<Byte2IntMap.Entry> byte2IntEntrySet()
+    {
+      if (this.entries == null) {
+        this.entries = ObjectSortedSets.singleton(new Byte2IntMaps.Singleton.SingletonEntry(this), Byte2IntSortedMaps.entryComparator(this.comparator));
+      }
+      return (ObjectSortedSet)this.entries;
+    }
+    
+    public ObjectSortedSet<Map.Entry<Byte, Integer>> entrySet()
+    {
+      return byte2IntEntrySet();
+    }
+    
+    public ByteSortedSet keySet()
+    {
+      if (this.keys == null) {
+        this.keys = ByteSortedSets.singleton(this.key, this.comparator);
+      }
+      return (ByteSortedSet)this.keys;
+    }
+    
+    public Byte2IntSortedMap subMap(byte from, byte local_to)
+    {
+      if ((compare(from, this.key) <= 0) && (compare(this.key, local_to) < 0)) {
+        return this;
+      }
+      return Byte2IntSortedMaps.EMPTY_MAP;
+    }
+    
+    public Byte2IntSortedMap headMap(byte local_to)
+    {
+      if (compare(this.key, local_to) < 0) {
+        return this;
+      }
+      return Byte2IntSortedMaps.EMPTY_MAP;
+    }
+    
+    public Byte2IntSortedMap tailMap(byte from)
+    {
+      if (compare(from, this.key) <= 0) {
+        return this;
+      }
+      return Byte2IntSortedMaps.EMPTY_MAP;
+    }
+    
+    public byte firstByteKey()
+    {
+      return this.key;
+    }
+    
+    public byte lastByteKey()
+    {
+      return this.key;
+    }
+    
+    public Byte2IntSortedMap headMap(Byte oto)
+    {
+      return headMap(oto.byteValue());
+    }
+    
+    public Byte2IntSortedMap tailMap(Byte ofrom)
+    {
+      return tailMap(ofrom.byteValue());
+    }
+    
+    public Byte2IntSortedMap subMap(Byte ofrom, Byte oto)
+    {
+      return subMap(ofrom.byteValue(), oto.byteValue());
+    }
+    
+    public Byte firstKey()
+    {
+      return Byte.valueOf(firstByteKey());
+    }
+    
+    public Byte lastKey()
+    {
+      return Byte.valueOf(lastByteKey());
+    }
+  }
+  
+  public static class EmptySortedMap
+    extends Byte2IntMaps.EmptyMap
+    implements Byte2IntSortedMap, Serializable, Cloneable
+  {
+    public static final long serialVersionUID = -7046029254386353129L;
+    
+    public ByteComparator comparator()
+    {
+      return null;
+    }
+    
+    public ObjectSortedSet<Byte2IntMap.Entry> byte2IntEntrySet()
+    {
+      return ObjectSortedSets.EMPTY_SET;
+    }
+    
+    public ObjectSortedSet<Map.Entry<Byte, Integer>> entrySet()
+    {
+      return ObjectSortedSets.EMPTY_SET;
+    }
+    
+    public ByteSortedSet keySet()
+    {
+      return ByteSortedSets.EMPTY_SET;
+    }
+    
+    public Byte2IntSortedMap subMap(byte from, byte local_to)
+    {
+      return Byte2IntSortedMaps.EMPTY_MAP;
+    }
+    
+    public Byte2IntSortedMap headMap(byte local_to)
+    {
+      return Byte2IntSortedMaps.EMPTY_MAP;
+    }
+    
+    public Byte2IntSortedMap tailMap(byte from)
+    {
+      return Byte2IntSortedMaps.EMPTY_MAP;
+    }
+    
+    public byte firstByteKey()
+    {
+      throw new NoSuchElementException();
+    }
+    
+    public byte lastByteKey()
+    {
+      throw new NoSuchElementException();
+    }
+    
+    public Byte2IntSortedMap headMap(Byte oto)
+    {
+      return headMap(oto.byteValue());
+    }
+    
+    public Byte2IntSortedMap tailMap(Byte ofrom)
+    {
+      return tailMap(ofrom.byteValue());
+    }
+    
+    public Byte2IntSortedMap subMap(Byte ofrom, Byte oto)
+    {
+      return subMap(ofrom.byteValue(), oto.byteValue());
+    }
+    
+    public Byte firstKey()
+    {
+      return Byte.valueOf(firstByteKey());
+    }
+    
+    public Byte lastKey()
+    {
+      return Byte.valueOf(lastByteKey());
+    }
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.bytes.Byte2IntSortedMaps
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

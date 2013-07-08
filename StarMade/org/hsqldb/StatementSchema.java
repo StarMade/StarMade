@@ -283,7 +283,7 @@ public class StatementSchema
         checkSchemaUpdateAuthorisation(paramSession, (HsqlNameManager.HsqlName)localObject1);
         localSchemaManager.checkSchemaNameCanChange((HsqlNameManager.HsqlName)localObject1);
         localSchemaManager.renameSchema((HsqlNameManager.HsqlName)localObject1, (HsqlNameManager.HsqlName)localObject5);
-        break label4822;
+        break label4827;
       }
       try
       {
@@ -1042,7 +1042,7 @@ public class StatementSchema
       break;
     }
     throw Error.runtimeError(201, "StatementSchema");
-    label4822:
+    label4827:
     return Result.updateZeroResult;
   }
   
@@ -1206,7 +1206,7 @@ public class StatementSchema
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.StatementSchema
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

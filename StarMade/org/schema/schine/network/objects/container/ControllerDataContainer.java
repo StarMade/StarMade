@@ -1,19 +1,19 @@
-/*  1:   */package org.schema.schine.network.objects.container;
-/*  2:   */
-/*  3:   */import java.util.LinkedList;
-/*  4:   */
-/*  7:   */public class ControllerDataContainer
-/*  8:   */{
-/*  9: 9 */  public LinkedList controllers = new LinkedList();
-/* 10:   */  
-/* 13:   */  public void clearControllers()
-/* 14:   */  {
-/* 15:15 */    this.controllers.clear();
-/* 16:   */  }
-/* 17:   */}
+package org.schema.schine.network.objects.container;
+
+import java.util.LinkedList;
+
+public class ControllerDataContainer
+{
+  public LinkedList controllers = new LinkedList();
+  
+  public void clearControllers()
+  {
+    this.controllers.clear();
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.schine.network.objects.container.ControllerDataContainer
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

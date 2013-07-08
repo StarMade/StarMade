@@ -1,20 +1,22 @@
-/*  1:   */package org.schema.game.common.data.physics;
-/*  2:   */
-/*  3:   */import com.bulletphysics.collision.dispatch.CollisionWorld.ClosestConvexResultCallback;
-/*  4:   */
-/*  5:   */public class ClosestConvexResultCallbackExt extends CollisionWorld.ClosestConvexResultCallback
-/*  6:   */{
-/*  7:   */  public Object userData;
-/*  8:   */  public boolean checkHasHitOnly;
-/*  9:   */  
-/* 10:   */  public ClosestConvexResultCallbackExt(javax.vecmath.Vector3f paramVector3f1, javax.vecmath.Vector3f paramVector3f2)
-/* 11:   */  {
-/* 12:12 */    super(paramVector3f1, paramVector3f2);
-/* 13:   */  }
-/* 14:   */}
+package org.schema.game.common.data.physics;
+
+import com.bulletphysics.collision.dispatch.CollisionWorld.ClosestConvexResultCallback;
+import javax.vecmath.Vector3f;
+
+public class ClosestConvexResultCallbackExt
+  extends CollisionWorld.ClosestConvexResultCallback
+{
+  public Object userData;
+  public boolean checkHasHitOnly;
+  
+  public ClosestConvexResultCallbackExt(Vector3f paramVector3f1, Vector3f paramVector3f2)
+  {
+    super(paramVector3f1, paramVector3f2);
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.game.common.data.physics.ClosestConvexResultCallbackExt
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

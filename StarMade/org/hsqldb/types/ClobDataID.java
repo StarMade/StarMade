@@ -9,17 +9,17 @@ import org.hsqldb.result.ResultLob;
 public class ClobDataID
   implements ClobData
 {
-  long id;
+  long field_300;
   long length = -1L;
   
   public ClobDataID(long paramLong)
   {
-    this.id = paramLong;
+    this.field_300 = paramLong;
   }
   
   public char[] getChars(SessionInterface paramSessionInterface, long paramLong, int paramInt)
   {
-    ResultLob localResultLob = ResultLob.newLobGetCharsRequest(this.id, paramLong, paramInt);
+    ResultLob localResultLob = ResultLob.newLobGetCharsRequest(this.field_300, paramLong, paramInt);
     Result localResult = paramSessionInterface.execute(localResultLob);
     if (localResult.isError()) {
       throw localResult.getException();
@@ -32,7 +32,7 @@ public class ClobDataID
     if (this.length > -1L) {
       return this.length;
     }
-    ResultLob localResultLob = ResultLob.newLobGetLengthRequest(this.id);
+    ResultLob localResultLob = ResultLob.newLobGetLengthRequest(this.field_300);
     Result localResult = paramSessionInterface.execute(localResultLob);
     if (localResult.isError()) {
       throw localResult.getException();
@@ -49,7 +49,7 @@ public class ClobDataID
   
   public ClobData duplicate(SessionInterface paramSessionInterface)
   {
-    ResultLob localResultLob = ResultLob.newLobDuplicateRequest(this.id);
+    ResultLob localResultLob = ResultLob.newLobDuplicateRequest(this.field_300);
     Result localResult = paramSessionInterface.execute(localResultLob);
     if (localResult.isError()) {
       throw localResult.getException();
@@ -60,7 +60,7 @@ public class ClobDataID
   
   public ClobData getClob(SessionInterface paramSessionInterface, long paramLong1, long paramLong2)
   {
-    ResultLob localResultLob = ResultLob.newLobGetRequest(this.id, paramLong1, paramLong2);
+    ResultLob localResultLob = ResultLob.newLobGetRequest(this.field_300, paramLong1, paramLong2);
     Result localResult = paramSessionInterface.execute(localResultLob);
     if (localResult.isError()) {
       throw localResult.getException();
@@ -71,7 +71,7 @@ public class ClobDataID
   
   public void truncate(SessionInterface paramSessionInterface, long paramLong)
   {
-    ResultLob localResultLob = ResultLob.newLobTruncateRequest(this.id, paramLong);
+    ResultLob localResultLob = ResultLob.newLobTruncateRequest(this.field_300, paramLong);
     Result localResult = paramSessionInterface.execute(localResultLob);
     if (localResult.isError()) {
       throw localResult.getException();
@@ -89,7 +89,7 @@ public class ClobDataID
   
   public void setString(SessionInterface paramSessionInterface, long paramLong, String paramString)
   {
-    ResultLob localResultLob = ResultLob.newLobSetCharsRequest(this.id, paramLong, paramString.toCharArray());
+    ResultLob localResultLob = ResultLob.newLobSetCharsRequest(this.field_300, paramLong, paramString.toCharArray());
     Result localResult = paramSessionInterface.execute(localResultLob);
     if (localResult.isError()) {
       throw localResult.getException();
@@ -113,7 +113,7 @@ public class ClobDataID
         paramArrayOfChar = (char[])localObject;
       }
     }
-    Object localObject = ResultLob.newLobSetCharsRequest(this.id, paramLong, paramArrayOfChar);
+    Object localObject = ResultLob.newLobSetCharsRequest(this.field_300, paramLong, paramArrayOfChar);
     Result localResult = paramSessionInterface.execute((Result)localObject);
     if (localResult.isError()) {
       throw localResult.getException();
@@ -123,7 +123,7 @@ public class ClobDataID
   
   public long position(SessionInterface paramSessionInterface, String paramString, long paramLong)
   {
-    ResultLob localResultLob = ResultLob.newLobGetCharPatternPositionRequest(this.id, paramString.toCharArray(), paramLong);
+    ResultLob localResultLob = ResultLob.newLobGetCharPatternPositionRequest(this.field_300, paramString.toCharArray(), paramLong);
     Result localResult = paramSessionInterface.execute(localResultLob);
     if (localResult.isError()) {
       throw localResult.getException();
@@ -133,7 +133,7 @@ public class ClobDataID
   
   public long position(SessionInterface paramSessionInterface, ClobData paramClobData, long paramLong)
   {
-    ResultLob localResultLob = ResultLob.newLobGetCharPatternPositionRequest(this.id, paramClobData.getId(), paramLong);
+    ResultLob localResultLob = ResultLob.newLobGetCharPatternPositionRequest(this.field_300, paramClobData.getId(), paramLong);
     Result localResult = paramSessionInterface.execute(localResultLob);
     if (localResult.isError()) {
       throw localResult.getException();
@@ -143,7 +143,7 @@ public class ClobDataID
   
   public long nonSpaceLength(SessionInterface paramSessionInterface)
   {
-    ResultLob localResultLob = ResultLob.newLobGetTruncateLength(this.id);
+    ResultLob localResultLob = ResultLob.newLobGetTruncateLength(this.field_300);
     Result localResult = paramSessionInterface.execute(localResultLob);
     if (localResult.isError()) {
       throw localResult.getException();
@@ -158,12 +158,12 @@ public class ClobDataID
   
   public long getId()
   {
-    return this.id;
+    return this.field_300;
   }
   
   public void setId(long paramLong)
   {
-    this.id = paramLong;
+    this.field_300 = paramLong;
   }
   
   static boolean isInLimits(long paramLong1, long paramLong2, long paramLong3)
@@ -181,19 +181,19 @@ public class ClobDataID
   public boolean equals(Object paramObject)
   {
     if ((paramObject instanceof BlobDataID)) {
-      return this.id == ((BlobDataID)paramObject).id;
+      return this.field_300 == ((BlobDataID)paramObject).field_300;
     }
     return false;
   }
   
   public int hashCode()
   {
-    return (int)this.id;
+    return (int)this.field_300;
   }
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.types.ClobDataID
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

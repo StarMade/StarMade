@@ -1,23 +1,31 @@
-/*  1:   */package it.unimi.dsi.fastutil.floats;
-/*  2:   */
-/* 54:   */public abstract class AbstractFloatBidirectionalIterator
-/* 55:   */  extends AbstractFloatIterator
-/* 56:   */  implements FloatBidirectionalIterator
-/* 57:   */{
-/* 58:58 */  public float previousFloat() { return previous().floatValue(); }
-/* 59:   */  
-/* 60:60 */  public Float previous() { return Float.valueOf(previousFloat()); }
-/* 61:   */  
-/* 63:   */  public int back(int n)
-/* 64:   */  {
-/* 65:65 */    int i = n;
-/* 66:66 */    while ((i-- != 0) && (hasPrevious())) previousFloat();
-/* 67:67 */    return n - i - 1;
-/* 68:   */  }
-/* 69:   */}
+package it.unimi.dsi.fastutil.floats;
+
+public abstract class AbstractFloatBidirectionalIterator
+  extends AbstractFloatIterator
+  implements FloatBidirectionalIterator
+{
+  public float previousFloat()
+  {
+    return previous().floatValue();
+  }
+  
+  public Float previous()
+  {
+    return Float.valueOf(previousFloat());
+  }
+  
+  public int back(int local_n)
+  {
+    int local_i = local_n;
+    while ((local_i-- != 0) && (hasPrevious())) {
+      previousFloat();
+    }
+    return local_n - local_i - 1;
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.floats.AbstractFloatBidirectionalIterator
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -1,20 +1,32 @@
-/*  1:   */package it.unimi.dsi.fastutil.chars;
-/*  2:   */
-/* 55:   */public abstract class AbstractCharListIterator
-/* 56:   */  extends AbstractCharBidirectionalIterator
-/* 57:   */  implements CharListIterator
-/* 58:   */{
-/* 59:59 */  public void set(Character ok) { set(ok.charValue()); }
-/* 60:   */  
-/* 61:61 */  public void add(Character ok) { add(ok.charValue()); }
-/* 62:   */  
-/* 63:63 */  public void set(char k) { throw new UnsupportedOperationException(); }
-/* 64:   */  
-/* 65:65 */  public void add(char k) { throw new UnsupportedOperationException(); }
-/* 66:   */}
+package it.unimi.dsi.fastutil.chars;
+
+public abstract class AbstractCharListIterator
+  extends AbstractCharBidirectionalIterator
+  implements CharListIterator
+{
+  public void set(Character local_ok)
+  {
+    set(local_ok.charValue());
+  }
+  
+  public void add(Character local_ok)
+  {
+    add(local_ok.charValue());
+  }
+  
+  public void set(char local_k)
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  public void add(char local_k)
+  {
+    throw new UnsupportedOperationException();
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.chars.AbstractCharListIterator
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

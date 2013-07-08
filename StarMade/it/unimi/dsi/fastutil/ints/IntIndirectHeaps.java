@@ -1,69 +1,111 @@
-/*   1:    */package it.unimi.dsi.fastutil.ints;
-/*   2:    */
-/*  63:    */public class IntIndirectHeaps
-/*  64:    */{
-/*  65:    */  public static int downHeap(int[] refArray, int[] heap, int[] inv, int size, int i, IntComparator c)
-/*  66:    */  {
-/*  67: 67 */    if (i >= size) throw new IllegalArgumentException("Heap position (" + i + ") is larger than or equal to heap size (" + size + ")");
-/*  68: 68 */    int e = heap[i];
-/*  69: 69 */    int E = refArray[e];
-/*  70:    */    
-/*  71: 71 */    if (c == null) { int child;
-/*  72: 72 */      while ((child = 2 * i + 1) < size) {
-/*  73: 73 */        if ((child + 1 < size) && (refArray[heap[(child + 1)]] < refArray[heap[child]])) child++;
-/*  74: 74 */        if (E <= refArray[heap[child]]) break;
-/*  75: 75 */        heap[i] = heap[child];
-/*  76: 76 */        inv[heap[i]] = i;
-/*  77: 77 */        i = child;
-/*  78:    */      } }
-/*  79:    */    int child;
-/*  80: 80 */    while ((child = 2 * i + 1) < size) {
-/*  81: 81 */      if ((child + 1 < size) && (c.compare(refArray[heap[(child + 1)]], refArray[heap[child]]) < 0)) child++;
-/*  82: 82 */      if (c.compare(E, refArray[heap[child]]) <= 0) break;
-/*  83: 83 */      heap[i] = heap[child];
-/*  84: 84 */      inv[heap[i]] = i;
-/*  85: 85 */      i = child;
-/*  86:    */    }
-/*  87: 87 */    heap[i] = e;
-/*  88: 88 */    inv[e] = i;
-/*  89: 89 */    return i;
-/*  90:    */  }
-/*  91:    */  
-/* 103:    */  public static int upHeap(int[] refArray, int[] heap, int[] inv, int size, int i, IntComparator c)
-/* 104:    */  {
-/* 105:105 */    if (i >= size) throw new IllegalArgumentException("Heap position (" + i + ") is larger than or equal to heap size (" + size + ")");
-/* 106:106 */    int e = heap[i];
-/* 107:107 */    int E = refArray[e];
-/* 108:    */    
-/* 109:109 */    if (c == null) { int parent;
-/* 110:110 */      while ((i != 0) && ((parent = (i - 1) / 2) >= 0) && 
-/* 111:111 */        (refArray[heap[parent]] > E)) {
-/* 112:112 */        heap[i] = heap[parent];
-/* 113:113 */        inv[heap[i]] = i;
-/* 114:114 */        i = parent;
-/* 115:    */      } }
-/* 116:    */    int parent;
-/* 117:117 */    while ((i != 0) && ((parent = (i - 1) / 2) >= 0) && 
-/* 118:118 */      (c.compare(refArray[heap[parent]], E) > 0)) {
-/* 119:119 */      heap[i] = heap[parent];
-/* 120:120 */      inv[heap[i]] = i;
-/* 121:121 */      i = parent;
-/* 122:    */    }
-/* 123:123 */    heap[i] = e;
-/* 124:124 */    inv[e] = i;
-/* 125:125 */    return i;
-/* 126:    */  }
-/* 127:    */  
-/* 135:    */  public static void makeHeap(int[] refArray, int offset, int length, int[] heap, int[] inv, IntComparator c)
-/* 136:    */  {
-/* 137:137 */    IntArrays.ensureOffsetLength(refArray, offset, length);
-/* 138:138 */    if (heap.length < length) throw new IllegalArgumentException("The heap length (" + heap.length + ") is smaller than the number of elements (" + length + ")");
-/* 139:139 */    if (inv.length < refArray.length) throw new IllegalArgumentException("The inversion array length (" + heap.length + ") is smaller than the length of the reference array (" + refArray.length + ")");
-/* 140:140 */    IntArrays.fill(inv, 0, refArray.length, -1);
-/* 141:141 */    int i = length;
-/* 142:142 */    for (; i-- != 0; inv[// INTERNAL ERROR //
+package it.unimi.dsi.fastutil.ints;
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+public class IntIndirectHeaps
+{
+  public static int downHeap(int[] refArray, int[] heap, int[] inv, int size, int local_i, IntComparator local_c)
+  {
+    if (local_i >= size) {
+      throw new IllegalArgumentException("Heap position (" + local_i + ") is larger than or equal to heap size (" + size + ")");
+    }
+    int local_e = heap[local_i];
+    int local_E = refArray[local_e];
+    if (local_c == null)
+    {
+      int child;
+      while ((child = 2 * local_i + 1) < size)
+      {
+        if ((child + 1 < size) && (refArray[heap[(child + 1)]] < refArray[heap[child]])) {
+          child++;
+        }
+        if (local_E <= refArray[heap[child]]) {
+          break;
+        }
+        heap[local_i] = heap[child];
+        inv[heap[local_i]] = local_i;
+        local_i = child;
+      }
+    }
+    int child;
+    while ((child = 2 * local_i + 1) < size)
+    {
+      if ((child + 1 < size) && (local_c.compare(refArray[heap[(child + 1)]], refArray[heap[child]]) < 0)) {
+        child++;
+      }
+      if (local_c.compare(local_E, refArray[heap[child]]) <= 0) {
+        break;
+      }
+      heap[local_i] = heap[child];
+      inv[heap[local_i]] = local_i;
+      local_i = child;
+    }
+    heap[local_i] = local_e;
+    inv[local_e] = local_i;
+    return local_i;
+  }
+  
+  public static int upHeap(int[] refArray, int[] heap, int[] inv, int size, int local_i, IntComparator local_c)
+  {
+    if (local_i >= size) {
+      throw new IllegalArgumentException("Heap position (" + local_i + ") is larger than or equal to heap size (" + size + ")");
+    }
+    int local_e = heap[local_i];
+    int local_E = refArray[local_e];
+    if (local_c == null)
+    {
+      int parent;
+      while ((local_i != 0) && ((parent = (local_i - 1) / 2) >= 0) && (refArray[heap[parent]] > local_E))
+      {
+        heap[local_i] = heap[parent];
+        inv[heap[local_i]] = local_i;
+        local_i = parent;
+      }
+    }
+    int parent;
+    while ((local_i != 0) && ((parent = (local_i - 1) / 2) >= 0) && (local_c.compare(refArray[heap[parent]], local_E) > 0))
+    {
+      heap[local_i] = heap[parent];
+      inv[heap[local_i]] = local_i;
+      local_i = parent;
+    }
+    heap[local_i] = local_e;
+    inv[local_e] = local_i;
+    return local_i;
+  }
+  
+  public static void makeHeap(int[] refArray, int offset, int length, int[] heap, int[] inv, IntComparator local_c)
+  {
+    IntArrays.ensureOffsetLength(refArray, offset, length);
+    if (heap.length < length) {
+      throw new IllegalArgumentException("The heap length (" + heap.length + ") is smaller than the number of elements (" + length + ")");
+    }
+    if (inv.length < refArray.length) {
+      throw new IllegalArgumentException("The inversion array length (" + heap.length + ") is smaller than the length of the reference array (" + refArray.length + ")");
+    }
+    IntArrays.fill(inv, 0, refArray.length, -1);
+    int local_i = length;
+    while (local_i-- != 0)
+    {
+      int tmp134_133 = (offset + local_i);
+      heap[local_i] = tmp134_133;
+      inv[tmp134_133] = local_i;
+    }
+    local_i = length / 2;
+    while (local_i-- != 0) {
+      downHeap(refArray, heap, inv, length, local_i, local_c);
+    }
+  }
+  
+  public static void makeHeap(int[] refArray, int[] heap, int[] inv, int size, IntComparator local_c)
+  {
+    int local_i = size / 2;
+    while (local_i-- != 0) {
+      downHeap(refArray, heap, inv, size, local_i, local_c);
+    }
+  }
+}
+
+
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.ints.IntIndirectHeaps
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

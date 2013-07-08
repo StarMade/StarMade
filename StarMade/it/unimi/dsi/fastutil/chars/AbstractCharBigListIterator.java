@@ -1,34 +1,50 @@
-/*  1:   */package it.unimi.dsi.fastutil.chars;
-/*  2:   */
-/* 54:   */public abstract class AbstractCharBigListIterator
-/* 55:   */  extends AbstractCharBidirectionalIterator
-/* 56:   */  implements CharBigListIterator
-/* 57:   */{
-/* 58:58 */  public void set(Character ok) { set(ok.charValue()); }
-/* 59:   */  
-/* 60:60 */  public void add(Character ok) { add(ok.charValue()); }
-/* 61:   */  
-/* 62:62 */  public void set(char k) { throw new UnsupportedOperationException(); }
-/* 63:   */  
-/* 64:64 */  public void add(char k) { throw new UnsupportedOperationException(); }
-/* 65:   */  
-/* 66:   */  public long skip(long n)
-/* 67:   */  {
-/* 68:68 */    long i = n;
-/* 69:69 */    while ((i-- != 0L) && (hasNext())) nextChar();
-/* 70:70 */    return n - i - 1L;
-/* 71:   */  }
-/* 72:   */  
-/* 74:   */  public long back(long n)
-/* 75:   */  {
-/* 76:76 */    long i = n;
-/* 77:77 */    while ((i-- != 0L) && (hasPrevious())) previousChar();
-/* 78:78 */    return n - i - 1L;
-/* 79:   */  }
-/* 80:   */}
+package it.unimi.dsi.fastutil.chars;
+
+public abstract class AbstractCharBigListIterator
+  extends AbstractCharBidirectionalIterator
+  implements CharBigListIterator
+{
+  public void set(Character local_ok)
+  {
+    set(local_ok.charValue());
+  }
+  
+  public void add(Character local_ok)
+  {
+    add(local_ok.charValue());
+  }
+  
+  public void set(char local_k)
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  public void add(char local_k)
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  public long skip(long local_n)
+  {
+    long local_i = local_n;
+    while ((local_i-- != 0L) && (hasNext())) {
+      nextChar();
+    }
+    return local_n - local_i - 1L;
+  }
+  
+  public long back(long local_n)
+  {
+    long local_i = local_n;
+    while ((local_i-- != 0L) && (hasPrevious())) {
+      previousChar();
+    }
+    return local_n - local_i - 1L;
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.chars.AbstractCharBigListIterator
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

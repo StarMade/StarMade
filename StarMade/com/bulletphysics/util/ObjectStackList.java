@@ -1,37 +1,40 @@
-/*  1:   */package com.bulletphysics.util;
-/*  2:   */
-/* 16:   */public class ObjectStackList<T>
-/* 17:   */  extends StackList<T>
-/* 18:   */{
-/* 19:   */  private Class<T> cls;
-/* 20:   */  
-/* 34:   */  public ObjectStackList(Class<T> cls)
-/* 35:   */  {
-/* 36:36 */    super(false);
-/* 37:37 */    this.cls = cls;
-/* 38:   */  }
-/* 39:   */  
-/* 40:   */  protected T create()
-/* 41:   */  {
-/* 42:   */    try {
-/* 43:43 */      return this.cls.newInstance();
-/* 44:   */    }
-/* 45:   */    catch (InstantiationException e) {
-/* 46:46 */      throw new IllegalStateException(e);
-/* 47:   */    }
-/* 48:   */    catch (IllegalAccessException e) {
-/* 49:49 */      throw new IllegalStateException(e);
-/* 50:   */    }
-/* 51:   */  }
-/* 52:   */  
-/* 53:   */  protected void copy(T dest, T src)
-/* 54:   */  {
-/* 55:55 */    throw new UnsupportedOperationException();
-/* 56:   */  }
-/* 57:   */}
+package com.bulletphysics.util;
+
+public class ObjectStackList<T>
+  extends StackList<T>
+{
+  private Class<T> cls;
+  
+  public ObjectStackList(Class<T> cls)
+  {
+    super(false);
+    this.cls = cls;
+  }
+  
+  protected T create()
+  {
+    try
+    {
+      return this.cls.newInstance();
+    }
+    catch (InstantiationException local_e)
+    {
+      throw new IllegalStateException(local_e);
+    }
+    catch (IllegalAccessException local_e)
+    {
+      throw new IllegalStateException(local_e);
+    }
+  }
+  
+  protected void copy(T dest, T src)
+  {
+    throw new UnsupportedOperationException();
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     com.bulletphysics.util.ObjectStackList
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -1,36 +1,35 @@
-/*  1:   */package org.schema.game.network.commands;
-/*  2:   */
-/*  3:   */import org.schema.schine.network.Command;
-/*  4:   */import org.schema.schine.network.client.ClientStateInterface;
-/*  5:   */import org.schema.schine.network.server.ServerProcessor;
-/*  6:   */import org.schema.schine.network.server.ServerStateInterface;
-/*  7:   */import vg;
-/*  8:   */
-/* 10:   */public class RequestBlockProperties
-/* 11:   */  extends Command
-/* 12:   */{
-/* 13:   */  public RequestBlockProperties()
-/* 14:   */  {
-/* 15:15 */    this.mode = 1;
-/* 16:   */  }
-/* 17:   */  
-/* 19:   */  public void clientAnswerProcess(Object[] paramArrayOfObject, ClientStateInterface paramClientStateInterface, short paramShort)
-/* 20:   */  {
-/* 21:21 */    paramClientStateInterface.arrivedReturn(paramShort, paramArrayOfObject);
-/* 22:   */  }
-/* 23:   */  
-/* 27:   */  public void serverProcess(ServerProcessor paramServerProcessor, Object[] paramArrayOfObject, ServerStateInterface paramServerStateInterface, short paramShort)
-/* 28:   */  {
-/* 29:29 */    paramArrayOfObject = (vg)paramServerStateInterface;
-/* 30:   */    
-/* 33:33 */    createReturnToClient(paramServerStateInterface, paramServerProcessor, paramShort, new Object[] { paramArrayOfObject.b() });
-/* 34:   */  }
-/* 35:   */  
-/* 36:   */  public void execute() {}
-/* 37:   */}
+package org.schema.game.network.commands;
+
+import class_1041;
+import org.schema.schine.network.Command;
+import org.schema.schine.network.client.ClientStateInterface;
+import org.schema.schine.network.server.ServerProcessor;
+import org.schema.schine.network.server.ServerStateInterface;
+
+public class RequestBlockProperties
+  extends Command
+{
+  public RequestBlockProperties()
+  {
+    this.mode = 1;
+  }
+  
+  public void clientAnswerProcess(Object[] paramArrayOfObject, ClientStateInterface paramClientStateInterface, short paramShort)
+  {
+    paramClientStateInterface.arrivedReturn(paramShort, paramArrayOfObject);
+  }
+  
+  public void serverProcess(ServerProcessor paramServerProcessor, Object[] paramArrayOfObject, ServerStateInterface paramServerStateInterface, short paramShort)
+  {
+    paramArrayOfObject = (class_1041)paramServerStateInterface;
+    createReturnToClient(paramServerStateInterface, paramServerProcessor, paramShort, new Object[] { paramArrayOfObject.b14() });
+  }
+  
+  public void execute() {}
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.game.network.commands.RequestBlockProperties
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -1,45 +1,48 @@
-/*  1:   */package org.schema.schine.network.objects.remote;
-/*  2:   */
-/*  3:   */import java.io.DataInputStream;
-/*  4:   */import java.io.DataOutputStream;
-/*  5:   */import javax.vecmath.Vector3f;
-/*  6:   */import org.schema.schine.network.NetworkGravity;
-/*  7:   */import org.schema.schine.network.objects.NetworkObject;
-/*  8:   */
-/* 11:   */public class RemoteGravity
-/* 12:   */  extends RemoteField
-/* 13:   */{
-/* 14:   */  public RemoteGravity(NetworkGravity paramNetworkGravity, NetworkObject paramNetworkObject)
-/* 15:   */  {
-/* 16:16 */    super(paramNetworkGravity, paramNetworkObject);
-/* 17:   */  }
-/* 18:   */  
-/* 19:19 */  public RemoteGravity(NetworkGravity paramNetworkGravity, boolean paramBoolean) { super(paramNetworkGravity, paramBoolean); }
-/* 20:   */  
-/* 22:   */  public int byteLength()
-/* 23:   */  {
-/* 24:24 */    return 1;
-/* 25:   */  }
-/* 26:   */  
-/* 27:   */  public void fromByteStream(DataInputStream paramDataInputStream, int paramInt) {
-/* 28:28 */    ((NetworkGravity)get()).gravityIdReceive = paramDataInputStream.readInt();
-/* 29:29 */    ((NetworkGravity)get()).gravityReceive.set(paramDataInputStream.readFloat(), paramDataInputStream.readFloat(), paramDataInputStream.readFloat());
-/* 30:30 */    ((NetworkGravity)get()).gravityReceived = true;
-/* 31:   */  }
-/* 32:   */  
-/* 35:   */  public int toByteStream(DataOutputStream paramDataOutputStream)
-/* 36:   */  {
-/* 37:37 */    paramDataOutputStream.writeInt(((NetworkGravity)get()).gravityId);
-/* 38:38 */    paramDataOutputStream.writeFloat(((NetworkGravity)get()).gravity.x);
-/* 39:39 */    paramDataOutputStream.writeFloat(((NetworkGravity)get()).gravity.y);
-/* 40:40 */    paramDataOutputStream.writeFloat(((NetworkGravity)get()).gravity.z);
-/* 41:   */    
-/* 42:42 */    return 1;
-/* 43:   */  }
-/* 44:   */}
+package org.schema.schine.network.objects.remote;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import javax.vecmath.Vector3f;
+import org.schema.schine.network.NetworkGravity;
+import org.schema.schine.network.objects.NetworkObject;
+
+public class RemoteGravity
+  extends RemoteField
+{
+  public RemoteGravity(NetworkGravity paramNetworkGravity, NetworkObject paramNetworkObject)
+  {
+    super(paramNetworkGravity, paramNetworkObject);
+  }
+  
+  public RemoteGravity(NetworkGravity paramNetworkGravity, boolean paramBoolean)
+  {
+    super(paramNetworkGravity, paramBoolean);
+  }
+  
+  public int byteLength()
+  {
+    return 1;
+  }
+  
+  public void fromByteStream(DataInputStream paramDataInputStream, int paramInt)
+  {
+    ((NetworkGravity)get()).gravityIdReceive = paramDataInputStream.readInt();
+    ((NetworkGravity)get()).gravityReceive.set(paramDataInputStream.readFloat(), paramDataInputStream.readFloat(), paramDataInputStream.readFloat());
+    ((NetworkGravity)get()).gravityReceived = true;
+  }
+  
+  public int toByteStream(DataOutputStream paramDataOutputStream)
+  {
+    paramDataOutputStream.writeInt(((NetworkGravity)get()).gravityId);
+    paramDataOutputStream.writeFloat(((NetworkGravity)get()).gravity.field_615);
+    paramDataOutputStream.writeFloat(((NetworkGravity)get()).gravity.field_616);
+    paramDataOutputStream.writeFloat(((NetworkGravity)get()).gravity.field_617);
+    return 1;
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.schine.network.objects.remote.RemoteGravity
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

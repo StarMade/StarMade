@@ -1,22 +1,24 @@
-/*  1:   */package org.schema.game.common.data.physics;
-/*  2:   */
-/*  3:   */import com.bulletphysics.collision.shapes.SphereShape;
-/*  4:   */
-/*  5:   */public class ChangableSphereShape extends SphereShape
-/*  6:   */{
-/*  7:   */  public ChangableSphereShape(float paramFloat) {
-/*  8: 8 */    super(paramFloat);
-/*  9:   */  }
-/* 10:   */  
-/* 11:   */  public void setRadius(float paramFloat)
-/* 12:   */  {
-/* 13:13 */    this.implicitShapeDimensions.x = paramFloat;
-/* 14:14 */    this.collisionMargin = paramFloat;
-/* 15:   */  }
-/* 16:   */}
+package org.schema.game.common.data.physics;
+
+import com.bulletphysics.collision.shapes.SphereShape;
+
+public class ChangableSphereShape
+  extends SphereShape
+{
+  public ChangableSphereShape(float paramFloat)
+  {
+    super(paramFloat);
+  }
+  
+  public void setRadius(float paramFloat)
+  {
+    this.implicitShapeDimensions.field_615 = paramFloat;
+    this.collisionMargin = paramFloat;
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.game.common.data.physics.ChangableSphereShape
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -1,40 +1,45 @@
-/*  1:   */package it.unimi.dsi.fastutil.ints;
-/*  2:   */
-/* 44:   */public abstract class AbstractIntSortedSet
-/* 45:   */  extends AbstractIntSet
-/* 46:   */  implements IntSortedSet
-/* 47:   */{
-/* 48:   */  public IntSortedSet headSet(Integer to)
-/* 49:   */  {
-/* 50:50 */    return headSet(to.intValue());
-/* 51:   */  }
-/* 52:   */  
-/* 53:   */  public IntSortedSet tailSet(Integer from) {
-/* 54:54 */    return tailSet(from.intValue());
-/* 55:   */  }
-/* 56:   */  
-/* 57:   */  public IntSortedSet subSet(Integer from, Integer to) {
-/* 58:58 */    return subSet(from.intValue(), to.intValue());
-/* 59:   */  }
-/* 60:   */  
-/* 61:   */  public Integer first() {
-/* 62:62 */    return Integer.valueOf(firstInt());
-/* 63:   */  }
-/* 64:   */  
-/* 65:   */  public Integer last() {
-/* 66:66 */    return Integer.valueOf(lastInt());
-/* 67:   */  }
-/* 68:   */  
-/* 69:   */  @Deprecated
-/* 70:   */  public IntBidirectionalIterator intIterator() {
-/* 71:71 */    return iterator();
-/* 72:   */  }
-/* 73:   */  
-/* 74:   */  public abstract IntBidirectionalIterator iterator();
-/* 75:   */}
+package it.unimi.dsi.fastutil.ints;
+
+public abstract class AbstractIntSortedSet
+  extends AbstractIntSet
+  implements IntSortedSet
+{
+  public IntSortedSet headSet(Integer local_to)
+  {
+    return headSet(local_to.intValue());
+  }
+  
+  public IntSortedSet tailSet(Integer from)
+  {
+    return tailSet(from.intValue());
+  }
+  
+  public IntSortedSet subSet(Integer from, Integer local_to)
+  {
+    return subSet(from.intValue(), local_to.intValue());
+  }
+  
+  public Integer first()
+  {
+    return Integer.valueOf(firstInt());
+  }
+  
+  public Integer last()
+  {
+    return Integer.valueOf(lastInt());
+  }
+  
+  @Deprecated
+  public IntBidirectionalIterator intIterator()
+  {
+    return iterator();
+  }
+  
+  public abstract IntBidirectionalIterator iterator();
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.ints.AbstractIntSortedSet
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

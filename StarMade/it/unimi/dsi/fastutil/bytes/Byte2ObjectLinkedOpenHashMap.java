@@ -1,1055 +1,1395 @@
-/*    1:     */package it.unimi.dsi.fastutil.bytes;
-/*    2:     */
-/*    3:     */import it.unimi.dsi.fastutil.Hash;
-/*    4:     */import it.unimi.dsi.fastutil.HashCommon;
-/*    5:     */import it.unimi.dsi.fastutil.booleans.BooleanArrays;
-/*    6:     */import it.unimi.dsi.fastutil.objects.AbstractObjectCollection;
-/*    7:     */import it.unimi.dsi.fastutil.objects.AbstractObjectSortedSet;
-/*    8:     */import it.unimi.dsi.fastutil.objects.ObjectArrays;
-/*    9:     */import it.unimi.dsi.fastutil.objects.ObjectBidirectionalIterator;
-/*   10:     */import it.unimi.dsi.fastutil.objects.ObjectCollection;
-/*   11:     */import it.unimi.dsi.fastutil.objects.ObjectIterator;
-/*   12:     */import it.unimi.dsi.fastutil.objects.ObjectListIterator;
-/*   13:     */import it.unimi.dsi.fastutil.objects.ObjectSortedSet;
-/*   14:     */import java.io.IOException;
-/*   15:     */import java.io.ObjectInputStream;
-/*   16:     */import java.io.ObjectOutputStream;
-/*   17:     */import java.io.Serializable;
-/*   18:     */import java.util.Comparator;
-/*   19:     */import java.util.Map;
-/*   20:     */import java.util.Map.Entry;
-/*   21:     */import java.util.NoSuchElementException;
-/*   22:     */
-/*  101:     */public class Byte2ObjectLinkedOpenHashMap<V>
-/*  102:     */  extends AbstractByte2ObjectSortedMap<V>
-/*  103:     */  implements Serializable, Cloneable, Hash
-/*  104:     */{
-/*  105:     */  public static final long serialVersionUID = 0L;
-/*  106:     */  private static final boolean ASSERTS = false;
-/*  107:     */  protected transient byte[] key;
-/*  108:     */  protected transient V[] value;
-/*  109:     */  protected transient boolean[] used;
-/*  110:     */  protected final float f;
-/*  111:     */  protected transient int n;
-/*  112:     */  protected transient int maxFill;
-/*  113:     */  protected transient int mask;
-/*  114:     */  protected int size;
-/*  115:     */  protected volatile transient Byte2ObjectSortedMap.FastSortedEntrySet<V> entries;
-/*  116:     */  protected volatile transient ByteSortedSet keys;
-/*  117:     */  protected volatile transient ObjectCollection<V> values;
-/*  118: 118 */  protected transient int first = -1;
-/*  119:     */  
-/*  120: 120 */  protected transient int last = -1;
-/*  121:     */  
-/*  128:     */  protected transient long[] link;
-/*  129:     */  
-/*  137:     */  public Byte2ObjectLinkedOpenHashMap(int expected, float f)
-/*  138:     */  {
-/*  139: 139 */    if ((f <= 0.0F) || (f > 1.0F)) throw new IllegalArgumentException("Load factor must be greater than 0 and smaller than or equal to 1");
-/*  140: 140 */    if (expected < 0) throw new IllegalArgumentException("The expected number of elements must be nonnegative");
-/*  141: 141 */    this.f = f;
-/*  142: 142 */    this.n = HashCommon.arraySize(expected, f);
-/*  143: 143 */    this.mask = (this.n - 1);
-/*  144: 144 */    this.maxFill = HashCommon.maxFill(this.n, f);
-/*  145: 145 */    this.key = new byte[this.n];
-/*  146: 146 */    this.value = ((Object[])new Object[this.n]);
-/*  147: 147 */    this.used = new boolean[this.n];
-/*  148: 148 */    this.link = new long[this.n];
-/*  149:     */  }
-/*  150:     */  
-/*  153:     */  public Byte2ObjectLinkedOpenHashMap(int expected)
-/*  154:     */  {
-/*  155: 155 */    this(expected, 0.75F);
-/*  156:     */  }
-/*  157:     */  
-/*  159:     */  public Byte2ObjectLinkedOpenHashMap()
-/*  160:     */  {
-/*  161: 161 */    this(16, 0.75F);
-/*  162:     */  }
-/*  163:     */  
-/*  167:     */  public Byte2ObjectLinkedOpenHashMap(Map<? extends Byte, ? extends V> m, float f)
-/*  168:     */  {
-/*  169: 169 */    this(m.size(), f);
-/*  170: 170 */    putAll(m);
-/*  171:     */  }
-/*  172:     */  
-/*  175:     */  public Byte2ObjectLinkedOpenHashMap(Map<? extends Byte, ? extends V> m)
-/*  176:     */  {
-/*  177: 177 */    this(m, 0.75F);
-/*  178:     */  }
-/*  179:     */  
-/*  183:     */  public Byte2ObjectLinkedOpenHashMap(Byte2ObjectMap<V> m, float f)
-/*  184:     */  {
-/*  185: 185 */    this(m.size(), f);
-/*  186: 186 */    putAll(m);
-/*  187:     */  }
-/*  188:     */  
-/*  191:     */  public Byte2ObjectLinkedOpenHashMap(Byte2ObjectMap<V> m)
-/*  192:     */  {
-/*  193: 193 */    this(m, 0.75F);
-/*  194:     */  }
-/*  195:     */  
-/*  201:     */  public Byte2ObjectLinkedOpenHashMap(byte[] k, V[] v, float f)
-/*  202:     */  {
-/*  203: 203 */    this(k.length, f);
-/*  204: 204 */    if (k.length != v.length) throw new IllegalArgumentException("The key array and the value array have different lengths (" + k.length + " and " + v.length + ")");
-/*  205: 205 */    for (int i = 0; i < k.length; i++) { put(k[i], v[i]);
-/*  206:     */    }
-/*  207:     */  }
-/*  208:     */  
-/*  212:     */  public Byte2ObjectLinkedOpenHashMap(byte[] k, V[] v)
-/*  213:     */  {
-/*  214: 214 */    this(k, v, 0.75F);
-/*  215:     */  }
-/*  216:     */  
-/*  220:     */  public V put(byte k, V v)
-/*  221:     */  {
-/*  222: 222 */    int pos = HashCommon.murmurHash3(k) & this.mask;
-/*  223:     */    
-/*  224: 224 */    while (this.used[pos] != 0) {
-/*  225: 225 */      if (this.key[pos] == k) {
-/*  226: 226 */        V oldValue = this.value[pos];
-/*  227: 227 */        this.value[pos] = v;
-/*  228: 228 */        return oldValue;
-/*  229:     */      }
-/*  230: 230 */      pos = pos + 1 & this.mask;
-/*  231:     */    }
-/*  232: 232 */    this.used[pos] = true;
-/*  233: 233 */    this.key[pos] = k;
-/*  234: 234 */    this.value[pos] = v;
-/*  235: 235 */    if (this.size == 0) {
-/*  236: 236 */      this.first = (this.last = pos);
-/*  237:     */      
-/*  238: 238 */      this.link[pos] = -1L;
-/*  239:     */    }
-/*  240:     */    else {
-/*  241: 241 */      this.link[this.last] ^= (this.link[this.last] ^ pos & 0xFFFFFFFF) & 0xFFFFFFFF;
-/*  242: 242 */      this.link[pos] = ((this.last & 0xFFFFFFFF) << 32 | 0xFFFFFFFF);
-/*  243: 243 */      this.last = pos;
-/*  244:     */    }
-/*  245: 245 */    if (++this.size >= this.maxFill) { rehash(HashCommon.arraySize(this.size + 1, this.f));
-/*  246:     */    }
-/*  247: 247 */    return this.defRetValue;
-/*  248:     */  }
-/*  249:     */  
-/*  250: 250 */  public V put(Byte ok, V ov) { V v = ov;
-/*  251: 251 */    byte k = ok.byteValue();
-/*  252:     */    
-/*  253: 253 */    int pos = HashCommon.murmurHash3(k) & this.mask;
-/*  254:     */    
-/*  255: 255 */    while (this.used[pos] != 0) {
-/*  256: 256 */      if (this.key[pos] == k) {
-/*  257: 257 */        V oldValue = this.value[pos];
-/*  258: 258 */        this.value[pos] = v;
-/*  259: 259 */        return oldValue;
-/*  260:     */      }
-/*  261: 261 */      pos = pos + 1 & this.mask;
-/*  262:     */    }
-/*  263: 263 */    this.used[pos] = true;
-/*  264: 264 */    this.key[pos] = k;
-/*  265: 265 */    this.value[pos] = v;
-/*  266: 266 */    if (this.size == 0) {
-/*  267: 267 */      this.first = (this.last = pos);
-/*  268:     */      
-/*  269: 269 */      this.link[pos] = -1L;
-/*  270:     */    }
-/*  271:     */    else {
-/*  272: 272 */      this.link[this.last] ^= (this.link[this.last] ^ pos & 0xFFFFFFFF) & 0xFFFFFFFF;
-/*  273: 273 */      this.link[pos] = ((this.last & 0xFFFFFFFF) << 32 | 0xFFFFFFFF);
-/*  274: 274 */      this.last = pos;
-/*  275:     */    }
-/*  276: 276 */    if (++this.size >= this.maxFill) { rehash(HashCommon.arraySize(this.size + 1, this.f));
-/*  277:     */    }
-/*  278: 278 */    return this.defRetValue;
-/*  279:     */  }
-/*  280:     */  
-/*  283:     */  protected final int shiftKeys(int pos)
-/*  284:     */  {
-/*  285:     */    int last;
-/*  286:     */    
-/*  288:     */    for (;;)
-/*  289:     */    {
-/*  290: 290 */      pos = (last = pos) + 1 & this.mask;
-/*  291: 291 */      while (this.used[pos] != 0) {
-/*  292: 292 */        int slot = HashCommon.murmurHash3(this.key[pos]) & this.mask;
-/*  293: 293 */        if (last <= pos ? (last < slot) && (slot <= pos) : (last >= slot) && (slot > pos)) break;
-/*  294: 294 */        pos = pos + 1 & this.mask;
-/*  295:     */      }
-/*  296: 296 */      if (this.used[pos] == 0) break;
-/*  297: 297 */      this.key[last] = this.key[pos];
-/*  298: 298 */      this.value[last] = this.value[pos];
-/*  299: 299 */      fixPointers(pos, last);
-/*  300:     */    }
-/*  301: 301 */    this.used[last] = false;
-/*  302: 302 */    this.value[last] = null;
-/*  303: 303 */    return last;
-/*  304:     */  }
-/*  305:     */  
-/*  306:     */  public V remove(byte k)
-/*  307:     */  {
-/*  308: 308 */    int pos = HashCommon.murmurHash3(k) & this.mask;
-/*  309:     */    
-/*  310: 310 */    while (this.used[pos] != 0) {
-/*  311: 311 */      if (this.key[pos] == k) {
-/*  312: 312 */        this.size -= 1;
-/*  313: 313 */        fixPointers(pos);
-/*  314: 314 */        V v = this.value[pos];
-/*  315: 315 */        shiftKeys(pos);
-/*  316: 316 */        return v;
-/*  317:     */      }
-/*  318: 318 */      pos = pos + 1 & this.mask;
-/*  319:     */    }
-/*  320: 320 */    return this.defRetValue;
-/*  321:     */  }
-/*  322:     */  
-/*  323:     */  public V remove(Object ok) {
-/*  324: 324 */    byte k = ((Byte)ok).byteValue();
-/*  325:     */    
-/*  326: 326 */    int pos = HashCommon.murmurHash3(k) & this.mask;
-/*  327:     */    
-/*  328: 328 */    while (this.used[pos] != 0) {
-/*  329: 329 */      if (this.key[pos] == k) {
-/*  330: 330 */        this.size -= 1;
-/*  331: 331 */        fixPointers(pos);
-/*  332: 332 */        V v = this.value[pos];
-/*  333: 333 */        shiftKeys(pos);
-/*  334: 334 */        return v;
-/*  335:     */      }
-/*  336: 336 */      pos = pos + 1 & this.mask;
-/*  337:     */    }
-/*  338: 338 */    return this.defRetValue;
-/*  339:     */  }
-/*  340:     */  
-/*  343:     */  public V removeFirst()
-/*  344:     */  {
-/*  345: 345 */    if (this.size == 0) throw new NoSuchElementException();
-/*  346: 346 */    this.size -= 1;
-/*  347: 347 */    int pos = this.first;
-/*  348:     */    
-/*  349: 349 */    this.first = ((int)this.link[pos]);
-/*  350: 350 */    if (0 <= this.first)
-/*  351:     */    {
-/*  352: 352 */      this.link[this.first] |= -4294967296L;
-/*  353:     */    }
-/*  354: 354 */    V v = this.value[pos];
-/*  355: 355 */    shiftKeys(pos);
-/*  356: 356 */    return v;
-/*  357:     */  }
-/*  358:     */  
-/*  361:     */  public V removeLast()
-/*  362:     */  {
-/*  363: 363 */    if (this.size == 0) throw new NoSuchElementException();
-/*  364: 364 */    this.size -= 1;
-/*  365: 365 */    int pos = this.last;
-/*  366:     */    
-/*  367: 367 */    this.last = ((int)(this.link[pos] >>> 32));
-/*  368: 368 */    if (0 <= this.last)
-/*  369:     */    {
-/*  370: 370 */      this.link[this.last] |= 4294967295L;
-/*  371:     */    }
-/*  372: 372 */    V v = this.value[pos];
-/*  373: 373 */    shiftKeys(pos);
-/*  374: 374 */    return v;
-/*  375:     */  }
-/*  376:     */  
-/*  377: 377 */  private void moveIndexToFirst(int i) { if ((this.size == 1) || (this.first == i)) return;
-/*  378: 378 */    if (this.last == i) {
-/*  379: 379 */      this.last = ((int)(this.link[i] >>> 32));
-/*  380:     */      
-/*  381: 381 */      this.link[this.last] |= 4294967295L;
-/*  382:     */    }
-/*  383:     */    else {
-/*  384: 384 */      long linki = this.link[i];
-/*  385: 385 */      int prev = (int)(linki >>> 32);
-/*  386: 386 */      int next = (int)linki;
-/*  387: 387 */      this.link[prev] ^= (this.link[prev] ^ linki & 0xFFFFFFFF) & 0xFFFFFFFF;
-/*  388: 388 */      this.link[next] ^= (this.link[next] ^ linki & 0x0) & 0x0;
-/*  389:     */    }
-/*  390: 390 */    this.link[this.first] ^= (this.link[this.first] ^ (i & 0xFFFFFFFF) << 32) & 0x0;
-/*  391: 391 */    this.link[i] = (0x0 | this.first & 0xFFFFFFFF);
-/*  392: 392 */    this.first = i;
-/*  393:     */  }
-/*  394:     */  
-/*  395: 395 */  private void moveIndexToLast(int i) { if ((this.size == 1) || (this.last == i)) return;
-/*  396: 396 */    if (this.first == i) {
-/*  397: 397 */      this.first = ((int)this.link[i]);
-/*  398:     */      
-/*  399: 399 */      this.link[this.first] |= -4294967296L;
-/*  400:     */    }
-/*  401:     */    else {
-/*  402: 402 */      long linki = this.link[i];
-/*  403: 403 */      int prev = (int)(linki >>> 32);
-/*  404: 404 */      int next = (int)linki;
-/*  405: 405 */      this.link[prev] ^= (this.link[prev] ^ linki & 0xFFFFFFFF) & 0xFFFFFFFF;
-/*  406: 406 */      this.link[next] ^= (this.link[next] ^ linki & 0x0) & 0x0;
-/*  407:     */    }
-/*  408: 408 */    this.link[this.last] ^= (this.link[this.last] ^ i & 0xFFFFFFFF) & 0xFFFFFFFF;
-/*  409: 409 */    this.link[i] = ((this.last & 0xFFFFFFFF) << 32 | 0xFFFFFFFF);
-/*  410: 410 */    this.last = i;
-/*  411:     */  }
-/*  412:     */  
-/*  416:     */  public V getAndMoveToFirst(byte k)
-/*  417:     */  {
-/*  418: 418 */    byte[] key = this.key;
-/*  419: 419 */    boolean[] used = this.used;
-/*  420: 420 */    int mask = this.mask;
-/*  421:     */    
-/*  422: 422 */    int pos = HashCommon.murmurHash3(k) & mask;
-/*  423:     */    
-/*  424: 424 */    while (used[pos] != 0) {
-/*  425: 425 */      if (k == key[pos]) {
-/*  426: 426 */        moveIndexToFirst(pos);
-/*  427: 427 */        return this.value[pos];
-/*  428:     */      }
-/*  429: 429 */      pos = pos + 1 & mask;
-/*  430:     */    }
-/*  431: 431 */    return this.defRetValue;
-/*  432:     */  }
-/*  433:     */  
-/*  437:     */  public V getAndMoveToLast(byte k)
-/*  438:     */  {
-/*  439: 439 */    byte[] key = this.key;
-/*  440: 440 */    boolean[] used = this.used;
-/*  441: 441 */    int mask = this.mask;
-/*  442:     */    
-/*  443: 443 */    int pos = HashCommon.murmurHash3(k) & mask;
-/*  444:     */    
-/*  445: 445 */    while (used[pos] != 0) {
-/*  446: 446 */      if (k == key[pos]) {
-/*  447: 447 */        moveIndexToLast(pos);
-/*  448: 448 */        return this.value[pos];
-/*  449:     */      }
-/*  450: 450 */      pos = pos + 1 & mask;
-/*  451:     */    }
-/*  452: 452 */    return this.defRetValue;
-/*  453:     */  }
-/*  454:     */  
-/*  459:     */  public V putAndMoveToFirst(byte k, V v)
-/*  460:     */  {
-/*  461: 461 */    byte[] key = this.key;
-/*  462: 462 */    boolean[] used = this.used;
-/*  463: 463 */    int mask = this.mask;
-/*  464:     */    
-/*  465: 465 */    int pos = HashCommon.murmurHash3(k) & mask;
-/*  466:     */    
-/*  467: 467 */    while (used[pos] != 0) {
-/*  468: 468 */      if (k == key[pos]) {
-/*  469: 469 */        V oldValue = this.value[pos];
-/*  470: 470 */        this.value[pos] = v;
-/*  471: 471 */        moveIndexToFirst(pos);
-/*  472: 472 */        return oldValue;
-/*  473:     */      }
-/*  474: 474 */      pos = pos + 1 & mask;
-/*  475:     */    }
-/*  476: 476 */    used[pos] = true;
-/*  477: 477 */    key[pos] = k;
-/*  478: 478 */    this.value[pos] = v;
-/*  479: 479 */    if (this.size == 0) {
-/*  480: 480 */      this.first = (this.last = pos);
-/*  481:     */      
-/*  482: 482 */      this.link[pos] = -1L;
-/*  483:     */    }
-/*  484:     */    else {
-/*  485: 485 */      this.link[this.first] ^= (this.link[this.first] ^ (pos & 0xFFFFFFFF) << 32) & 0x0;
-/*  486: 486 */      this.link[pos] = (0x0 | this.first & 0xFFFFFFFF);
-/*  487: 487 */      this.first = pos;
-/*  488:     */    }
-/*  489: 489 */    if (++this.size >= this.maxFill) { rehash(HashCommon.arraySize(this.size, this.f));
-/*  490:     */    }
-/*  491: 491 */    return this.defRetValue;
-/*  492:     */  }
-/*  493:     */  
-/*  498:     */  public V putAndMoveToLast(byte k, V v)
-/*  499:     */  {
-/*  500: 500 */    byte[] key = this.key;
-/*  501: 501 */    boolean[] used = this.used;
-/*  502: 502 */    int mask = this.mask;
-/*  503:     */    
-/*  504: 504 */    int pos = HashCommon.murmurHash3(k) & mask;
-/*  505:     */    
-/*  506: 506 */    while (used[pos] != 0) {
-/*  507: 507 */      if (k == key[pos]) {
-/*  508: 508 */        V oldValue = this.value[pos];
-/*  509: 509 */        this.value[pos] = v;
-/*  510: 510 */        moveIndexToLast(pos);
-/*  511: 511 */        return oldValue;
-/*  512:     */      }
-/*  513: 513 */      pos = pos + 1 & mask;
-/*  514:     */    }
-/*  515: 515 */    used[pos] = true;
-/*  516: 516 */    key[pos] = k;
-/*  517: 517 */    this.value[pos] = v;
-/*  518: 518 */    if (this.size == 0) {
-/*  519: 519 */      this.first = (this.last = pos);
-/*  520:     */      
-/*  521: 521 */      this.link[pos] = -1L;
-/*  522:     */    }
-/*  523:     */    else {
-/*  524: 524 */      this.link[this.last] ^= (this.link[this.last] ^ pos & 0xFFFFFFFF) & 0xFFFFFFFF;
-/*  525: 525 */      this.link[pos] = ((this.last & 0xFFFFFFFF) << 32 | 0xFFFFFFFF);
-/*  526: 526 */      this.last = pos;
-/*  527:     */    }
-/*  528: 528 */    if (++this.size >= this.maxFill) { rehash(HashCommon.arraySize(this.size, this.f));
-/*  529:     */    }
-/*  530: 530 */    return this.defRetValue;
-/*  531:     */  }
-/*  532:     */  
-/*  533: 533 */  public V get(Byte ok) { byte k = ok.byteValue();
-/*  534:     */    
-/*  535: 535 */    int pos = HashCommon.murmurHash3(k) & this.mask;
-/*  536:     */    
-/*  537: 537 */    while (this.used[pos] != 0) {
-/*  538: 538 */      if (this.key[pos] == k) return this.value[pos];
-/*  539: 539 */      pos = pos + 1 & this.mask;
-/*  540:     */    }
-/*  541: 541 */    return this.defRetValue;
-/*  542:     */  }
-/*  543:     */  
-/*  544:     */  public V get(byte k)
-/*  545:     */  {
-/*  546: 546 */    int pos = HashCommon.murmurHash3(k) & this.mask;
-/*  547:     */    
-/*  548: 548 */    while (this.used[pos] != 0) {
-/*  549: 549 */      if (this.key[pos] == k) return this.value[pos];
-/*  550: 550 */      pos = pos + 1 & this.mask;
-/*  551:     */    }
-/*  552: 552 */    return this.defRetValue;
-/*  553:     */  }
-/*  554:     */  
-/*  555:     */  public boolean containsKey(byte k)
-/*  556:     */  {
-/*  557: 557 */    int pos = HashCommon.murmurHash3(k) & this.mask;
-/*  558:     */    
-/*  559: 559 */    while (this.used[pos] != 0) {
-/*  560: 560 */      if (this.key[pos] == k) return true;
-/*  561: 561 */      pos = pos + 1 & this.mask;
-/*  562:     */    }
-/*  563: 563 */    return false;
-/*  564:     */  }
-/*  565:     */  
-/*  566: 566 */  public boolean containsValue(Object v) { V[] value = this.value;
-/*  567: 567 */    boolean[] used = this.used;
-/*  568: 568 */    for (int i = this.n; i-- != 0; return true) label16: if ((used[i] == 0) || (value[i] == null ? v != null : !value[i].equals(v))) break label16;
-/*  569: 569 */    return false;
-/*  570:     */  }
-/*  571:     */  
-/*  576:     */  public void clear()
-/*  577:     */  {
-/*  578: 578 */    if (this.size == 0) return;
-/*  579: 579 */    this.size = 0;
-/*  580: 580 */    BooleanArrays.fill(this.used, false);
-/*  581:     */    
-/*  582: 582 */    ObjectArrays.fill(this.value, null);
-/*  583: 583 */    this.first = (this.last = -1);
-/*  584:     */  }
-/*  585:     */  
-/*  586: 586 */  public int size() { return this.size; }
-/*  587:     */  
-/*  588:     */  public boolean isEmpty() {
-/*  589: 589 */    return this.size == 0;
-/*  590:     */  }
-/*  591:     */  
-/*  596:     */  @Deprecated
-/*  597:     */  public void growthFactor(int growthFactor) {}
-/*  598:     */  
-/*  603:     */  @Deprecated
-/*  604:     */  public int growthFactor()
-/*  605:     */  {
-/*  606: 606 */    return 16;
-/*  607:     */  }
-/*  608:     */  
-/*  609:     */  private final class MapEntry
-/*  610:     */    implements Byte2ObjectMap.Entry<V>, Map.Entry<Byte, V>
-/*  611:     */  {
-/*  612:     */    private int index;
-/*  613:     */    
-/*  614:     */    MapEntry(int index)
-/*  615:     */    {
-/*  616: 616 */      this.index = index;
-/*  617:     */    }
-/*  618:     */    
-/*  619: 619 */    public Byte getKey() { return Byte.valueOf(Byte2ObjectLinkedOpenHashMap.this.key[this.index]); }
-/*  620:     */    
-/*  621:     */    public byte getByteKey() {
-/*  622: 622 */      return Byte2ObjectLinkedOpenHashMap.this.key[this.index];
-/*  623:     */    }
-/*  624:     */    
-/*  625: 625 */    public V getValue() { return Byte2ObjectLinkedOpenHashMap.this.value[this.index]; }
-/*  626:     */    
-/*  627:     */    public V setValue(V v) {
-/*  628: 628 */      V oldValue = Byte2ObjectLinkedOpenHashMap.this.value[this.index];
-/*  629: 629 */      Byte2ObjectLinkedOpenHashMap.this.value[this.index] = v;
-/*  630: 630 */      return oldValue;
-/*  631:     */    }
-/*  632:     */    
-/*  633:     */    public boolean equals(Object o) {
-/*  634: 634 */      if (!(o instanceof Map.Entry)) return false;
-/*  635: 635 */      Map.Entry<Byte, V> e = (Map.Entry)o;
-/*  636: 636 */      return (Byte2ObjectLinkedOpenHashMap.this.key[this.index] == ((Byte)e.getKey()).byteValue()) && (Byte2ObjectLinkedOpenHashMap.this.value[this.index] == null ? e.getValue() == null : Byte2ObjectLinkedOpenHashMap.this.value[this.index].equals(e.getValue()));
-/*  637:     */    }
-/*  638:     */    
-/*  639: 639 */    public int hashCode() { return Byte2ObjectLinkedOpenHashMap.this.key[this.index] ^ (Byte2ObjectLinkedOpenHashMap.this.value[this.index] == null ? 0 : Byte2ObjectLinkedOpenHashMap.this.value[this.index].hashCode()); }
-/*  640:     */    
-/*  641:     */    public String toString() {
-/*  642: 642 */      return Byte2ObjectLinkedOpenHashMap.this.key[this.index] + "=>" + Byte2ObjectLinkedOpenHashMap.this.value[this.index];
-/*  643:     */    }
-/*  644:     */  }
-/*  645:     */  
-/*  651:     */  protected void fixPointers(int i)
-/*  652:     */  {
-/*  653: 653 */    if (this.size == 0) {
-/*  654: 654 */      this.first = (this.last = -1);
-/*  655: 655 */      return;
-/*  656:     */    }
-/*  657: 657 */    if (this.first == i) {
-/*  658: 658 */      this.first = ((int)this.link[i]);
-/*  659: 659 */      if (0 <= this.first)
-/*  660:     */      {
-/*  661: 661 */        this.link[this.first] |= -4294967296L;
-/*  662:     */      }
-/*  663: 663 */      return;
-/*  664:     */    }
-/*  665: 665 */    if (this.last == i) {
-/*  666: 666 */      this.last = ((int)(this.link[i] >>> 32));
-/*  667: 667 */      if (0 <= this.last)
-/*  668:     */      {
-/*  669: 669 */        this.link[this.last] |= 4294967295L;
-/*  670:     */      }
-/*  671: 671 */      return;
-/*  672:     */    }
-/*  673: 673 */    long linki = this.link[i];
-/*  674: 674 */    int prev = (int)(linki >>> 32);
-/*  675: 675 */    int next = (int)linki;
-/*  676: 676 */    this.link[prev] ^= (this.link[prev] ^ linki & 0xFFFFFFFF) & 0xFFFFFFFF;
-/*  677: 677 */    this.link[next] ^= (this.link[next] ^ linki & 0x0) & 0x0;
-/*  678:     */  }
-/*  679:     */  
-/*  686:     */  protected void fixPointers(int s, int d)
-/*  687:     */  {
-/*  688: 688 */    if (this.size == 1) {
-/*  689: 689 */      this.first = (this.last = d);
-/*  690:     */      
-/*  691: 691 */      this.link[d] = -1L;
-/*  692: 692 */      return;
-/*  693:     */    }
-/*  694: 694 */    if (this.first == s) {
-/*  695: 695 */      this.first = d;
-/*  696: 696 */      this.link[((int)this.link[s])] ^= (this.link[((int)this.link[s])] ^ (d & 0xFFFFFFFF) << 32) & 0x0;
-/*  697: 697 */      this.link[d] = this.link[s];
-/*  698: 698 */      return;
-/*  699:     */    }
-/*  700: 700 */    if (this.last == s) {
-/*  701: 701 */      this.last = d;
-/*  702: 702 */      this.link[((int)(this.link[s] >>> 32))] ^= (this.link[((int)(this.link[s] >>> 32))] ^ d & 0xFFFFFFFF) & 0xFFFFFFFF;
-/*  703: 703 */      this.link[d] = this.link[s];
-/*  704: 704 */      return;
-/*  705:     */    }
-/*  706: 706 */    long links = this.link[s];
-/*  707: 707 */    int prev = (int)(links >>> 32);
-/*  708: 708 */    int next = (int)links;
-/*  709: 709 */    this.link[prev] ^= (this.link[prev] ^ d & 0xFFFFFFFF) & 0xFFFFFFFF;
-/*  710: 710 */    this.link[next] ^= (this.link[next] ^ (d & 0xFFFFFFFF) << 32) & 0x0;
-/*  711: 711 */    this.link[d] = links;
-/*  712:     */  }
-/*  713:     */  
-/*  716:     */  public byte firstByteKey()
-/*  717:     */  {
-/*  718: 718 */    if (this.size == 0) throw new NoSuchElementException();
-/*  719: 719 */    return this.key[this.first];
-/*  720:     */  }
-/*  721:     */  
-/*  724:     */  public byte lastByteKey()
-/*  725:     */  {
-/*  726: 726 */    if (this.size == 0) throw new NoSuchElementException();
-/*  727: 727 */    return this.key[this.last]; }
-/*  728:     */  
-/*  729: 729 */  public ByteComparator comparator() { return null; }
-/*  730: 730 */  public Byte2ObjectSortedMap<V> tailMap(byte from) { throw new UnsupportedOperationException(); }
-/*  731: 731 */  public Byte2ObjectSortedMap<V> headMap(byte to) { throw new UnsupportedOperationException(); }
-/*  732: 732 */  public Byte2ObjectSortedMap<V> subMap(byte from, byte to) { throw new UnsupportedOperationException(); }
-/*  733:     */  
-/*  739:     */  private class MapIterator
-/*  740:     */  {
-/*  741: 741 */    int prev = -1;
-/*  742:     */    
-/*  743: 743 */    int next = -1;
-/*  744:     */    
-/*  745: 745 */    int curr = -1;
-/*  746:     */    
-/*  747: 747 */    int index = -1;
-/*  748:     */    
-/*  749: 749 */    private MapIterator() { this.next = Byte2ObjectLinkedOpenHashMap.this.first;
-/*  750: 750 */      this.index = 0;
-/*  751:     */    }
-/*  752:     */    
-/*  753: 753 */    private MapIterator(byte from) { if (Byte2ObjectLinkedOpenHashMap.this.key[Byte2ObjectLinkedOpenHashMap.this.last] == from) {
-/*  754: 754 */        this.prev = Byte2ObjectLinkedOpenHashMap.this.last;
-/*  755: 755 */        this.index = Byte2ObjectLinkedOpenHashMap.this.size;
-/*  756:     */      }
-/*  757:     */      else
-/*  758:     */      {
-/*  759: 759 */        int pos = HashCommon.murmurHash3(from) & Byte2ObjectLinkedOpenHashMap.this.mask;
-/*  760:     */        
-/*  761: 761 */        while (Byte2ObjectLinkedOpenHashMap.this.used[pos] != 0) {
-/*  762: 762 */          if (Byte2ObjectLinkedOpenHashMap.this.key[pos] == from)
-/*  763:     */          {
-/*  764: 764 */            this.next = ((int)Byte2ObjectLinkedOpenHashMap.this.link[pos]);
-/*  765: 765 */            this.prev = pos;
-/*  766: 766 */            return;
-/*  767:     */          }
-/*  768: 768 */          pos = pos + 1 & Byte2ObjectLinkedOpenHashMap.this.mask;
-/*  769:     */        }
-/*  770: 770 */        throw new NoSuchElementException("The key " + from + " does not belong to this map.");
-/*  771:     */      } }
-/*  772:     */    
-/*  773: 773 */    public boolean hasNext() { return this.next != -1; }
-/*  774: 774 */    public boolean hasPrevious() { return this.prev != -1; }
-/*  775:     */    
-/*  776: 776 */    private final void ensureIndexKnown() { if (this.index >= 0) return;
-/*  777: 777 */      if (this.prev == -1) {
-/*  778: 778 */        this.index = 0;
-/*  779: 779 */        return;
-/*  780:     */      }
-/*  781: 781 */      if (this.next == -1) {
-/*  782: 782 */        this.index = Byte2ObjectLinkedOpenHashMap.this.size;
-/*  783: 783 */        return;
-/*  784:     */      }
-/*  785: 785 */      int pos = Byte2ObjectLinkedOpenHashMap.this.first;
-/*  786: 786 */      this.index = 1;
-/*  787: 787 */      while (pos != this.prev) {
-/*  788: 788 */        pos = (int)Byte2ObjectLinkedOpenHashMap.this.link[pos];
-/*  789: 789 */        this.index += 1;
-/*  790:     */      }
-/*  791:     */    }
-/*  792:     */    
-/*  793: 793 */    public int nextIndex() { ensureIndexKnown();
-/*  794: 794 */      return this.index;
-/*  795:     */    }
-/*  796:     */    
-/*  797: 797 */    public int previousIndex() { ensureIndexKnown();
-/*  798: 798 */      return this.index - 1;
-/*  799:     */    }
-/*  800:     */    
-/*  801: 801 */    public int nextEntry() { if (!hasNext()) return Byte2ObjectLinkedOpenHashMap.this.size();
-/*  802: 802 */      this.curr = this.next;
-/*  803: 803 */      this.next = ((int)Byte2ObjectLinkedOpenHashMap.this.link[this.curr]);
-/*  804: 804 */      this.prev = this.curr;
-/*  805: 805 */      if (this.index >= 0) this.index += 1;
-/*  806: 806 */      return this.curr;
-/*  807:     */    }
-/*  808:     */    
-/*  809: 809 */    public int previousEntry() { if (!hasPrevious()) return -1;
-/*  810: 810 */      this.curr = this.prev;
-/*  811: 811 */      this.prev = ((int)(Byte2ObjectLinkedOpenHashMap.this.link[this.curr] >>> 32));
-/*  812: 812 */      this.next = this.curr;
-/*  813: 813 */      if (this.index >= 0) this.index -= 1;
-/*  814: 814 */      return this.curr;
-/*  815:     */    }
-/*  816:     */    
-/*  817:     */    public void remove() {
-/*  818: 818 */      ensureIndexKnown();
-/*  819: 819 */      if (this.curr == -1) throw new IllegalStateException();
-/*  820: 820 */      if (this.curr == this.prev)
-/*  821:     */      {
-/*  823: 823 */        this.index -= 1;
-/*  824: 824 */        this.prev = ((int)(Byte2ObjectLinkedOpenHashMap.this.link[this.curr] >>> 32));
-/*  825:     */      }
-/*  826:     */      else {
-/*  827: 827 */        this.next = ((int)Byte2ObjectLinkedOpenHashMap.this.link[this.curr]); }
-/*  828: 828 */      Byte2ObjectLinkedOpenHashMap.this.size -= 1;
-/*  829:     */      
-/*  831: 831 */      if (this.prev == -1) { Byte2ObjectLinkedOpenHashMap.this.first = this.next;
-/*  832:     */      } else
-/*  833: 833 */        Byte2ObjectLinkedOpenHashMap.this.link[this.prev] ^= (Byte2ObjectLinkedOpenHashMap.this.link[this.prev] ^ this.next & 0xFFFFFFFF) & 0xFFFFFFFF;
-/*  834: 834 */      if (this.next == -1) { Byte2ObjectLinkedOpenHashMap.this.last = this.prev;
-/*  835:     */      } else
-/*  836: 836 */        Byte2ObjectLinkedOpenHashMap.this.link[this.next] ^= (Byte2ObjectLinkedOpenHashMap.this.link[this.next] ^ (this.prev & 0xFFFFFFFF) << 32) & 0x0;
-/*  837: 837 */      int pos = this.curr;
-/*  838:     */      int last;
-/*  839:     */      for (;;) {
-/*  840: 840 */        pos = (last = pos) + 1 & Byte2ObjectLinkedOpenHashMap.this.mask;
-/*  841: 841 */        while (Byte2ObjectLinkedOpenHashMap.this.used[pos] != 0) {
-/*  842: 842 */          int slot = HashCommon.murmurHash3(Byte2ObjectLinkedOpenHashMap.this.key[pos]) & Byte2ObjectLinkedOpenHashMap.this.mask;
-/*  843: 843 */          if (last <= pos ? (last < slot) && (slot <= pos) : (last >= slot) && (slot > pos)) break;
-/*  844: 844 */          pos = pos + 1 & Byte2ObjectLinkedOpenHashMap.this.mask;
-/*  845:     */        }
-/*  846: 846 */        if (Byte2ObjectLinkedOpenHashMap.this.used[pos] == 0) break;
-/*  847: 847 */        Byte2ObjectLinkedOpenHashMap.this.key[last] = Byte2ObjectLinkedOpenHashMap.this.key[pos];
-/*  848: 848 */        Byte2ObjectLinkedOpenHashMap.this.value[last] = Byte2ObjectLinkedOpenHashMap.this.value[pos];
-/*  849: 849 */        if (this.next == pos) this.next = last;
-/*  850: 850 */        if (this.prev == pos) this.prev = last;
-/*  851: 851 */        Byte2ObjectLinkedOpenHashMap.this.fixPointers(pos, last);
-/*  852:     */      }
-/*  853: 853 */      Byte2ObjectLinkedOpenHashMap.this.used[last] = false;
-/*  854: 854 */      Byte2ObjectLinkedOpenHashMap.this.value[last] = null;
-/*  855: 855 */      this.curr = -1;
-/*  856:     */    }
-/*  857:     */    
-/*  858: 858 */    public int skip(int n) { int i = n;
-/*  859: 859 */      while ((i-- != 0) && (hasNext())) nextEntry();
-/*  860: 860 */      return n - i - 1;
-/*  861:     */    }
-/*  862:     */    
-/*  863: 863 */    public int back(int n) { int i = n;
-/*  864: 864 */      while ((i-- != 0) && (hasPrevious())) previousEntry();
-/*  865: 865 */      return n - i - 1;
-/*  866:     */    } }
-/*  867:     */  
-/*  868:     */  private class EntryIterator extends Byte2ObjectLinkedOpenHashMap<V>.MapIterator implements ObjectListIterator<Byte2ObjectMap.Entry<V>> { private Byte2ObjectLinkedOpenHashMap<V>.MapEntry entry;
-/*  869:     */    
-/*  870: 870 */    public EntryIterator() { super(null); }
-/*  871:     */    
-/*  872: 872 */    public EntryIterator(byte from) { super(from, null); }
-/*  873:     */    
-/*  874:     */    public Byte2ObjectLinkedOpenHashMap<V>.MapEntry next() {
-/*  875: 875 */      return this.entry = new Byte2ObjectLinkedOpenHashMap.MapEntry(Byte2ObjectLinkedOpenHashMap.this, nextEntry());
-/*  876:     */    }
-/*  877:     */    
-/*  878: 878 */    public Byte2ObjectLinkedOpenHashMap<V>.MapEntry previous() { return this.entry = new Byte2ObjectLinkedOpenHashMap.MapEntry(Byte2ObjectLinkedOpenHashMap.this, previousEntry()); }
-/*  879:     */    
-/*  880:     */    public void remove()
-/*  881:     */    {
-/*  882: 882 */      super.remove();
-/*  883: 883 */      Byte2ObjectLinkedOpenHashMap.MapEntry.access$202(this.entry, -1); }
-/*  884:     */    
-/*  885: 885 */    public void set(Byte2ObjectMap.Entry<V> ok) { throw new UnsupportedOperationException(); }
-/*  886: 886 */    public void add(Byte2ObjectMap.Entry<V> ok) { throw new UnsupportedOperationException(); }
-/*  887:     */  }
-/*  888:     */  
-/*  889: 889 */  private class FastEntryIterator extends Byte2ObjectLinkedOpenHashMap<V>.MapIterator implements ObjectListIterator<Byte2ObjectMap.Entry<V>> { final AbstractByte2ObjectMap.BasicEntry<V> entry = new AbstractByte2ObjectMap.BasicEntry((byte)0, null);
-/*  890: 890 */    public FastEntryIterator() { super(null); }
-/*  891:     */    
-/*  892: 892 */    public FastEntryIterator(byte from) { super(from, null); }
-/*  893:     */    
-/*  894:     */    public AbstractByte2ObjectMap.BasicEntry<V> next() {
-/*  895: 895 */      int e = nextEntry();
-/*  896: 896 */      this.entry.key = Byte2ObjectLinkedOpenHashMap.this.key[e];
-/*  897: 897 */      this.entry.value = Byte2ObjectLinkedOpenHashMap.this.value[e];
-/*  898: 898 */      return this.entry;
-/*  899:     */    }
-/*  900:     */    
-/*  901: 901 */    public AbstractByte2ObjectMap.BasicEntry<V> previous() { int e = previousEntry();
-/*  902: 902 */      this.entry.key = Byte2ObjectLinkedOpenHashMap.this.key[e];
-/*  903: 903 */      this.entry.value = Byte2ObjectLinkedOpenHashMap.this.value[e];
-/*  904: 904 */      return this.entry; }
-/*  905:     */    
-/*  906: 906 */    public void set(Byte2ObjectMap.Entry<V> ok) { throw new UnsupportedOperationException(); }
-/*  907: 907 */    public void add(Byte2ObjectMap.Entry<V> ok) { throw new UnsupportedOperationException(); } }
-/*  908:     */  
-/*  909:     */  private final class MapEntrySet extends AbstractObjectSortedSet<Byte2ObjectMap.Entry<V>> implements Byte2ObjectSortedMap.FastSortedEntrySet<V> { private MapEntrySet() {}
-/*  910:     */    
-/*  911: 911 */    public ObjectBidirectionalIterator<Byte2ObjectMap.Entry<V>> iterator() { return new Byte2ObjectLinkedOpenHashMap.EntryIterator(Byte2ObjectLinkedOpenHashMap.this); }
-/*  912:     */    
-/*  913: 913 */    public Comparator<? super Byte2ObjectMap.Entry<V>> comparator() { return null; }
-/*  914: 914 */    public ObjectSortedSet<Byte2ObjectMap.Entry<V>> subSet(Byte2ObjectMap.Entry<V> fromElement, Byte2ObjectMap.Entry<V> toElement) { throw new UnsupportedOperationException(); }
-/*  915: 915 */    public ObjectSortedSet<Byte2ObjectMap.Entry<V>> headSet(Byte2ObjectMap.Entry<V> toElement) { throw new UnsupportedOperationException(); }
-/*  916: 916 */    public ObjectSortedSet<Byte2ObjectMap.Entry<V>> tailSet(Byte2ObjectMap.Entry<V> fromElement) { throw new UnsupportedOperationException(); }
-/*  917:     */    
-/*  918: 918 */    public Byte2ObjectMap.Entry<V> first() { if (Byte2ObjectLinkedOpenHashMap.this.size == 0) throw new NoSuchElementException();
-/*  919: 919 */      return new Byte2ObjectLinkedOpenHashMap.MapEntry(Byte2ObjectLinkedOpenHashMap.this, Byte2ObjectLinkedOpenHashMap.this.first);
-/*  920:     */    }
-/*  921:     */    
-/*  922: 922 */    public Byte2ObjectMap.Entry<V> last() { if (Byte2ObjectLinkedOpenHashMap.this.size == 0) throw new NoSuchElementException();
-/*  923: 923 */      return new Byte2ObjectLinkedOpenHashMap.MapEntry(Byte2ObjectLinkedOpenHashMap.this, Byte2ObjectLinkedOpenHashMap.this.last);
-/*  924:     */    }
-/*  925:     */    
-/*  926:     */    public boolean contains(Object o) {
-/*  927: 927 */      if (!(o instanceof Map.Entry)) return false;
-/*  928: 928 */      Map.Entry<Byte, V> e = (Map.Entry)o;
-/*  929: 929 */      byte k = ((Byte)e.getKey()).byteValue();
-/*  930:     */      
-/*  931: 931 */      int pos = HashCommon.murmurHash3(k) & Byte2ObjectLinkedOpenHashMap.this.mask;
-/*  932:     */      
-/*  933: 933 */      while (Byte2ObjectLinkedOpenHashMap.this.used[pos] != 0) {
-/*  934: 934 */        if (Byte2ObjectLinkedOpenHashMap.this.key[pos] == k) return Byte2ObjectLinkedOpenHashMap.this.value[pos] == null ? false : e.getValue() == null ? true : Byte2ObjectLinkedOpenHashMap.this.value[pos].equals(e.getValue());
-/*  935: 935 */        pos = pos + 1 & Byte2ObjectLinkedOpenHashMap.this.mask;
-/*  936:     */      }
-/*  937: 937 */      return false;
-/*  938:     */    }
-/*  939:     */    
-/*  940:     */    public boolean remove(Object o) {
-/*  941: 941 */      if (!(o instanceof Map.Entry)) return false;
-/*  942: 942 */      Map.Entry<Byte, V> e = (Map.Entry)o;
-/*  943: 943 */      byte k = ((Byte)e.getKey()).byteValue();
-/*  944:     */      
-/*  945: 945 */      int pos = HashCommon.murmurHash3(k) & Byte2ObjectLinkedOpenHashMap.this.mask;
-/*  946:     */      
-/*  947: 947 */      while (Byte2ObjectLinkedOpenHashMap.this.used[pos] != 0) {
-/*  948: 948 */        if (Byte2ObjectLinkedOpenHashMap.this.key[pos] == k) {
-/*  949: 949 */          Byte2ObjectLinkedOpenHashMap.this.remove(e.getKey());
-/*  950: 950 */          return true;
-/*  951:     */        }
-/*  952: 952 */        pos = pos + 1 & Byte2ObjectLinkedOpenHashMap.this.mask;
-/*  953:     */      }
-/*  954: 954 */      return false;
-/*  955:     */    }
-/*  956:     */    
-/*  957: 957 */    public int size() { return Byte2ObjectLinkedOpenHashMap.this.size; }
-/*  958:     */    
-/*  959:     */    public void clear() {
-/*  960: 960 */      Byte2ObjectLinkedOpenHashMap.this.clear();
-/*  961:     */    }
-/*  962:     */    
-/*  963: 963 */    public ObjectBidirectionalIterator<Byte2ObjectMap.Entry<V>> iterator(Byte2ObjectMap.Entry<V> from) { return new Byte2ObjectLinkedOpenHashMap.EntryIterator(Byte2ObjectLinkedOpenHashMap.this, ((Byte)from.getKey()).byteValue()); }
-/*  964:     */    
-/*  965:     */    public ObjectBidirectionalIterator<Byte2ObjectMap.Entry<V>> fastIterator() {
-/*  966: 966 */      return new Byte2ObjectLinkedOpenHashMap.FastEntryIterator(Byte2ObjectLinkedOpenHashMap.this);
-/*  967:     */    }
-/*  968:     */    
-/*  969: 969 */    public ObjectBidirectionalIterator<Byte2ObjectMap.Entry<V>> fastIterator(Byte2ObjectMap.Entry<V> from) { return new Byte2ObjectLinkedOpenHashMap.FastEntryIterator(Byte2ObjectLinkedOpenHashMap.this, ((Byte)from.getKey()).byteValue()); }
-/*  970:     */  }
-/*  971:     */  
-/*  972:     */  public Byte2ObjectSortedMap.FastSortedEntrySet<V> byte2ObjectEntrySet() {
-/*  973: 973 */    if (this.entries == null) this.entries = new MapEntrySet(null);
-/*  974: 974 */    return this.entries;
-/*  975:     */  }
-/*  976:     */  
-/*  979:     */  private final class KeyIterator
-/*  980:     */    extends Byte2ObjectLinkedOpenHashMap.MapIterator
-/*  981:     */    implements ByteListIterator
-/*  982:     */  {
-/*  983: 983 */    public KeyIterator(byte k) { super(k, null); }
-/*  984: 984 */    public byte previousByte() { return Byte2ObjectLinkedOpenHashMap.this.key[previousEntry()]; }
-/*  985: 985 */    public void set(byte k) { throw new UnsupportedOperationException(); }
-/*  986: 986 */    public void add(byte k) { throw new UnsupportedOperationException(); }
-/*  987: 987 */    public Byte previous() { return Byte.valueOf(Byte2ObjectLinkedOpenHashMap.this.key[previousEntry()]); }
-/*  988: 988 */    public void set(Byte ok) { throw new UnsupportedOperationException(); }
-/*  989: 989 */    public void add(Byte ok) { throw new UnsupportedOperationException(); }
-/*  990: 990 */    public KeyIterator() { super(null); }
-/*  991: 991 */    public byte nextByte() { return Byte2ObjectLinkedOpenHashMap.this.key[nextEntry()]; }
-/*  992: 992 */    public Byte next() { return Byte.valueOf(Byte2ObjectLinkedOpenHashMap.this.key[nextEntry()]); } }
-/*  993:     */  
-/*  994:     */  private final class KeySet extends AbstractByteSortedSet { private KeySet() {}
-/*  995:     */    
-/*  996: 996 */    public ByteListIterator iterator(byte from) { return new Byte2ObjectLinkedOpenHashMap.KeyIterator(Byte2ObjectLinkedOpenHashMap.this, from); }
-/*  997:     */    
-/*  998:     */    public ByteListIterator iterator() {
-/*  999: 999 */      return new Byte2ObjectLinkedOpenHashMap.KeyIterator(Byte2ObjectLinkedOpenHashMap.this);
-/* 1000:     */    }
-/* 1001:     */    
-/* 1002:1002 */    public int size() { return Byte2ObjectLinkedOpenHashMap.this.size; }
-/* 1003:     */    
-/* 1005:1005 */    public boolean contains(byte k) { return Byte2ObjectLinkedOpenHashMap.this.containsKey(k); }
-/* 1006:     */    
-/* 1007:     */    public boolean remove(byte k) {
-/* 1008:1008 */      int oldSize = Byte2ObjectLinkedOpenHashMap.this.size;
-/* 1009:1009 */      Byte2ObjectLinkedOpenHashMap.this.remove(k);
-/* 1010:1010 */      return Byte2ObjectLinkedOpenHashMap.this.size != oldSize;
-/* 1011:     */    }
-/* 1012:     */    
-/* 1013:1013 */    public void clear() { Byte2ObjectLinkedOpenHashMap.this.clear(); }
-/* 1014:     */    
-/* 1015:     */    public byte firstByte() {
-/* 1016:1016 */      if (Byte2ObjectLinkedOpenHashMap.this.size == 0) throw new NoSuchElementException();
-/* 1017:1017 */      return Byte2ObjectLinkedOpenHashMap.this.key[Byte2ObjectLinkedOpenHashMap.this.first];
-/* 1018:     */    }
-/* 1019:     */    
-/* 1020:1020 */    public byte lastByte() { if (Byte2ObjectLinkedOpenHashMap.this.size == 0) throw new NoSuchElementException();
-/* 1021:1021 */      return Byte2ObjectLinkedOpenHashMap.this.key[Byte2ObjectLinkedOpenHashMap.this.last]; }
-/* 1022:     */    
-/* 1023:1023 */    public ByteComparator comparator() { return null; }
-/* 1024:1024 */    public final ByteSortedSet tailSet(byte from) { throw new UnsupportedOperationException(); }
-/* 1025:1025 */    public final ByteSortedSet headSet(byte to) { throw new UnsupportedOperationException(); }
-/* 1026:1026 */    public final ByteSortedSet subSet(byte from, byte to) { throw new UnsupportedOperationException(); }
-/* 1027:     */  }
-/* 1028:     */  
-/* 1029:1029 */  public ByteSortedSet keySet() { if (this.keys == null) this.keys = new KeySet(null);
-/* 1030:1030 */    return this.keys;
-/* 1031:     */  }
-/* 1032:     */  
-/* 1035:     */  private final class ValueIterator
-/* 1036:     */    extends Byte2ObjectLinkedOpenHashMap<V>.MapIterator
-/* 1037:     */    implements ObjectListIterator<V>
-/* 1038:     */  {
-/* 1039:1039 */    public V previous() { return Byte2ObjectLinkedOpenHashMap.this.value[previousEntry()]; }
-/* 1040:1040 */    public void set(V v) { throw new UnsupportedOperationException(); }
-/* 1041:1041 */    public void add(V v) { throw new UnsupportedOperationException(); }
-/* 1042:1042 */    public ValueIterator() { super(null); }
-/* 1043:1043 */    public V next() { return Byte2ObjectLinkedOpenHashMap.this.value[nextEntry()]; }
-/* 1044:     */  }
-/* 1045:     */  
-/* 1046:1046 */  public ObjectCollection<V> values() { if (this.values == null) { this.values = new AbstractObjectCollection() {
-/* 1047:     */        public ObjectIterator<V> iterator() {
-/* 1048:1048 */          return new Byte2ObjectLinkedOpenHashMap.ValueIterator(Byte2ObjectLinkedOpenHashMap.this);
-/* 1049:     */        }
-/* 1050:     */        
-/* 1051:1051 */        public int size() { return Byte2ObjectLinkedOpenHashMap.this.size; }
-/* 1052:     */        
-/* 1053:     */        public boolean contains(Object v) {
-/* 1054:1054 */          return Byte2ObjectLinkedOpenHashMap.this.containsValue(v);
-/* 1055:     */        }
-/* 1056:     */        
-/* 1057:1057 */        public void clear() { Byte2ObjectLinkedOpenHashMap.this.clear(); }
-/* 1058:     */      };
-/* 1059:     */    }
-/* 1060:1060 */    return this.values;
-/* 1061:     */  }
-/* 1062:     */  
-/* 1071:     */  @Deprecated
-/* 1072:     */  public boolean rehash()
-/* 1073:     */  {
-/* 1074:1074 */    return true;
-/* 1075:     */  }
-/* 1076:     */  
-/* 1087:     */  public boolean trim()
-/* 1088:     */  {
-/* 1089:1089 */    int l = HashCommon.arraySize(this.size, this.f);
-/* 1090:1090 */    if (l >= this.n) return true;
-/* 1091:     */    try {
-/* 1092:1092 */      rehash(l);
-/* 1093:     */    } catch (OutOfMemoryError cantDoIt) {
-/* 1094:1094 */      return false; }
-/* 1095:1095 */    return true;
-/* 1096:     */  }
-/* 1097:     */  
-/* 1114:     */  public boolean trim(int n)
-/* 1115:     */  {
-/* 1116:1116 */    int l = HashCommon.nextPowerOfTwo((int)Math.ceil(n / this.f));
-/* 1117:1117 */    if (this.n <= l) return true;
-/* 1118:     */    try {
-/* 1119:1119 */      rehash(l);
-/* 1120:     */    } catch (OutOfMemoryError cantDoIt) {
-/* 1121:1121 */      return false; }
-/* 1122:1122 */    return true;
-/* 1123:     */  }
-/* 1124:     */  
-/* 1133:     */  protected void rehash(int newN)
-/* 1134:     */  {
-/* 1135:1135 */    int i = this.first;int prev = -1;int newPrev = -1;
-/* 1136:     */    
-/* 1137:1137 */    byte[] key = this.key;
-/* 1138:1138 */    V[] value = this.value;
-/* 1139:1139 */    int newMask = newN - 1;
-/* 1140:1140 */    byte[] newKey = new byte[newN];
-/* 1141:1141 */    V[] newValue = (Object[])new Object[newN];
-/* 1142:1142 */    boolean[] newUsed = new boolean[newN];
-/* 1143:1143 */    long[] link = this.link;
-/* 1144:1144 */    long[] newLink = new long[newN];
-/* 1145:1145 */    this.first = -1;
-/* 1146:1146 */    for (int j = this.size; j-- != 0;) {
-/* 1147:1147 */      byte k = key[i];
-/* 1148:1148 */      int pos = HashCommon.murmurHash3(k) & newMask;
-/* 1149:1149 */      while (newUsed[pos] != 0) pos = pos + 1 & newMask;
-/* 1150:1150 */      newUsed[pos] = true;
-/* 1151:1151 */      newKey[pos] = k;
-/* 1152:1152 */      newValue[pos] = value[i];
-/* 1153:1153 */      if (prev != -1) {
-/* 1154:1154 */        newLink[newPrev] ^= (newLink[newPrev] ^ pos & 0xFFFFFFFF) & 0xFFFFFFFF;
-/* 1155:1155 */        newLink[pos] ^= (newLink[pos] ^ (newPrev & 0xFFFFFFFF) << 32) & 0x0;
-/* 1156:1156 */        newPrev = pos;
-/* 1157:     */      }
-/* 1158:     */      else {
-/* 1159:1159 */        newPrev = this.first = pos;
-/* 1160:     */        
-/* 1161:1161 */        newLink[pos] = -1L;
-/* 1162:     */      }
-/* 1163:1163 */      int t = i;
-/* 1164:1164 */      i = (int)link[i];
-/* 1165:1165 */      prev = t;
-/* 1166:     */    }
-/* 1167:1167 */    this.n = newN;
-/* 1168:1168 */    this.mask = newMask;
-/* 1169:1169 */    this.maxFill = HashCommon.maxFill(this.n, this.f);
-/* 1170:1170 */    this.key = newKey;
-/* 1171:1171 */    this.value = newValue;
-/* 1172:1172 */    this.used = newUsed;
-/* 1173:1173 */    this.link = newLink;
-/* 1174:1174 */    this.last = newPrev;
-/* 1175:1175 */    if (newPrev != -1)
-/* 1176:     */    {
-/* 1177:1177 */      newLink[newPrev] |= 4294967295L;
-/* 1178:     */    }
-/* 1179:     */  }
-/* 1180:     */  
-/* 1183:     */  public Byte2ObjectLinkedOpenHashMap<V> clone()
-/* 1184:     */  {
-/* 1185:     */    Byte2ObjectLinkedOpenHashMap<V> c;
-/* 1186:     */    
-/* 1188:     */    try
-/* 1189:     */    {
-/* 1190:1190 */      c = (Byte2ObjectLinkedOpenHashMap)super.clone();
-/* 1191:     */    }
-/* 1192:     */    catch (CloneNotSupportedException cantHappen) {
-/* 1193:1193 */      throw new InternalError();
-/* 1194:     */    }
-/* 1195:1195 */    c.keys = null;
-/* 1196:1196 */    c.values = null;
-/* 1197:1197 */    c.entries = null;
-/* 1198:1198 */    c.key = ((byte[])this.key.clone());
-/* 1199:1199 */    c.value = ((Object[])this.value.clone());
-/* 1200:1200 */    c.used = ((boolean[])this.used.clone());
-/* 1201:1201 */    c.link = ((long[])this.link.clone());
-/* 1202:1202 */    return c;
-/* 1203:     */  }
-/* 1204:     */  
-/* 1212:     */  public int hashCode()
-/* 1213:     */  {
-/* 1214:1214 */    int h = 0;
-/* 1215:1215 */    int j = this.size;int i = 0; for (int t = 0; j-- != 0;) {
-/* 1216:1216 */      while (this.used[i] == 0) i++;
-/* 1217:1217 */      t = this.key[i];
-/* 1218:1218 */      if (this != this.value[i])
-/* 1219:1219 */        t ^= (this.value[i] == null ? 0 : this.value[i].hashCode());
-/* 1220:1220 */      h += t;
-/* 1221:1221 */      i++;
-/* 1222:     */    }
-/* 1223:1223 */    return h;
-/* 1224:     */  }
-/* 1225:     */  
-/* 1226:1226 */  private void writeObject(ObjectOutputStream s) throws IOException { byte[] key = this.key;
-/* 1227:1227 */    V[] value = this.value;
-/* 1228:1228 */    Byte2ObjectLinkedOpenHashMap<V>.MapIterator i = new MapIterator(null);
-/* 1229:1229 */    s.defaultWriteObject();
-/* 1230:1230 */    for (int j = this.size; j-- != 0;) {
-/* 1231:1231 */      int e = i.nextEntry();
-/* 1232:1232 */      s.writeByte(key[e]);
-/* 1233:1233 */      s.writeObject(value[e]);
-/* 1234:     */    }
-/* 1235:     */  }
-/* 1236:     */  
-/* 1237:     */  private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
-/* 1238:1238 */    s.defaultReadObject();
-/* 1239:1239 */    this.n = HashCommon.arraySize(this.size, this.f);
-/* 1240:1240 */    this.maxFill = HashCommon.maxFill(this.n, this.f);
-/* 1241:1241 */    this.mask = (this.n - 1);
-/* 1242:1242 */    byte[] key = this.key = new byte[this.n];
-/* 1243:1243 */    V[] value = this.value = (Object[])new Object[this.n];
-/* 1244:1244 */    boolean[] used = this.used = new boolean[this.n];
-/* 1245:1245 */    long[] link = this.link = new long[this.n];
-/* 1246:1246 */    int prev = -1;
-/* 1247:1247 */    this.first = (this.last = -1);
-/* 1248:     */    
-/* 1250:1250 */    int i = this.size; for (int pos = 0; i-- != 0;) {
-/* 1251:1251 */      byte k = s.readByte();
-/* 1252:1252 */      V v = s.readObject();
-/* 1253:1253 */      pos = HashCommon.murmurHash3(k) & this.mask;
-/* 1254:1254 */      while (used[pos] != 0) pos = pos + 1 & this.mask;
-/* 1255:1255 */      used[pos] = true;
-/* 1256:1256 */      key[pos] = k;
-/* 1257:1257 */      value[pos] = v;
-/* 1258:1258 */      if (this.first != -1) {
-/* 1259:1259 */        link[prev] ^= (link[prev] ^ pos & 0xFFFFFFFF) & 0xFFFFFFFF;
-/* 1260:1260 */        link[pos] ^= (link[pos] ^ (prev & 0xFFFFFFFF) << 32) & 0x0;
-/* 1261:1261 */        prev = pos;
-/* 1262:     */      }
-/* 1263:     */      else {
-/* 1264:1264 */        prev = this.first = pos;
-/* 1265:     */        
-/* 1266:1266 */        link[pos] |= -4294967296L;
-/* 1267:     */      }
-/* 1268:     */    }
-/* 1269:1269 */    this.last = prev;
-/* 1270:1270 */    if (prev != -1)
-/* 1271:     */    {
-/* 1272:1272 */      link[prev] |= 4294967295L;
-/* 1273:     */    }
-/* 1274:     */  }
-/* 1275:     */  
-/* 1276:     */  private void checkTable() {}
-/* 1277:     */}
+package it.unimi.dsi.fastutil.bytes;
+
+import it.unimi.dsi.fastutil.Hash;
+import it.unimi.dsi.fastutil.HashCommon;
+import it.unimi.dsi.fastutil.booleans.BooleanArrays;
+import it.unimi.dsi.fastutil.objects.AbstractObjectCollection;
+import it.unimi.dsi.fastutil.objects.AbstractObjectSortedSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrays;
+import it.unimi.dsi.fastutil.objects.ObjectBidirectionalIterator;
+import it.unimi.dsi.fastutil.objects.ObjectCollection;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
+import it.unimi.dsi.fastutil.objects.ObjectListIterator;
+import it.unimi.dsi.fastutil.objects.ObjectSortedSet;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.NoSuchElementException;
+
+public class Byte2ObjectLinkedOpenHashMap<V>
+  extends AbstractByte2ObjectSortedMap<V>
+  implements Serializable, Cloneable, Hash
+{
+  public static final long serialVersionUID = 0L;
+  private static final boolean ASSERTS = false;
+  protected transient byte[] key;
+  protected transient V[] value;
+  protected transient boolean[] used;
+  protected final float field_48;
+  protected transient int field_49;
+  protected transient int maxFill;
+  protected transient int mask;
+  protected int size;
+  protected volatile transient Byte2ObjectSortedMap.FastSortedEntrySet<V> entries;
+  protected volatile transient ByteSortedSet keys;
+  protected volatile transient ObjectCollection<V> values;
+  protected transient int first = -1;
+  protected transient int last = -1;
+  protected transient long[] link;
+  
+  public Byte2ObjectLinkedOpenHashMap(int expected, float local_f)
+  {
+    if ((local_f <= 0.0F) || (local_f > 1.0F)) {
+      throw new IllegalArgumentException("Load factor must be greater than 0 and smaller than or equal to 1");
+    }
+    if (expected < 0) {
+      throw new IllegalArgumentException("The expected number of elements must be nonnegative");
+    }
+    this.field_48 = local_f;
+    this.field_49 = HashCommon.arraySize(expected, local_f);
+    this.mask = (this.field_49 - 1);
+    this.maxFill = HashCommon.maxFill(this.field_49, local_f);
+    this.key = new byte[this.field_49];
+    this.value = ((Object[])new Object[this.field_49]);
+    this.used = new boolean[this.field_49];
+    this.link = new long[this.field_49];
+  }
+  
+  public Byte2ObjectLinkedOpenHashMap(int expected)
+  {
+    this(expected, 0.75F);
+  }
+  
+  public Byte2ObjectLinkedOpenHashMap()
+  {
+    this(16, 0.75F);
+  }
+  
+  public Byte2ObjectLinkedOpenHashMap(Map<? extends Byte, ? extends V> local_m, float local_f)
+  {
+    this(local_m.size(), local_f);
+    putAll(local_m);
+  }
+  
+  public Byte2ObjectLinkedOpenHashMap(Map<? extends Byte, ? extends V> local_m)
+  {
+    this(local_m, 0.75F);
+  }
+  
+  public Byte2ObjectLinkedOpenHashMap(Byte2ObjectMap<V> local_m, float local_f)
+  {
+    this(local_m.size(), local_f);
+    putAll(local_m);
+  }
+  
+  public Byte2ObjectLinkedOpenHashMap(Byte2ObjectMap<V> local_m)
+  {
+    this(local_m, 0.75F);
+  }
+  
+  public Byte2ObjectLinkedOpenHashMap(byte[] local_k, V[] local_v, float local_f)
+  {
+    this(local_k.length, local_f);
+    if (local_k.length != local_v.length) {
+      throw new IllegalArgumentException("The key array and the value array have different lengths (" + local_k.length + " and " + local_v.length + ")");
+    }
+    for (int local_i = 0; local_i < local_k.length; local_i++) {
+      put(local_k[local_i], local_v[local_i]);
+    }
+  }
+  
+  public Byte2ObjectLinkedOpenHashMap(byte[] local_k, V[] local_v)
+  {
+    this(local_k, local_v, 0.75F);
+  }
+  
+  public V put(byte local_k, V local_v)
+  {
+    for (int pos = HashCommon.murmurHash3(local_k) & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask) {
+      if (this.key[pos] == local_k)
+      {
+        V oldValue = this.value[pos];
+        this.value[pos] = local_v;
+        return oldValue;
+      }
+    }
+    this.used[pos] = true;
+    this.key[pos] = local_k;
+    this.value[pos] = local_v;
+    if (this.size == 0)
+    {
+      this.first = (this.last = pos);
+      this.link[pos] = -1L;
+    }
+    else
+    {
+      this.link[this.last] ^= (this.link[this.last] ^ pos & 0xFFFFFFFF) & 0xFFFFFFFF;
+      this.link[pos] = ((this.last & 0xFFFFFFFF) << 32 | 0xFFFFFFFF);
+      this.last = pos;
+    }
+    if (++this.size >= this.maxFill) {
+      rehash(HashCommon.arraySize(this.size + 1, this.field_48));
+    }
+    return this.defRetValue;
+  }
+  
+  public V put(Byte local_ok, V local_ov)
+  {
+    V local_v = local_ov;
+    byte local_k = local_ok.byteValue();
+    for (int pos = HashCommon.murmurHash3(local_k) & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask) {
+      if (this.key[pos] == local_k)
+      {
+        V oldValue = this.value[pos];
+        this.value[pos] = local_v;
+        return oldValue;
+      }
+    }
+    this.used[pos] = true;
+    this.key[pos] = local_k;
+    this.value[pos] = local_v;
+    if (this.size == 0)
+    {
+      this.first = (this.last = pos);
+      this.link[pos] = -1L;
+    }
+    else
+    {
+      this.link[this.last] ^= (this.link[this.last] ^ pos & 0xFFFFFFFF) & 0xFFFFFFFF;
+      this.link[pos] = ((this.last & 0xFFFFFFFF) << 32 | 0xFFFFFFFF);
+      this.last = pos;
+    }
+    if (++this.size >= this.maxFill) {
+      rehash(HashCommon.arraySize(this.size + 1, this.field_48));
+    }
+    return this.defRetValue;
+  }
+  
+  protected final int shiftKeys(int pos)
+  {
+    int last;
+    for (;;)
+    {
+      for (pos = (last = pos) + 1 & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask)
+      {
+        int slot = HashCommon.murmurHash3(this.key[pos]) & this.mask;
+        if (last <= pos ? (last < slot) && (slot <= pos) : (last >= slot) && (slot > pos)) {
+          break;
+        }
+      }
+      if (this.used[pos] == 0) {
+        break;
+      }
+      this.key[last] = this.key[pos];
+      this.value[last] = this.value[pos];
+      fixPointers(pos, last);
+    }
+    this.used[last] = false;
+    this.value[last] = null;
+    return last;
+  }
+  
+  public V remove(byte local_k)
+  {
+    for (int pos = HashCommon.murmurHash3(local_k) & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask) {
+      if (this.key[pos] == local_k)
+      {
+        this.size -= 1;
+        fixPointers(pos);
+        V local_v = this.value[pos];
+        shiftKeys(pos);
+        return local_v;
+      }
+    }
+    return this.defRetValue;
+  }
+  
+  public V remove(Object local_ok)
+  {
+    byte local_k = ((Byte)local_ok).byteValue();
+    for (int pos = HashCommon.murmurHash3(local_k) & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask) {
+      if (this.key[pos] == local_k)
+      {
+        this.size -= 1;
+        fixPointers(pos);
+        V local_v = this.value[pos];
+        shiftKeys(pos);
+        return local_v;
+      }
+    }
+    return this.defRetValue;
+  }
+  
+  public V removeFirst()
+  {
+    if (this.size == 0) {
+      throw new NoSuchElementException();
+    }
+    this.size -= 1;
+    int pos = this.first;
+    this.first = ((int)this.link[pos]);
+    if (0 <= this.first) {
+      this.link[this.first] |= -4294967296L;
+    }
+    V local_v = this.value[pos];
+    shiftKeys(pos);
+    return local_v;
+  }
+  
+  public V removeLast()
+  {
+    if (this.size == 0) {
+      throw new NoSuchElementException();
+    }
+    this.size -= 1;
+    int pos = this.last;
+    this.last = ((int)(this.link[pos] >>> 32));
+    if (0 <= this.last) {
+      this.link[this.last] |= 4294967295L;
+    }
+    V local_v = this.value[pos];
+    shiftKeys(pos);
+    return local_v;
+  }
+  
+  private void moveIndexToFirst(int local_i)
+  {
+    if ((this.size == 1) || (this.first == local_i)) {
+      return;
+    }
+    if (this.last == local_i)
+    {
+      this.last = ((int)(this.link[local_i] >>> 32));
+      this.link[this.last] |= 4294967295L;
+    }
+    else
+    {
+      long linki = this.link[local_i];
+      int prev = (int)(linki >>> 32);
+      int next = (int)linki;
+      this.link[prev] ^= (this.link[prev] ^ linki & 0xFFFFFFFF) & 0xFFFFFFFF;
+      this.link[next] ^= (this.link[next] ^ linki & 0x0) & 0x0;
+    }
+    this.link[this.first] ^= (this.link[this.first] ^ (local_i & 0xFFFFFFFF) << 32) & 0x0;
+    this.link[local_i] = (0x0 | this.first & 0xFFFFFFFF);
+    this.first = local_i;
+  }
+  
+  private void moveIndexToLast(int local_i)
+  {
+    if ((this.size == 1) || (this.last == local_i)) {
+      return;
+    }
+    if (this.first == local_i)
+    {
+      this.first = ((int)this.link[local_i]);
+      this.link[this.first] |= -4294967296L;
+    }
+    else
+    {
+      long linki = this.link[local_i];
+      int prev = (int)(linki >>> 32);
+      int next = (int)linki;
+      this.link[prev] ^= (this.link[prev] ^ linki & 0xFFFFFFFF) & 0xFFFFFFFF;
+      this.link[next] ^= (this.link[next] ^ linki & 0x0) & 0x0;
+    }
+    this.link[this.last] ^= (this.link[this.last] ^ local_i & 0xFFFFFFFF) & 0xFFFFFFFF;
+    this.link[local_i] = ((this.last & 0xFFFFFFFF) << 32 | 0xFFFFFFFF);
+    this.last = local_i;
+  }
+  
+  public V getAndMoveToFirst(byte local_k)
+  {
+    byte[] key = this.key;
+    boolean[] used = this.used;
+    int mask = this.mask;
+    for (int pos = HashCommon.murmurHash3(local_k) & mask; used[pos] != 0; pos = pos + 1 & mask) {
+      if (local_k == key[pos])
+      {
+        moveIndexToFirst(pos);
+        return this.value[pos];
+      }
+    }
+    return this.defRetValue;
+  }
+  
+  public V getAndMoveToLast(byte local_k)
+  {
+    byte[] key = this.key;
+    boolean[] used = this.used;
+    int mask = this.mask;
+    for (int pos = HashCommon.murmurHash3(local_k) & mask; used[pos] != 0; pos = pos + 1 & mask) {
+      if (local_k == key[pos])
+      {
+        moveIndexToLast(pos);
+        return this.value[pos];
+      }
+    }
+    return this.defRetValue;
+  }
+  
+  public V putAndMoveToFirst(byte local_k, V local_v)
+  {
+    byte[] key = this.key;
+    boolean[] used = this.used;
+    int mask = this.mask;
+    for (int pos = HashCommon.murmurHash3(local_k) & mask; used[pos] != 0; pos = pos + 1 & mask) {
+      if (local_k == key[pos])
+      {
+        V oldValue = this.value[pos];
+        this.value[pos] = local_v;
+        moveIndexToFirst(pos);
+        return oldValue;
+      }
+    }
+    used[pos] = true;
+    key[pos] = local_k;
+    this.value[pos] = local_v;
+    if (this.size == 0)
+    {
+      this.first = (this.last = pos);
+      this.link[pos] = -1L;
+    }
+    else
+    {
+      this.link[this.first] ^= (this.link[this.first] ^ (pos & 0xFFFFFFFF) << 32) & 0x0;
+      this.link[pos] = (0x0 | this.first & 0xFFFFFFFF);
+      this.first = pos;
+    }
+    if (++this.size >= this.maxFill) {
+      rehash(HashCommon.arraySize(this.size, this.field_48));
+    }
+    return this.defRetValue;
+  }
+  
+  public V putAndMoveToLast(byte local_k, V local_v)
+  {
+    byte[] key = this.key;
+    boolean[] used = this.used;
+    int mask = this.mask;
+    for (int pos = HashCommon.murmurHash3(local_k) & mask; used[pos] != 0; pos = pos + 1 & mask) {
+      if (local_k == key[pos])
+      {
+        V oldValue = this.value[pos];
+        this.value[pos] = local_v;
+        moveIndexToLast(pos);
+        return oldValue;
+      }
+    }
+    used[pos] = true;
+    key[pos] = local_k;
+    this.value[pos] = local_v;
+    if (this.size == 0)
+    {
+      this.first = (this.last = pos);
+      this.link[pos] = -1L;
+    }
+    else
+    {
+      this.link[this.last] ^= (this.link[this.last] ^ pos & 0xFFFFFFFF) & 0xFFFFFFFF;
+      this.link[pos] = ((this.last & 0xFFFFFFFF) << 32 | 0xFFFFFFFF);
+      this.last = pos;
+    }
+    if (++this.size >= this.maxFill) {
+      rehash(HashCommon.arraySize(this.size, this.field_48));
+    }
+    return this.defRetValue;
+  }
+  
+  public V get(Byte local_ok)
+  {
+    byte local_k = local_ok.byteValue();
+    for (int pos = HashCommon.murmurHash3(local_k) & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask) {
+      if (this.key[pos] == local_k) {
+        return this.value[pos];
+      }
+    }
+    return this.defRetValue;
+  }
+  
+  public V get(byte local_k)
+  {
+    for (int pos = HashCommon.murmurHash3(local_k) & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask) {
+      if (this.key[pos] == local_k) {
+        return this.value[pos];
+      }
+    }
+    return this.defRetValue;
+  }
+  
+  public boolean containsKey(byte local_k)
+  {
+    for (int pos = HashCommon.murmurHash3(local_k) & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask) {
+      if (this.key[pos] == local_k) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  public boolean containsValue(Object local_v)
+  {
+    V[] value = this.value;
+    boolean[] used = this.used;
+    int local_i = this.field_49;
+    while (local_i-- != 0) {
+      if ((used[local_i] != 0) && (value[local_i] == null ? local_v == null : value[local_i].equals(local_v))) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  public void clear()
+  {
+    if (this.size == 0) {
+      return;
+    }
+    this.size = 0;
+    BooleanArrays.fill(this.used, false);
+    ObjectArrays.fill(this.value, null);
+    this.first = (this.last = -1);
+  }
+  
+  public int size()
+  {
+    return this.size;
+  }
+  
+  public boolean isEmpty()
+  {
+    return this.size == 0;
+  }
+  
+  @Deprecated
+  public void growthFactor(int growthFactor) {}
+  
+  @Deprecated
+  public int growthFactor()
+  {
+    return 16;
+  }
+  
+  protected void fixPointers(int local_i)
+  {
+    if (this.size == 0)
+    {
+      this.first = (this.last = -1);
+      return;
+    }
+    if (this.first == local_i)
+    {
+      this.first = ((int)this.link[local_i]);
+      if (0 <= this.first) {
+        this.link[this.first] |= -4294967296L;
+      }
+      return;
+    }
+    if (this.last == local_i)
+    {
+      this.last = ((int)(this.link[local_i] >>> 32));
+      if (0 <= this.last) {
+        this.link[this.last] |= 4294967295L;
+      }
+      return;
+    }
+    long linki = this.link[local_i];
+    int prev = (int)(linki >>> 32);
+    int next = (int)linki;
+    this.link[prev] ^= (this.link[prev] ^ linki & 0xFFFFFFFF) & 0xFFFFFFFF;
+    this.link[next] ^= (this.link[next] ^ linki & 0x0) & 0x0;
+  }
+  
+  protected void fixPointers(int local_s, int local_d)
+  {
+    if (this.size == 1)
+    {
+      this.first = (this.last = local_d);
+      this.link[local_d] = -1L;
+      return;
+    }
+    if (this.first == local_s)
+    {
+      this.first = local_d;
+      this.link[((int)this.link[local_s])] ^= (this.link[((int)this.link[local_s])] ^ (local_d & 0xFFFFFFFF) << 32) & 0x0;
+      this.link[local_d] = this.link[local_s];
+      return;
+    }
+    if (this.last == local_s)
+    {
+      this.last = local_d;
+      this.link[((int)(this.link[local_s] >>> 32))] ^= (this.link[((int)(this.link[local_s] >>> 32))] ^ local_d & 0xFFFFFFFF) & 0xFFFFFFFF;
+      this.link[local_d] = this.link[local_s];
+      return;
+    }
+    long links = this.link[local_s];
+    int prev = (int)(links >>> 32);
+    int next = (int)links;
+    this.link[prev] ^= (this.link[prev] ^ local_d & 0xFFFFFFFF) & 0xFFFFFFFF;
+    this.link[next] ^= (this.link[next] ^ (local_d & 0xFFFFFFFF) << 32) & 0x0;
+    this.link[local_d] = links;
+  }
+  
+  public byte firstByteKey()
+  {
+    if (this.size == 0) {
+      throw new NoSuchElementException();
+    }
+    return this.key[this.first];
+  }
+  
+  public byte lastByteKey()
+  {
+    if (this.size == 0) {
+      throw new NoSuchElementException();
+    }
+    return this.key[this.last];
+  }
+  
+  public ByteComparator comparator()
+  {
+    return null;
+  }
+  
+  public Byte2ObjectSortedMap<V> tailMap(byte from)
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  public Byte2ObjectSortedMap<V> headMap(byte local_to)
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  public Byte2ObjectSortedMap<V> subMap(byte from, byte local_to)
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  public Byte2ObjectSortedMap.FastSortedEntrySet<V> byte2ObjectEntrySet()
+  {
+    if (this.entries == null) {
+      this.entries = new MapEntrySet(null);
+    }
+    return this.entries;
+  }
+  
+  public ByteSortedSet keySet()
+  {
+    if (this.keys == null) {
+      this.keys = new KeySet(null);
+    }
+    return this.keys;
+  }
+  
+  public ObjectCollection<V> values()
+  {
+    if (this.values == null) {
+      this.values = new AbstractObjectCollection()
+      {
+        public ObjectIterator<V> iterator()
+        {
+          return new Byte2ObjectLinkedOpenHashMap.ValueIterator(Byte2ObjectLinkedOpenHashMap.this);
+        }
+        
+        public int size()
+        {
+          return Byte2ObjectLinkedOpenHashMap.this.size;
+        }
+        
+        public boolean contains(Object local_v)
+        {
+          return Byte2ObjectLinkedOpenHashMap.this.containsValue(local_v);
+        }
+        
+        public void clear()
+        {
+          Byte2ObjectLinkedOpenHashMap.this.clear();
+        }
+      };
+    }
+    return this.values;
+  }
+  
+  @Deprecated
+  public boolean rehash()
+  {
+    return true;
+  }
+  
+  public boolean trim()
+  {
+    int local_l = HashCommon.arraySize(this.size, this.field_48);
+    if (local_l >= this.field_49) {
+      return true;
+    }
+    try
+    {
+      rehash(local_l);
+    }
+    catch (OutOfMemoryError cantDoIt)
+    {
+      return false;
+    }
+    return true;
+  }
+  
+  public boolean trim(int local_n)
+  {
+    int local_l = HashCommon.nextPowerOfTwo((int)Math.ceil(local_n / this.field_48));
+    if (this.field_49 <= local_l) {
+      return true;
+    }
+    try
+    {
+      rehash(local_l);
+    }
+    catch (OutOfMemoryError cantDoIt)
+    {
+      return false;
+    }
+    return true;
+  }
+  
+  protected void rehash(int newN)
+  {
+    int local_i = this.first;
+    int prev = -1;
+    int newPrev = -1;
+    byte[] key = this.key;
+    V[] value = this.value;
+    int newMask = newN - 1;
+    byte[] newKey = new byte[newN];
+    V[] newValue = (Object[])new Object[newN];
+    boolean[] newUsed = new boolean[newN];
+    long[] link = this.link;
+    long[] newLink = new long[newN];
+    this.first = -1;
+    int local_j = this.size;
+    while (local_j-- != 0)
+    {
+      byte local_k = key[local_i];
+      for (int pos = HashCommon.murmurHash3(local_k) & newMask; newUsed[pos] != 0; pos = pos + 1 & newMask) {}
+      newUsed[pos] = true;
+      newKey[pos] = local_k;
+      newValue[pos] = value[local_i];
+      if (prev != -1)
+      {
+        newLink[newPrev] ^= (newLink[newPrev] ^ pos & 0xFFFFFFFF) & 0xFFFFFFFF;
+        newLink[pos] ^= (newLink[pos] ^ (newPrev & 0xFFFFFFFF) << 32) & 0x0;
+        newPrev = pos;
+      }
+      else
+      {
+        newPrev = this.first = pos;
+        newLink[pos] = -1L;
+      }
+      int local_t = local_i;
+      local_i = (int)link[local_i];
+      prev = local_t;
+    }
+    this.field_49 = newN;
+    this.mask = newMask;
+    this.maxFill = HashCommon.maxFill(this.field_49, this.field_48);
+    this.key = newKey;
+    this.value = newValue;
+    this.used = newUsed;
+    this.link = newLink;
+    this.last = newPrev;
+    if (newPrev != -1) {
+      newLink[newPrev] |= 4294967295L;
+    }
+  }
+  
+  public Byte2ObjectLinkedOpenHashMap<V> clone()
+  {
+    Byte2ObjectLinkedOpenHashMap<V> local_c;
+    try
+    {
+      local_c = (Byte2ObjectLinkedOpenHashMap)super.clone();
+    }
+    catch (CloneNotSupportedException cantHappen)
+    {
+      throw new InternalError();
+    }
+    local_c.keys = null;
+    local_c.values = null;
+    local_c.entries = null;
+    local_c.key = ((byte[])this.key.clone());
+    local_c.value = ((Object[])this.value.clone());
+    local_c.used = ((boolean[])this.used.clone());
+    local_c.link = ((long[])this.link.clone());
+    return local_c;
+  }
+  
+  public int hashCode()
+  {
+    int local_h = 0;
+    int local_j = this.size;
+    int local_i = 0;
+    int local_t = 0;
+    while (local_j-- != 0)
+    {
+      while (this.used[local_i] == 0) {
+        local_i++;
+      }
+      local_t = this.key[local_i];
+      if (this != this.value[local_i]) {
+        local_t ^= (this.value[local_i] == null ? 0 : this.value[local_i].hashCode());
+      }
+      local_h += local_t;
+      local_i++;
+    }
+    return local_h;
+  }
+  
+  private void writeObject(ObjectOutputStream local_s)
+    throws IOException
+  {
+    byte[] key = this.key;
+    V[] value = this.value;
+    Byte2ObjectLinkedOpenHashMap<V>.MapIterator local_i = new MapIterator(null);
+    local_s.defaultWriteObject();
+    int local_j = this.size;
+    while (local_j-- != 0)
+    {
+      int local_e = local_i.nextEntry();
+      local_s.writeByte(key[local_e]);
+      local_s.writeObject(value[local_e]);
+    }
+  }
+  
+  private void readObject(ObjectInputStream local_s)
+    throws IOException, ClassNotFoundException
+  {
+    local_s.defaultReadObject();
+    this.field_49 = HashCommon.arraySize(this.size, this.field_48);
+    this.maxFill = HashCommon.maxFill(this.field_49, this.field_48);
+    this.mask = (this.field_49 - 1);
+    byte[] key = this.key = new byte[this.field_49];
+    V[] value = this.value = (Object[])new Object[this.field_49];
+    boolean[] used = this.used = new boolean[this.field_49];
+    long[] link = this.link = new long[this.field_49];
+    int prev = -1;
+    this.first = (this.last = -1);
+    int local_i = this.size;
+    int pos = 0;
+    while (local_i-- != 0)
+    {
+      byte local_k = local_s.readByte();
+      V local_v = local_s.readObject();
+      for (pos = HashCommon.murmurHash3(local_k) & this.mask; used[pos] != 0; pos = pos + 1 & this.mask) {}
+      used[pos] = true;
+      key[pos] = local_k;
+      value[pos] = local_v;
+      if (this.first != -1)
+      {
+        link[prev] ^= (link[prev] ^ pos & 0xFFFFFFFF) & 0xFFFFFFFF;
+        link[pos] ^= (link[pos] ^ (prev & 0xFFFFFFFF) << 32) & 0x0;
+        prev = pos;
+      }
+      else
+      {
+        prev = this.first = pos;
+        link[pos] |= -4294967296L;
+      }
+    }
+    this.last = prev;
+    if (prev != -1) {
+      link[prev] |= 4294967295L;
+    }
+  }
+  
+  private void checkTable() {}
+  
+  private final class ValueIterator
+    extends Byte2ObjectLinkedOpenHashMap<V>.MapIterator
+    implements ObjectListIterator<V>
+  {
+    public V previous()
+    {
+      return Byte2ObjectLinkedOpenHashMap.this.value[previousEntry()];
+    }
+    
+    public void set(V local_v)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public void add(V local_v)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public ValueIterator()
+    {
+      super(null);
+    }
+    
+    public V next()
+    {
+      return Byte2ObjectLinkedOpenHashMap.this.value[nextEntry()];
+    }
+  }
+  
+  private final class KeySet
+    extends AbstractByteSortedSet
+  {
+    private KeySet() {}
+    
+    public ByteListIterator iterator(byte from)
+    {
+      return new Byte2ObjectLinkedOpenHashMap.KeyIterator(Byte2ObjectLinkedOpenHashMap.this, from);
+    }
+    
+    public ByteListIterator iterator()
+    {
+      return new Byte2ObjectLinkedOpenHashMap.KeyIterator(Byte2ObjectLinkedOpenHashMap.this);
+    }
+    
+    public int size()
+    {
+      return Byte2ObjectLinkedOpenHashMap.this.size;
+    }
+    
+    public boolean contains(byte local_k)
+    {
+      return Byte2ObjectLinkedOpenHashMap.this.containsKey(local_k);
+    }
+    
+    public boolean remove(byte local_k)
+    {
+      int oldSize = Byte2ObjectLinkedOpenHashMap.this.size;
+      Byte2ObjectLinkedOpenHashMap.this.remove(local_k);
+      return Byte2ObjectLinkedOpenHashMap.this.size != oldSize;
+    }
+    
+    public void clear()
+    {
+      Byte2ObjectLinkedOpenHashMap.this.clear();
+    }
+    
+    public byte firstByte()
+    {
+      if (Byte2ObjectLinkedOpenHashMap.this.size == 0) {
+        throw new NoSuchElementException();
+      }
+      return Byte2ObjectLinkedOpenHashMap.this.key[Byte2ObjectLinkedOpenHashMap.this.first];
+    }
+    
+    public byte lastByte()
+    {
+      if (Byte2ObjectLinkedOpenHashMap.this.size == 0) {
+        throw new NoSuchElementException();
+      }
+      return Byte2ObjectLinkedOpenHashMap.this.key[Byte2ObjectLinkedOpenHashMap.this.last];
+    }
+    
+    public ByteComparator comparator()
+    {
+      return null;
+    }
+    
+    public final ByteSortedSet tailSet(byte from)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public final ByteSortedSet headSet(byte local_to)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public final ByteSortedSet subSet(byte from, byte local_to)
+    {
+      throw new UnsupportedOperationException();
+    }
+  }
+  
+  private final class KeyIterator
+    extends Byte2ObjectLinkedOpenHashMap.MapIterator
+    implements ByteListIterator
+  {
+    public KeyIterator(byte local_k)
+    {
+      super(local_k, null);
+    }
+    
+    public byte previousByte()
+    {
+      return Byte2ObjectLinkedOpenHashMap.this.key[previousEntry()];
+    }
+    
+    public void set(byte local_k)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public void add(byte local_k)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public Byte previous()
+    {
+      return Byte.valueOf(Byte2ObjectLinkedOpenHashMap.this.key[previousEntry()]);
+    }
+    
+    public void set(Byte local_ok)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public void add(Byte local_ok)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public KeyIterator()
+    {
+      super(null);
+    }
+    
+    public byte nextByte()
+    {
+      return Byte2ObjectLinkedOpenHashMap.this.key[nextEntry()];
+    }
+    
+    public Byte next()
+    {
+      return Byte.valueOf(Byte2ObjectLinkedOpenHashMap.this.key[nextEntry()]);
+    }
+  }
+  
+  private final class MapEntrySet
+    extends AbstractObjectSortedSet<Byte2ObjectMap.Entry<V>>
+    implements Byte2ObjectSortedMap.FastSortedEntrySet<V>
+  {
+    private MapEntrySet() {}
+    
+    public ObjectBidirectionalIterator<Byte2ObjectMap.Entry<V>> iterator()
+    {
+      return new Byte2ObjectLinkedOpenHashMap.EntryIterator(Byte2ObjectLinkedOpenHashMap.this);
+    }
+    
+    public Comparator<? super Byte2ObjectMap.Entry<V>> comparator()
+    {
+      return null;
+    }
+    
+    public ObjectSortedSet<Byte2ObjectMap.Entry<V>> subSet(Byte2ObjectMap.Entry<V> fromElement, Byte2ObjectMap.Entry<V> toElement)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public ObjectSortedSet<Byte2ObjectMap.Entry<V>> headSet(Byte2ObjectMap.Entry<V> toElement)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public ObjectSortedSet<Byte2ObjectMap.Entry<V>> tailSet(Byte2ObjectMap.Entry<V> fromElement)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public Byte2ObjectMap.Entry<V> first()
+    {
+      if (Byte2ObjectLinkedOpenHashMap.this.size == 0) {
+        throw new NoSuchElementException();
+      }
+      return new Byte2ObjectLinkedOpenHashMap.MapEntry(Byte2ObjectLinkedOpenHashMap.this, Byte2ObjectLinkedOpenHashMap.this.first);
+    }
+    
+    public Byte2ObjectMap.Entry<V> last()
+    {
+      if (Byte2ObjectLinkedOpenHashMap.this.size == 0) {
+        throw new NoSuchElementException();
+      }
+      return new Byte2ObjectLinkedOpenHashMap.MapEntry(Byte2ObjectLinkedOpenHashMap.this, Byte2ObjectLinkedOpenHashMap.this.last);
+    }
+    
+    public boolean contains(Object local_o)
+    {
+      if (!(local_o instanceof Map.Entry)) {
+        return false;
+      }
+      Map.Entry<Byte, V> local_e = (Map.Entry)local_o;
+      byte local_k = ((Byte)local_e.getKey()).byteValue();
+      for (int pos = HashCommon.murmurHash3(local_k) & Byte2ObjectLinkedOpenHashMap.this.mask; Byte2ObjectLinkedOpenHashMap.this.used[pos] != 0; pos = pos + 1 & Byte2ObjectLinkedOpenHashMap.this.mask) {
+        if (Byte2ObjectLinkedOpenHashMap.this.key[pos] == local_k) {
+          return Byte2ObjectLinkedOpenHashMap.this.value[pos] == null ? false : local_e.getValue() == null ? true : Byte2ObjectLinkedOpenHashMap.this.value[pos].equals(local_e.getValue());
+        }
+      }
+      return false;
+    }
+    
+    public boolean remove(Object local_o)
+    {
+      if (!(local_o instanceof Map.Entry)) {
+        return false;
+      }
+      Map.Entry<Byte, V> local_e = (Map.Entry)local_o;
+      byte local_k = ((Byte)local_e.getKey()).byteValue();
+      for (int pos = HashCommon.murmurHash3(local_k) & Byte2ObjectLinkedOpenHashMap.this.mask; Byte2ObjectLinkedOpenHashMap.this.used[pos] != 0; pos = pos + 1 & Byte2ObjectLinkedOpenHashMap.this.mask) {
+        if (Byte2ObjectLinkedOpenHashMap.this.key[pos] == local_k)
+        {
+          Byte2ObjectLinkedOpenHashMap.this.remove(local_e.getKey());
+          return true;
+        }
+      }
+      return false;
+    }
+    
+    public int size()
+    {
+      return Byte2ObjectLinkedOpenHashMap.this.size;
+    }
+    
+    public void clear()
+    {
+      Byte2ObjectLinkedOpenHashMap.this.clear();
+    }
+    
+    public ObjectBidirectionalIterator<Byte2ObjectMap.Entry<V>> iterator(Byte2ObjectMap.Entry<V> from)
+    {
+      return new Byte2ObjectLinkedOpenHashMap.EntryIterator(Byte2ObjectLinkedOpenHashMap.this, ((Byte)from.getKey()).byteValue());
+    }
+    
+    public ObjectBidirectionalIterator<Byte2ObjectMap.Entry<V>> fastIterator()
+    {
+      return new Byte2ObjectLinkedOpenHashMap.FastEntryIterator(Byte2ObjectLinkedOpenHashMap.this);
+    }
+    
+    public ObjectBidirectionalIterator<Byte2ObjectMap.Entry<V>> fastIterator(Byte2ObjectMap.Entry<V> from)
+    {
+      return new Byte2ObjectLinkedOpenHashMap.FastEntryIterator(Byte2ObjectLinkedOpenHashMap.this, ((Byte)from.getKey()).byteValue());
+    }
+  }
+  
+  private class FastEntryIterator
+    extends Byte2ObjectLinkedOpenHashMap<V>.MapIterator
+    implements ObjectListIterator<Byte2ObjectMap.Entry<V>>
+  {
+    final AbstractByte2ObjectMap.BasicEntry<V> entry = new AbstractByte2ObjectMap.BasicEntry((byte)0, null);
+    
+    public FastEntryIterator()
+    {
+      super(null);
+    }
+    
+    public FastEntryIterator(byte from)
+    {
+      super(from, null);
+    }
+    
+    public AbstractByte2ObjectMap.BasicEntry<V> next()
+    {
+      int local_e = nextEntry();
+      this.entry.key = Byte2ObjectLinkedOpenHashMap.this.key[local_e];
+      this.entry.value = Byte2ObjectLinkedOpenHashMap.this.value[local_e];
+      return this.entry;
+    }
+    
+    public AbstractByte2ObjectMap.BasicEntry<V> previous()
+    {
+      int local_e = previousEntry();
+      this.entry.key = Byte2ObjectLinkedOpenHashMap.this.key[local_e];
+      this.entry.value = Byte2ObjectLinkedOpenHashMap.this.value[local_e];
+      return this.entry;
+    }
+    
+    public void set(Byte2ObjectMap.Entry<V> local_ok)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public void add(Byte2ObjectMap.Entry<V> local_ok)
+    {
+      throw new UnsupportedOperationException();
+    }
+  }
+  
+  private class EntryIterator
+    extends Byte2ObjectLinkedOpenHashMap<V>.MapIterator
+    implements ObjectListIterator<Byte2ObjectMap.Entry<V>>
+  {
+    private Byte2ObjectLinkedOpenHashMap<V>.MapEntry entry;
+    
+    public EntryIterator()
+    {
+      super(null);
+    }
+    
+    public EntryIterator(byte from)
+    {
+      super(from, null);
+    }
+    
+    public Byte2ObjectLinkedOpenHashMap<V>.MapEntry next()
+    {
+      return this.entry = new Byte2ObjectLinkedOpenHashMap.MapEntry(Byte2ObjectLinkedOpenHashMap.this, nextEntry());
+    }
+    
+    public Byte2ObjectLinkedOpenHashMap<V>.MapEntry previous()
+    {
+      return this.entry = new Byte2ObjectLinkedOpenHashMap.MapEntry(Byte2ObjectLinkedOpenHashMap.this, previousEntry());
+    }
+    
+    public void remove()
+    {
+      super.remove();
+      Byte2ObjectLinkedOpenHashMap.MapEntry.access$202(this.entry, -1);
+    }
+    
+    public void set(Byte2ObjectMap.Entry<V> local_ok)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public void add(Byte2ObjectMap.Entry<V> local_ok)
+    {
+      throw new UnsupportedOperationException();
+    }
+  }
+  
+  private class MapIterator
+  {
+    int prev = -1;
+    int next = -1;
+    int curr = -1;
+    int index = -1;
+    
+    private MapIterator()
+    {
+      this.next = Byte2ObjectLinkedOpenHashMap.this.first;
+      this.index = 0;
+    }
+    
+    private MapIterator(byte from)
+    {
+      if (Byte2ObjectLinkedOpenHashMap.this.key[Byte2ObjectLinkedOpenHashMap.this.last] == from)
+      {
+        this.prev = Byte2ObjectLinkedOpenHashMap.this.last;
+        this.index = Byte2ObjectLinkedOpenHashMap.this.size;
+      }
+      else
+      {
+        for (int pos = HashCommon.murmurHash3(from) & Byte2ObjectLinkedOpenHashMap.this.mask; Byte2ObjectLinkedOpenHashMap.this.used[pos] != 0; pos = pos + 1 & Byte2ObjectLinkedOpenHashMap.this.mask) {
+          if (Byte2ObjectLinkedOpenHashMap.this.key[pos] == from)
+          {
+            this.next = ((int)Byte2ObjectLinkedOpenHashMap.this.link[pos]);
+            this.prev = pos;
+            return;
+          }
+        }
+        throw new NoSuchElementException("The key " + from + " does not belong to this map.");
+      }
+    }
+    
+    public boolean hasNext()
+    {
+      return this.next != -1;
+    }
+    
+    public boolean hasPrevious()
+    {
+      return this.prev != -1;
+    }
+    
+    private final void ensureIndexKnown()
+    {
+      if (this.index >= 0) {
+        return;
+      }
+      if (this.prev == -1)
+      {
+        this.index = 0;
+        return;
+      }
+      if (this.next == -1)
+      {
+        this.index = Byte2ObjectLinkedOpenHashMap.this.size;
+        return;
+      }
+      int pos = Byte2ObjectLinkedOpenHashMap.this.first;
+      for (this.index = 1; pos != this.prev; this.index += 1) {
+        pos = (int)Byte2ObjectLinkedOpenHashMap.this.link[pos];
+      }
+    }
+    
+    public int nextIndex()
+    {
+      ensureIndexKnown();
+      return this.index;
+    }
+    
+    public int previousIndex()
+    {
+      ensureIndexKnown();
+      return this.index - 1;
+    }
+    
+    public int nextEntry()
+    {
+      if (!hasNext()) {
+        return Byte2ObjectLinkedOpenHashMap.this.size();
+      }
+      this.curr = this.next;
+      this.next = ((int)Byte2ObjectLinkedOpenHashMap.this.link[this.curr]);
+      this.prev = this.curr;
+      if (this.index >= 0) {
+        this.index += 1;
+      }
+      return this.curr;
+    }
+    
+    public int previousEntry()
+    {
+      if (!hasPrevious()) {
+        return -1;
+      }
+      this.curr = this.prev;
+      this.prev = ((int)(Byte2ObjectLinkedOpenHashMap.this.link[this.curr] >>> 32));
+      this.next = this.curr;
+      if (this.index >= 0) {
+        this.index -= 1;
+      }
+      return this.curr;
+    }
+    
+    public void remove()
+    {
+      ensureIndexKnown();
+      if (this.curr == -1) {
+        throw new IllegalStateException();
+      }
+      if (this.curr == this.prev)
+      {
+        this.index -= 1;
+        this.prev = ((int)(Byte2ObjectLinkedOpenHashMap.this.link[this.curr] >>> 32));
+      }
+      else
+      {
+        this.next = ((int)Byte2ObjectLinkedOpenHashMap.this.link[this.curr]);
+      }
+      Byte2ObjectLinkedOpenHashMap.this.size -= 1;
+      if (this.prev == -1) {
+        Byte2ObjectLinkedOpenHashMap.this.first = this.next;
+      } else {
+        Byte2ObjectLinkedOpenHashMap.this.link[this.prev] ^= (Byte2ObjectLinkedOpenHashMap.this.link[this.prev] ^ this.next & 0xFFFFFFFF) & 0xFFFFFFFF;
+      }
+      if (this.next == -1) {
+        Byte2ObjectLinkedOpenHashMap.this.last = this.prev;
+      } else {
+        Byte2ObjectLinkedOpenHashMap.this.link[this.next] ^= (Byte2ObjectLinkedOpenHashMap.this.link[this.next] ^ (this.prev & 0xFFFFFFFF) << 32) & 0x0;
+      }
+      int pos = this.curr;
+      int last;
+      for (;;)
+      {
+        for (pos = (last = pos) + 1 & Byte2ObjectLinkedOpenHashMap.this.mask; Byte2ObjectLinkedOpenHashMap.this.used[pos] != 0; pos = pos + 1 & Byte2ObjectLinkedOpenHashMap.this.mask)
+        {
+          int slot = HashCommon.murmurHash3(Byte2ObjectLinkedOpenHashMap.this.key[pos]) & Byte2ObjectLinkedOpenHashMap.this.mask;
+          if (last <= pos ? (last < slot) && (slot <= pos) : (last >= slot) && (slot > pos)) {
+            break;
+          }
+        }
+        if (Byte2ObjectLinkedOpenHashMap.this.used[pos] == 0) {
+          break;
+        }
+        Byte2ObjectLinkedOpenHashMap.this.key[last] = Byte2ObjectLinkedOpenHashMap.this.key[pos];
+        Byte2ObjectLinkedOpenHashMap.this.value[last] = Byte2ObjectLinkedOpenHashMap.this.value[pos];
+        if (this.next == pos) {
+          this.next = last;
+        }
+        if (this.prev == pos) {
+          this.prev = last;
+        }
+        Byte2ObjectLinkedOpenHashMap.this.fixPointers(pos, last);
+      }
+      Byte2ObjectLinkedOpenHashMap.this.used[last] = false;
+      Byte2ObjectLinkedOpenHashMap.this.value[last] = null;
+      this.curr = -1;
+    }
+    
+    public int skip(int local_n)
+    {
+      int local_i = local_n;
+      while ((local_i-- != 0) && (hasNext())) {
+        nextEntry();
+      }
+      return local_n - local_i - 1;
+    }
+    
+    public int back(int local_n)
+    {
+      int local_i = local_n;
+      while ((local_i-- != 0) && (hasPrevious())) {
+        previousEntry();
+      }
+      return local_n - local_i - 1;
+    }
+  }
+  
+  private final class MapEntry
+    implements Byte2ObjectMap.Entry<V>, Map.Entry<Byte, V>
+  {
+    private int index;
+    
+    MapEntry(int index)
+    {
+      this.index = index;
+    }
+    
+    public Byte getKey()
+    {
+      return Byte.valueOf(Byte2ObjectLinkedOpenHashMap.this.key[this.index]);
+    }
+    
+    public byte getByteKey()
+    {
+      return Byte2ObjectLinkedOpenHashMap.this.key[this.index];
+    }
+    
+    public V getValue()
+    {
+      return Byte2ObjectLinkedOpenHashMap.this.value[this.index];
+    }
+    
+    public V setValue(V local_v)
+    {
+      V oldValue = Byte2ObjectLinkedOpenHashMap.this.value[this.index];
+      Byte2ObjectLinkedOpenHashMap.this.value[this.index] = local_v;
+      return oldValue;
+    }
+    
+    public boolean equals(Object local_o)
+    {
+      if (!(local_o instanceof Map.Entry)) {
+        return false;
+      }
+      Map.Entry<Byte, V> local_e = (Map.Entry)local_o;
+      return (Byte2ObjectLinkedOpenHashMap.this.key[this.index] == ((Byte)local_e.getKey()).byteValue()) && (Byte2ObjectLinkedOpenHashMap.this.value[this.index] == null ? local_e.getValue() == null : Byte2ObjectLinkedOpenHashMap.this.value[this.index].equals(local_e.getValue()));
+    }
+    
+    public int hashCode()
+    {
+      return Byte2ObjectLinkedOpenHashMap.this.key[this.index] ^ (Byte2ObjectLinkedOpenHashMap.this.value[this.index] == null ? 0 : Byte2ObjectLinkedOpenHashMap.this.value[this.index].hashCode());
+    }
+    
+    public String toString()
+    {
+      return Byte2ObjectLinkedOpenHashMap.this.key[this.index] + "=>" + Byte2ObjectLinkedOpenHashMap.this.value[this.index];
+    }
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.bytes.Byte2ObjectLinkedOpenHashMap
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

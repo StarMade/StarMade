@@ -1,13 +1,13 @@
-/*  1:   */package it.unimi.dsi.fastutil;
-/*  2:   */
-/* 32:   */public class Maps
-/* 33:   */{
-/* 34:   */  @Deprecated
-/* 35:35 */  public static final Object MISSING = new Object();
-/* 36:   */}
+package it.unimi.dsi.fastutil;
+
+public class Maps
+{
+  @Deprecated
+  public static final Object MISSING = new Object();
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.Maps
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

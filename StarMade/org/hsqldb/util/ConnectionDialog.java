@@ -220,7 +220,7 @@ class ConnectionDialog
     if ((str.equals("ConnectOk")) || ((paramActionEvent.getSource() instanceof TextField))) {
       try
       {
-        if (this.mURL.getText().indexOf(171) >= 0) {
+        if (this.mURL.getText().indexOf('«') >= 0) {
           throw new Exception("please specify db path");
         }
         this.mConnection = createConnection(this.mDriver.getText(), this.mURL.getText(), this.mUser.getText(), this.mPassword.getText());
@@ -259,7 +259,7 @@ class ConnectionDialog
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.util.ConnectionDialog
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -159,11 +159,11 @@ public class LdapAuthBean
     throws DenyException
   {
     if (!this.initialized) {
-      throw new IllegalStateException(new StringBuilder().append("You must invoke the 'init' method to initialize the ").append(LdapAuthBean.class.getName()).append(" instance.").toString());
+      throw new IllegalStateException("You must invoke the 'init' method to initialize the " + LdapAuthBean.class.getName() + " instance.");
     }
     Hashtable localHashtable = new Hashtable(5, 0.75F);
     localHashtable.put("java.naming.factory.initial", this.initialContextFactory);
-    localHashtable.put("java.naming.provider.url", new StringBuilder().append("ldap://").append(this.ldapHost).append(this.ldapPort == null ? "" : new StringBuilder().append(":").append(this.ldapPort).toString()).toString());
+    localHashtable.put("java.naming.provider.url", "ldap://" + this.ldapHost + (this.ldapPort == null ? "" : new StringBuilder().append(":").append(this.ldapPort).toString()));
     StartTlsResponse localStartTlsResponse = null;
     InitialLdapContext localInitialLdapContext = null;
     try
@@ -208,7 +208,7 @@ public class LdapAuthBean
           throw new DenyException();
         }
         if (((Attribute)localObject1).size() != 1) {
-          throw new RuntimeException(new StringBuilder().append("Access attribute '").append(this.accessAttribute).append("' has unexpected value count: ").append(((Attribute)localObject1).size()).toString());
+          throw new RuntimeException("Access attribute '" + this.accessAttribute + "' has unexpected value count: " + ((Attribute)localObject1).size());
         }
         if (this.accessValuePattern != null)
         {
@@ -217,7 +217,7 @@ public class LdapAuthBean
             throw new RuntimeException("Access Attr. value is null");
           }
           if (!(localObject2 instanceof String)) {
-            throw new RuntimeException(new StringBuilder().append("Access Attr. value not a String: ").append(localObject2.getClass().getName()).toString());
+            throw new RuntimeException("Access Attr. value not a String: " + localObject2.getClass().getName());
           }
           if (!this.accessValuePattern.matcher((String)localObject2).matches()) {
             throw new DenyException();
@@ -238,10 +238,10 @@ public class LdapAuthBean
         {
           Object localObject3 = localAttribute.get(j);
           if (localObject3 == null) {
-            throw new RuntimeException(new StringBuilder().append("R/S Attr value #").append(j).append(" is null").toString());
+            throw new RuntimeException("R/S Attr value #" + j + " is null");
           }
           if (!(localObject3 instanceof String)) {
-            throw new RuntimeException(new StringBuilder().append("R/S Attr value #").append(j).append(" not a String: ").append(localObject3.getClass().getName()).toString());
+            throw new RuntimeException("R/S Attr value #" + j + " not a String: " + localObject3.getClass().getName());
           }
           if (this.roleSchemaValuePattern == null)
           {
@@ -312,11 +312,11 @@ public class LdapAuthBean
     throws IOException
   {
     if (paramArrayOfString.length != 3) {
-      throw new IllegalArgumentException(new StringBuilder().append("SYNTAX:  java ").append(AuthBeanMultiplexer.class.getName()).append(" path/to/file.properties <USERNAME> <PASSWORD>").toString());
+      throw new IllegalArgumentException("SYNTAX:  java " + AuthBeanMultiplexer.class.getName() + " path/to/file.properties <USERNAME> <PASSWORD>");
     }
     File localFile = new File(paramArrayOfString[0]);
     if (!localFile.isFile()) {
-      throw new IllegalArgumentException(new StringBuilder().append("Not a file: ").append(localFile.getAbsolutePath()).toString());
+      throw new IllegalArgumentException("Not a file: " + localFile.getAbsolutePath());
     }
     Properties localProperties = new Properties();
     localProperties.load(new FileInputStream(localFile));
@@ -337,7 +337,7 @@ public class LdapAuthBean
     if (str1 != null)
     {
       if (!new File(str1).isFile()) {
-        throw new IllegalArgumentException(new StringBuilder().append("Specified trust store is not a file: ").append(str1).toString());
+        throw new IllegalArgumentException("Specified trust store is not a file: " + str1);
       }
       System.setProperty("javax.net.ssl.trustStore", str1);
     }
@@ -395,13 +395,13 @@ public class LdapAuthBean
     if (arrayOfString == null) {
       System.out.println("<ALLOW ACCESS w/ local Roles+Schema>");
     } else {
-      System.out.println(new StringBuilder().append(Integer.toString(arrayOfString.length)).append(" Roles/Schema: ").append(Arrays.toString(arrayOfString)).toString());
+      System.out.println(Integer.toString(arrayOfString.length) + " Roles/Schema: " + Arrays.toString(arrayOfString));
     }
   }
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.auth.LdapAuthBean
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

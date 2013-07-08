@@ -1,8 +1,8 @@
 package org.schema.schine.network.client;
 
+import class_1363;
+import class_941;
 import org.schema.schine.network.ControllerInterface;
-import xq;
-import yz;
 
 public abstract interface ClientControllerInterface
   extends ControllerInterface
@@ -13,7 +13,7 @@ public abstract interface ClientControllerInterface
   
   public abstract void handleBrokeConnection();
   
-  public abstract void handleGUIMouseEvent(yz paramyz, int paramInt);
+  public abstract void handleGUIMouseEvent(class_1363 paramclass_1363, int paramInt);
   
   public abstract void kick(String paramString);
   
@@ -25,11 +25,11 @@ public abstract interface ClientControllerInterface
   
   public abstract void synchronize();
   
-  public abstract void update(xq paramxq);
+  public abstract void update(class_941 paramclass_941);
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.schine.network.client.ClientControllerInterface
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -81,7 +81,7 @@ public class AttVal
   
   public Attribute checkAttribute(Lexer paramLexer, Node paramNode)
   {
-    TagTable localTagTable = paramLexer.configuration.tt;
+    TagTable localTagTable = paramLexer.configuration.field_1881;
     Attribute localAttribute = this.dict;
     if (localAttribute != null)
     {
@@ -187,7 +187,7 @@ public class AttVal
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.w3c.tidy.AttVal
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -1,40 +1,40 @@
-/*  1:   */package com.bulletphysics.collision.broadphase;
-/*  2:   */
-/* 12:   */public class DbvtLeafCollider
-/* 13:   */  extends Dbvt.ICollide
-/* 14:   */{
-/* 15:   */  public DbvtBroadphase pbp;
-/* 16:   */  
-/* 25:   */  public DbvtProxy ppx;
-/* 26:   */  
-/* 36:   */  public DbvtLeafCollider(DbvtBroadphase p, DbvtProxy px)
-/* 37:   */  {
-/* 38:38 */    this.pbp = p;
-/* 39:39 */    this.ppx = px;
-/* 40:   */  }
-/* 41:   */  
-/* 42:   */  public void Process(Dbvt.Node na)
-/* 43:   */  {
-/* 44:44 */    Dbvt.Node nb = this.ppx.leaf;
-/* 45:45 */    if (nb != na) {
-/* 46:46 */      DbvtProxy pa = (DbvtProxy)na.data;
-/* 47:47 */      DbvtProxy pb = (DbvtProxy)nb.data;
-/* 48:   */      
-/* 50:50 */      if (DbvtAabbMm.Intersect(pa.aabb, pb.aabb))
-/* 51:   */      {
-/* 54:54 */        if (pa.hashCode() > pb.hashCode()) {
-/* 55:55 */          DbvtProxy tmp = pa;
-/* 56:56 */          pa = pb;
-/* 57:57 */          pb = tmp;
-/* 58:   */        }
-/* 59:59 */        this.pbp.paircache.addOverlappingPair(pa, pb);
-/* 60:   */      }
-/* 61:   */    }
-/* 62:   */  }
-/* 63:   */}
+package com.bulletphysics.collision.broadphase;
+
+public class DbvtLeafCollider
+  extends Dbvt.ICollide
+{
+  public DbvtBroadphase pbp;
+  public DbvtProxy ppx;
+  
+  public DbvtLeafCollider(DbvtBroadphase local_p, DbvtProxy local_px)
+  {
+    this.pbp = local_p;
+    this.ppx = local_px;
+  }
+  
+  public void Process(Dbvt.Node local_na)
+  {
+    Dbvt.Node local_nb = this.ppx.leaf;
+    if (local_nb != local_na)
+    {
+      DbvtProxy local_pa = (DbvtProxy)local_na.data;
+      DbvtProxy local_pb = (DbvtProxy)local_nb.data;
+      if (DbvtAabbMm.Intersect(local_pa.aabb, local_pb.aabb))
+      {
+        if (local_pa.hashCode() > local_pb.hashCode())
+        {
+          DbvtProxy tmp = local_pa;
+          local_pa = local_pb;
+          local_pb = tmp;
+        }
+        this.pbp.paircache.addOverlappingPair(local_pa, local_pb);
+      }
+    }
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     com.bulletphysics.collision.broadphase.DbvtLeafCollider
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

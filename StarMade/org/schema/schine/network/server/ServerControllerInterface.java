@@ -1,8 +1,8 @@
 package org.schema.schine.network.server;
 
+import class_941;
 import org.schema.schine.network.ControllerInterface;
 import org.schema.schine.network.RegisteredClientOnServer;
-import xq;
 
 public abstract interface ServerControllerInterface
   extends ControllerInterface
@@ -15,7 +15,7 @@ public abstract interface ServerControllerInterface
   
   public abstract void unregister(int paramInt);
   
-  public abstract void update(xq paramxq);
+  public abstract void update(class_941 paramclass_941);
   
   public abstract boolean authenticate(String paramString1, String paramString2, String paramString3);
   
@@ -23,7 +23,7 @@ public abstract interface ServerControllerInterface
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.schine.network.server.ServerControllerInterface
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

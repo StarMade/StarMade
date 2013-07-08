@@ -21,7 +21,7 @@ public class DataFileCacheSession
   {
     this.dataFileName = (paramString + ".data.tmp");
     this.database = paramDatabase;
-    this.fa = FileUtil.getFileUtil();
+    this.field_2045 = FileUtil.getFileUtil();
     this.dataFileScale = 64;
     this.cachedRowPadding = this.dataFileScale;
     this.initialFreePos = this.dataFileScale;
@@ -58,7 +58,7 @@ public class DataFileCacheSession
       {
         this.dataFile.close();
         this.dataFile = null;
-        this.fa.removeElement(this.dataFileName);
+        this.field_2045.removeElement(this.dataFileName);
       }
     }
     catch (Throwable localThrowable)
@@ -88,7 +88,7 @@ public class DataFileCacheSession
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.persist.DataFileCacheSession
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

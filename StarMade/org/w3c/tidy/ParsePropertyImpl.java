@@ -307,7 +307,7 @@ public final class ParsePropertyImpl
       while (localStringTokenizer.hasMoreTokens())
       {
         paramConfiguration.definedTags |= i;
-        paramConfiguration.tt.defineTag(i, localStringTokenizer.nextToken());
+        paramConfiguration.field_1881.defineTag(i, localStringTokenizer.nextToken());
       }
       return null;
     }
@@ -336,7 +336,7 @@ public final class ParsePropertyImpl
       } else {
         return "";
       }
-      List localList = paramConfiguration.tt.findAllDefinedTag(s);
+      List localList = paramConfiguration.field_1881.findAllDefinedTag(s);
       if (localList.isEmpty()) {
         return "";
       }
@@ -532,7 +532,7 @@ public final class ParsePropertyImpl
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.w3c.tidy.ParsePropertyImpl
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

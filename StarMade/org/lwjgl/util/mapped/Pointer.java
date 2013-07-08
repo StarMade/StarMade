@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 public @interface Pointer {}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.lwjgl.util.mapped.Pointer
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

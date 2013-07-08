@@ -38,24 +38,24 @@ public class Color4b
   
   public final void set(Color paramColor)
   {
-    this.x = ((byte)paramColor.getRed());
-    this.y = ((byte)paramColor.getGreen());
-    this.z = ((byte)paramColor.getBlue());
-    this.w = ((byte)paramColor.getAlpha());
+    this.field_592 = ((byte)paramColor.getRed());
+    this.field_593 = ((byte)paramColor.getGreen());
+    this.field_594 = ((byte)paramColor.getBlue());
+    this.field_595 = ((byte)paramColor.getAlpha());
   }
   
   public final Color get()
   {
-    int i = this.x & 0xFF;
-    int j = this.y & 0xFF;
-    int k = this.z & 0xFF;
-    int m = this.w & 0xFF;
+    int i = this.field_592 & 0xFF;
+    int j = this.field_593 & 0xFF;
+    int k = this.field_594 & 0xFF;
+    int m = this.field_595 & 0xFF;
     return new Color(i, j, k, m);
   }
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     javax.vecmath.Color4b
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

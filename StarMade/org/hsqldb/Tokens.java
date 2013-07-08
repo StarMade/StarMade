@@ -833,10 +833,10 @@ public class Tokens
   public static final int ARE = 7;
   public static final int ARRAY = 8;
   public static final int ARRAY_AGG = 9;
-  public static final int AS = 10;
+  public static final int field_2176 = 10;
   public static final int ASENSITIVE = 11;
   public static final int ASYMMETRIC = 12;
-  public static final int AT = 13;
+  public static final int field_2177 = 13;
   public static final int ATOMIC = 14;
   public static final int AUTHORIZATION = 15;
   public static final int AVG = 16;
@@ -847,7 +847,7 @@ public class Tokens
   public static final int BLOB = 21;
   public static final int BOOLEAN = 22;
   public static final int BOTH = 23;
-  public static final int BY = 24;
+  public static final int field_2178 = 24;
   public static final int CALL = 25;
   public static final int CALLED = 26;
   public static final int CARDINALITY = 27;
@@ -909,7 +909,7 @@ public class Tokens
   public static final int DETERMINISTIC = 83;
   public static final int DISCONNECT = 84;
   public static final int DISTINCT = 85;
-  public static final int DO = 86;
+  public static final int field_2179 = 86;
   public static final int DOUBLE = 87;
   public static final int DROP = 88;
   public static final int DYNAMIC = 89;
@@ -953,7 +953,7 @@ public class Tokens
   public static final int HOUR = 127;
   public static final int IDENTITY = 128;
   public static final int IMPORT = 129;
-  public static final int IN = 130;
+  public static final int field_2180 = 130;
   public static final int INDICATOR = 131;
   public static final int INNER = 132;
   public static final int INOUT = 133;
@@ -965,7 +965,7 @@ public class Tokens
   public static final int INTERSECTION = 139;
   public static final int INTERVAL = 140;
   public static final int INTO = 141;
-  public static final int IS = 142;
+  public static final int field_2181 = 142;
   public static final int ITERATE = 143;
   public static final int JOIN = 144;
   public static final int LAG = 145;
@@ -979,7 +979,7 @@ public class Tokens
   public static final int LEFT = 153;
   public static final int LIKE = 154;
   public static final int LIKE_REGEX = 155;
-  public static final int LN = 156;
+  public static final int field_2182 = 156;
   public static final int LOCAL = 157;
   public static final int LOCALTIME = 158;
   public static final int LOCALTIMESTAMP = 159;
@@ -1003,7 +1003,7 @@ public class Tokens
   public static final int NCHAR = 177;
   public static final int NCLOB = 178;
   public static final int NEW = 179;
-  public static final int NO = 180;
+  public static final int field_2183 = 180;
   public static final int NONE = 181;
   public static final int NORMALIZE = 182;
   public static final int NOT = 183;
@@ -1014,13 +1014,13 @@ public class Tokens
   public static final int NUMERIC = 188;
   public static final int OCCURRENCES_REGEX = 189;
   public static final int OCTET_LENGTH = 190;
-  public static final int OF = 191;
+  public static final int field_2184 = 191;
   public static final int OFFSET = 192;
   public static final int OLD = 193;
-  public static final int ON = 194;
+  public static final int field_2185 = 194;
   public static final int ONLY = 195;
   public static final int OPEN = 196;
-  public static final int OR = 197;
+  public static final int field_2186 = 197;
   public static final int ORDER = 198;
   public static final int OUT = 199;
   public static final int OUTER = 200;
@@ -1108,7 +1108,7 @@ public class Tokens
   public static final int TIMESTAMP = 282;
   public static final int TIMEZONE_HOUR = 283;
   public static final int TIMEZONE_MINUTE = 284;
-  public static final int TO = 285;
+  public static final int field_2187 = 285;
   public static final int TRAILING = 286;
   public static final int TRANSLATE = 287;
   public static final int TRANSLATE_REGEX = 288;
@@ -1147,7 +1147,7 @@ public class Tokens
   public static final int WITHOUT = 321;
   public static final int WHILE = 322;
   public static final int YEAR = 323;
-  public static final int A = 330;
+  public static final int field_2188 = 330;
   public static final int ABSOLUTE = 331;
   public static final int ACTION = 332;
   public static final int ADA = 333;
@@ -1163,7 +1163,7 @@ public class Tokens
   public static final int BEFORE = 343;
   public static final int BERNOULLI = 344;
   public static final int BREADTH = 345;
-  public static final int C = 346;
+  public static final int field_2189 = 346;
   public static final int CASCADE = 347;
   public static final int CATALOG = 348;
   public static final int CATALOG_NAME = 349;
@@ -1222,14 +1222,14 @@ public class Tokens
   public static final int FOLLOWING = 402;
   public static final int FORTRAN = 403;
   public static final int FOUND = 404;
-  public static final int G = 405;
+  public static final int field_2190 = 405;
   public static final int GENERAL = 406;
   public static final int GENERATED = 407;
-  public static final int GO = 408;
+  public static final int field_2191 = 408;
   public static final int GOTO = 409;
   public static final int GRANTED = 410;
   public static final int HIERARCHY = 411;
-  public static final int IF = 412;
+  public static final int field_2192 = 412;
   public static final int IGNORE = 413;
   public static final int IMMEDIATE = 414;
   public static final int IMPLEMENTATION = 415;
@@ -1243,7 +1243,7 @@ public class Tokens
   public static final int INVOKER = 423;
   public static final int ISOLATION = 424;
   public static final int JAVA = 425;
-  public static final int K = 426;
+  public static final int field_2193 = 426;
   public static final int KEY = 427;
   public static final int KEY_MEMBER = 428;
   public static final int KEY_TYPE = 429;
@@ -1252,7 +1252,7 @@ public class Tokens
   public static final int LEVEL = 432;
   public static final int LIBRARY = 433;
   public static final int LOCATOR = 434;
-  public static final int M = 435;
+  public static final int field_2194 = 435;
   public static final int MAP = 436;
   public static final int MATCHED = 437;
   public static final int MAXVALUE = 438;
@@ -1279,7 +1279,7 @@ public class Tokens
   public static final int OTHERS = 459;
   public static final int OUTPUT = 460;
   public static final int OVERRIDING = 461;
-  public static final int P = 462;
+  public static final int field_2195 = 462;
   public static final int PAD = 463;
   public static final int PARAMETER_MODE = 464;
   public static final int PARAMETER_NAME = 465;
@@ -1338,7 +1338,7 @@ public class Tokens
   public static final int STRUCTURE = 518;
   public static final int STYLE = 519;
   public static final int SUBCLASS_ORIGIN = 520;
-  public static final int T = 521;
+  public static final int field_2196 = 521;
   public static final int TABLE_NAME = 522;
   public static final int TEMPORARY = 523;
   public static final int TIES = 524;
@@ -1401,7 +1401,7 @@ public class Tokens
   static final int FILE = 589;
   static final int FILES = 590;
   static final int FORMAT = 591;
-  static final int GC = 592;
+  static final int field_2197 = 592;
   static final int HEADER = 593;
   static final int IGNORECASE = 594;
   static final int IMMEDIATELY = 595;
@@ -1514,7 +1514,7 @@ public class Tokens
   static final int NIO = 706;
   static final int NOW = 707;
   static final int OCTETLENGTH = 708;
-  static final int PI = 709;
+  static final int field_2198 = 709;
   static final int POSITION_ARRAY = 710;
   public static final int QUARTER = 711;
   static final int RADIANS = 712;
@@ -2393,7 +2393,7 @@ public class Tokens
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.Tokens
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -1,393 +1,446 @@
-/*   1:    */package it.unimi.dsi.fastutil.longs;
-/*   2:    */
-/*   3:    */import it.unimi.dsi.fastutil.Hash;
-/*   4:    */import it.unimi.dsi.fastutil.HashCommon;
-/*   5:    */import it.unimi.dsi.fastutil.booleans.BooleanArrays;
-/*   6:    */import java.io.IOException;
-/*   7:    */import java.io.ObjectInputStream;
-/*   8:    */import java.io.ObjectOutputStream;
-/*   9:    */import java.io.Serializable;
-/*  10:    */import java.util.Collection;
-/*  11:    */import java.util.Iterator;
-/*  12:    */import java.util.NoSuchElementException;
-/*  13:    */
-/*  81:    */public class LongOpenCustomHashSet
-/*  82:    */  extends AbstractLongSet
-/*  83:    */  implements Serializable, Cloneable, Hash
-/*  84:    */{
-/*  85:    */  public static final long serialVersionUID = 0L;
-/*  86:    */  private static final boolean ASSERTS = false;
-/*  87:    */  protected transient long[] key;
-/*  88:    */  protected transient boolean[] used;
-/*  89:    */  protected final float f;
-/*  90:    */  protected transient int n;
-/*  91:    */  protected transient int maxFill;
-/*  92:    */  protected transient int mask;
-/*  93:    */  protected int size;
-/*  94:    */  protected LongHash.Strategy strategy;
-/*  95:    */  
-/*  96:    */  public LongOpenCustomHashSet(int expected, float f, LongHash.Strategy strategy)
-/*  97:    */  {
-/*  98: 98 */    this.strategy = strategy;
-/*  99: 99 */    if ((f <= 0.0F) || (f > 1.0F)) throw new IllegalArgumentException("Load factor must be greater than 0 and smaller than or equal to 1");
-/* 100:100 */    if (expected < 0) throw new IllegalArgumentException("The expected number of elements must be nonnegative");
-/* 101:101 */    this.f = f;
-/* 102:102 */    this.n = HashCommon.arraySize(expected, f);
-/* 103:103 */    this.mask = (this.n - 1);
-/* 104:104 */    this.maxFill = HashCommon.maxFill(this.n, f);
-/* 105:105 */    this.key = new long[this.n];
-/* 106:106 */    this.used = new boolean[this.n];
-/* 107:    */  }
-/* 108:    */  
-/* 112:    */  public LongOpenCustomHashSet(int expected, LongHash.Strategy strategy)
-/* 113:    */  {
-/* 114:114 */    this(expected, 0.75F, strategy);
-/* 115:    */  }
-/* 116:    */  
-/* 119:    */  public LongOpenCustomHashSet(LongHash.Strategy strategy)
-/* 120:    */  {
-/* 121:121 */    this(16, 0.75F, strategy);
-/* 122:    */  }
-/* 123:    */  
-/* 128:    */  public LongOpenCustomHashSet(Collection<? extends Long> c, float f, LongHash.Strategy strategy)
-/* 129:    */  {
-/* 130:130 */    this(c.size(), f, strategy);
-/* 131:131 */    addAll(c);
-/* 132:    */  }
-/* 133:    */  
-/* 138:    */  public LongOpenCustomHashSet(Collection<? extends Long> c, LongHash.Strategy strategy)
-/* 139:    */  {
-/* 140:140 */    this(c, 0.75F, strategy);
-/* 141:    */  }
-/* 142:    */  
-/* 147:    */  public LongOpenCustomHashSet(LongCollection c, float f, LongHash.Strategy strategy)
-/* 148:    */  {
-/* 149:149 */    this(c.size(), f, strategy);
-/* 150:150 */    addAll(c);
-/* 151:    */  }
-/* 152:    */  
-/* 157:    */  public LongOpenCustomHashSet(LongCollection c, LongHash.Strategy strategy)
-/* 158:    */  {
-/* 159:159 */    this(c, 0.75F, strategy);
-/* 160:    */  }
-/* 161:    */  
-/* 166:    */  public LongOpenCustomHashSet(LongIterator i, float f, LongHash.Strategy strategy)
-/* 167:    */  {
-/* 168:168 */    this(16, f, strategy);
-/* 169:169 */    while (i.hasNext()) { add(i.nextLong());
-/* 170:    */    }
-/* 171:    */  }
-/* 172:    */  
-/* 175:    */  public LongOpenCustomHashSet(LongIterator i, LongHash.Strategy strategy)
-/* 176:    */  {
-/* 177:177 */    this(i, 0.75F, strategy);
-/* 178:    */  }
-/* 179:    */  
-/* 184:    */  public LongOpenCustomHashSet(Iterator<?> i, float f, LongHash.Strategy strategy)
-/* 185:    */  {
-/* 186:186 */    this(LongIterators.asLongIterator(i), f, strategy);
-/* 187:    */  }
-/* 188:    */  
-/* 192:    */  public LongOpenCustomHashSet(Iterator<?> i, LongHash.Strategy strategy)
-/* 193:    */  {
-/* 194:194 */    this(LongIterators.asLongIterator(i), strategy);
-/* 195:    */  }
-/* 196:    */  
-/* 203:    */  public LongOpenCustomHashSet(long[] a, int offset, int length, float f, LongHash.Strategy strategy)
-/* 204:    */  {
-/* 205:205 */    this(length < 0 ? 0 : length, f, strategy);
-/* 206:206 */    LongArrays.ensureOffsetLength(a, offset, length);
-/* 207:207 */    for (int i = 0; i < length; i++) { add(a[(offset + i)]);
-/* 208:    */    }
-/* 209:    */  }
-/* 210:    */  
-/* 215:    */  public LongOpenCustomHashSet(long[] a, int offset, int length, LongHash.Strategy strategy)
-/* 216:    */  {
-/* 217:217 */    this(a, offset, length, 0.75F, strategy);
-/* 218:    */  }
-/* 219:    */  
-/* 224:    */  public LongOpenCustomHashSet(long[] a, float f, LongHash.Strategy strategy)
-/* 225:    */  {
-/* 226:226 */    this(a, 0, a.length, f, strategy);
-/* 227:    */  }
-/* 228:    */  
-/* 233:    */  public LongOpenCustomHashSet(long[] a, LongHash.Strategy strategy)
-/* 234:    */  {
-/* 235:235 */    this(a, 0.75F, strategy);
-/* 236:    */  }
-/* 237:    */  
-/* 240:    */  public LongHash.Strategy strategy()
-/* 241:    */  {
-/* 242:242 */    return this.strategy;
-/* 243:    */  }
-/* 244:    */  
-/* 248:    */  public boolean add(long k)
-/* 249:    */  {
-/* 250:250 */    int pos = HashCommon.murmurHash3(this.strategy.hashCode(k)) & this.mask;
-/* 251:    */    
-/* 252:252 */    while (this.used[pos] != 0) {
-/* 253:253 */      if (this.strategy.equals(this.key[pos], k)) return false;
-/* 254:254 */      pos = pos + 1 & this.mask;
-/* 255:    */    }
-/* 256:256 */    this.used[pos] = true;
-/* 257:257 */    this.key[pos] = k;
-/* 258:258 */    if (++this.size >= this.maxFill) { rehash(HashCommon.arraySize(this.size + 1, this.f));
-/* 259:    */    }
-/* 260:260 */    return true;
-/* 261:    */  }
-/* 262:    */  
-/* 265:    */  protected final int shiftKeys(int pos)
-/* 266:    */  {
-/* 267:    */    int last;
-/* 268:    */    
-/* 270:    */    for (;;)
-/* 271:    */    {
-/* 272:272 */      pos = (last = pos) + 1 & this.mask;
-/* 273:273 */      while (this.used[pos] != 0) {
-/* 274:274 */        int slot = HashCommon.murmurHash3(this.strategy.hashCode(this.key[pos])) & this.mask;
-/* 275:275 */        if (last <= pos ? (last < slot) && (slot <= pos) : (last >= slot) && (slot > pos)) break;
-/* 276:276 */        pos = pos + 1 & this.mask;
-/* 277:    */      }
-/* 278:278 */      if (this.used[pos] == 0) break;
-/* 279:279 */      this.key[last] = this.key[pos];
-/* 280:    */    }
-/* 281:281 */    this.used[last] = false;
-/* 282:282 */    return last;
-/* 283:    */  }
-/* 284:    */  
-/* 285:    */  public boolean remove(long k)
-/* 286:    */  {
-/* 287:287 */    int pos = HashCommon.murmurHash3(this.strategy.hashCode(k)) & this.mask;
-/* 288:    */    
-/* 289:289 */    while (this.used[pos] != 0) {
-/* 290:290 */      if (this.strategy.equals(this.key[pos], k)) {
-/* 291:291 */        this.size -= 1;
-/* 292:292 */        shiftKeys(pos);
-/* 293:    */        
-/* 294:294 */        return true;
-/* 295:    */      }
-/* 296:296 */      pos = pos + 1 & this.mask;
-/* 297:    */    }
-/* 298:298 */    return false;
-/* 299:    */  }
-/* 300:    */  
-/* 301:    */  public boolean contains(long k)
-/* 302:    */  {
-/* 303:303 */    int pos = HashCommon.murmurHash3(this.strategy.hashCode(k)) & this.mask;
-/* 304:    */    
-/* 305:305 */    while (this.used[pos] != 0) {
-/* 306:306 */      if (this.strategy.equals(this.key[pos], k)) return true;
-/* 307:307 */      pos = pos + 1 & this.mask;
-/* 308:    */    }
-/* 309:309 */    return false;
-/* 310:    */  }
-/* 311:    */  
-/* 316:    */  public void clear()
-/* 317:    */  {
-/* 318:318 */    if (this.size == 0) return;
-/* 319:319 */    this.size = 0;
-/* 320:320 */    BooleanArrays.fill(this.used, false);
-/* 321:    */  }
-/* 322:    */  
-/* 323:323 */  public int size() { return this.size; }
-/* 324:    */  
-/* 325:    */  public boolean isEmpty() {
-/* 326:326 */    return this.size == 0;
-/* 327:    */  }
-/* 328:    */  
-/* 334:    */  @Deprecated
-/* 335:    */  public void growthFactor(int growthFactor) {}
-/* 336:    */  
-/* 342:    */  @Deprecated
-/* 343:343 */  public int growthFactor() { return 16; }
-/* 344:    */  
-/* 345:    */  private class SetIterator extends AbstractLongIterator {
-/* 346:    */    int pos;
-/* 347:    */    int last;
-/* 348:    */    
-/* 349:349 */    private SetIterator() { this.pos = LongOpenCustomHashSet.this.n;
-/* 350:    */      
-/* 352:352 */      this.last = -1;
-/* 353:    */      
-/* 354:354 */      this.c = LongOpenCustomHashSet.this.size;
-/* 355:    */      
-/* 359:359 */      boolean[] used = LongOpenCustomHashSet.this.used;
-/* 360:360 */      while ((this.c != 0) && (used[(--this.pos)] == 0)) {}
-/* 361:    */    }
-/* 362:    */    
-/* 363:363 */    public boolean hasNext() { return this.c != 0; }
-/* 364:    */    
-/* 365:    */    public long nextLong() {
-/* 366:366 */      if (!hasNext()) throw new NoSuchElementException();
-/* 367:367 */      this.c -= 1;
-/* 368:    */      
-/* 369:369 */      if (this.pos < 0) return this.wrapped.getLong(-(this.last = --this.pos) - 2);
-/* 370:370 */      long retVal = LongOpenCustomHashSet.this.key[(this.last = this.pos)];
-/* 371:    */      
-/* 372:372 */      if (this.c != 0) {
-/* 373:373 */        boolean[] used = LongOpenCustomHashSet.this.used;
-/* 374:374 */        while ((this.pos-- != 0) && (used[this.pos] == 0)) {}
-/* 375:    */      }
-/* 376:    */      
-/* 377:377 */      return retVal;
-/* 378:    */    }
-/* 379:    */    
-/* 381:    */    int c;
-/* 382:    */    
-/* 383:    */    LongArrayList wrapped;
-/* 384:    */    
-/* 385:    */    final int shiftKeys(int pos)
-/* 386:    */    {
-/* 387:    */      int last;
-/* 388:    */      for (;;)
-/* 389:    */      {
-/* 390:390 */        pos = (last = pos) + 1 & LongOpenCustomHashSet.this.mask;
-/* 391:391 */        while (LongOpenCustomHashSet.this.used[pos] != 0) {
-/* 392:392 */          int slot = HashCommon.murmurHash3(LongOpenCustomHashSet.this.strategy.hashCode(LongOpenCustomHashSet.this.key[pos])) & LongOpenCustomHashSet.this.mask;
-/* 393:393 */          if (last <= pos ? (last < slot) && (slot <= pos) : (last >= slot) && (slot > pos)) break;
-/* 394:394 */          pos = pos + 1 & LongOpenCustomHashSet.this.mask;
-/* 395:    */        }
-/* 396:396 */        if (LongOpenCustomHashSet.this.used[pos] == 0) break;
-/* 397:397 */        if (pos < last)
-/* 398:    */        {
-/* 399:399 */          if (this.wrapped == null) this.wrapped = new LongArrayList();
-/* 400:400 */          this.wrapped.add(LongOpenCustomHashSet.this.key[pos]);
-/* 401:    */        }
-/* 402:402 */        LongOpenCustomHashSet.this.key[last] = LongOpenCustomHashSet.this.key[pos];
-/* 403:    */      }
-/* 404:404 */      LongOpenCustomHashSet.this.used[last] = false;
-/* 405:405 */      return last;
-/* 406:    */    }
-/* 407:    */    
-/* 408:    */    public void remove() {
-/* 409:409 */      if (this.last == -1) throw new IllegalStateException();
-/* 410:410 */      if (this.pos < -1)
-/* 411:    */      {
-/* 412:412 */        LongOpenCustomHashSet.this.remove(this.wrapped.getLong(-this.pos - 2));
-/* 413:413 */        this.last = -1;
-/* 414:414 */        return;
-/* 415:    */      }
-/* 416:416 */      LongOpenCustomHashSet.this.size -= 1;
-/* 417:417 */      if ((shiftKeys(this.last) == this.pos) && (this.c > 0)) {
-/* 418:418 */        this.c += 1;
-/* 419:419 */        nextLong();
-/* 420:    */      }
-/* 421:421 */      this.last = -1;
-/* 422:    */    }
-/* 423:    */  }
-/* 424:    */  
-/* 425:    */  public LongIterator iterator() {
-/* 426:426 */    return new SetIterator(null);
-/* 427:    */  }
-/* 428:    */  
-/* 437:    */  @Deprecated
-/* 438:    */  public boolean rehash()
-/* 439:    */  {
-/* 440:440 */    return true;
-/* 441:    */  }
-/* 442:    */  
-/* 453:    */  public boolean trim()
-/* 454:    */  {
-/* 455:455 */    int l = HashCommon.arraySize(this.size, this.f);
-/* 456:456 */    if (l >= this.n) return true;
-/* 457:    */    try {
-/* 458:458 */      rehash(l);
-/* 459:    */    } catch (OutOfMemoryError cantDoIt) {
-/* 460:460 */      return false; }
-/* 461:461 */    return true;
-/* 462:    */  }
-/* 463:    */  
-/* 480:    */  public boolean trim(int n)
-/* 481:    */  {
-/* 482:482 */    int l = HashCommon.nextPowerOfTwo((int)Math.ceil(n / this.f));
-/* 483:483 */    if (this.n <= l) return true;
-/* 484:    */    try {
-/* 485:485 */      rehash(l);
-/* 486:    */    } catch (OutOfMemoryError cantDoIt) {
-/* 487:487 */      return false; }
-/* 488:488 */    return true;
-/* 489:    */  }
-/* 490:    */  
-/* 499:    */  protected void rehash(int newN)
-/* 500:    */  {
-/* 501:501 */    int i = 0;
-/* 502:502 */    boolean[] used = this.used;
-/* 503:    */    
-/* 504:504 */    long[] key = this.key;
-/* 505:505 */    int newMask = newN - 1;
-/* 506:506 */    long[] newKey = new long[newN];
-/* 507:507 */    boolean[] newUsed = new boolean[newN];
-/* 508:508 */    for (int j = this.size; j-- != 0;) {
-/* 509:509 */      while (used[i] == 0) i++;
-/* 510:510 */      long k = key[i];
-/* 511:511 */      int pos = HashCommon.murmurHash3(this.strategy.hashCode(k)) & newMask;
-/* 512:512 */      while (newUsed[pos] != 0) pos = pos + 1 & newMask;
-/* 513:513 */      newUsed[pos] = true;
-/* 514:514 */      newKey[pos] = k;
-/* 515:515 */      i++;
-/* 516:    */    }
-/* 517:517 */    this.n = newN;
-/* 518:518 */    this.mask = newMask;
-/* 519:519 */    this.maxFill = HashCommon.maxFill(this.n, this.f);
-/* 520:520 */    this.key = newKey;
-/* 521:521 */    this.used = newUsed;
-/* 522:    */  }
-/* 523:    */  
-/* 527:    */  public LongOpenCustomHashSet clone()
-/* 528:    */  {
-/* 529:    */    LongOpenCustomHashSet c;
-/* 530:    */    
-/* 532:    */    try
-/* 533:    */    {
-/* 534:534 */      c = (LongOpenCustomHashSet)super.clone();
-/* 535:    */    }
-/* 536:    */    catch (CloneNotSupportedException cantHappen) {
-/* 537:537 */      throw new InternalError();
-/* 538:    */    }
-/* 539:539 */    c.key = ((long[])this.key.clone());
-/* 540:540 */    c.used = ((boolean[])this.used.clone());
-/* 541:541 */    c.strategy = this.strategy;
-/* 542:542 */    return c;
-/* 543:    */  }
-/* 544:    */  
-/* 552:    */  public int hashCode()
-/* 553:    */  {
-/* 554:554 */    int h = 0;int i = 0;int j = this.size;
-/* 555:555 */    while (j-- != 0) {
-/* 556:556 */      while (this.used[i] == 0) i++;
-/* 557:557 */      h += this.strategy.hashCode(this.key[i]);
-/* 558:558 */      i++;
-/* 559:    */    }
-/* 560:560 */    return h;
-/* 561:    */  }
-/* 562:    */  
-/* 563:563 */  private void writeObject(ObjectOutputStream s) throws IOException { LongIterator i = iterator();
-/* 564:564 */    s.defaultWriteObject();
-/* 565:565 */    for (int j = this.size; j-- != 0; s.writeLong(i.nextLong())) {}
-/* 566:    */  }
-/* 567:    */  
-/* 568:    */  private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
-/* 569:569 */    s.defaultReadObject();
-/* 570:570 */    this.n = HashCommon.arraySize(this.size, this.f);
-/* 571:571 */    this.maxFill = HashCommon.maxFill(this.n, this.f);
-/* 572:572 */    this.mask = (this.n - 1);
-/* 573:573 */    long[] key = this.key = new long[this.n];
-/* 574:574 */    boolean[] used = this.used = new boolean[this.n];
-/* 575:    */    
-/* 576:576 */    int i = this.size; for (int pos = 0; i-- != 0;) {
-/* 577:577 */      long k = s.readLong();
-/* 578:578 */      pos = HashCommon.murmurHash3(this.strategy.hashCode(k)) & this.mask;
-/* 579:579 */      while (used[pos] != 0) pos = pos + 1 & this.mask;
-/* 580:580 */      used[pos] = true;
-/* 581:581 */      key[pos] = k;
-/* 582:    */    }
-/* 583:    */  }
-/* 584:    */  
-/* 585:    */  private void checkTable() {}
-/* 586:    */}
+package it.unimi.dsi.fastutil.longs;
+
+import it.unimi.dsi.fastutil.Hash;
+import it.unimi.dsi.fastutil.HashCommon;
+import it.unimi.dsi.fastutil.booleans.BooleanArrays;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+public class LongOpenCustomHashSet
+  extends AbstractLongSet
+  implements Serializable, Cloneable, Hash
+{
+  public static final long serialVersionUID = 0L;
+  private static final boolean ASSERTS = false;
+  protected transient long[] key;
+  protected transient boolean[] used;
+  protected final float field_156;
+  protected transient int field_157;
+  protected transient int maxFill;
+  protected transient int mask;
+  protected int size;
+  protected LongHash.Strategy strategy;
+  
+  public LongOpenCustomHashSet(int expected, float local_f, LongHash.Strategy strategy)
+  {
+    this.strategy = strategy;
+    if ((local_f <= 0.0F) || (local_f > 1.0F)) {
+      throw new IllegalArgumentException("Load factor must be greater than 0 and smaller than or equal to 1");
+    }
+    if (expected < 0) {
+      throw new IllegalArgumentException("The expected number of elements must be nonnegative");
+    }
+    this.field_156 = local_f;
+    this.field_157 = HashCommon.arraySize(expected, local_f);
+    this.mask = (this.field_157 - 1);
+    this.maxFill = HashCommon.maxFill(this.field_157, local_f);
+    this.key = new long[this.field_157];
+    this.used = new boolean[this.field_157];
+  }
+  
+  public LongOpenCustomHashSet(int expected, LongHash.Strategy strategy)
+  {
+    this(expected, 0.75F, strategy);
+  }
+  
+  public LongOpenCustomHashSet(LongHash.Strategy strategy)
+  {
+    this(16, 0.75F, strategy);
+  }
+  
+  public LongOpenCustomHashSet(Collection<? extends Long> local_c, float local_f, LongHash.Strategy strategy)
+  {
+    this(local_c.size(), local_f, strategy);
+    addAll(local_c);
+  }
+  
+  public LongOpenCustomHashSet(Collection<? extends Long> local_c, LongHash.Strategy strategy)
+  {
+    this(local_c, 0.75F, strategy);
+  }
+  
+  public LongOpenCustomHashSet(LongCollection local_c, float local_f, LongHash.Strategy strategy)
+  {
+    this(local_c.size(), local_f, strategy);
+    addAll(local_c);
+  }
+  
+  public LongOpenCustomHashSet(LongCollection local_c, LongHash.Strategy strategy)
+  {
+    this(local_c, 0.75F, strategy);
+  }
+  
+  public LongOpenCustomHashSet(LongIterator local_i, float local_f, LongHash.Strategy strategy)
+  {
+    this(16, local_f, strategy);
+    while (local_i.hasNext()) {
+      add(local_i.nextLong());
+    }
+  }
+  
+  public LongOpenCustomHashSet(LongIterator local_i, LongHash.Strategy strategy)
+  {
+    this(local_i, 0.75F, strategy);
+  }
+  
+  public LongOpenCustomHashSet(Iterator<?> local_i, float local_f, LongHash.Strategy strategy)
+  {
+    this(LongIterators.asLongIterator(local_i), local_f, strategy);
+  }
+  
+  public LongOpenCustomHashSet(Iterator<?> local_i, LongHash.Strategy strategy)
+  {
+    this(LongIterators.asLongIterator(local_i), strategy);
+  }
+  
+  public LongOpenCustomHashSet(long[] local_a, int offset, int length, float local_f, LongHash.Strategy strategy)
+  {
+    this(length < 0 ? 0 : length, local_f, strategy);
+    LongArrays.ensureOffsetLength(local_a, offset, length);
+    for (int local_i = 0; local_i < length; local_i++) {
+      add(local_a[(offset + local_i)]);
+    }
+  }
+  
+  public LongOpenCustomHashSet(long[] local_a, int offset, int length, LongHash.Strategy strategy)
+  {
+    this(local_a, offset, length, 0.75F, strategy);
+  }
+  
+  public LongOpenCustomHashSet(long[] local_a, float local_f, LongHash.Strategy strategy)
+  {
+    this(local_a, 0, local_a.length, local_f, strategy);
+  }
+  
+  public LongOpenCustomHashSet(long[] local_a, LongHash.Strategy strategy)
+  {
+    this(local_a, 0.75F, strategy);
+  }
+  
+  public LongHash.Strategy strategy()
+  {
+    return this.strategy;
+  }
+  
+  public boolean add(long local_k)
+  {
+    for (int pos = HashCommon.murmurHash3(this.strategy.hashCode(local_k)) & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask) {
+      if (this.strategy.equals(this.key[pos], local_k)) {
+        return false;
+      }
+    }
+    this.used[pos] = true;
+    this.key[pos] = local_k;
+    if (++this.size >= this.maxFill) {
+      rehash(HashCommon.arraySize(this.size + 1, this.field_156));
+    }
+    return true;
+  }
+  
+  protected final int shiftKeys(int pos)
+  {
+    int last;
+    for (;;)
+    {
+      for (pos = (last = pos) + 1 & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask)
+      {
+        int slot = HashCommon.murmurHash3(this.strategy.hashCode(this.key[pos])) & this.mask;
+        if (last <= pos ? (last < slot) && (slot <= pos) : (last >= slot) && (slot > pos)) {
+          break;
+        }
+      }
+      if (this.used[pos] == 0) {
+        break;
+      }
+      this.key[last] = this.key[pos];
+    }
+    this.used[last] = false;
+    return last;
+  }
+  
+  public boolean remove(long local_k)
+  {
+    for (int pos = HashCommon.murmurHash3(this.strategy.hashCode(local_k)) & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask) {
+      if (this.strategy.equals(this.key[pos], local_k))
+      {
+        this.size -= 1;
+        shiftKeys(pos);
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  public boolean contains(long local_k)
+  {
+    for (int pos = HashCommon.murmurHash3(this.strategy.hashCode(local_k)) & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask) {
+      if (this.strategy.equals(this.key[pos], local_k)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  public void clear()
+  {
+    if (this.size == 0) {
+      return;
+    }
+    this.size = 0;
+    BooleanArrays.fill(this.used, false);
+  }
+  
+  public int size()
+  {
+    return this.size;
+  }
+  
+  public boolean isEmpty()
+  {
+    return this.size == 0;
+  }
+  
+  @Deprecated
+  public void growthFactor(int growthFactor) {}
+  
+  @Deprecated
+  public int growthFactor()
+  {
+    return 16;
+  }
+  
+  public LongIterator iterator()
+  {
+    return new SetIterator(null);
+  }
+  
+  @Deprecated
+  public boolean rehash()
+  {
+    return true;
+  }
+  
+  public boolean trim()
+  {
+    int local_l = HashCommon.arraySize(this.size, this.field_156);
+    if (local_l >= this.field_157) {
+      return true;
+    }
+    try
+    {
+      rehash(local_l);
+    }
+    catch (OutOfMemoryError cantDoIt)
+    {
+      return false;
+    }
+    return true;
+  }
+  
+  public boolean trim(int local_n)
+  {
+    int local_l = HashCommon.nextPowerOfTwo((int)Math.ceil(local_n / this.field_156));
+    if (this.field_157 <= local_l) {
+      return true;
+    }
+    try
+    {
+      rehash(local_l);
+    }
+    catch (OutOfMemoryError cantDoIt)
+    {
+      return false;
+    }
+    return true;
+  }
+  
+  protected void rehash(int newN)
+  {
+    int local_i = 0;
+    boolean[] used = this.used;
+    long[] key = this.key;
+    int newMask = newN - 1;
+    long[] newKey = new long[newN];
+    boolean[] newUsed = new boolean[newN];
+    int local_j = this.size;
+    while (local_j-- != 0)
+    {
+      while (used[local_i] == 0) {
+        local_i++;
+      }
+      long local_k = key[local_i];
+      for (int pos = HashCommon.murmurHash3(this.strategy.hashCode(local_k)) & newMask; newUsed[pos] != 0; pos = pos + 1 & newMask) {}
+      newUsed[pos] = true;
+      newKey[pos] = local_k;
+      local_i++;
+    }
+    this.field_157 = newN;
+    this.mask = newMask;
+    this.maxFill = HashCommon.maxFill(this.field_157, this.field_156);
+    this.key = newKey;
+    this.used = newUsed;
+  }
+  
+  public LongOpenCustomHashSet clone()
+  {
+    LongOpenCustomHashSet local_c;
+    try
+    {
+      local_c = (LongOpenCustomHashSet)super.clone();
+    }
+    catch (CloneNotSupportedException cantHappen)
+    {
+      throw new InternalError();
+    }
+    local_c.key = ((long[])this.key.clone());
+    local_c.used = ((boolean[])this.used.clone());
+    local_c.strategy = this.strategy;
+    return local_c;
+  }
+  
+  public int hashCode()
+  {
+    int local_h = 0;
+    int local_i = 0;
+    int local_j = this.size;
+    while (local_j-- != 0)
+    {
+      while (this.used[local_i] == 0) {
+        local_i++;
+      }
+      local_h += this.strategy.hashCode(this.key[local_i]);
+      local_i++;
+    }
+    return local_h;
+  }
+  
+  private void writeObject(ObjectOutputStream local_s)
+    throws IOException
+  {
+    LongIterator local_i = iterator();
+    local_s.defaultWriteObject();
+    int local_j = this.size;
+    while (local_j-- != 0) {
+      local_s.writeLong(local_i.nextLong());
+    }
+  }
+  
+  private void readObject(ObjectInputStream local_s)
+    throws IOException, ClassNotFoundException
+  {
+    local_s.defaultReadObject();
+    this.field_157 = HashCommon.arraySize(this.size, this.field_156);
+    this.maxFill = HashCommon.maxFill(this.field_157, this.field_156);
+    this.mask = (this.field_157 - 1);
+    long[] key = this.key = new long[this.field_157];
+    boolean[] used = this.used = new boolean[this.field_157];
+    int local_i = this.size;
+    int pos = 0;
+    while (local_i-- != 0)
+    {
+      long local_k = local_s.readLong();
+      for (pos = HashCommon.murmurHash3(this.strategy.hashCode(local_k)) & this.mask; used[pos] != 0; pos = pos + 1 & this.mask) {}
+      used[pos] = true;
+      key[pos] = local_k;
+    }
+  }
+  
+  private void checkTable() {}
+  
+  private class SetIterator
+    extends AbstractLongIterator
+  {
+    int pos = LongOpenCustomHashSet.this.field_157;
+    int last = -1;
+    int field_386 = LongOpenCustomHashSet.this.size;
+    LongArrayList wrapped;
+    
+    private SetIterator()
+    {
+      boolean[] used = LongOpenCustomHashSet.this.used;
+      while ((this.field_386 != 0) && (used[(--this.pos)] == 0)) {}
+    }
+    
+    public boolean hasNext()
+    {
+      return this.field_386 != 0;
+    }
+    
+    public long nextLong()
+    {
+      if (!hasNext()) {
+        throw new NoSuchElementException();
+      }
+      this.field_386 -= 1;
+      if (this.pos < 0) {
+        return this.wrapped.getLong(-(this.last = --this.pos) - 2);
+      }
+      long retVal = LongOpenCustomHashSet.this.key[(this.last = this.pos)];
+      if (this.field_386 != 0)
+      {
+        boolean[] used = LongOpenCustomHashSet.this.used;
+        while ((this.pos-- != 0) && (used[this.pos] == 0)) {}
+      }
+      return retVal;
+    }
+    
+    final int shiftKeys(int pos)
+    {
+      int last;
+      for (;;)
+      {
+        for (pos = (last = pos) + 1 & LongOpenCustomHashSet.this.mask; LongOpenCustomHashSet.this.used[pos] != 0; pos = pos + 1 & LongOpenCustomHashSet.this.mask)
+        {
+          int slot = HashCommon.murmurHash3(LongOpenCustomHashSet.this.strategy.hashCode(LongOpenCustomHashSet.this.key[pos])) & LongOpenCustomHashSet.this.mask;
+          if (last <= pos ? (last < slot) && (slot <= pos) : (last >= slot) && (slot > pos)) {
+            break;
+          }
+        }
+        if (LongOpenCustomHashSet.this.used[pos] == 0) {
+          break;
+        }
+        if (pos < last)
+        {
+          if (this.wrapped == null) {
+            this.wrapped = new LongArrayList();
+          }
+          this.wrapped.add(LongOpenCustomHashSet.this.key[pos]);
+        }
+        LongOpenCustomHashSet.this.key[last] = LongOpenCustomHashSet.this.key[pos];
+      }
+      LongOpenCustomHashSet.this.used[last] = false;
+      return last;
+    }
+    
+    public void remove()
+    {
+      if (this.last == -1) {
+        throw new IllegalStateException();
+      }
+      if (this.pos < -1)
+      {
+        LongOpenCustomHashSet.this.remove(this.wrapped.getLong(-this.pos - 2));
+        this.last = -1;
+        return;
+      }
+      LongOpenCustomHashSet.this.size -= 1;
+      if ((shiftKeys(this.last) == this.pos) && (this.field_386 > 0))
+      {
+        this.field_386 += 1;
+        nextLong();
+      }
+      this.last = -1;
+    }
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.longs.LongOpenCustomHashSet
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

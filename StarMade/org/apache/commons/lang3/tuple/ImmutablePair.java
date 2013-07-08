@@ -1,43 +1,41 @@
-/*   1:    */package org.apache.commons.lang3.tuple;
-/*   2:    */
-/*  15:    */public final class ImmutablePair<L, R>
-/*  16:    */  extends Pair<L, R>
-/*  17:    */{
-/*  18:    */  private static final long serialVersionUID = 4954918890077093841L;
-/*  19:    */  
-/*  31:    */  public final L left;
-/*  32:    */  
-/*  43:    */  public final R right;
-/*  44:    */  
-/*  56:    */  public static <L, R> ImmutablePair<L, R> of(L left, R right)
-/*  57:    */  {
-/*  58: 58 */    return new ImmutablePair(left, right);
-/*  59:    */  }
-/*  60:    */  
-/*  67:    */  public ImmutablePair(L left, R right)
-/*  68:    */  {
-/*  69: 69 */    this.left = left;
-/*  70: 70 */    this.right = right;
-/*  71:    */  }
-/*  72:    */  
-/*  77:    */  public L getLeft()
-/*  78:    */  {
-/*  79: 79 */    return this.left;
-/*  80:    */  }
-/*  81:    */  
-/*  85:    */  public R getRight()
-/*  86:    */  {
-/*  87: 87 */    return this.right;
-/*  88:    */  }
-/*  89:    */  
-/*  98:    */  public R setValue(R value)
-/*  99:    */  {
-/* 100:100 */    throw new UnsupportedOperationException();
-/* 101:    */  }
-/* 102:    */}
+package org.apache.commons.lang3.tuple;
+
+public final class ImmutablePair<L, R>
+  extends Pair<L, R>
+{
+  private static final long serialVersionUID = 4954918890077093841L;
+  public final L left;
+  public final R right;
+  
+  public static <L, R> ImmutablePair<L, R> of1(L left, R right)
+  {
+    return new ImmutablePair(left, right);
+  }
+  
+  public ImmutablePair(L left, R right)
+  {
+    this.left = left;
+    this.right = right;
+  }
+  
+  public L getLeft()
+  {
+    return this.left;
+  }
+  
+  public R getRight()
+  {
+    return this.right;
+  }
+  
+  public R setValue(R value)
+  {
+    throw new UnsupportedOperationException();
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.apache.commons.lang3.tuple.ImmutablePair
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -185,13 +185,13 @@ public class TextFileReader
     //   4: iconst_0
     //   5: istore 4
     //   7: aload_0
-    //   8: getfield 2	org/hsqldb/persist/TextFileReader:dataFile	Lorg/hsqldb/persist/RandomAccessInterface;
+    //   8: getfield 23	org/hsqldb/persist/TextFileReader:dataFile	Lorg/hsqldb/persist/RandomAccessInterface;
     //   11: iload_1
     //   12: i2l
-    //   13: invokeinterface 11 3 0
+    //   13: invokeinterface 55 3 0
     //   18: aload_0
-    //   19: getfield 2	org/hsqldb/persist/TextFileReader:dataFile	Lorg/hsqldb/persist/RandomAccessInterface;
-    //   22: invokeinterface 12 1 0
+    //   19: getfield 23	org/hsqldb/persist/TextFileReader:dataFile	Lorg/hsqldb/persist/RandomAccessInterface;
+    //   22: invokeinterface 59 1 0
     //   27: istore 5
     //   29: iinc 3 1
     //   32: iload 5
@@ -201,9 +201,9 @@ public class TextFileReader
     //   82: iconst_0
     //   83: istore 4
     //   85: aload_0
-    //   86: getfield 4	org/hsqldb/persist/TextFileReader:rowIn	Lorg/hsqldb/rowio/RowInputInterface;
-    //   89: checkcast 24	org/hsqldb/rowio/RowInputText
-    //   92: invokevirtual 30	org/hsqldb/rowio/RowInputText:skippedLine	()V
+    //   86: getfield 27	org/hsqldb/persist/TextFileReader:rowIn	Lorg/hsqldb/rowio/RowInputInterface;
+    //   89: checkcast 97	org/hsqldb/rowio/RowInputText
+    //   92: invokevirtual 116	org/hsqldb/rowio/RowInputText:skippedLine	()V
     //   95: iload_3
     //   96: istore_2
     //   97: goto +46 -> 143
@@ -212,9 +212,9 @@ public class TextFileReader
     //   105: iconst_0
     //   106: istore 4
     //   108: aload_0
-    //   109: getfield 4	org/hsqldb/persist/TextFileReader:rowIn	Lorg/hsqldb/rowio/RowInputInterface;
-    //   112: checkcast 24	org/hsqldb/rowio/RowInputText
-    //   115: invokevirtual 30	org/hsqldb/rowio/RowInputText:skippedLine	()V
+    //   109: getfield 27	org/hsqldb/persist/TextFileReader:rowIn	Lorg/hsqldb/rowio/RowInputInterface;
+    //   112: checkcast 97	org/hsqldb/rowio/RowInputText
+    //   115: invokevirtual 116	org/hsqldb/rowio/RowInputText:skippedLine	()V
     //   118: goto +25 -> 143
     //   121: iconst_m1
     //   122: ireturn
@@ -223,16 +223,16 @@ public class TextFileReader
     //   128: iconst_0
     //   129: istore 4
     //   131: aload_0
-    //   132: getfield 4	org/hsqldb/persist/TextFileReader:rowIn	Lorg/hsqldb/rowio/RowInputInterface;
-    //   135: checkcast 24	org/hsqldb/rowio/RowInputText
-    //   138: invokevirtual 30	org/hsqldb/rowio/RowInputText:skippedLine	()V
+    //   132: getfield 27	org/hsqldb/persist/TextFileReader:rowIn	Lorg/hsqldb/rowio/RowInputInterface;
+    //   135: checkcast 97	org/hsqldb/rowio/RowInputText
+    //   138: invokevirtual 116	org/hsqldb/rowio/RowInputText:skippedLine	()V
     //   141: iload_2
     //   142: ireturn
     //   143: goto -125 -> 18
     //   146: astore_2
     //   147: sipush 484
     //   150: aload_2
-    //   151: invokestatic 27	org/hsqldb/error/Error:error	(ILjava/lang/Throwable;)Lorg/hsqldb/HsqlException;
+    //   151: invokestatic 107	org/hsqldb/error/Error:error	(ILjava/lang/Throwable;)Lorg/hsqldb/HsqlException;
     //   154: athrow
     // Local variable table:
     //   start	length	slot	name	signature
@@ -262,7 +262,7 @@ public class TextFileReader
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.persist.TextFileReader
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

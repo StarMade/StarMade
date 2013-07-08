@@ -6,76 +6,76 @@ public abstract class Tuple3b
   implements Serializable, Cloneable
 {
   static final long serialVersionUID = -483782685323607044L;
-  public byte x;
-  public byte y;
-  public byte z;
+  public byte field_607;
+  public byte field_608;
+  public byte field_609;
   
   public Tuple3b(byte paramByte1, byte paramByte2, byte paramByte3)
   {
-    this.x = paramByte1;
-    this.y = paramByte2;
-    this.z = paramByte3;
+    this.field_607 = paramByte1;
+    this.field_608 = paramByte2;
+    this.field_609 = paramByte3;
   }
   
   public Tuple3b(byte[] paramArrayOfByte)
   {
-    this.x = paramArrayOfByte[0];
-    this.y = paramArrayOfByte[1];
-    this.z = paramArrayOfByte[2];
+    this.field_607 = paramArrayOfByte[0];
+    this.field_608 = paramArrayOfByte[1];
+    this.field_609 = paramArrayOfByte[2];
   }
   
   public Tuple3b(Tuple3b paramTuple3b)
   {
-    this.x = paramTuple3b.x;
-    this.y = paramTuple3b.y;
-    this.z = paramTuple3b.z;
+    this.field_607 = paramTuple3b.field_607;
+    this.field_608 = paramTuple3b.field_608;
+    this.field_609 = paramTuple3b.field_609;
   }
   
   public Tuple3b()
   {
-    this.x = 0;
-    this.y = 0;
-    this.z = 0;
+    this.field_607 = 0;
+    this.field_608 = 0;
+    this.field_609 = 0;
   }
   
   public String toString()
   {
-    return "(" + (this.x & 0xFF) + ", " + (this.y & 0xFF) + ", " + (this.z & 0xFF) + ")";
+    return "(" + (this.field_607 & 0xFF) + ", " + (this.field_608 & 0xFF) + ", " + (this.field_609 & 0xFF) + ")";
   }
   
   public final void get(byte[] paramArrayOfByte)
   {
-    paramArrayOfByte[0] = this.x;
-    paramArrayOfByte[1] = this.y;
-    paramArrayOfByte[2] = this.z;
+    paramArrayOfByte[0] = this.field_607;
+    paramArrayOfByte[1] = this.field_608;
+    paramArrayOfByte[2] = this.field_609;
   }
   
   public final void get(Tuple3b paramTuple3b)
   {
-    paramTuple3b.x = this.x;
-    paramTuple3b.y = this.y;
-    paramTuple3b.z = this.z;
+    paramTuple3b.field_607 = this.field_607;
+    paramTuple3b.field_608 = this.field_608;
+    paramTuple3b.field_609 = this.field_609;
   }
   
   public final void set(Tuple3b paramTuple3b)
   {
-    this.x = paramTuple3b.x;
-    this.y = paramTuple3b.y;
-    this.z = paramTuple3b.z;
+    this.field_607 = paramTuple3b.field_607;
+    this.field_608 = paramTuple3b.field_608;
+    this.field_609 = paramTuple3b.field_609;
   }
   
   public final void set(byte[] paramArrayOfByte)
   {
-    this.x = paramArrayOfByte[0];
-    this.y = paramArrayOfByte[1];
-    this.z = paramArrayOfByte[2];
+    this.field_607 = paramArrayOfByte[0];
+    this.field_608 = paramArrayOfByte[1];
+    this.field_609 = paramArrayOfByte[2];
   }
   
   public boolean equals(Tuple3b paramTuple3b)
   {
     try
     {
-      return (this.x == paramTuple3b.x) && (this.y == paramTuple3b.y) && (this.z == paramTuple3b.z);
+      return (this.field_607 == paramTuple3b.field_607) && (this.field_608 == paramTuple3b.field_608) && (this.field_609 == paramTuple3b.field_609);
     }
     catch (NullPointerException localNullPointerException) {}
     return false;
@@ -86,7 +86,7 @@ public abstract class Tuple3b
     try
     {
       Tuple3b localTuple3b = (Tuple3b)paramObject;
-      return (this.x == localTuple3b.x) && (this.y == localTuple3b.y) && (this.z == localTuple3b.z);
+      return (this.field_607 == localTuple3b.field_607) && (this.field_608 == localTuple3b.field_608) && (this.field_609 == localTuple3b.field_609);
     }
     catch (NullPointerException localNullPointerException)
     {
@@ -98,7 +98,7 @@ public abstract class Tuple3b
   
   public int hashCode()
   {
-    return (this.x & 0xFF) << 0 | (this.y & 0xFF) << 8 | (this.z & 0xFF) << 16;
+    return (this.field_607 & 0xFF) << 0 | (this.field_608 & 0xFF) << 8 | (this.field_609 & 0xFF) << 16;
   }
   
   public Object clone()
@@ -115,7 +115,7 @@ public abstract class Tuple3b
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     javax.vecmath.Tuple3b
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

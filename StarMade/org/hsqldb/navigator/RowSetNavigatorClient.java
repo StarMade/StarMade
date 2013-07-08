@@ -151,7 +151,7 @@ public class RowSetNavigatorClient
   public void read(RowInputInterface paramRowInputInterface, ResultMetaData paramResultMetaData)
     throws IOException
   {
-    this.id = paramRowInputInterface.readLong();
+    this.field_385 = paramRowInputInterface.readLong();
     this.size = paramRowInputInterface.readInt();
     this.currentOffset = paramRowInputInterface.readInt();
     this.baseBlockSize = paramRowInputInterface.readInt();
@@ -170,7 +170,7 @@ public class RowSetNavigatorClient
     if (i > this.table.length) {
       i = this.table.length;
     }
-    paramRowOutputInterface.writeLong(this.id);
+    paramRowOutputInterface.writeLong(this.field_385);
     paramRowOutputInterface.writeInt(this.size);
     paramRowOutputInterface.writeInt(this.currentOffset);
     paramRowOutputInterface.writeInt(i);
@@ -185,7 +185,7 @@ public class RowSetNavigatorClient
   {
     try
     {
-      RowSetNavigatorClient localRowSetNavigatorClient = this.session.getRows(this.id, paramInt, this.baseBlockSize);
+      RowSetNavigatorClient localRowSetNavigatorClient = this.session.getRows(this.field_385, paramInt, this.baseBlockSize);
       this.table = localRowSetNavigatorClient.table;
       this.currentOffset = localRowSetNavigatorClient.currentOffset;
     }
@@ -205,7 +205,7 @@ public class RowSetNavigatorClient
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.navigator.RowSetNavigatorClient
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

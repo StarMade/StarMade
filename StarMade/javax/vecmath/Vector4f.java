@@ -40,50 +40,50 @@ public class Vector4f
   
   public Vector4f(Tuple3f paramTuple3f)
   {
-    super(paramTuple3f.x, paramTuple3f.y, paramTuple3f.z, 0.0F);
+    super(paramTuple3f.field_615, paramTuple3f.field_616, paramTuple3f.field_617, 0.0F);
   }
   
   public Vector4f() {}
   
   public final void set(Tuple3f paramTuple3f)
   {
-    this.x = paramTuple3f.x;
-    this.y = paramTuple3f.y;
-    this.z = paramTuple3f.z;
-    this.w = 0.0F;
+    this.field_596 = paramTuple3f.field_615;
+    this.field_597 = paramTuple3f.field_616;
+    this.field_598 = paramTuple3f.field_617;
+    this.field_599 = 0.0F;
   }
   
   public final float length()
   {
-    return (float)Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w);
+    return (float)Math.sqrt(this.field_596 * this.field_596 + this.field_597 * this.field_597 + this.field_598 * this.field_598 + this.field_599 * this.field_599);
   }
   
   public final float lengthSquared()
   {
-    return this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w;
+    return this.field_596 * this.field_596 + this.field_597 * this.field_597 + this.field_598 * this.field_598 + this.field_599 * this.field_599;
   }
   
   public final float dot(Vector4f paramVector4f)
   {
-    return this.x * paramVector4f.x + this.y * paramVector4f.y + this.z * paramVector4f.z + this.w * paramVector4f.w;
+    return this.field_596 * paramVector4f.field_596 + this.field_597 * paramVector4f.field_597 + this.field_598 * paramVector4f.field_598 + this.field_599 * paramVector4f.field_599;
   }
   
   public final void normalize(Vector4f paramVector4f)
   {
-    float f = (float)(1.0D / Math.sqrt(paramVector4f.x * paramVector4f.x + paramVector4f.y * paramVector4f.y + paramVector4f.z * paramVector4f.z + paramVector4f.w * paramVector4f.w));
-    paramVector4f.x *= f;
-    paramVector4f.y *= f;
-    paramVector4f.z *= f;
-    paramVector4f.w *= f;
+    float f = (float)(1.0D / Math.sqrt(paramVector4f.field_596 * paramVector4f.field_596 + paramVector4f.field_597 * paramVector4f.field_597 + paramVector4f.field_598 * paramVector4f.field_598 + paramVector4f.field_599 * paramVector4f.field_599));
+    paramVector4f.field_596 *= f;
+    paramVector4f.field_597 *= f;
+    paramVector4f.field_598 *= f;
+    paramVector4f.field_599 *= f;
   }
   
   public final void normalize()
   {
-    float f = (float)(1.0D / Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w));
-    this.x *= f;
-    this.y *= f;
-    this.z *= f;
-    this.w *= f;
+    float f = (float)(1.0D / Math.sqrt(this.field_596 * this.field_596 + this.field_597 * this.field_597 + this.field_598 * this.field_598 + this.field_599 * this.field_599));
+    this.field_596 *= f;
+    this.field_597 *= f;
+    this.field_598 *= f;
+    this.field_599 *= f;
   }
   
   public final float angle(Vector4f paramVector4f)
@@ -100,7 +100,7 @@ public class Vector4f
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     javax.vecmath.Vector4f
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

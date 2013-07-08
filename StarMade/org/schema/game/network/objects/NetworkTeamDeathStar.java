@@ -1,19 +1,19 @@
-/*  1:   */package org.schema.game.network.objects;
-/*  2:   */
-/*  3:   */import kl;
-/*  4:   */import org.schema.schine.network.StateInterface;
-/*  5:   */
-/*  7:   */public class NetworkTeamDeathStar
-/*  8:   */  extends NetworkSegmentController
-/*  9:   */{
-/* 10:   */  public NetworkTeamDeathStar(StateInterface paramStateInterface, kl paramkl)
-/* 11:   */  {
-/* 12:12 */    super(paramStateInterface, paramkl);
-/* 13:   */  }
-/* 14:   */}
+package org.schema.game.network.objects;
+
+import class_782;
+import org.schema.schine.network.StateInterface;
+
+public class NetworkTeamDeathStar
+  extends NetworkSegmentController
+{
+  public NetworkTeamDeathStar(StateInterface paramStateInterface, class_782 paramclass_782)
+  {
+    super(paramStateInterface, paramclass_782);
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.game.network.objects.NetworkTeamDeathStar
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

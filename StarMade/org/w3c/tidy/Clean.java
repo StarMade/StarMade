@@ -3,11 +3,11 @@ package org.w3c.tidy;
 public class Clean
 {
   private int classNum = 1;
-  private TagTable tt;
+  private TagTable field_1747;
   
   public Clean(TagTable paramTagTable)
   {
-    this.tt = paramTagTable;
+    this.field_1747 = paramTagTable;
   }
   
   private StyleProp insertProperty(StyleProp paramStyleProp, String paramString1, String paramString2)
@@ -235,7 +235,7 @@ public class Clean
   
   private boolean niceBody(Lexer paramLexer, Node paramNode)
   {
-    Node localNode = paramNode.findBody(paramLexer.configuration.tt);
+    Node localNode = paramNode.findBody(paramLexer.configuration.field_1881);
     if ((localNode != null) && ((localNode.getAttrByName("background") != null) || (localNode.getAttrByName("bgcolor") != null) || (localNode.getAttrByName("text") != null) || (localNode.getAttrByName("link") != null) || (localNode.getAttrByName("vlink") != null) || (localNode.getAttrByName("alink") != null)))
     {
       Lexer tmp71_70 = paramLexer;
@@ -255,7 +255,7 @@ public class Clean
     AttVal localAttVal = new AttVal(null, null, 34, "type", "text/css");
     localAttVal.dict = AttributeTable.getDefaultAttributeTable().findAttribute(localAttVal);
     localNode1.attributes = localAttVal;
-    Node localNode3 = paramNode.findBody(paramLexer.configuration.tt);
+    Node localNode3 = paramNode.findBody(paramLexer.configuration.field_1881);
     paramLexer.txtstart = paramLexer.lexsize;
     if (localNode3 != null) {
       cleanBodyAttrs(paramLexer, localNode3);
@@ -274,7 +274,7 @@ public class Clean
     }
     paramLexer.txtend = paramLexer.lexsize;
     localNode1.insertNodeAtEnd(paramLexer.newNode((short)4, paramLexer.lexbuf, paramLexer.txtstart, paramLexer.txtend));
-    Node localNode2 = paramNode.findHEAD(paramLexer.configuration.tt);
+    Node localNode2 = paramNode.findHEAD(paramLexer.configuration.field_1881);
     if (localNode2 != null) {
       localNode2.insertNodeAtEnd(localNode1);
     }
@@ -502,22 +502,22 @@ public class Clean
     if (paramString == null) {
       return;
     }
-    if (("6".equals(paramString)) && (paramNode.tag == this.tt.tagP))
+    if (("6".equals(paramString)) && (paramNode.tag == this.field_1747.tagP))
     {
       paramNode.element = "h1";
-      this.tt.findTag(paramNode);
+      this.field_1747.findTag(paramNode);
       return;
     }
-    if (("5".equals(paramString)) && (paramNode.tag == this.tt.tagP))
+    if (("5".equals(paramString)) && (paramNode.tag == this.field_1747.tagP))
     {
       paramNode.element = "h2";
-      this.tt.findTag(paramNode);
+      this.field_1747.findTag(paramNode);
       return;
     }
-    if (("4".equals(paramString)) && (paramNode.tag == this.tt.tagP))
+    if (("4".equals(paramString)) && (paramNode.tag == this.field_1747.tagP))
     {
       paramNode.element = "h3";
-      this.tt.findTag(paramNode);
+      this.field_1747.findTag(paramNode);
       return;
     }
     String str = fontSize2Name(paramString);
@@ -575,7 +575,7 @@ public class Clean
   
   private boolean dir2Div(Lexer paramLexer, Node paramNode)
   {
-    if ((paramNode.tag == this.tt.tagDir) || (paramNode.tag == this.tt.tagUl) || (paramNode.tag == this.tt.tagOl))
+    if ((paramNode.tag == this.field_1747.tagDir) || (paramNode.tag == this.field_1747.tagUl) || (paramNode.tag == this.field_1747.tagOl))
     {
       Node localNode = paramNode.content;
       if (localNode == null) {
@@ -584,13 +584,13 @@ public class Clean
       if (localNode.next != null) {
         return false;
       }
-      if (localNode.tag != this.tt.tagLi) {
+      if (localNode.tag != this.field_1747.tagLi) {
         return false;
       }
       if (!localNode.implicit) {
         return false;
       }
-      paramNode.tag = this.tt.tagDiv;
+      paramNode.tag = this.field_1747.tagDiv;
       paramNode.element = "div";
       addStyleProperty(paramNode, "margin-left: 2em");
       stripOnlyChild(paramNode);
@@ -601,7 +601,7 @@ public class Clean
   
   private boolean center2Div(Lexer paramLexer, Node paramNode, Node[] paramArrayOfNode)
   {
-    if (paramNode.tag == this.tt.tagCenter)
+    if (paramNode.tag == this.field_1747.tagCenter)
     {
       if (paramLexer.configuration.dropFontTags)
       {
@@ -647,7 +647,7 @@ public class Clean
         }
         return true;
       }
-      paramNode.tag = this.tt.tagDiv;
+      paramNode.tag = this.field_1747.tagDiv;
       paramNode.element = "div";
       addStyleProperty(paramNode, "text-align: center");
       return true;
@@ -657,14 +657,14 @@ public class Clean
   
   private boolean mergeDivs(Lexer paramLexer, Node paramNode)
   {
-    if (paramNode.tag != this.tt.tagDiv) {
+    if (paramNode.tag != this.field_1747.tagDiv) {
       return false;
     }
     Node localNode = paramNode.content;
     if (localNode == null) {
       return false;
     }
-    if (localNode.tag != this.tt.tagDiv) {
+    if (localNode.tag != this.field_1747.tagDiv) {
       return false;
     }
     if (localNode.next != null) {
@@ -677,7 +677,7 @@ public class Clean
   
   private boolean nestedList(Lexer paramLexer, Node paramNode, Node[] paramArrayOfNode)
   {
-    if ((paramNode.tag == this.tt.tagUl) || (paramNode.tag == this.tt.tagOl))
+    if ((paramNode.tag == this.field_1747.tagUl) || (paramNode.tag == this.field_1747.tagOl))
     {
       Node localNode1 = paramNode.content;
       if (localNode1 == null) {
@@ -702,7 +702,7 @@ public class Clean
       paramNode.content = null;
       paramNode.next = null;
       paramNode = null;
-      if ((localNode2.prev != null) && ((localNode2.prev.tag == this.tt.tagUl) || (localNode2.prev.tag == this.tt.tagOl)))
+      if ((localNode2.prev != null) && ((localNode2.prev.tag == this.field_1747.tagUl) || (localNode2.prev.tag == this.field_1747.tagOl)))
       {
         paramNode = localNode2;
         localNode2 = paramNode.prev;
@@ -724,9 +724,9 @@ public class Clean
   
   private boolean blockStyle(Lexer paramLexer, Node paramNode)
   {
-    if (((paramNode.tag.model & 0xE8) != 0) && (paramNode.tag != this.tt.tagTable) && (paramNode.tag != this.tt.tagTr) && (paramNode.tag != this.tt.tagLi))
+    if (((paramNode.tag.model & 0xE8) != 0) && (paramNode.tag != this.field_1747.tagTable) && (paramNode.tag != this.field_1747.tagTr) && (paramNode.tag != this.field_1747.tagLi))
     {
-      if (paramNode.tag != this.tt.tagCaption) {
+      if (paramNode.tag != this.field_1747.tagCaption) {
         textAlign(paramLexer, paramNode);
       }
       Node localNode = paramNode.content;
@@ -736,21 +736,21 @@ public class Clean
       if (localNode.next != null) {
         return false;
       }
-      if (localNode.tag == this.tt.tagB)
+      if (localNode.tag == this.field_1747.tagB)
       {
         mergeStyles(paramNode, localNode);
         addStyleProperty(paramNode, "font-weight: bold");
         stripOnlyChild(paramNode);
         return true;
       }
-      if (localNode.tag == this.tt.tagI)
+      if (localNode.tag == this.field_1747.tagI)
       {
         mergeStyles(paramNode, localNode);
         addStyleProperty(paramNode, "font-style: italic");
         stripOnlyChild(paramNode);
         return true;
       }
-      if (localNode.tag == this.tt.tagFont)
+      if (localNode.tag == this.field_1747.tagFont)
       {
         mergeStyles(paramNode, localNode);
         addFontStyles(paramNode, localNode.attributes);
@@ -763,7 +763,7 @@ public class Clean
   
   private boolean inlineStyle(Lexer paramLexer, Node paramNode, Node[] paramArrayOfNode)
   {
-    if ((paramNode.tag != this.tt.tagFont) && ((paramNode.tag.model & 0x210) != 0))
+    if ((paramNode.tag != this.field_1747.tagFont) && ((paramNode.tag.model & 0x210) != 0))
     {
       Node localNode = paramNode.content;
       if (localNode == null) {
@@ -772,21 +772,21 @@ public class Clean
       if (localNode.next != null) {
         return false;
       }
-      if ((localNode.tag == this.tt.tagB) && (paramLexer.configuration.logicalEmphasis))
+      if ((localNode.tag == this.field_1747.tagB) && (paramLexer.configuration.logicalEmphasis))
       {
         mergeStyles(paramNode, localNode);
         addStyleProperty(paramNode, "font-weight: bold");
         stripOnlyChild(paramNode);
         return true;
       }
-      if ((localNode.tag == this.tt.tagI) && (paramLexer.configuration.logicalEmphasis))
+      if ((localNode.tag == this.field_1747.tagI) && (paramLexer.configuration.logicalEmphasis))
       {
         mergeStyles(paramNode, localNode);
         addStyleProperty(paramNode, "font-style: italic");
         stripOnlyChild(paramNode);
         return true;
       }
-      if (localNode.tag == this.tt.tagFont)
+      if (localNode.tag == this.field_1747.tagFont)
       {
         mergeStyles(paramNode, localNode);
         addFontStyles(paramNode, localNode.attributes);
@@ -799,7 +799,7 @@ public class Clean
   
   private boolean font2Span(Lexer paramLexer, Node paramNode, Node[] paramArrayOfNode)
   {
-    if (paramNode.tag == this.tt.tagFont)
+    if (paramNode.tag == this.field_1747.tagFont)
     {
       if (paramLexer.configuration.dropFontTags)
       {
@@ -823,7 +823,7 @@ public class Clean
         localObject1 = localAttVal;
       }
       paramNode.attributes = localObject2;
-      paramNode.tag = this.tt.tagSpan;
+      paramNode.tag = this.field_1747.tagSpan;
       paramNode.element = "span";
       return true;
     }
@@ -928,7 +928,7 @@ public class Clean
     while (paramNode != null)
     {
       Node localNode = paramNode.next;
-      if (((paramNode.tag == this.tt.tagB) || (paramNode.tag == this.tt.tagI)) && (paramNode.parent != null) && (paramNode.parent.tag == paramNode.tag))
+      if (((paramNode.tag == this.field_1747.tagB) || (paramNode.tag == this.field_1747.tagI)) && (paramNode.parent != null) && (paramNode.parent.tag == paramNode.tag))
       {
         arrayOfNode[0] = localNode;
         discardContainer(paramNode, arrayOfNode);
@@ -949,15 +949,15 @@ public class Clean
   {
     while (paramNode != null)
     {
-      if (paramNode.tag == this.tt.tagI)
+      if (paramNode.tag == this.field_1747.tagI)
       {
-        paramNode.element = this.tt.tagEm.name;
-        paramNode.tag = this.tt.tagEm;
+        paramNode.element = this.field_1747.tagEm.name;
+        paramNode.tag = this.field_1747.tagEm;
       }
-      else if (paramNode.tag == this.tt.tagB)
+      else if (paramNode.tag == this.field_1747.tagB)
       {
-        paramNode.element = this.tt.tagStrong.name;
-        paramNode.tag = this.tt.tagStrong;
+        paramNode.element = this.field_1747.tagStrong.name;
+        paramNode.tag = this.field_1747.tagStrong;
       }
       if (paramNode.content != null) {
         emFromI(paramNode.content);
@@ -976,8 +976,8 @@ public class Clean
       if ((paramNode.tag != null) && (paramNode.tag.getParser() == ParserImpl.LIST) && (paramNode.hasOneChild()) && (paramNode.content.implicit))
       {
         stripOnlyChild(paramNode);
-        paramNode.element = this.tt.tagBlockquote.name;
-        paramNode.tag = this.tt.tagBlockquote;
+        paramNode.element = this.field_1747.tagBlockquote.name;
+        paramNode.tag = this.field_1747.tagBlockquote;
         paramNode.implicit = true;
       }
       paramNode = paramNode.next;
@@ -988,10 +988,10 @@ public class Clean
   {
     while (paramNode != null)
     {
-      if ((paramNode.tag == this.tt.tagBlockquote) && (paramNode.implicit))
+      if ((paramNode.tag == this.field_1747.tagBlockquote) && (paramNode.implicit))
       {
         int i = 1;
-        while ((paramNode.hasOneChild()) && (paramNode.content.tag == this.tt.tagBlockquote) && (paramNode.implicit))
+        while ((paramNode.hasOneChild()) && (paramNode.content.tag == this.field_1747.tagBlockquote) && (paramNode.implicit))
         {
           i++;
           stripOnlyChild(paramNode);
@@ -1000,8 +1000,8 @@ public class Clean
           bQ2Div(paramNode.content);
         }
         String str = "margin-left: " + new Integer(2 * i).toString() + "em";
-        paramNode.element = this.tt.tagDiv.name;
-        paramNode.tag = this.tt.tagDiv;
+        paramNode.element = this.field_1747.tagDiv.name;
+        paramNode.tag = this.field_1747.tagDiv;
         AttVal localAttVal = paramNode.getAttrByName("style");
         if ((localAttVal != null) && (localAttVal.value != null)) {
           localAttVal.value = (str + "; " + localAttVal.value);
@@ -1020,7 +1020,7 @@ public class Clean
   Node findEnclosingCell(Node paramNode)
   {
     for (Node localNode = paramNode; localNode != null; localNode = localNode.parent) {
-      if (localNode.tag == this.tt.tagTd) {
+      if (localNode.tag == this.field_1747.tagTd) {
         return localNode;
       }
     }
@@ -1081,7 +1081,7 @@ public class Clean
       localAttVal = ((AttVal)localObject1).next;
       if ((((AttVal)localObject1).attribute != null) && (((AttVal)localObject1).value != null) && (((AttVal)localObject1).attribute.equals("class")) && ((((AttVal)localObject1).value.equals("Code")) || (!((AttVal)localObject1).value.startsWith("Mso")))) {
         localObject2 = localObject1;
-      } else if ((((AttVal)localObject1).attribute != null) && ((((AttVal)localObject1).attribute.equals("class")) || (((AttVal)localObject1).attribute.equals("style")) || (((AttVal)localObject1).attribute.equals("lang")) || (((AttVal)localObject1).attribute.startsWith("x:")) || (((((AttVal)localObject1).attribute.equals("height")) || (((AttVal)localObject1).attribute.equals("width"))) && ((paramNode.tag == this.tt.tagTd) || (paramNode.tag == this.tt.tagTr) || (paramNode.tag == this.tt.tagTh)))))
+      } else if ((((AttVal)localObject1).attribute != null) && ((((AttVal)localObject1).attribute.equals("class")) || (((AttVal)localObject1).attribute.equals("style")) || (((AttVal)localObject1).attribute.equals("lang")) || (((AttVal)localObject1).attribute.startsWith("x:")) || (((((AttVal)localObject1).attribute.equals("height")) || (((AttVal)localObject1).attribute.equals("width"))) && ((paramNode.tag == this.field_1747.tagTd) || (paramNode.tag == this.field_1747.tagTr) || (paramNode.tag == this.field_1747.tagTh)))))
       {
         if (localObject2 != null) {
           localObject2.next = localAttVal;
@@ -1197,24 +1197,24 @@ public class Clean
     Node localNode = null;
     while (paramNode != null)
     {
-      if (paramNode.tag == this.tt.tagHtml)
+      if (paramNode.tag == this.field_1747.tagHtml)
       {
         if (paramNode.getAttrByName("xmlns:o") == null) {
           return;
         }
-        paramLexer.configuration.tt.freeAttrs(paramNode);
+        paramLexer.configuration.field_1881.freeAttrs(paramNode);
       }
       Object localObject1;
       Object localObject2;
-      if ((paramNode.tag == this.tt.tagP) && (noMargins(paramNode)))
+      if ((paramNode.tag == this.field_1747.tagP) && (noMargins(paramNode)))
       {
-        Node.coerceNode(paramLexer, paramNode, this.tt.tagPre);
+        Node.coerceNode(paramLexer, paramNode, this.field_1747.tagPre);
         purgeWord2000Attributes(paramNode);
         if (paramNode.content != null) {
           cleanWord2000(paramLexer, paramNode.content);
         }
         localObject1 = paramNode;
-        for (paramNode = paramNode.next; (paramNode.tag == this.tt.tagP) && (noMargins(paramNode)); paramNode = (Node)localObject2)
+        for (paramNode = paramNode.next; (paramNode.tag == this.field_1747.tagP) && (noMargins(paramNode)); paramNode = (Node)localObject2)
         {
           localObject2 = paramNode.next;
           paramNode.removeNode();
@@ -1230,39 +1230,39 @@ public class Clean
       {
         paramNode = stripSpan(paramLexer, paramNode);
       }
-      else if ((paramNode.tag == this.tt.tagStyle) || (paramNode.tag == this.tt.tagMeta) || (paramNode.type == 2))
+      else if ((paramNode.tag == this.field_1747.tagStyle) || (paramNode.tag == this.field_1747.tagMeta) || (paramNode.type == 2))
       {
         paramNode = Node.discardElement(paramNode);
       }
-      else if ((paramNode.tag == this.tt.tagSpan) || (paramNode.tag == this.tt.tagFont))
+      else if ((paramNode.tag == this.field_1747.tagSpan) || (paramNode.tag == this.field_1747.tagFont))
       {
         paramNode = stripSpan(paramLexer, paramNode);
       }
-      else if (paramNode.tag == this.tt.tagLink)
+      else if (paramNode.tag == this.field_1747.tagLink)
       {
         localObject1 = paramNode.getAttrByName("rel");
         if ((localObject1 != null) && (((AttVal)localObject1).value != null) && (((AttVal)localObject1).value.equals("File-List"))) {
           paramNode = Node.discardElement(paramNode);
         }
       }
-      else if ((paramNode.content == null) && (paramNode.tag == this.tt.tagP))
+      else if ((paramNode.content == null) && (paramNode.tag == this.field_1747.tagP))
       {
         paramNode = Node.discardElement(paramNode);
       }
       else
       {
-        if (paramNode.tag == this.tt.tagP)
+        if (paramNode.tag == this.field_1747.tagP)
         {
           localObject1 = paramNode.getAttrByName("class");
           localObject2 = paramNode.getAttrByName("style");
           Object localObject3;
           if ((localObject1 != null) && (((AttVal)localObject1).value != null) && ((((AttVal)localObject1).value.equals("MsoListBullet")) || (((AttVal)localObject1).value.equals("MsoListNumber")) || ((localObject2 != null) && (((AttVal)localObject2).value.indexOf("mso-list:") != -1))))
           {
-            localObject3 = this.tt.tagUl;
+            localObject3 = this.field_1747.tagUl;
             if (((AttVal)localObject1).value.equals("MsoListNumber")) {
-              localObject3 = this.tt.tagOl;
+              localObject3 = this.field_1747.tagOl;
             }
-            Node.coerceNode(paramLexer, paramNode, this.tt.tagLi);
+            Node.coerceNode(paramLexer, paramNode, this.field_1747.tagLi);
             if ((localNode == null) || (localNode.tag != localObject3))
             {
               localNode = paramLexer.inferredTag(((Dict)localObject3).name);
@@ -1280,7 +1280,7 @@ public class Clean
           {
             localObject3 = paramLexer.newLineNode();
             normalizeSpaces(paramLexer, paramNode);
-            if ((localNode == null) || (localNode.tag != this.tt.tagPre))
+            if ((localNode == null) || (localNode.tag != this.field_1747.tagPre))
             {
               localNode = paramLexer.inferredTag("pre");
               Node.insertNodeBeforeElement(paramNode, localNode);
@@ -1313,14 +1313,14 @@ public class Clean
   
   public boolean isWord2000(Node paramNode)
   {
-    Node localNode3 = paramNode.findHTML(this.tt);
+    Node localNode3 = paramNode.findHTML(this.field_1747);
     if ((localNode3 != null) && (localNode3.getAttrByName("xmlns:o") != null)) {
       return true;
     }
-    Node localNode2 = paramNode.findHEAD(this.tt);
+    Node localNode2 = paramNode.findHEAD(this.field_1747);
     if (localNode2 != null) {
       for (Node localNode1 = localNode2.content; localNode1 != null; localNode1 = localNode1.next) {
-        if (localNode1.tag == this.tt.tagMeta)
+        if (localNode1.tag == this.field_1747.tagMeta)
         {
           AttVal localAttVal = localNode1.getAttrByName("name");
           if ((localAttVal != null) && (localAttVal.value != null) && ("generator".equals(localAttVal.value)))
@@ -1343,7 +1343,7 @@ public class Clean
     }
     Object localObject2 = null;
     Object localObject3 = null;
-    TagTable localTagTable = paramLexer.configuration.tt;
+    TagTable localTagTable = paramLexer.configuration.field_1881;
     for (Object localObject1 = paramNode.content; localObject1 != null; localObject1 = ((Node)localObject1).next)
     {
       if (((Node)localObject1).tag == localTagTable.tagHead) {
@@ -1381,7 +1381,7 @@ public class Clean
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.w3c.tidy.Clean
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

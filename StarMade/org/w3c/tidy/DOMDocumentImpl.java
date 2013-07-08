@@ -19,7 +19,7 @@ public class DOMDocumentImpl
   extends DOMNodeImpl
   implements Document
 {
-  private TagTable tt = new TagTable();
+  private TagTable field_372 = new TagTable();
   
   protected DOMDocumentImpl(Node paramNode)
   {
@@ -62,7 +62,7 @@ public class DOMDocumentImpl
   public Element createElement(String paramString)
     throws DOMException
   {
-    Node localNode = new Node((short)7, null, 0, 0, paramString, this.tt);
+    Node localNode = new Node((short)7, null, 0, 0, paramString, this.field_372);
     if (localNode != null)
     {
       if (localNode.tag == null) {
@@ -224,7 +224,7 @@ public class DOMDocumentImpl
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.w3c.tidy.DOMDocumentImpl
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -1,28 +1,30 @@
-/*  1:   */package org.schema.game.network.objects;
-/*  2:   */
-/*  3:   */import org.schema.schine.network.StateInterface;
-/*  4:   */import org.schema.schine.network.objects.NetworkEntity;
-/*  5:   */import org.schema.schine.network.objects.remote.RemoteBoolean;
-/*  6:   */import org.schema.schine.network.objects.remote.RemoteInteger;
-/*  7:   */import org.schema.schine.network.objects.remote.RemoteString;
-/*  8:   */
-/*  9:   */public class NetworkPlayerCharacter
-/* 10:   */  extends NetworkEntity
-/* 11:   */{
-/* 12:12 */  public RemoteInteger clientOwnerId = new RemoteInteger(Integer.valueOf(-1), this);
-/* 13:   */  
-/* 14:14 */  public RemoteString uniqueId = new RemoteString(this);
-/* 15:15 */  public RemoteBoolean spawnedOnServer = new RemoteBoolean(this);
-/* 16:   */  
-/* 17:17 */  public NetworkPlayerCharacter(StateInterface paramStateInterface) { super(paramStateInterface); }
-/* 18:   */  
-/* 19:   */  public void onDelete(StateInterface paramStateInterface) {}
-/* 20:   */  
-/* 21:   */  public void onInit(StateInterface paramStateInterface) {}
-/* 22:   */}
+package org.schema.game.network.objects;
+
+import org.schema.schine.network.StateInterface;
+import org.schema.schine.network.objects.NetworkEntity;
+import org.schema.schine.network.objects.remote.RemoteBoolean;
+import org.schema.schine.network.objects.remote.RemoteInteger;
+import org.schema.schine.network.objects.remote.RemoteString;
+
+public class NetworkPlayerCharacter
+  extends NetworkEntity
+{
+  public RemoteInteger clientOwnerId = new RemoteInteger(Integer.valueOf(-1), this);
+  public RemoteString uniqueId = new RemoteString(this);
+  public RemoteBoolean spawnedOnServer = new RemoteBoolean(this);
+  
+  public NetworkPlayerCharacter(StateInterface paramStateInterface)
+  {
+    super(paramStateInterface);
+  }
+  
+  public void onDelete(StateInterface paramStateInterface) {}
+  
+  public void onInit(StateInterface paramStateInterface) {}
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.game.network.objects.NetworkPlayerCharacter
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

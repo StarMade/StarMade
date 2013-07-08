@@ -1,47 +1,54 @@
-/*  1:   */package it.unimi.dsi.fastutil.bytes;
-/*  2:   */
-/*  3:   */import it.unimi.dsi.fastutil.AbstractStack;
-/*  4:   */
-/* 50:   */public abstract class AbstractByteStack
-/* 51:   */  extends AbstractStack<Byte>
-/* 52:   */  implements ByteStack
-/* 53:   */{
-/* 54:   */  public void push(Byte o)
-/* 55:   */  {
-/* 56:56 */    push(o.byteValue());
-/* 57:   */  }
-/* 58:   */  
-/* 59:   */  public Byte pop() {
-/* 60:60 */    return Byte.valueOf(popByte());
-/* 61:   */  }
-/* 62:   */  
-/* 63:   */  public Byte top() {
-/* 64:64 */    return Byte.valueOf(topByte());
-/* 65:   */  }
-/* 66:   */  
-/* 67:   */  public Byte peek(int i) {
-/* 68:68 */    return Byte.valueOf(peekByte(i));
-/* 69:   */  }
-/* 70:   */  
-/* 71:   */  public void push(byte k) {
-/* 72:72 */    push(Byte.valueOf(k));
-/* 73:   */  }
-/* 74:   */  
-/* 75:   */  public byte popByte() {
-/* 76:76 */    return pop().byteValue();
-/* 77:   */  }
-/* 78:   */  
-/* 79:   */  public byte topByte() {
-/* 80:80 */    return top().byteValue();
-/* 81:   */  }
-/* 82:   */  
-/* 83:   */  public byte peekByte(int i) {
-/* 84:84 */    return peek(i).byteValue();
-/* 85:   */  }
-/* 86:   */}
+package it.unimi.dsi.fastutil.bytes;
+
+import it.unimi.dsi.fastutil.AbstractStack;
+
+public abstract class AbstractByteStack
+  extends AbstractStack<Byte>
+  implements ByteStack
+{
+  public void push(Byte local_o)
+  {
+    push(local_o.byteValue());
+  }
+  
+  public Byte pop()
+  {
+    return Byte.valueOf(popByte());
+  }
+  
+  public Byte top()
+  {
+    return Byte.valueOf(topByte());
+  }
+  
+  public Byte peek(int local_i)
+  {
+    return Byte.valueOf(peekByte(local_i));
+  }
+  
+  public void push(byte local_k)
+  {
+    push(Byte.valueOf(local_k));
+  }
+  
+  public byte popByte()
+  {
+    return pop().byteValue();
+  }
+  
+  public byte topByte()
+  {
+    return top().byteValue();
+  }
+  
+  public byte peekByte(int local_i)
+  {
+    return peek(local_i).byteValue();
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.bytes.AbstractByteStack
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

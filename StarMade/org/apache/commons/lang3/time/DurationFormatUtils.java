@@ -1,430 +1,464 @@
-/*   1:    */package org.apache.commons.lang3.time;
-/*   2:    */
-/*   3:    */import java.util.ArrayList;
-/*   4:    */import java.util.Calendar;
-/*   5:    */import java.util.Date;
-/*   6:    */import java.util.GregorianCalendar;
-/*   7:    */import java.util.TimeZone;
-/*   8:    */import org.apache.commons.lang3.StringUtils;
-/*   9:    */
-/*  70:    */public class DurationFormatUtils
-/*  71:    */{
-/*  72:    */  public static final String ISO_EXTENDED_FORMAT_PATTERN = "'P'yyyy'Y'M'M'd'DT'H'H'm'M's.S'S'";
-/*  73:    */  
-/*  74:    */  public static String formatDurationHMS(long durationMillis)
-/*  75:    */  {
-/*  76: 76 */    return formatDuration(durationMillis, "H:mm:ss.SSS");
-/*  77:    */  }
-/*  78:    */  
-/*  89:    */  public static String formatDurationISO(long durationMillis)
-/*  90:    */  {
-/*  91: 91 */    return formatDuration(durationMillis, "'P'yyyy'Y'M'M'd'DT'H'H'm'M's.S'S'", false);
-/*  92:    */  }
-/*  93:    */  
-/* 104:    */  public static String formatDuration(long durationMillis, String format)
-/* 105:    */  {
-/* 106:106 */    return formatDuration(durationMillis, format, true);
-/* 107:    */  }
-/* 108:    */  
-/* 122:    */  public static String formatDuration(long durationMillis, String format, boolean padWithZeros)
-/* 123:    */  {
-/* 124:124 */    Token[] tokens = lexx(format);
-/* 125:    */    
-/* 126:126 */    int days = 0;
-/* 127:127 */    int hours = 0;
-/* 128:128 */    int minutes = 0;
-/* 129:129 */    int seconds = 0;
-/* 130:130 */    int milliseconds = 0;
-/* 131:    */    
-/* 132:132 */    if (Token.containsTokenWithValue(tokens, d)) {
-/* 133:133 */      days = (int)(durationMillis / 86400000L);
-/* 134:134 */      durationMillis -= days * 86400000L;
-/* 135:    */    }
-/* 136:136 */    if (Token.containsTokenWithValue(tokens, H)) {
-/* 137:137 */      hours = (int)(durationMillis / 3600000L);
-/* 138:138 */      durationMillis -= hours * 3600000L;
-/* 139:    */    }
-/* 140:140 */    if (Token.containsTokenWithValue(tokens, m)) {
-/* 141:141 */      minutes = (int)(durationMillis / 60000L);
-/* 142:142 */      durationMillis -= minutes * 60000L;
-/* 143:    */    }
-/* 144:144 */    if (Token.containsTokenWithValue(tokens, s)) {
-/* 145:145 */      seconds = (int)(durationMillis / 1000L);
-/* 146:146 */      durationMillis -= seconds * 1000L;
-/* 147:    */    }
-/* 148:148 */    if (Token.containsTokenWithValue(tokens, S)) {
-/* 149:149 */      milliseconds = (int)durationMillis;
-/* 150:    */    }
-/* 151:    */    
-/* 152:152 */    return format(tokens, 0, 0, days, hours, minutes, seconds, milliseconds, padWithZeros);
-/* 153:    */  }
-/* 154:    */  
-/* 172:    */  public static String formatDurationWords(long durationMillis, boolean suppressLeadingZeroElements, boolean suppressTrailingZeroElements)
-/* 173:    */  {
-/* 174:174 */    String duration = formatDuration(durationMillis, "d' days 'H' hours 'm' minutes 's' seconds'");
-/* 175:175 */    if (suppressLeadingZeroElements)
-/* 176:    */    {
-/* 177:177 */      duration = " " + duration;
-/* 178:178 */      String tmp = StringUtils.replaceOnce(duration, " 0 days", "");
-/* 179:179 */      if (tmp.length() != duration.length()) {
-/* 180:180 */        duration = tmp;
-/* 181:181 */        tmp = StringUtils.replaceOnce(duration, " 0 hours", "");
-/* 182:182 */        if (tmp.length() != duration.length()) {
-/* 183:183 */          duration = tmp;
-/* 184:184 */          tmp = StringUtils.replaceOnce(duration, " 0 minutes", "");
-/* 185:185 */          duration = tmp;
-/* 186:186 */          if (tmp.length() != duration.length()) {
-/* 187:187 */            duration = StringUtils.replaceOnce(tmp, " 0 seconds", "");
-/* 188:    */          }
-/* 189:    */        }
-/* 190:    */      }
-/* 191:191 */      if (duration.length() != 0)
-/* 192:    */      {
-/* 193:193 */        duration = duration.substring(1);
-/* 194:    */      }
-/* 195:    */    }
-/* 196:196 */    if (suppressTrailingZeroElements) {
-/* 197:197 */      String tmp = StringUtils.replaceOnce(duration, " 0 seconds", "");
-/* 198:198 */      if (tmp.length() != duration.length()) {
-/* 199:199 */        duration = tmp;
-/* 200:200 */        tmp = StringUtils.replaceOnce(duration, " 0 minutes", "");
-/* 201:201 */        if (tmp.length() != duration.length()) {
-/* 202:202 */          duration = tmp;
-/* 203:203 */          tmp = StringUtils.replaceOnce(duration, " 0 hours", "");
-/* 204:204 */          if (tmp.length() != duration.length()) {
-/* 205:205 */            duration = StringUtils.replaceOnce(tmp, " 0 days", "");
-/* 206:    */          }
-/* 207:    */        }
-/* 208:    */      }
-/* 209:    */    }
-/* 210:    */    
-/* 211:211 */    duration = " " + duration;
-/* 212:212 */    duration = StringUtils.replaceOnce(duration, " 1 seconds", " 1 second");
-/* 213:213 */    duration = StringUtils.replaceOnce(duration, " 1 minutes", " 1 minute");
-/* 214:214 */    duration = StringUtils.replaceOnce(duration, " 1 hours", " 1 hour");
-/* 215:215 */    duration = StringUtils.replaceOnce(duration, " 1 days", " 1 day");
-/* 216:216 */    return duration.trim();
-/* 217:    */  }
-/* 218:    */  
-/* 228:    */  public static String formatPeriodISO(long startMillis, long endMillis)
-/* 229:    */  {
-/* 230:230 */    return formatPeriod(startMillis, endMillis, "'P'yyyy'Y'M'M'd'DT'H'H'm'M's.S'S'", false, TimeZone.getDefault());
-/* 231:    */  }
-/* 232:    */  
-/* 241:    */  public static String formatPeriod(long startMillis, long endMillis, String format)
-/* 242:    */  {
-/* 243:243 */    return formatPeriod(startMillis, endMillis, format, true, TimeZone.getDefault());
-/* 244:    */  }
-/* 245:    */  
-/* 276:    */  public static String formatPeriod(long startMillis, long endMillis, String format, boolean padWithZeros, TimeZone timezone)
-/* 277:    */  {
-/* 278:278 */    Token[] tokens = lexx(format);
-/* 279:    */    
-/* 282:282 */    Calendar start = Calendar.getInstance(timezone);
-/* 283:283 */    start.setTime(new Date(startMillis));
-/* 284:284 */    Calendar end = Calendar.getInstance(timezone);
-/* 285:285 */    end.setTime(new Date(endMillis));
-/* 286:    */    
-/* 288:288 */    int milliseconds = end.get(14) - start.get(14);
-/* 289:289 */    int seconds = end.get(13) - start.get(13);
-/* 290:290 */    int minutes = end.get(12) - start.get(12);
-/* 291:291 */    int hours = end.get(11) - start.get(11);
-/* 292:292 */    int days = end.get(5) - start.get(5);
-/* 293:293 */    int months = end.get(2) - start.get(2);
-/* 294:294 */    int years = end.get(1) - start.get(1);
-/* 295:    */    
-/* 297:297 */    while (milliseconds < 0) {
-/* 298:298 */      milliseconds += 1000;
-/* 299:299 */      seconds--;
-/* 300:    */    }
-/* 301:301 */    while (seconds < 0) {
-/* 302:302 */      seconds += 60;
-/* 303:303 */      minutes--;
-/* 304:    */    }
-/* 305:305 */    while (minutes < 0) {
-/* 306:306 */      minutes += 60;
-/* 307:307 */      hours--;
-/* 308:    */    }
-/* 309:309 */    while (hours < 0) {
-/* 310:310 */      hours += 24;
-/* 311:311 */      days--;
-/* 312:    */    }
-/* 313:    */    
-/* 314:314 */    if (Token.containsTokenWithValue(tokens, M)) {
-/* 315:315 */      while (days < 0) {
-/* 316:316 */        days += start.getActualMaximum(5);
-/* 317:317 */        months--;
-/* 318:318 */        start.add(2, 1);
-/* 319:    */      }
-/* 320:    */      
-/* 321:321 */      while (months < 0) {
-/* 322:322 */        months += 12;
-/* 323:323 */        years--;
-/* 324:    */      }
-/* 325:    */      
-/* 326:326 */      if ((!Token.containsTokenWithValue(tokens, y)) && (years != 0)) {
-/* 327:327 */        while (years != 0) {
-/* 328:328 */          months += 12 * years;
-/* 329:329 */          years = 0;
-/* 330:    */        }
-/* 331:    */      }
-/* 332:    */    }
-/* 333:    */    else
-/* 334:    */    {
-/* 335:335 */      if (!Token.containsTokenWithValue(tokens, y)) {
-/* 336:336 */        int target = end.get(1);
-/* 337:337 */        if (months < 0)
-/* 338:    */        {
-/* 339:339 */          target--;
-/* 340:    */        }
-/* 341:    */        
-/* 342:342 */        while (start.get(1) != target) {
-/* 343:343 */          days += start.getActualMaximum(6) - start.get(6);
-/* 344:    */          
-/* 346:346 */          if (((start instanceof GregorianCalendar)) && (start.get(2) == 1) && (start.get(5) == 29))
-/* 347:    */          {
-/* 349:349 */            days++;
-/* 350:    */          }
-/* 351:    */          
-/* 352:352 */          start.add(1, 1);
-/* 353:    */          
-/* 354:354 */          days += start.get(6);
-/* 355:    */        }
-/* 356:    */        
-/* 357:357 */        years = 0;
-/* 358:    */      }
-/* 359:    */      
-/* 360:360 */      while (start.get(2) != end.get(2)) {
-/* 361:361 */        days += start.getActualMaximum(5);
-/* 362:362 */        start.add(2, 1);
-/* 363:    */      }
-/* 364:    */      
-/* 365:365 */      months = 0;
-/* 366:    */      
-/* 367:367 */      while (days < 0) {
-/* 368:368 */        days += start.getActualMaximum(5);
-/* 369:369 */        months--;
-/* 370:370 */        start.add(2, 1);
-/* 371:    */      }
-/* 372:    */    }
-/* 373:    */    
-/* 379:379 */    if (!Token.containsTokenWithValue(tokens, d)) {
-/* 380:380 */      hours += 24 * days;
-/* 381:381 */      days = 0;
-/* 382:    */    }
-/* 383:383 */    if (!Token.containsTokenWithValue(tokens, H)) {
-/* 384:384 */      minutes += 60 * hours;
-/* 385:385 */      hours = 0;
-/* 386:    */    }
-/* 387:387 */    if (!Token.containsTokenWithValue(tokens, m)) {
-/* 388:388 */      seconds += 60 * minutes;
-/* 389:389 */      minutes = 0;
-/* 390:    */    }
-/* 391:391 */    if (!Token.containsTokenWithValue(tokens, s)) {
-/* 392:392 */      milliseconds += 1000 * seconds;
-/* 393:393 */      seconds = 0;
-/* 394:    */    }
-/* 395:    */    
-/* 396:396 */    return format(tokens, years, months, days, hours, minutes, seconds, milliseconds, padWithZeros);
-/* 397:    */  }
-/* 398:    */  
-/* 414:    */  static String format(Token[] tokens, int years, int months, int days, int hours, int minutes, int seconds, int milliseconds, boolean padWithZeros)
-/* 415:    */  {
-/* 416:416 */    StringBuffer buffer = new StringBuffer();
-/* 417:417 */    boolean lastOutputSeconds = false;
-/* 418:418 */    int sz = tokens.length;
-/* 419:419 */    for (int i = 0; i < sz; i++) {
-/* 420:420 */      Token token = tokens[i];
-/* 421:421 */      Object value = token.getValue();
-/* 422:422 */      int count = token.getCount();
-/* 423:423 */      if ((value instanceof StringBuffer)) {
-/* 424:424 */        buffer.append(value.toString());
-/* 425:    */      }
-/* 426:426 */      else if (value == y) {
-/* 427:427 */        buffer.append(padWithZeros ? StringUtils.leftPad(Integer.toString(years), count, '0') : Integer.toString(years));
-/* 428:    */        
-/* 429:429 */        lastOutputSeconds = false;
-/* 430:430 */      } else if (value == M) {
-/* 431:431 */        buffer.append(padWithZeros ? StringUtils.leftPad(Integer.toString(months), count, '0') : Integer.toString(months));
-/* 432:    */        
-/* 433:433 */        lastOutputSeconds = false;
-/* 434:434 */      } else if (value == d) {
-/* 435:435 */        buffer.append(padWithZeros ? StringUtils.leftPad(Integer.toString(days), count, '0') : Integer.toString(days));
-/* 436:    */        
-/* 437:437 */        lastOutputSeconds = false;
-/* 438:438 */      } else if (value == H) {
-/* 439:439 */        buffer.append(padWithZeros ? StringUtils.leftPad(Integer.toString(hours), count, '0') : Integer.toString(hours));
-/* 440:    */        
-/* 441:441 */        lastOutputSeconds = false;
-/* 442:442 */      } else if (value == m) {
-/* 443:443 */        buffer.append(padWithZeros ? StringUtils.leftPad(Integer.toString(minutes), count, '0') : Integer.toString(minutes));
-/* 444:    */        
-/* 445:445 */        lastOutputSeconds = false;
-/* 446:446 */      } else if (value == s) {
-/* 447:447 */        buffer.append(padWithZeros ? StringUtils.leftPad(Integer.toString(seconds), count, '0') : Integer.toString(seconds));
-/* 448:    */        
-/* 449:449 */        lastOutputSeconds = true;
-/* 450:450 */      } else if (value == S) {
-/* 451:451 */        if (lastOutputSeconds) {
-/* 452:452 */          milliseconds += 1000;
-/* 453:453 */          String str = padWithZeros ? StringUtils.leftPad(Integer.toString(milliseconds), count, '0') : Integer.toString(milliseconds);
-/* 454:    */          
-/* 456:456 */          buffer.append(str.substring(1));
-/* 457:    */        } else {
-/* 458:458 */          buffer.append(padWithZeros ? StringUtils.leftPad(Integer.toString(milliseconds), count, '0') : Integer.toString(milliseconds));
-/* 459:    */        }
-/* 460:    */        
-/* 462:462 */        lastOutputSeconds = false;
-/* 463:    */      }
-/* 464:    */    }
-/* 465:    */    
-/* 466:466 */    return buffer.toString();
-/* 467:    */  }
-/* 468:    */  
-/* 469:469 */  static final Object y = "y";
-/* 470:470 */  static final Object M = "M";
-/* 471:471 */  static final Object d = "d";
-/* 472:472 */  static final Object H = "H";
-/* 473:473 */  static final Object m = "m";
-/* 474:474 */  static final Object s = "s";
-/* 475:475 */  static final Object S = "S";
-/* 476:    */  
-/* 482:    */  static Token[] lexx(String format)
-/* 483:    */  {
-/* 484:484 */    char[] array = format.toCharArray();
-/* 485:485 */    ArrayList<Token> list = new ArrayList(array.length);
-/* 486:    */    
-/* 487:487 */    boolean inLiteral = false;
-/* 488:488 */    StringBuffer buffer = null;
-/* 489:489 */    Token previous = null;
-/* 490:490 */    int sz = array.length;
-/* 491:491 */    for (int i = 0; i < sz; i++) {
-/* 492:492 */      char ch = array[i];
-/* 493:493 */      if ((inLiteral) && (ch != '\'')) {
-/* 494:494 */        buffer.append(ch);
-/* 495:    */      }
-/* 496:    */      else {
-/* 497:497 */        Object value = null;
-/* 498:498 */        switch (ch)
-/* 499:    */        {
-/* 500:    */        case '\'': 
-/* 501:501 */          if (inLiteral) {
-/* 502:502 */            buffer = null;
-/* 503:503 */            inLiteral = false;
-/* 504:    */          } else {
-/* 505:505 */            buffer = new StringBuffer();
-/* 506:506 */            list.add(new Token(buffer));
-/* 507:507 */            inLiteral = true;
-/* 508:    */          }
-/* 509:509 */          break;
-/* 510:510 */        case 'y':  value = y;break;
-/* 511:511 */        case 'M':  value = M;break;
-/* 512:512 */        case 'd':  value = d;break;
-/* 513:513 */        case 'H':  value = H;break;
-/* 514:514 */        case 'm':  value = m;break;
-/* 515:515 */        case 's':  value = s;break;
-/* 516:516 */        case 'S':  value = S;break;
-/* 517:    */        default: 
-/* 518:518 */          if (buffer == null) {
-/* 519:519 */            buffer = new StringBuffer();
-/* 520:520 */            list.add(new Token(buffer));
-/* 521:    */          }
-/* 522:522 */          buffer.append(ch);
-/* 523:    */        }
-/* 524:    */        
-/* 525:525 */        if (value != null) {
-/* 526:526 */          if ((previous != null) && (previous.getValue() == value)) {
-/* 527:527 */            previous.increment();
-/* 528:    */          } else {
-/* 529:529 */            Token token = new Token(value);
-/* 530:530 */            list.add(token);
-/* 531:531 */            previous = token;
-/* 532:    */          }
-/* 533:533 */          buffer = null;
-/* 534:    */        }
-/* 535:    */      } }
-/* 536:536 */    return (Token[])list.toArray(new Token[list.size()]);
-/* 537:    */  }
-/* 538:    */  
-/* 542:    */  static class Token
-/* 543:    */  {
-/* 544:    */    private final Object value;
-/* 545:    */    
-/* 547:    */    private int count;
-/* 548:    */    
-/* 551:    */    static boolean containsTokenWithValue(Token[] tokens, Object value)
-/* 552:    */    {
-/* 553:553 */      int sz = tokens.length;
-/* 554:554 */      for (int i = 0; i < sz; i++) {
-/* 555:555 */        if (tokens[i].getValue() == value) {
-/* 556:556 */          return true;
-/* 557:    */        }
-/* 558:    */      }
-/* 559:559 */      return false;
-/* 560:    */    }
-/* 561:    */    
-/* 569:    */    Token(Object value)
-/* 570:    */    {
-/* 571:571 */      this.value = value;
-/* 572:572 */      this.count = 1;
-/* 573:    */    }
-/* 574:    */    
-/* 581:    */    Token(Object value, int count)
-/* 582:    */    {
-/* 583:583 */      this.value = value;
-/* 584:584 */      this.count = count;
-/* 585:    */    }
-/* 586:    */    
-/* 589:    */    void increment()
-/* 590:    */    {
-/* 591:591 */      this.count += 1;
-/* 592:    */    }
-/* 593:    */    
-/* 598:    */    int getCount()
-/* 599:    */    {
-/* 600:600 */      return this.count;
-/* 601:    */    }
-/* 602:    */    
-/* 607:    */    Object getValue()
-/* 608:    */    {
-/* 609:609 */      return this.value;
-/* 610:    */    }
-/* 611:    */    
-/* 618:    */    public boolean equals(Object obj2)
-/* 619:    */    {
-/* 620:620 */      if ((obj2 instanceof Token)) {
-/* 621:621 */        Token tok2 = (Token)obj2;
-/* 622:622 */        if (this.value.getClass() != tok2.value.getClass()) {
-/* 623:623 */          return false;
-/* 624:    */        }
-/* 625:625 */        if (this.count != tok2.count) {
-/* 626:626 */          return false;
-/* 627:    */        }
-/* 628:628 */        if ((this.value instanceof StringBuffer))
-/* 629:629 */          return this.value.toString().equals(tok2.value.toString());
-/* 630:630 */        if ((this.value instanceof Number)) {
-/* 631:631 */          return this.value.equals(tok2.value);
-/* 632:    */        }
-/* 633:633 */        return this.value == tok2.value;
-/* 634:    */      }
-/* 635:    */      
-/* 636:636 */      return false;
-/* 637:    */    }
-/* 638:    */    
-/* 646:    */    public int hashCode()
-/* 647:    */    {
-/* 648:648 */      return this.value.hashCode();
-/* 649:    */    }
-/* 650:    */    
-/* 656:    */    public String toString()
-/* 657:    */    {
-/* 658:658 */      return StringUtils.repeat(this.value.toString(), this.count);
-/* 659:    */    }
-/* 660:    */  }
-/* 661:    */}
+package org.apache.commons.lang3.time;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
+import org.apache.commons.lang3.StringUtils;
+
+public class DurationFormatUtils
+{
+  public static final String ISO_EXTENDED_FORMAT_PATTERN = "'P'yyyy'Y'M'M'd'DT'H'H'm'M's.S'S'";
+  static final Object field_2057 = "y";
+  static final Object field_2058 = "M";
+  static final Object field_2059 = "d";
+  static final Object field_2060 = "H";
+  static final Object field_2061 = "m";
+  static final Object field_2062 = "s";
+  static final Object field_2063 = "S";
+  
+  public static String formatDurationHMS(long durationMillis)
+  {
+    return formatDuration(durationMillis, "H:mm:ss.SSS");
+  }
+  
+  public static String formatDurationISO(long durationMillis)
+  {
+    return formatDuration(durationMillis, "'P'yyyy'Y'M'M'd'DT'H'H'm'M's.S'S'", false);
+  }
+  
+  public static String formatDuration(long durationMillis, String format)
+  {
+    return formatDuration(durationMillis, format, true);
+  }
+  
+  public static String formatDuration(long durationMillis, String format, boolean padWithZeros)
+  {
+    Token[] tokens = lexx(format);
+    int days = 0;
+    int hours = 0;
+    int minutes = 0;
+    int seconds = 0;
+    int milliseconds = 0;
+    if (Token.containsTokenWithValue(tokens, field_2059))
+    {
+      days = (int)(durationMillis / 86400000L);
+      durationMillis -= days * 86400000L;
+    }
+    if (Token.containsTokenWithValue(tokens, field_2060))
+    {
+      hours = (int)(durationMillis / 3600000L);
+      durationMillis -= hours * 3600000L;
+    }
+    if (Token.containsTokenWithValue(tokens, field_2061))
+    {
+      minutes = (int)(durationMillis / 60000L);
+      durationMillis -= minutes * 60000L;
+    }
+    if (Token.containsTokenWithValue(tokens, field_2062))
+    {
+      seconds = (int)(durationMillis / 1000L);
+      durationMillis -= seconds * 1000L;
+    }
+    if (Token.containsTokenWithValue(tokens, field_2063)) {
+      milliseconds = (int)durationMillis;
+    }
+    return format(tokens, 0, 0, days, hours, minutes, seconds, milliseconds, padWithZeros);
+  }
+  
+  public static String formatDurationWords(long durationMillis, boolean suppressLeadingZeroElements, boolean suppressTrailingZeroElements)
+  {
+    String duration = formatDuration(durationMillis, "d' days 'H' hours 'm' minutes 's' seconds'");
+    if (suppressLeadingZeroElements)
+    {
+      duration = " " + duration;
+      String tmp = StringUtils.replaceOnce(duration, " 0 days", "");
+      if (tmp.length() != duration.length())
+      {
+        duration = tmp;
+        tmp = StringUtils.replaceOnce(duration, " 0 hours", "");
+        if (tmp.length() != duration.length())
+        {
+          duration = tmp;
+          tmp = StringUtils.replaceOnce(duration, " 0 minutes", "");
+          duration = tmp;
+          if (tmp.length() != duration.length()) {
+            duration = StringUtils.replaceOnce(tmp, " 0 seconds", "");
+          }
+        }
+      }
+      if (duration.length() != 0) {
+        duration = duration.substring(1);
+      }
+    }
+    if (suppressTrailingZeroElements)
+    {
+      String tmp = StringUtils.replaceOnce(duration, " 0 seconds", "");
+      if (tmp.length() != duration.length())
+      {
+        duration = tmp;
+        tmp = StringUtils.replaceOnce(duration, " 0 minutes", "");
+        if (tmp.length() != duration.length())
+        {
+          duration = tmp;
+          tmp = StringUtils.replaceOnce(duration, " 0 hours", "");
+          if (tmp.length() != duration.length()) {
+            duration = StringUtils.replaceOnce(tmp, " 0 days", "");
+          }
+        }
+      }
+    }
+    duration = " " + duration;
+    duration = StringUtils.replaceOnce(duration, " 1 seconds", " 1 second");
+    duration = StringUtils.replaceOnce(duration, " 1 minutes", " 1 minute");
+    duration = StringUtils.replaceOnce(duration, " 1 hours", " 1 hour");
+    duration = StringUtils.replaceOnce(duration, " 1 days", " 1 day");
+    return duration.trim();
+  }
+  
+  public static String formatPeriodISO(long startMillis, long endMillis)
+  {
+    return formatPeriod(startMillis, endMillis, "'P'yyyy'Y'M'M'd'DT'H'H'm'M's.S'S'", false, TimeZone.getDefault());
+  }
+  
+  public static String formatPeriod(long startMillis, long endMillis, String format)
+  {
+    return formatPeriod(startMillis, endMillis, format, true, TimeZone.getDefault());
+  }
+  
+  public static String formatPeriod(long startMillis, long endMillis, String format, boolean padWithZeros, TimeZone timezone)
+  {
+    Token[] tokens = lexx(format);
+    Calendar start = Calendar.getInstance(timezone);
+    start.setTime(new Date(startMillis));
+    Calendar end = Calendar.getInstance(timezone);
+    end.setTime(new Date(endMillis));
+    int milliseconds = end.get(14) - start.get(14);
+    int seconds = end.get(13) - start.get(13);
+    int minutes = end.get(12) - start.get(12);
+    int hours = end.get(11) - start.get(11);
+    int days = end.get(5) - start.get(5);
+    int months = end.get(2) - start.get(2);
+    int years = end.get(1) - start.get(1);
+    while (milliseconds < 0)
+    {
+      milliseconds += 1000;
+      seconds--;
+    }
+    while (seconds < 0)
+    {
+      seconds += 60;
+      minutes--;
+    }
+    while (minutes < 0)
+    {
+      minutes += 60;
+      hours--;
+    }
+    while (hours < 0)
+    {
+      hours += 24;
+      days--;
+    }
+    if (Token.containsTokenWithValue(tokens, field_2058))
+    {
+      while (days < 0)
+      {
+        days += start.getActualMaximum(5);
+        months--;
+        start.add(2, 1);
+      }
+      while (months < 0)
+      {
+        months += 12;
+        years--;
+      }
+      if ((!Token.containsTokenWithValue(tokens, field_2057)) && (years != 0)) {
+        while (years != 0)
+        {
+          months += 12 * years;
+          years = 0;
+        }
+      }
+    }
+    else
+    {
+      if (!Token.containsTokenWithValue(tokens, field_2057))
+      {
+        int target = end.get(1);
+        if (months < 0) {
+          target--;
+        }
+        while (start.get(1) != target)
+        {
+          days += start.getActualMaximum(6) - start.get(6);
+          if (((start instanceof GregorianCalendar)) && (start.get(2) == 1) && (start.get(5) == 29)) {
+            days++;
+          }
+          start.add(1, 1);
+          days += start.get(6);
+        }
+        years = 0;
+      }
+      while (start.get(2) != end.get(2))
+      {
+        days += start.getActualMaximum(5);
+        start.add(2, 1);
+      }
+      months = 0;
+      while (days < 0)
+      {
+        days += start.getActualMaximum(5);
+        months--;
+        start.add(2, 1);
+      }
+    }
+    if (!Token.containsTokenWithValue(tokens, field_2059))
+    {
+      hours += 24 * days;
+      days = 0;
+    }
+    if (!Token.containsTokenWithValue(tokens, field_2060))
+    {
+      minutes += 60 * hours;
+      hours = 0;
+    }
+    if (!Token.containsTokenWithValue(tokens, field_2061))
+    {
+      seconds += 60 * minutes;
+      minutes = 0;
+    }
+    if (!Token.containsTokenWithValue(tokens, field_2062))
+    {
+      milliseconds += 1000 * seconds;
+      seconds = 0;
+    }
+    return format(tokens, years, months, days, hours, minutes, seconds, milliseconds, padWithZeros);
+  }
+  
+  static String format(Token[] tokens, int years, int months, int days, int hours, int minutes, int seconds, int milliseconds, boolean padWithZeros)
+  {
+    StringBuffer buffer = new StringBuffer();
+    boolean lastOutputSeconds = false;
+    int local_sz = tokens.length;
+    for (int local_i = 0; local_i < local_sz; local_i++)
+    {
+      Token token = tokens[local_i];
+      Object value = token.getValue();
+      int count = token.getCount();
+      if ((value instanceof StringBuffer))
+      {
+        buffer.append(value.toString());
+      }
+      else if (value == field_2057)
+      {
+        buffer.append(padWithZeros ? StringUtils.leftPad(Integer.toString(years), count, '0') : Integer.toString(years));
+        lastOutputSeconds = false;
+      }
+      else if (value == field_2058)
+      {
+        buffer.append(padWithZeros ? StringUtils.leftPad(Integer.toString(months), count, '0') : Integer.toString(months));
+        lastOutputSeconds = false;
+      }
+      else if (value == field_2059)
+      {
+        buffer.append(padWithZeros ? StringUtils.leftPad(Integer.toString(days), count, '0') : Integer.toString(days));
+        lastOutputSeconds = false;
+      }
+      else if (value == field_2060)
+      {
+        buffer.append(padWithZeros ? StringUtils.leftPad(Integer.toString(hours), count, '0') : Integer.toString(hours));
+        lastOutputSeconds = false;
+      }
+      else if (value == field_2061)
+      {
+        buffer.append(padWithZeros ? StringUtils.leftPad(Integer.toString(minutes), count, '0') : Integer.toString(minutes));
+        lastOutputSeconds = false;
+      }
+      else if (value == field_2062)
+      {
+        buffer.append(padWithZeros ? StringUtils.leftPad(Integer.toString(seconds), count, '0') : Integer.toString(seconds));
+        lastOutputSeconds = true;
+      }
+      else if (value == field_2063)
+      {
+        if (lastOutputSeconds)
+        {
+          milliseconds += 1000;
+          String str = padWithZeros ? StringUtils.leftPad(Integer.toString(milliseconds), count, '0') : Integer.toString(milliseconds);
+          buffer.append(str.substring(1));
+        }
+        else
+        {
+          buffer.append(padWithZeros ? StringUtils.leftPad(Integer.toString(milliseconds), count, '0') : Integer.toString(milliseconds));
+        }
+        lastOutputSeconds = false;
+      }
+    }
+    return buffer.toString();
+  }
+  
+  static Token[] lexx(String format)
+  {
+    char[] array = format.toCharArray();
+    ArrayList<Token> list = new ArrayList(array.length);
+    boolean inLiteral = false;
+    StringBuffer buffer = null;
+    Token previous = null;
+    int local_sz = array.length;
+    for (int local_i = 0; local_i < local_sz; local_i++)
+    {
+      char local_ch = array[local_i];
+      if ((inLiteral) && (local_ch != '\''))
+      {
+        buffer.append(local_ch);
+      }
+      else
+      {
+        Object value = null;
+        switch (local_ch)
+        {
+        case '\'': 
+          if (inLiteral)
+          {
+            buffer = null;
+            inLiteral = false;
+          }
+          else
+          {
+            buffer = new StringBuffer();
+            list.add(new Token(buffer));
+            inLiteral = true;
+          }
+          break;
+        case 'y': 
+          value = field_2057;
+          break;
+        case 'M': 
+          value = field_2058;
+          break;
+        case 'd': 
+          value = field_2059;
+          break;
+        case 'H': 
+          value = field_2060;
+          break;
+        case 'm': 
+          value = field_2061;
+          break;
+        case 's': 
+          value = field_2062;
+          break;
+        case 'S': 
+          value = field_2063;
+          break;
+        default: 
+          if (buffer == null)
+          {
+            buffer = new StringBuffer();
+            list.add(new Token(buffer));
+          }
+          buffer.append(local_ch);
+        }
+        if (value != null)
+        {
+          if ((previous != null) && (previous.getValue() == value))
+          {
+            previous.increment();
+          }
+          else
+          {
+            Token token = new Token(value);
+            list.add(token);
+            previous = token;
+          }
+          buffer = null;
+        }
+      }
+    }
+    return (Token[])list.toArray(new Token[list.size()]);
+  }
+  
+  static class Token
+  {
+    private final Object value;
+    private int count;
+    
+    static boolean containsTokenWithValue(Token[] tokens, Object value)
+    {
+      int local_sz = tokens.length;
+      for (int local_i = 0; local_i < local_sz; local_i++) {
+        if (tokens[local_i].getValue() == value) {
+          return true;
+        }
+      }
+      return false;
+    }
+    
+    Token(Object value)
+    {
+      this.value = value;
+      this.count = 1;
+    }
+    
+    Token(Object value, int count)
+    {
+      this.value = value;
+      this.count = count;
+    }
+    
+    void increment()
+    {
+      this.count += 1;
+    }
+    
+    int getCount()
+    {
+      return this.count;
+    }
+    
+    Object getValue()
+    {
+      return this.value;
+    }
+    
+    public boolean equals(Object obj2)
+    {
+      if ((obj2 instanceof Token))
+      {
+        Token tok2 = (Token)obj2;
+        if (this.value.getClass() != tok2.value.getClass()) {
+          return false;
+        }
+        if (this.count != tok2.count) {
+          return false;
+        }
+        if ((this.value instanceof StringBuffer)) {
+          return this.value.toString().equals(tok2.value.toString());
+        }
+        if ((this.value instanceof Number)) {
+          return this.value.equals(tok2.value);
+        }
+        return this.value == tok2.value;
+      }
+      return false;
+    }
+    
+    public int hashCode()
+    {
+      return this.value.hashCode();
+    }
+    
+    public String toString()
+    {
+      return StringUtils.repeat(this.value.toString(), this.count);
+    }
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.apache.commons.lang3.time.DurationFormatUtils
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -1,18 +1,18 @@
-/*  1:   */package org.schema.common;
-/*  2:   */
-/* 29:   */public class ParseException
-/* 30:   */  extends Exception
-/* 31:   */{
-/* 32:   */  private static final long serialVersionUID = -1027385809147577794L;
-/* 33:   */  
-/* 59:   */  public ParseException(String paramString)
-/* 60:   */  {
-/* 61:61 */    super(paramString);
-/* 62:   */  }
-/* 63:   */}
+package org.schema.common;
+
+public class ParseException
+  extends Exception
+{
+  private static final long serialVersionUID = -1027385809147577794L;
+  
+  public ParseException(String paramString)
+  {
+    super(paramString);
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.common.ParseException
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

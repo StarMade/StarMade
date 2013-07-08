@@ -1,36 +1,34 @@
-/*  1:   */package org.schema.game.common.data.physics;
-/*  2:   */
-/*  3:   */import com.bulletphysics.collision.broadphase.CollisionAlgorithm;
-/*  4:   */import com.bulletphysics.collision.broadphase.CollisionAlgorithmConstructionInfo;
-/*  5:   */import com.bulletphysics.collision.dispatch.CollisionAlgorithmCreateFunc;
-/*  6:   */import com.bulletphysics.collision.dispatch.CollisionObject;
-/*  7:   */import com.bulletphysics.util.ObjectPool;
-/*  8:   */
-/* 55:   */public class CompoundCollisionAlgorithmExt$SwappedCreateFunc
-/* 56:   */  extends CollisionAlgorithmCreateFunc
-/* 57:   */{
-/* 58:58 */  private final ObjectPool pool = ObjectPool.get(CompoundCollisionAlgorithmExt.class);
-/* 59:   */  
-/* 62:   */  public CollisionAlgorithm createCollisionAlgorithm(CollisionAlgorithmConstructionInfo paramCollisionAlgorithmConstructionInfo, CollisionObject paramCollisionObject1, CollisionObject paramCollisionObject2)
-/* 63:   */  {
-/* 64:   */    CompoundCollisionAlgorithmExt localCompoundCollisionAlgorithmExt;
-/* 65:   */    
-/* 67:67 */    CompoundCollisionAlgorithmExt.access$002(localCompoundCollisionAlgorithmExt = new CompoundCollisionAlgorithmExt(), paramCollisionObject2);
-/* 68:68 */    CompoundCollisionAlgorithmExt.access$102(localCompoundCollisionAlgorithmExt, paramCollisionObject1);
-/* 69:   */    
-/* 70:70 */    localCompoundCollisionAlgorithmExt.init(paramCollisionAlgorithmConstructionInfo);
-/* 71:71 */    localCompoundCollisionAlgorithmExt.swapped = true;
-/* 72:72 */    return localCompoundCollisionAlgorithmExt;
-/* 73:   */  }
-/* 74:   */  
-/* 77:   */  public void releaseCollisionAlgorithm(CollisionAlgorithm paramCollisionAlgorithm)
-/* 78:   */  {
-/* 79:79 */    CompoundCollisionAlgorithmExt.access$200(paramCollisionAlgorithm = (CompoundCollisionAlgorithmExt)paramCollisionAlgorithm).pool.release(paramCollisionAlgorithm);
-/* 80:   */  }
-/* 81:   */}
+package org.schema.game.common.data.physics;
+
+import com.bulletphysics.collision.broadphase.CollisionAlgorithm;
+import com.bulletphysics.collision.broadphase.CollisionAlgorithmConstructionInfo;
+import com.bulletphysics.collision.dispatch.CollisionAlgorithmCreateFunc;
+import com.bulletphysics.collision.dispatch.CollisionObject;
+import com.bulletphysics.util.ObjectPool;
+
+public class CompoundCollisionAlgorithmExt$SwappedCreateFunc
+  extends CollisionAlgorithmCreateFunc
+{
+  private final ObjectPool pool = ObjectPool.get(CompoundCollisionAlgorithmExt.class);
+  
+  public CollisionAlgorithm createCollisionAlgorithm(CollisionAlgorithmConstructionInfo paramCollisionAlgorithmConstructionInfo, CollisionObject paramCollisionObject1, CollisionObject paramCollisionObject2)
+  {
+    CompoundCollisionAlgorithmExt localCompoundCollisionAlgorithmExt;
+    CompoundCollisionAlgorithmExt.access$002(localCompoundCollisionAlgorithmExt = new CompoundCollisionAlgorithmExt(), paramCollisionObject2);
+    CompoundCollisionAlgorithmExt.access$102(localCompoundCollisionAlgorithmExt, paramCollisionObject1);
+    localCompoundCollisionAlgorithmExt.init(paramCollisionAlgorithmConstructionInfo);
+    localCompoundCollisionAlgorithmExt.swapped = true;
+    return localCompoundCollisionAlgorithmExt;
+  }
+  
+  public void releaseCollisionAlgorithm(CollisionAlgorithm paramCollisionAlgorithm)
+  {
+    CompoundCollisionAlgorithmExt.access$200(paramCollisionAlgorithm = (CompoundCollisionAlgorithmExt)paramCollisionAlgorithm).pool.release(paramCollisionAlgorithm);
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.game.common.data.physics.CompoundCollisionAlgorithmExt.SwappedCreateFunc
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

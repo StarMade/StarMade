@@ -19,7 +19,7 @@ public final class ServerAcl
 {
   protected static final byte[] ALL_SET_4BYTES = { -1, -1, -1, -1 };
   protected static final byte[] ALL_SET_16BYTES = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
-  private PrintWriter pw = null;
+  private PrintWriter field_2237 = null;
   private List aclEntries;
   private static AclEntry PROHIBIT_ALL_IPV4;
   private static AclEntry PROHIBIT_ALL_IPV6;
@@ -57,7 +57,7 @@ public final class ServerAcl
   
   public void setPrintWriter(PrintWriter paramPrintWriter)
   {
-    this.pw = paramPrintWriter;
+    this.field_2237 = paramPrintWriter;
   }
   
   public String toString()
@@ -102,11 +102,11 @@ public final class ServerAcl
   
   private void println(String paramString)
   {
-    if (this.pw == null) {
+    if (this.field_2237 == null) {
       return;
     }
-    this.pw.println(paramString);
-    this.pw.flush();
+    this.field_2237.println(paramString);
+    this.field_2237.flush();
   }
   
   public ServerAcl(File paramFile)
@@ -290,16 +290,16 @@ public final class ServerAcl
         arrayOfByte = ServerAcl.ALL_SET_16BYTES;
         break;
       default: 
-        throw new IllegalArgumentException(new StringBuilder().append("Only 4 and 16 bytes supported, not ").append(paramArrayOfByte.length).toString());
+        throw new IllegalArgumentException("Only 4 and 16 bytes supported, not " + paramArrayOfByte.length);
       }
       if (paramInt > paramArrayOfByte.length * 8) {
-        throw new IllegalArgumentException(new StringBuilder().append("Specified ").append(paramInt).append(" significant bits, but value only has ").append(paramArrayOfByte.length * 8).append(" bits").toString());
+        throw new IllegalArgumentException("Specified " + paramInt + " significant bits, but value only has " + paramArrayOfByte.length * 8 + " bits");
       }
       this.bitBlockSize = paramInt;
       this.value = paramArrayOfByte;
       this.mask = BitMap.leftShift(arrayOfByte, paramArrayOfByte.length * 8 - paramInt);
       if (this.mask.length != paramArrayOfByte.length) {
-        throw new RuntimeException(new StringBuilder().append("Basic program assertion failed.  Generated mask length ").append(this.mask.length).append(" (bytes) does not match given value length ").append(paramArrayOfByte.length).append(" (bytes).").toString());
+        throw new RuntimeException("Basic program assertion failed.  Generated mask length " + this.mask.length + " (bytes) does not match given value length " + paramArrayOfByte.length + " (bytes).");
       }
       this.allow = paramBoolean;
       validateMask();
@@ -308,8 +308,8 @@ public final class ServerAcl
     public String toString()
     {
       StringBuffer localStringBuffer = new StringBuffer("Addrs ");
-      localStringBuffer.append(this.value.length == 16 ? new StringBuilder().append("[").append(ServerAcl.colonNotation(this.value)).append(']').toString() : ServerAcl.dottedNotation(this.value));
-      localStringBuffer.append(new StringBuilder().append("/").append(this.bitBlockSize).append(' ').append(this.allow ? "ALLOW" : "DENY").toString());
+      localStringBuffer.append(this.value.length == 16 ? "[" + ServerAcl.colonNotation(this.value) + ']' : ServerAcl.dottedNotation(this.value));
+      localStringBuffer.append("/" + this.bitBlockSize + ' ' + (this.allow ? "ALLOW" : "DENY"));
       return localStringBuffer.toString();
     }
     
@@ -325,7 +325,7 @@ public final class ServerAcl
       throws ServerAcl.AclFormatException
     {
       if (BitMap.hasAnyBitSet(BitMap.and(this.value, BitMap.not(this.mask)))) {
-        throw new ServerAcl.AclFormatException(new StringBuilder().append("The base address '").append(ServerAcl.dottedNotation(this.value)).append("' is too specific for block-size-spec /").append(this.bitBlockSize).toString());
+        throw new ServerAcl.AclFormatException("The base address '" + ServerAcl.dottedNotation(this.value) + "' is too specific for block-size-spec /" + this.bitBlockSize);
       }
     }
   }
@@ -341,7 +341,7 @@ public final class ServerAcl
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.server.ServerAcl
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

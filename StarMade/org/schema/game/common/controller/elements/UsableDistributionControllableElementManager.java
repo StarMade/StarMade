@@ -1,31 +1,31 @@
-/*  1:   */package org.schema.game.common.controller.elements;
-/*  2:   */
-/*  3:   */import Ah;
-/*  4:   */import Aj;
-/*  5:   */import java.util.ArrayList;
-/*  6:   */import org.schema.game.common.controller.SegmentController;
-/*  7:   */
-/* 11:   */public abstract class UsableDistributionControllableElementManager
-/* 12:   */  extends UsableControllableElementManager
-/* 13:   */{
-/* 14:   */  public UsableDistributionControllableElementManager(short paramShort1, short paramShort2, SegmentController paramSegmentController)
-/* 15:   */  {
-/* 16:16 */    super(paramShort1, paramShort2, paramSegmentController);
-/* 17:   */  }
-/* 18:   */  
-/* 19:   */  public Ah toDistributionTagStructure() {
-/* 20:20 */    Ah[] arrayOfAh = new Ah[getCollectionManagers().size() + 1];
-/* 21:21 */    for (int i = 0; i < getCollectionManagers().size(); i++) {
-/* 22:22 */      arrayOfAh[i] = ((DistributionCollectionManager)getCollectionManagers().get(i)).toDistributionTagStructure();
-/* 23:   */    }
-/* 24:24 */    arrayOfAh[getCollectionManagers().size()] = new Ah(Aj.a, null, null);
-/* 25:   */    
-/* 26:26 */    return new Ah(Aj.n, "wepContr", arrayOfAh);
-/* 27:   */  }
-/* 28:   */}
+package org.schema.game.common.controller.elements;
+
+import class_69;
+import class_79;
+import java.util.ArrayList;
+import org.schema.game.common.controller.SegmentController;
+
+public abstract class UsableDistributionControllableElementManager
+  extends UsableControllableElementManager
+{
+  public UsableDistributionControllableElementManager(short paramShort1, short paramShort2, SegmentController paramSegmentController)
+  {
+    super(paramShort1, paramShort2, paramSegmentController);
+  }
+  
+  public class_69 toDistributionTagStructure()
+  {
+    class_69[] arrayOfclass_69 = new class_69[getCollectionManagers().size() + 1];
+    for (int i = 0; i < getCollectionManagers().size(); i++) {
+      arrayOfclass_69[i] = ((DistributionCollectionManager)getCollectionManagers().get(i)).toDistributionTagStructure();
+    }
+    arrayOfclass_69[getCollectionManagers().size()] = new class_69(class_79.field_548, null, null);
+    return new class_69(class_79.field_561, "wepContr", arrayOfclass_69);
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.game.common.controller.elements.UsableDistributionControllableElementManager
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

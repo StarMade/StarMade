@@ -28,9 +28,9 @@ public class DbBackup
     {
       if (paramArrayOfString.length < 1)
       {
-        System.out.println(RB.DbBackup_syntax.getString(new String[] { DbBackup.class.getName() }));
+        System.out.println(class_1436.DbBackup_syntax.getString(new String[] { DbBackup.class.getName() }));
         System.out.println();
-        System.out.println(RB.listing_format.getString());
+        System.out.println(class_1436.listing_format.getString());
         System.exit(0);
       }
       if (paramArrayOfString[0].equals("--save"))
@@ -88,7 +88,7 @@ public class DbBackup
     }
     catch (IllegalArgumentException localIllegalArgumentException)
     {
-      System.out.println(RB.DbBackup_syntaxerr.getString(new String[] { DbBackup.class.getName() }));
+      System.out.println(class_1436.DbBackup_syntaxerr.getString(new String[] { DbBackup.class.getName() }));
       System.exit(2);
     }
   }
@@ -194,7 +194,7 @@ public class DbBackup
     {
       int j = (this.componentStreams[i] != null) || (this.componentFiles[i].exists()) ? 1 : 0;
       if (j == 0) {
-        throw new FileNotFoundException(RB.file_missing.getString(new String[] { this.componentFiles[i].getAbsolutePath() }));
+        throw new FileNotFoundException(class_1436.file_missing.getString(new String[] { this.componentFiles[i].getAbsolutePath() }));
       }
     }
     if (!this.abortUponModify) {
@@ -223,7 +223,7 @@ public class DbBackup
     }
     String str = localProperties.getProperty("modified");
     if ((str != null) && ((str.equalsIgnoreCase("yes")) || (str.equalsIgnoreCase("true")))) {
-      throw new IllegalStateException(RB.modified_property.getString(new String[] { str }));
+      throw new IllegalStateException(class_1436.modified_property.getString(new String[] { str }));
     }
   }
   
@@ -239,22 +239,22 @@ public class DbBackup
         if (this.componentFiles[i].exists())
         {
           if (this.existList[i] == 0) {
-            throw new FileNotFoundException(RB.file_disappeared.getString(new String[] { this.componentFiles[i].getAbsolutePath() }));
+            throw new FileNotFoundException(class_1436.file_disappeared.getString(new String[] { this.componentFiles[i].getAbsolutePath() }));
           }
           if (this.componentFiles[i].lastModified() > paramLong) {
-            throw new FileNotFoundException(RB.file_changed.getString(new String[] { this.componentFiles[i].getAbsolutePath() }));
+            throw new FileNotFoundException(class_1436.file_changed.getString(new String[] { this.componentFiles[i].getAbsolutePath() }));
           }
         }
         else if (this.existList[i] != 0)
         {
-          throw new FileNotFoundException(RB.file_appeared.getString(new String[] { this.componentFiles[i].getAbsolutePath() }));
+          throw new FileNotFoundException(class_1436.file_appeared.getString(new String[] { this.componentFiles[i].getAbsolutePath() }));
         }
       }
     }
     catch (IllegalStateException localIllegalStateException)
     {
       if (!this.archiveFile.delete()) {
-        System.out.println(RB.cleanup_rmfail.getString(new String[] { this.archiveFile.getAbsolutePath() }));
+        System.out.println(class_1436.cleanup_rmfail.getString(new String[] { this.archiveFile.getAbsolutePath() }));
       }
       throw localIllegalStateException;
     }
@@ -285,7 +285,7 @@ public class DbBackup
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.lib.tar.DbBackup
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

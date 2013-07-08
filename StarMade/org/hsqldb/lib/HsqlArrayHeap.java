@@ -5,7 +5,7 @@ import java.util.Comparator;
 public class HsqlArrayHeap
   implements HsqlHeap
 {
-  protected Comparator oc;
+  protected Comparator field_416;
   protected int count;
   protected Object[] heap;
   
@@ -19,7 +19,7 @@ public class HsqlArrayHeap
       throw new IllegalArgumentException("null comparator");
     }
     this.heap = new Object[paramInt];
-    this.oc = paramComparator;
+    this.field_416 = paramComparator;
   }
   
   public synchronized void clear()
@@ -49,7 +49,7 @@ public class HsqlArrayHeap
       int j = i - 1 >> 1;
       try
       {
-        if (this.oc.compare(paramObject, this.heap[j]) >= 0) {
+        if (this.field_416.compare(paramObject, this.heap[j]) >= 0) {
           break;
         }
       }
@@ -100,8 +100,8 @@ public class HsqlArrayHeap
         break;
       }
       int k = (i << 1) + 2;
-      int m = (k >= this.count) || (this.oc.compare(this.heap[j], this.heap[k]) < 0) ? j : k;
-      if (this.oc.compare(localObject1, this.heap[m]) <= 0) {
+      int m = (k >= this.count) || (this.field_416.compare(this.heap[j], this.heap[k]) < 0) ? j : k;
+      if (this.field_416.compare(localObject1, this.heap[m]) <= 0) {
         break;
       }
       this.heap[i] = this.heap[m];
@@ -146,7 +146,7 @@ public class HsqlArrayHeap
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.lib.HsqlArrayHeap
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

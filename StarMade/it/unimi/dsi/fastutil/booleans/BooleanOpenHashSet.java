@@ -1,384 +1,437 @@
-/*   1:    */package it.unimi.dsi.fastutil.booleans;
-/*   2:    */
-/*   3:    */import it.unimi.dsi.fastutil.Hash;
-/*   4:    */import it.unimi.dsi.fastutil.HashCommon;
-/*   5:    */import java.io.IOException;
-/*   6:    */import java.io.ObjectInputStream;
-/*   7:    */import java.io.ObjectOutputStream;
-/*   8:    */import java.io.Serializable;
-/*   9:    */import java.util.Collection;
-/*  10:    */import java.util.Iterator;
-/*  11:    */import java.util.NoSuchElementException;
-/*  12:    */
-/*  78:    */public class BooleanOpenHashSet
-/*  79:    */  extends AbstractBooleanSet
-/*  80:    */  implements Serializable, Cloneable, Hash
-/*  81:    */{
-/*  82:    */  public static final long serialVersionUID = 0L;
-/*  83:    */  private static final boolean ASSERTS = false;
-/*  84:    */  protected transient boolean[] key;
-/*  85:    */  protected transient boolean[] used;
-/*  86:    */  protected final float f;
-/*  87:    */  protected transient int n;
-/*  88:    */  protected transient int maxFill;
-/*  89:    */  protected transient int mask;
-/*  90:    */  protected int size;
-/*  91:    */  
-/*  92:    */  public BooleanOpenHashSet(int expected, float f)
-/*  93:    */  {
-/*  94: 94 */    if ((f <= 0.0F) || (f > 1.0F)) throw new IllegalArgumentException("Load factor must be greater than 0 and smaller than or equal to 1");
-/*  95: 95 */    if (expected < 0) throw new IllegalArgumentException("The expected number of elements must be nonnegative");
-/*  96: 96 */    this.f = f;
-/*  97: 97 */    this.n = HashCommon.arraySize(expected, f);
-/*  98: 98 */    this.mask = (this.n - 1);
-/*  99: 99 */    this.maxFill = HashCommon.maxFill(this.n, f);
-/* 100:100 */    this.key = new boolean[this.n];
-/* 101:101 */    this.used = new boolean[this.n];
-/* 102:    */  }
-/* 103:    */  
-/* 106:    */  public BooleanOpenHashSet(int expected)
-/* 107:    */  {
-/* 108:108 */    this(expected, 0.75F);
-/* 109:    */  }
-/* 110:    */  
-/* 112:    */  public BooleanOpenHashSet()
-/* 113:    */  {
-/* 114:114 */    this(16, 0.75F);
-/* 115:    */  }
-/* 116:    */  
-/* 120:    */  public BooleanOpenHashSet(Collection<? extends Boolean> c, float f)
-/* 121:    */  {
-/* 122:122 */    this(c.size(), f);
-/* 123:123 */    addAll(c);
-/* 124:    */  }
-/* 125:    */  
-/* 129:    */  public BooleanOpenHashSet(Collection<? extends Boolean> c)
-/* 130:    */  {
-/* 131:131 */    this(c, 0.75F);
-/* 132:    */  }
-/* 133:    */  
-/* 137:    */  public BooleanOpenHashSet(BooleanCollection c, float f)
-/* 138:    */  {
-/* 139:139 */    this(c.size(), f);
-/* 140:140 */    addAll(c);
-/* 141:    */  }
-/* 142:    */  
-/* 146:    */  public BooleanOpenHashSet(BooleanCollection c)
-/* 147:    */  {
-/* 148:148 */    this(c, 0.75F);
-/* 149:    */  }
-/* 150:    */  
-/* 154:    */  public BooleanOpenHashSet(BooleanIterator i, float f)
-/* 155:    */  {
-/* 156:156 */    this(16, f);
-/* 157:157 */    while (i.hasNext()) { add(i.nextBoolean());
-/* 158:    */    }
-/* 159:    */  }
-/* 160:    */  
-/* 162:    */  public BooleanOpenHashSet(BooleanIterator i)
-/* 163:    */  {
-/* 164:164 */    this(i, 0.75F);
-/* 165:    */  }
-/* 166:    */  
-/* 170:    */  public BooleanOpenHashSet(Iterator<?> i, float f)
-/* 171:    */  {
-/* 172:172 */    this(BooleanIterators.asBooleanIterator(i), f);
-/* 173:    */  }
-/* 174:    */  
-/* 177:    */  public BooleanOpenHashSet(Iterator<?> i)
-/* 178:    */  {
-/* 179:179 */    this(BooleanIterators.asBooleanIterator(i));
-/* 180:    */  }
-/* 181:    */  
-/* 187:    */  public BooleanOpenHashSet(boolean[] a, int offset, int length, float f)
-/* 188:    */  {
-/* 189:189 */    this(length < 0 ? 0 : length, f);
-/* 190:190 */    BooleanArrays.ensureOffsetLength(a, offset, length);
-/* 191:191 */    for (int i = 0; i < length; i++) { add(a[(offset + i)]);
-/* 192:    */    }
-/* 193:    */  }
-/* 194:    */  
-/* 198:    */  public BooleanOpenHashSet(boolean[] a, int offset, int length)
-/* 199:    */  {
-/* 200:200 */    this(a, offset, length, 0.75F);
-/* 201:    */  }
-/* 202:    */  
-/* 206:    */  public BooleanOpenHashSet(boolean[] a, float f)
-/* 207:    */  {
-/* 208:208 */    this(a, 0, a.length, f);
-/* 209:    */  }
-/* 210:    */  
-/* 214:    */  public BooleanOpenHashSet(boolean[] a)
-/* 215:    */  {
-/* 216:216 */    this(a, 0.75F);
-/* 217:    */  }
-/* 218:    */  
-/* 222:    */  public boolean add(boolean k)
-/* 223:    */  {
-/* 224:224 */    int pos = (k ? 262886248 : -878682501) & this.mask;
-/* 225:    */    
-/* 226:226 */    while (this.used[pos] != 0) {
-/* 227:227 */      if (this.key[pos] == k) return false;
-/* 228:228 */      pos = pos + 1 & this.mask;
-/* 229:    */    }
-/* 230:230 */    this.used[pos] = true;
-/* 231:231 */    this.key[pos] = k;
-/* 232:232 */    if (++this.size >= this.maxFill) { rehash(HashCommon.arraySize(this.size + 1, this.f));
-/* 233:    */    }
-/* 234:234 */    return true;
-/* 235:    */  }
-/* 236:    */  
-/* 239:    */  protected final int shiftKeys(int pos)
-/* 240:    */  {
-/* 241:    */    int last;
-/* 242:    */    
-/* 244:    */    for (;;)
-/* 245:    */    {
-/* 246:246 */      pos = (last = pos) + 1 & this.mask;
-/* 247:247 */      while (this.used[pos] != 0) {
-/* 248:248 */        int slot = (this.key[pos] != 0 ? 262886248 : -878682501) & this.mask;
-/* 249:249 */        if (last <= pos ? (last < slot) && (slot <= pos) : (last >= slot) && (slot > pos)) break;
-/* 250:250 */        pos = pos + 1 & this.mask;
-/* 251:    */      }
-/* 252:252 */      if (this.used[pos] == 0) break;
-/* 253:253 */      this.key[last] = this.key[pos];
-/* 254:    */    }
-/* 255:255 */    this.used[last] = false;
-/* 256:256 */    return last;
-/* 257:    */  }
-/* 258:    */  
-/* 259:    */  public boolean remove(boolean k)
-/* 260:    */  {
-/* 261:261 */    int pos = (k ? 262886248 : -878682501) & this.mask;
-/* 262:    */    
-/* 263:263 */    while (this.used[pos] != 0) {
-/* 264:264 */      if (this.key[pos] == k) {
-/* 265:265 */        this.size -= 1;
-/* 266:266 */        shiftKeys(pos);
-/* 267:    */        
-/* 268:268 */        return true;
-/* 269:    */      }
-/* 270:270 */      pos = pos + 1 & this.mask;
-/* 271:    */    }
-/* 272:272 */    return false;
-/* 273:    */  }
-/* 274:    */  
-/* 275:    */  public boolean contains(boolean k)
-/* 276:    */  {
-/* 277:277 */    int pos = (k ? 262886248 : -878682501) & this.mask;
-/* 278:    */    
-/* 279:279 */    while (this.used[pos] != 0) {
-/* 280:280 */      if (this.key[pos] == k) return true;
-/* 281:281 */      pos = pos + 1 & this.mask;
-/* 282:    */    }
-/* 283:283 */    return false;
-/* 284:    */  }
-/* 285:    */  
-/* 290:    */  public void clear()
-/* 291:    */  {
-/* 292:292 */    if (this.size == 0) return;
-/* 293:293 */    this.size = 0;
-/* 294:294 */    BooleanArrays.fill(this.used, false);
-/* 295:    */  }
-/* 296:    */  
-/* 297:297 */  public int size() { return this.size; }
-/* 298:    */  
-/* 299:    */  public boolean isEmpty() {
-/* 300:300 */    return this.size == 0;
-/* 301:    */  }
-/* 302:    */  
-/* 308:    */  @Deprecated
-/* 309:    */  public void growthFactor(int growthFactor) {}
-/* 310:    */  
-/* 316:    */  @Deprecated
-/* 317:317 */  public int growthFactor() { return 16; }
-/* 318:    */  
-/* 319:    */  private class SetIterator extends AbstractBooleanIterator {
-/* 320:    */    int pos;
-/* 321:    */    int last;
-/* 322:    */    
-/* 323:323 */    private SetIterator() { this.pos = BooleanOpenHashSet.this.n;
-/* 324:    */      
-/* 326:326 */      this.last = -1;
-/* 327:    */      
-/* 328:328 */      this.c = BooleanOpenHashSet.this.size;
-/* 329:    */      
-/* 333:333 */      boolean[] used = BooleanOpenHashSet.this.used;
-/* 334:334 */      while ((this.c != 0) && (used[(--this.pos)] == 0)) {}
-/* 335:    */    }
-/* 336:    */    
-/* 337:337 */    public boolean hasNext() { return this.c != 0; }
-/* 338:    */    
-/* 339:    */    public boolean nextBoolean() {
-/* 340:340 */      if (!hasNext()) throw new NoSuchElementException();
-/* 341:341 */      this.c -= 1;
-/* 342:    */      
-/* 343:343 */      if (this.pos < 0) return this.wrapped.getBoolean(-(this.last = --this.pos) - 2);
-/* 344:344 */      boolean retVal = BooleanOpenHashSet.this.key[(this.last = this.pos)];
-/* 345:    */      
-/* 346:346 */      if (this.c != 0) {
-/* 347:347 */        boolean[] used = BooleanOpenHashSet.this.used;
-/* 348:348 */        while ((this.pos-- != 0) && (used[this.pos] == 0)) {}
-/* 349:    */      }
-/* 350:    */      
-/* 351:351 */      return retVal;
-/* 352:    */    }
-/* 353:    */    
-/* 355:    */    int c;
-/* 356:    */    
-/* 357:    */    BooleanArrayList wrapped;
-/* 358:    */    
-/* 359:    */    final int shiftKeys(int pos)
-/* 360:    */    {
-/* 361:    */      int last;
-/* 362:    */      for (;;)
-/* 363:    */      {
-/* 364:364 */        pos = (last = pos) + 1 & BooleanOpenHashSet.this.mask;
-/* 365:365 */        while (BooleanOpenHashSet.this.used[pos] != 0) {
-/* 366:366 */          int slot = (BooleanOpenHashSet.this.key[pos] != 0 ? 262886248 : -878682501) & BooleanOpenHashSet.this.mask;
-/* 367:367 */          if (last <= pos ? (last < slot) && (slot <= pos) : (last >= slot) && (slot > pos)) break;
-/* 368:368 */          pos = pos + 1 & BooleanOpenHashSet.this.mask;
-/* 369:    */        }
-/* 370:370 */        if (BooleanOpenHashSet.this.used[pos] == 0) break;
-/* 371:371 */        if (pos < last)
-/* 372:    */        {
-/* 373:373 */          if (this.wrapped == null) this.wrapped = new BooleanArrayList();
-/* 374:374 */          this.wrapped.add(BooleanOpenHashSet.this.key[pos]);
-/* 375:    */        }
-/* 376:376 */        BooleanOpenHashSet.this.key[last] = BooleanOpenHashSet.this.key[pos];
-/* 377:    */      }
-/* 378:378 */      BooleanOpenHashSet.this.used[last] = false;
-/* 379:379 */      return last;
-/* 380:    */    }
-/* 381:    */    
-/* 382:    */    public void remove() {
-/* 383:383 */      if (this.last == -1) throw new IllegalStateException();
-/* 384:384 */      if (this.pos < -1)
-/* 385:    */      {
-/* 386:386 */        BooleanOpenHashSet.this.remove(this.wrapped.getBoolean(-this.pos - 2));
-/* 387:387 */        this.last = -1;
-/* 388:388 */        return;
-/* 389:    */      }
-/* 390:390 */      BooleanOpenHashSet.this.size -= 1;
-/* 391:391 */      if ((shiftKeys(this.last) == this.pos) && (this.c > 0)) {
-/* 392:392 */        this.c += 1;
-/* 393:393 */        nextBoolean();
-/* 394:    */      }
-/* 395:395 */      this.last = -1;
-/* 396:    */    }
-/* 397:    */  }
-/* 398:    */  
-/* 399:    */  public BooleanIterator iterator() {
-/* 400:400 */    return new SetIterator(null);
-/* 401:    */  }
-/* 402:    */  
-/* 411:    */  @Deprecated
-/* 412:    */  public boolean rehash()
-/* 413:    */  {
-/* 414:414 */    return true;
-/* 415:    */  }
-/* 416:    */  
-/* 427:    */  public boolean trim()
-/* 428:    */  {
-/* 429:429 */    int l = HashCommon.arraySize(this.size, this.f);
-/* 430:430 */    if (l >= this.n) return true;
-/* 431:    */    try {
-/* 432:432 */      rehash(l);
-/* 433:    */    } catch (OutOfMemoryError cantDoIt) {
-/* 434:434 */      return false; }
-/* 435:435 */    return true;
-/* 436:    */  }
-/* 437:    */  
-/* 454:    */  public boolean trim(int n)
-/* 455:    */  {
-/* 456:456 */    int l = HashCommon.nextPowerOfTwo((int)Math.ceil(n / this.f));
-/* 457:457 */    if (this.n <= l) return true;
-/* 458:    */    try {
-/* 459:459 */      rehash(l);
-/* 460:    */    } catch (OutOfMemoryError cantDoIt) {
-/* 461:461 */      return false; }
-/* 462:462 */    return true;
-/* 463:    */  }
-/* 464:    */  
-/* 473:    */  protected void rehash(int newN)
-/* 474:    */  {
-/* 475:475 */    int i = 0;
-/* 476:476 */    boolean[] used = this.used;
-/* 477:    */    
-/* 478:478 */    boolean[] key = this.key;
-/* 479:479 */    int newMask = newN - 1;
-/* 480:480 */    boolean[] newKey = new boolean[newN];
-/* 481:481 */    boolean[] newUsed = new boolean[newN];
-/* 482:482 */    for (int j = this.size; j-- != 0;) {
-/* 483:483 */      while (used[i] == 0) i++;
-/* 484:484 */      boolean k = key[i];
-/* 485:485 */      int pos = (k ? 262886248 : -878682501) & newMask;
-/* 486:486 */      while (newUsed[pos] != 0) pos = pos + 1 & newMask;
-/* 487:487 */      newUsed[pos] = true;
-/* 488:488 */      newKey[pos] = k;
-/* 489:489 */      i++;
-/* 490:    */    }
-/* 491:491 */    this.n = newN;
-/* 492:492 */    this.mask = newMask;
-/* 493:493 */    this.maxFill = HashCommon.maxFill(this.n, this.f);
-/* 494:494 */    this.key = newKey;
-/* 495:495 */    this.used = newUsed;
-/* 496:    */  }
-/* 497:    */  
-/* 501:    */  public BooleanOpenHashSet clone()
-/* 502:    */  {
-/* 503:    */    BooleanOpenHashSet c;
-/* 504:    */    
-/* 506:    */    try
-/* 507:    */    {
-/* 508:508 */      c = (BooleanOpenHashSet)super.clone();
-/* 509:    */    }
-/* 510:    */    catch (CloneNotSupportedException cantHappen) {
-/* 511:511 */      throw new InternalError();
-/* 512:    */    }
-/* 513:513 */    c.key = ((boolean[])this.key.clone());
-/* 514:514 */    c.used = ((boolean[])this.used.clone());
-/* 515:515 */    return c;
-/* 516:    */  }
-/* 517:    */  
-/* 525:    */  public int hashCode()
-/* 526:    */  {
-/* 527:527 */    int h = 0;int i = 0;int j = this.size;
-/* 528:528 */    while (j-- != 0) {
-/* 529:529 */      while (this.used[i] == 0) i++;
-/* 530:530 */      h += (this.key[i] != 0 ? 1231 : 1237);
-/* 531:531 */      i++;
-/* 532:    */    }
-/* 533:533 */    return h;
-/* 534:    */  }
-/* 535:    */  
-/* 536:536 */  private void writeObject(ObjectOutputStream s) throws IOException { BooleanIterator i = iterator();
-/* 537:537 */    s.defaultWriteObject();
-/* 538:538 */    for (int j = this.size; j-- != 0; s.writeBoolean(i.nextBoolean())) {}
-/* 539:    */  }
-/* 540:    */  
-/* 541:    */  private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
-/* 542:542 */    s.defaultReadObject();
-/* 543:543 */    this.n = HashCommon.arraySize(this.size, this.f);
-/* 544:544 */    this.maxFill = HashCommon.maxFill(this.n, this.f);
-/* 545:545 */    this.mask = (this.n - 1);
-/* 546:546 */    boolean[] key = this.key = new boolean[this.n];
-/* 547:547 */    boolean[] used = this.used = new boolean[this.n];
-/* 548:    */    
-/* 549:549 */    int i = this.size; for (int pos = 0; i-- != 0;) {
-/* 550:550 */      boolean k = s.readBoolean();
-/* 551:551 */      pos = (k ? 262886248 : -878682501) & this.mask;
-/* 552:552 */      while (used[pos] != 0) pos = pos + 1 & this.mask;
-/* 553:553 */      used[pos] = true;
-/* 554:554 */      key[pos] = k;
-/* 555:    */    }
-/* 556:    */  }
-/* 557:    */  
-/* 558:    */  private void checkTable() {}
-/* 559:    */}
+package it.unimi.dsi.fastutil.booleans;
+
+import it.unimi.dsi.fastutil.Hash;
+import it.unimi.dsi.fastutil.HashCommon;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+public class BooleanOpenHashSet
+  extends AbstractBooleanSet
+  implements Serializable, Cloneable, Hash
+{
+  public static final long serialVersionUID = 0L;
+  private static final boolean ASSERTS = false;
+  protected transient boolean[] key;
+  protected transient boolean[] used;
+  protected final float field_401;
+  protected transient int field_402;
+  protected transient int maxFill;
+  protected transient int mask;
+  protected int size;
+  
+  public BooleanOpenHashSet(int expected, float local_f)
+  {
+    if ((local_f <= 0.0F) || (local_f > 1.0F)) {
+      throw new IllegalArgumentException("Load factor must be greater than 0 and smaller than or equal to 1");
+    }
+    if (expected < 0) {
+      throw new IllegalArgumentException("The expected number of elements must be nonnegative");
+    }
+    this.field_401 = local_f;
+    this.field_402 = HashCommon.arraySize(expected, local_f);
+    this.mask = (this.field_402 - 1);
+    this.maxFill = HashCommon.maxFill(this.field_402, local_f);
+    this.key = new boolean[this.field_402];
+    this.used = new boolean[this.field_402];
+  }
+  
+  public BooleanOpenHashSet(int expected)
+  {
+    this(expected, 0.75F);
+  }
+  
+  public BooleanOpenHashSet()
+  {
+    this(16, 0.75F);
+  }
+  
+  public BooleanOpenHashSet(Collection<? extends Boolean> local_c, float local_f)
+  {
+    this(local_c.size(), local_f);
+    addAll(local_c);
+  }
+  
+  public BooleanOpenHashSet(Collection<? extends Boolean> local_c)
+  {
+    this(local_c, 0.75F);
+  }
+  
+  public BooleanOpenHashSet(BooleanCollection local_c, float local_f)
+  {
+    this(local_c.size(), local_f);
+    addAll(local_c);
+  }
+  
+  public BooleanOpenHashSet(BooleanCollection local_c)
+  {
+    this(local_c, 0.75F);
+  }
+  
+  public BooleanOpenHashSet(BooleanIterator local_i, float local_f)
+  {
+    this(16, local_f);
+    while (local_i.hasNext()) {
+      add(local_i.nextBoolean());
+    }
+  }
+  
+  public BooleanOpenHashSet(BooleanIterator local_i)
+  {
+    this(local_i, 0.75F);
+  }
+  
+  public BooleanOpenHashSet(Iterator<?> local_i, float local_f)
+  {
+    this(BooleanIterators.asBooleanIterator(local_i), local_f);
+  }
+  
+  public BooleanOpenHashSet(Iterator<?> local_i)
+  {
+    this(BooleanIterators.asBooleanIterator(local_i));
+  }
+  
+  public BooleanOpenHashSet(boolean[] local_a, int offset, int length, float local_f)
+  {
+    this(length < 0 ? 0 : length, local_f);
+    BooleanArrays.ensureOffsetLength(local_a, offset, length);
+    for (int local_i = 0; local_i < length; local_i++) {
+      add(local_a[(offset + local_i)]);
+    }
+  }
+  
+  public BooleanOpenHashSet(boolean[] local_a, int offset, int length)
+  {
+    this(local_a, offset, length, 0.75F);
+  }
+  
+  public BooleanOpenHashSet(boolean[] local_a, float local_f)
+  {
+    this(local_a, 0, local_a.length, local_f);
+  }
+  
+  public BooleanOpenHashSet(boolean[] local_a)
+  {
+    this(local_a, 0.75F);
+  }
+  
+  public boolean add(boolean local_k)
+  {
+    for (int pos = (local_k ? 262886248 : -878682501) & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask) {
+      if (this.key[pos] == local_k) {
+        return false;
+      }
+    }
+    this.used[pos] = true;
+    this.key[pos] = local_k;
+    if (++this.size >= this.maxFill) {
+      rehash(HashCommon.arraySize(this.size + 1, this.field_401));
+    }
+    return true;
+  }
+  
+  protected final int shiftKeys(int pos)
+  {
+    int last;
+    for (;;)
+    {
+      for (pos = (last = pos) + 1 & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask)
+      {
+        int slot = (this.key[pos] != 0 ? 262886248 : -878682501) & this.mask;
+        if (last <= pos ? (last < slot) && (slot <= pos) : (last >= slot) && (slot > pos)) {
+          break;
+        }
+      }
+      if (this.used[pos] == 0) {
+        break;
+      }
+      this.key[last] = this.key[pos];
+    }
+    this.used[last] = false;
+    return last;
+  }
+  
+  public boolean remove(boolean local_k)
+  {
+    for (int pos = (local_k ? 262886248 : -878682501) & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask) {
+      if (this.key[pos] == local_k)
+      {
+        this.size -= 1;
+        shiftKeys(pos);
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  public boolean contains(boolean local_k)
+  {
+    for (int pos = (local_k ? 262886248 : -878682501) & this.mask; this.used[pos] != 0; pos = pos + 1 & this.mask) {
+      if (this.key[pos] == local_k) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  public void clear()
+  {
+    if (this.size == 0) {
+      return;
+    }
+    this.size = 0;
+    BooleanArrays.fill(this.used, false);
+  }
+  
+  public int size()
+  {
+    return this.size;
+  }
+  
+  public boolean isEmpty()
+  {
+    return this.size == 0;
+  }
+  
+  @Deprecated
+  public void growthFactor(int growthFactor) {}
+  
+  @Deprecated
+  public int growthFactor()
+  {
+    return 16;
+  }
+  
+  public BooleanIterator iterator()
+  {
+    return new SetIterator(null);
+  }
+  
+  @Deprecated
+  public boolean rehash()
+  {
+    return true;
+  }
+  
+  public boolean trim()
+  {
+    int local_l = HashCommon.arraySize(this.size, this.field_401);
+    if (local_l >= this.field_402) {
+      return true;
+    }
+    try
+    {
+      rehash(local_l);
+    }
+    catch (OutOfMemoryError cantDoIt)
+    {
+      return false;
+    }
+    return true;
+  }
+  
+  public boolean trim(int local_n)
+  {
+    int local_l = HashCommon.nextPowerOfTwo((int)Math.ceil(local_n / this.field_401));
+    if (this.field_402 <= local_l) {
+      return true;
+    }
+    try
+    {
+      rehash(local_l);
+    }
+    catch (OutOfMemoryError cantDoIt)
+    {
+      return false;
+    }
+    return true;
+  }
+  
+  protected void rehash(int newN)
+  {
+    int local_i = 0;
+    boolean[] used = this.used;
+    boolean[] key = this.key;
+    int newMask = newN - 1;
+    boolean[] newKey = new boolean[newN];
+    boolean[] newUsed = new boolean[newN];
+    int local_j = this.size;
+    while (local_j-- != 0)
+    {
+      while (used[local_i] == 0) {
+        local_i++;
+      }
+      boolean local_k = key[local_i];
+      for (int pos = (local_k ? 262886248 : -878682501) & newMask; newUsed[pos] != 0; pos = pos + 1 & newMask) {}
+      newUsed[pos] = true;
+      newKey[pos] = local_k;
+      local_i++;
+    }
+    this.field_402 = newN;
+    this.mask = newMask;
+    this.maxFill = HashCommon.maxFill(this.field_402, this.field_401);
+    this.key = newKey;
+    this.used = newUsed;
+  }
+  
+  public BooleanOpenHashSet clone()
+  {
+    BooleanOpenHashSet local_c;
+    try
+    {
+      local_c = (BooleanOpenHashSet)super.clone();
+    }
+    catch (CloneNotSupportedException cantHappen)
+    {
+      throw new InternalError();
+    }
+    local_c.key = ((boolean[])this.key.clone());
+    local_c.used = ((boolean[])this.used.clone());
+    return local_c;
+  }
+  
+  public int hashCode()
+  {
+    int local_h = 0;
+    int local_i = 0;
+    int local_j = this.size;
+    while (local_j-- != 0)
+    {
+      while (this.used[local_i] == 0) {
+        local_i++;
+      }
+      local_h += (this.key[local_i] != 0 ? 1231 : 1237);
+      local_i++;
+    }
+    return local_h;
+  }
+  
+  private void writeObject(ObjectOutputStream local_s)
+    throws IOException
+  {
+    BooleanIterator local_i = iterator();
+    local_s.defaultWriteObject();
+    int local_j = this.size;
+    while (local_j-- != 0) {
+      local_s.writeBoolean(local_i.nextBoolean());
+    }
+  }
+  
+  private void readObject(ObjectInputStream local_s)
+    throws IOException, ClassNotFoundException
+  {
+    local_s.defaultReadObject();
+    this.field_402 = HashCommon.arraySize(this.size, this.field_401);
+    this.maxFill = HashCommon.maxFill(this.field_402, this.field_401);
+    this.mask = (this.field_402 - 1);
+    boolean[] key = this.key = new boolean[this.field_402];
+    boolean[] used = this.used = new boolean[this.field_402];
+    int local_i = this.size;
+    int pos = 0;
+    while (local_i-- != 0)
+    {
+      boolean local_k = local_s.readBoolean();
+      for (pos = (local_k ? 262886248 : -878682501) & this.mask; used[pos] != 0; pos = pos + 1 & this.mask) {}
+      used[pos] = true;
+      key[pos] = local_k;
+    }
+  }
+  
+  private void checkTable() {}
+  
+  private class SetIterator
+    extends AbstractBooleanIterator
+  {
+    int pos = BooleanOpenHashSet.this.field_402;
+    int last = -1;
+    int field_305 = BooleanOpenHashSet.this.size;
+    BooleanArrayList wrapped;
+    
+    private SetIterator()
+    {
+      boolean[] used = BooleanOpenHashSet.this.used;
+      while ((this.field_305 != 0) && (used[(--this.pos)] == 0)) {}
+    }
+    
+    public boolean hasNext()
+    {
+      return this.field_305 != 0;
+    }
+    
+    public boolean nextBoolean()
+    {
+      if (!hasNext()) {
+        throw new NoSuchElementException();
+      }
+      this.field_305 -= 1;
+      if (this.pos < 0) {
+        return this.wrapped.getBoolean(-(this.last = --this.pos) - 2);
+      }
+      boolean retVal = BooleanOpenHashSet.this.key[(this.last = this.pos)];
+      if (this.field_305 != 0)
+      {
+        boolean[] used = BooleanOpenHashSet.this.used;
+        while ((this.pos-- != 0) && (used[this.pos] == 0)) {}
+      }
+      return retVal;
+    }
+    
+    final int shiftKeys(int pos)
+    {
+      int last;
+      for (;;)
+      {
+        for (pos = (last = pos) + 1 & BooleanOpenHashSet.this.mask; BooleanOpenHashSet.this.used[pos] != 0; pos = pos + 1 & BooleanOpenHashSet.this.mask)
+        {
+          int slot = (BooleanOpenHashSet.this.key[pos] != 0 ? 262886248 : -878682501) & BooleanOpenHashSet.this.mask;
+          if (last <= pos ? (last < slot) && (slot <= pos) : (last >= slot) && (slot > pos)) {
+            break;
+          }
+        }
+        if (BooleanOpenHashSet.this.used[pos] == 0) {
+          break;
+        }
+        if (pos < last)
+        {
+          if (this.wrapped == null) {
+            this.wrapped = new BooleanArrayList();
+          }
+          this.wrapped.add(BooleanOpenHashSet.this.key[pos]);
+        }
+        BooleanOpenHashSet.this.key[last] = BooleanOpenHashSet.this.key[pos];
+      }
+      BooleanOpenHashSet.this.used[last] = false;
+      return last;
+    }
+    
+    public void remove()
+    {
+      if (this.last == -1) {
+        throw new IllegalStateException();
+      }
+      if (this.pos < -1)
+      {
+        BooleanOpenHashSet.this.remove(this.wrapped.getBoolean(-this.pos - 2));
+        this.last = -1;
+        return;
+      }
+      BooleanOpenHashSet.this.size -= 1;
+      if ((shiftKeys(this.last) == this.pos) && (this.field_305 > 0))
+      {
+        this.field_305 += 1;
+        nextBoolean();
+      }
+      this.last = -1;
+    }
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.booleans.BooleanOpenHashSet
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

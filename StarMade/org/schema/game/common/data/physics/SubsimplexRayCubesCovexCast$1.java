@@ -1,16 +1,16 @@
-/*  1:   */package org.schema.game.common.data.physics;
-/*  2:   */
-/* 70:   */final class SubsimplexRayCubesCovexCast$1
-/* 71:   */  extends ThreadLocal
-/* 72:   */{
-/* 73:   */  protected final CubeRayVariableSet initialValue()
-/* 74:   */  {
-/* 75:75 */    return new CubeRayVariableSet();
-/* 76:   */  }
-/* 77:   */}
+package org.schema.game.common.data.physics;
+
+final class SubsimplexRayCubesCovexCast$1
+  extends ThreadLocal
+{
+  protected final CubeRayVariableSet initialValue()
+  {
+    return new CubeRayVariableSet();
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.game.common.data.physics.SubsimplexRayCubesCovexCast.1
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

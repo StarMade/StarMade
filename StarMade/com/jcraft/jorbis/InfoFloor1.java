@@ -22,7 +22,7 @@ class InfoFloor1
   float twofitatten;
   int unusedminsize;
   int unusedmin_n;
-  int n;
+  int field_2037;
   
   InfoFloor1()
   {
@@ -64,13 +64,13 @@ class InfoFloor1
     localInfoFloor12.twofitatten = localInfoFloor11.twofitatten;
     localInfoFloor12.unusedminsize = localInfoFloor11.unusedminsize;
     localInfoFloor12.unusedmin_n = localInfoFloor11.unusedmin_n;
-    localInfoFloor12.n = localInfoFloor11.n;
+    localInfoFloor12.field_2037 = localInfoFloor11.field_2037;
     return localInfoFloor12;
   }
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     com.jcraft.jorbis.InfoFloor1
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

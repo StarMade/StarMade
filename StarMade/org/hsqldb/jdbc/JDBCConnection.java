@@ -92,7 +92,7 @@ public class JDBCConnection
     throws SQLException
   {
     checkClosed();
-    if ((paramString == null) || (paramString.length() == 0) || (paramString.indexOf(123) == -1)) {
+    if ((paramString == null) || (paramString.length() == 0) || (paramString.indexOf('{') == -1)) {
       return paramString;
     }
     int i = 0;
@@ -1087,7 +1087,7 @@ public class JDBCConnection
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.jdbc.JDBCConnection
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -23,7 +23,7 @@ import org.hsqldb.store.BitMap;
 
 public class DataFileCache
 {
-  protected FileAccess fa;
+  protected FileAccess field_2045;
   public static final int FLAG_ISSHADOWED = 1;
   public static final int FLAG_ISSAVED = 2;
   public static final int FLAG_ROWINFO = 3;
@@ -74,7 +74,7 @@ public class DataFileCache
     this.dataFileName = (paramString + ".data");
     this.backupFileName = (paramString + ".backup");
     this.database = paramDatabase;
-    this.fa = paramDatabase.logger.getFileAccess();
+    this.field_2045 = paramDatabase.logger.getFileAccess();
     this.dataFileScale = paramDatabase.logger.getDataFileScale();
     this.cachedRowPadding = 8;
     if (this.dataFileScale > 8) {
@@ -127,7 +127,7 @@ public class DataFileCache
         return;
       }
       long l1 = 0L;
-      boolean bool2 = this.fa.isStreamElement(this.dataFileName);
+      boolean bool2 = this.field_2045.isStreamElement(this.dataFileName);
       boolean bool3 = this.database.logger.propIncrementBackup;
       boolean bool4 = false;
       if (bool2)
@@ -155,7 +155,7 @@ public class DataFileCache
         }
         if ((bool4) && (bool3))
         {
-          boolean bool6 = this.fa.isStreamElement(this.backupFileName);
+          boolean bool6 = this.field_2045.isStreamElement(this.backupFileName);
           if (bool6) {
             bool4 = false;
           }
@@ -169,7 +169,7 @@ public class DataFileCache
         }
         else
         {
-          boolean bool5 = this.fa.isStreamElement(this.backupFileName);
+          boolean bool5 = this.field_2045.isStreamElement(this.backupFileName);
           if (!bool5) {
             backupFile(false);
           }
@@ -230,7 +230,7 @@ public class DataFileCache
         return;
       }
       long l = 0L;
-      boolean bool1 = this.fa.isStreamElement(this.dataFileName);
+      boolean bool1 = this.field_2045.isStreamElement(this.dataFileName);
       boolean bool2 = this.database.logger.propIncrementBackup;
       int k = this.database.getProperties().getDBModified() == 1 ? 1 : 0;
       if ((bool1) && (k != 0)) {
@@ -347,7 +347,7 @@ public class DataFileCache
   {
     try
     {
-      if (this.fa.isStreamElement(this.backupFileName))
+      if (this.field_2045.isStreamElement(this.backupFileName))
       {
         RAShadowFile.restoreFile(this.database, this.backupFileName, this.dataFileName);
         deleteBackup();
@@ -927,12 +927,12 @@ public class DataFileCache
     {
       if (this.database.logger.propIncrementBackup)
       {
-        if (this.fa.isStreamElement(this.backupFileName)) {
+        if (this.field_2045.isStreamElement(this.backupFileName)) {
           deleteBackup();
         }
         return;
       }
-      if (this.fa.isStreamElement(this.dataFileName))
+      if (this.field_2045.isStreamElement(this.dataFileName))
       {
         String str = paramBoolean ? this.dataFileName + ".new" : this.dataFileName;
         FileArchiver.archive(str, this.backupFileName + ".new", this.database.logger.getFileAccess(), 1);
@@ -959,10 +959,10 @@ public class DataFileCache
         deleteBackup();
         return;
       }
-      if (this.fa.isStreamElement(this.backupFileName + ".new"))
+      if (this.field_2045.isStreamElement(this.backupFileName + ".new"))
       {
         deleteBackup();
-        this.fa.renameElement(this.backupFileName + ".new", this.backupFileName);
+        this.field_2045.renameElement(this.backupFileName + ".new", this.backupFileName);
       }
     }
     finally
@@ -976,10 +976,10 @@ public class DataFileCache
     this.writeLock.lock();
     try
     {
-      if (this.fa.isStreamElement(this.dataFileName + ".new"))
+      if (this.field_2045.isStreamElement(this.dataFileName + ".new"))
       {
         deleteFile();
-        this.fa.renameElement(this.dataFileName + ".new", this.dataFileName);
+        this.field_2045.renameElement(this.dataFileName + ".new", this.dataFileName);
       }
     }
     finally
@@ -993,18 +993,18 @@ public class DataFileCache
     this.writeLock.lock();
     try
     {
-      this.fa.removeElement(this.dataFileName);
+      this.field_2045.removeElement(this.dataFileName);
       if (this.database.logger.isStoredFileAccess()) {
         return;
       }
-      if (this.fa.isStreamElement(this.dataFileName))
+      if (this.field_2045.isStreamElement(this.dataFileName))
       {
         this.database.logger.log.deleteOldDataFiles();
-        this.fa.removeElement(this.dataFileName);
-        if (this.fa.isStreamElement(this.dataFileName))
+        this.field_2045.removeElement(this.dataFileName);
+        if (this.field_2045.isStreamElement(this.dataFileName))
         {
           String str = FileUtil.newDiscardFileName(this.dataFileName);
-          this.fa.renameElement(this.dataFileName, str);
+          this.field_2045.renameElement(this.dataFileName, str);
         }
       }
     }
@@ -1019,8 +1019,8 @@ public class DataFileCache
     this.writeLock.lock();
     try
     {
-      if (this.fa.isStreamElement(this.backupFileName)) {
-        this.fa.removeElement(this.backupFileName);
+      if (this.field_2045.isStreamElement(this.backupFileName)) {
+        this.field_2045.removeElement(this.backupFileName);
       }
     }
     finally
@@ -1176,7 +1176,7 @@ public class DataFileCache
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.persist.DataFileCache
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

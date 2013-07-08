@@ -1,25 +1,23 @@
-/*  1:   */package org.newdawn.slick.util.pathfinding.heuristics;
-/*  2:   */
-/*  3:   */import org.newdawn.slick.util.pathfinding.AStarHeuristic;
-/*  4:   */import org.newdawn.slick.util.pathfinding.Mover;
-/*  5:   */import org.newdawn.slick.util.pathfinding.TileBasedMap;
-/*  6:   */
-/* 13:   */public class ClosestHeuristic
-/* 14:   */  implements AStarHeuristic
-/* 15:   */{
-/* 16:   */  public float getCost(TileBasedMap map, Mover mover, int x, int y, int tx, int ty)
-/* 17:   */  {
-/* 18:18 */    float dx = tx - x;
-/* 19:19 */    float dy = ty - y;
-/* 20:   */    
-/* 21:21 */    float result = (float)Math.sqrt(dx * dx + dy * dy);
-/* 22:   */    
-/* 23:23 */    return result;
-/* 24:   */  }
-/* 25:   */}
+package org.newdawn.slick.util.pathfinding.heuristics;
+
+import org.newdawn.slick.util.pathfinding.AStarHeuristic;
+import org.newdawn.slick.util.pathfinding.Mover;
+import org.newdawn.slick.util.pathfinding.TileBasedMap;
+
+public class ClosestHeuristic
+  implements AStarHeuristic
+{
+  public float getCost(TileBasedMap map, Mover mover, int local_x, int local_y, int local_tx, int local_ty)
+  {
+    float local_dx = local_tx - local_x;
+    float local_dy = local_ty - local_y;
+    float result = (float)Math.sqrt(local_dx * local_dx + local_dy * local_dy);
+    return result;
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.newdawn.slick.util.pathfinding.heuristics.ClosestHeuristic
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

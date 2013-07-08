@@ -1,26 +1,26 @@
-/*  1:   */package org.jasypt.encryption.pbe.config;
-/*  2:   */
-/*  3:   */import org.jasypt.commons.CommonUtils;
-/*  4:   */
-/* 55:   */public class WebStringPBEConfig
-/* 56:   */  extends WebPBEConfig
-/* 57:   */  implements StringPBEConfig
-/* 58:   */{
-/* 59:59 */  private String stringOutputType = null;
-/* 60:   */  
-/* 86:   */  public void setStringOutputType(String stringOutputType)
-/* 87:   */  {
-/* 88:88 */    this.stringOutputType = CommonUtils.getStandardStringOutputType(stringOutputType);
-/* 89:   */  }
-/* 90:   */  
-/* 93:   */  public String getStringOutputType()
-/* 94:   */  {
-/* 95:95 */    return this.stringOutputType;
-/* 96:   */  }
-/* 97:   */}
+package org.jasypt.encryption.pbe.config;
+
+import org.jasypt.commons.CommonUtils;
+
+public class WebStringPBEConfig
+  extends WebPBEConfig
+  implements StringPBEConfig
+{
+  private String stringOutputType = null;
+  
+  public void setStringOutputType(String stringOutputType)
+  {
+    this.stringOutputType = CommonUtils.getStandardStringOutputType(stringOutputType);
+  }
+  
+  public String getStringOutputType()
+  {
+    return this.stringOutputType;
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.jasypt.encryption.pbe.config.WebStringPBEConfig
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -1,47 +1,47 @@
-/*   1:    */package org.jaxen.jdom;
-/*   2:    */
-/*   3:    */import org.jdom.Element;
-/*   4:    */import org.jdom.Namespace;
-/*   5:    */
-/*  63:    */public class XPathNamespace
-/*  64:    */{
-/*  65:    */  private Element jdomElement;
-/*  66:    */  private Namespace jdomNamespace;
-/*  67:    */  
-/*  68:    */  public XPathNamespace(Namespace jdomNamespace)
-/*  69:    */  {
-/*  70: 70 */    this.jdomNamespace = jdomNamespace;
-/*  71:    */  }
-/*  72:    */  
-/*  76:    */  public XPathNamespace(Element jdomElement, Namespace jdomNamespace)
-/*  77:    */  {
-/*  78: 78 */    this.jdomElement = jdomElement;
-/*  79: 79 */    this.jdomNamespace = jdomNamespace;
-/*  80:    */  }
-/*  81:    */  
-/*  86:    */  public Element getJDOMElement()
-/*  87:    */  {
-/*  88: 88 */    return this.jdomElement;
-/*  89:    */  }
-/*  90:    */  
-/*  93:    */  public void setJDOMElement(Element jdomElement)
-/*  94:    */  {
-/*  95: 95 */    this.jdomElement = jdomElement;
-/*  96:    */  }
-/*  97:    */  
-/* 101:    */  public Namespace getJDOMNamespace()
-/* 102:    */  {
-/* 103:103 */    return this.jdomNamespace;
-/* 104:    */  }
-/* 105:    */  
-/* 106:    */  public String toString()
-/* 107:    */  {
-/* 108:108 */    return "[xmlns:" + this.jdomNamespace.getPrefix() + "=\"" + this.jdomNamespace.getURI() + "\", element=" + this.jdomElement.getName() + "]";
-/* 109:    */  }
-/* 110:    */}
+package org.jaxen.jdom;
+
+import org.jdom.Element;
+import org.jdom.Namespace;
+
+public class XPathNamespace
+{
+  private Element jdomElement;
+  private Namespace jdomNamespace;
+  
+  public XPathNamespace(Namespace jdomNamespace)
+  {
+    this.jdomNamespace = jdomNamespace;
+  }
+  
+  public XPathNamespace(Element jdomElement, Namespace jdomNamespace)
+  {
+    this.jdomElement = jdomElement;
+    this.jdomNamespace = jdomNamespace;
+  }
+  
+  public Element getJDOMElement()
+  {
+    return this.jdomElement;
+  }
+  
+  public void setJDOMElement(Element jdomElement)
+  {
+    this.jdomElement = jdomElement;
+  }
+  
+  public Namespace getJDOMNamespace()
+  {
+    return this.jdomNamespace;
+  }
+  
+  public String toString()
+  {
+    return "[xmlns:" + this.jdomNamespace.getPrefix() + "=\"" + this.jdomNamespace.getURI() + "\", element=" + this.jdomElement.getName() + "]";
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.jaxen.jdom.XPathNamespace
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

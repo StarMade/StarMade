@@ -1,107 +1,101 @@
-/*   1:    */package org.newdawn.slick.svg.inkscape;
-/*   2:    */
-/*   3:    */import java.util.ArrayList;
-/*   4:    */import java.util.StringTokenizer;
-/*   5:    */import org.newdawn.slick.geom.Polygon;
-/*   6:    */import org.newdawn.slick.geom.Shape;
-/*   7:    */import org.newdawn.slick.geom.Transform;
-/*   8:    */import org.newdawn.slick.svg.Diagram;
-/*   9:    */import org.newdawn.slick.svg.Figure;
-/*  10:    */import org.newdawn.slick.svg.Loader;
-/*  11:    */import org.newdawn.slick.svg.NonGeometricData;
-/*  12:    */import org.newdawn.slick.svg.ParsingException;
-/*  13:    */import org.w3c.dom.Element;
-/*  14:    */
-/*  27:    */public class PolygonProcessor
-/*  28:    */  implements ElementProcessor
-/*  29:    */{
-/*  30:    */  private static int processPoly(Polygon poly, Element element, StringTokenizer tokens)
-/*  31:    */    throws ParsingException
-/*  32:    */  {
-/*  33: 33 */    int count = 0;
-/*  34:    */    
-/*  35: 35 */    ArrayList pts = new ArrayList();
-/*  36: 36 */    boolean moved = false;
-/*  37: 37 */    boolean closed = false;
-/*  38:    */    
-/*  39: 39 */    while (tokens.hasMoreTokens()) {
-/*  40: 40 */      String nextToken = tokens.nextToken();
-/*  41: 41 */      if (!nextToken.equals("L"))
-/*  42:    */      {
-/*  44: 44 */        if (nextToken.equals("z")) {
-/*  45: 45 */          closed = true;
-/*  46: 46 */          break;
-/*  47:    */        }
-/*  48: 48 */        if (nextToken.equals("M")) {
-/*  49: 49 */          if (!moved) {
-/*  50: 50 */            moved = true;
-/*  51:    */          }
-/*  52:    */          else
-/*  53:    */          {
-/*  54: 54 */            return 0; }
-/*  55:    */        } else {
-/*  56: 56 */          if (nextToken.equals("C")) {
-/*  57: 57 */            return 0;
-/*  58:    */          }
-/*  59:    */          
-/*  60: 60 */          String tokenX = nextToken;
-/*  61: 61 */          String tokenY = tokens.nextToken();
-/*  62:    */          try
-/*  63:    */          {
-/*  64: 64 */            float x = Float.parseFloat(tokenX);
-/*  65: 65 */            float y = Float.parseFloat(tokenY);
-/*  66:    */            
-/*  67: 67 */            poly.addPoint(x, y);
-/*  68: 68 */            count++;
-/*  69:    */          } catch (NumberFormatException e) {
-/*  70: 70 */            throw new ParsingException(element.getAttribute("id"), "Invalid token in points list", e);
-/*  71:    */          }
-/*  72:    */        }
-/*  73:    */      } }
-/*  74: 74 */    poly.setClosed(closed);
-/*  75: 75 */    return count;
-/*  76:    */  }
-/*  77:    */  
-/*  80:    */  public void process(Loader loader, Element element, Diagram diagram, Transform t)
-/*  81:    */    throws ParsingException
-/*  82:    */  {
-/*  83: 83 */    Transform transform = Util.getTransform(element);
-/*  84: 84 */    transform = new Transform(t, transform);
-/*  85:    */    
-/*  86: 86 */    String points = element.getAttribute("points");
-/*  87: 87 */    if (element.getNodeName().equals("path")) {
-/*  88: 88 */      points = element.getAttribute("d");
-/*  89:    */    }
-/*  90:    */    
-/*  91: 91 */    StringTokenizer tokens = new StringTokenizer(points, ", ");
-/*  92: 92 */    Polygon poly = new Polygon();
-/*  93: 93 */    int count = processPoly(poly, element, tokens);
-/*  94:    */    
-/*  95: 95 */    NonGeometricData data = Util.getNonGeometricData(element);
-/*  96: 96 */    if (count > 3) {
-/*  97: 97 */      Shape shape = poly.transform(transform);
-/*  98:    */      
-/*  99: 99 */      diagram.addFigure(new Figure(5, shape, data, transform));
-/* 100:    */    }
-/* 101:    */  }
-/* 102:    */  
-/* 105:    */  public boolean handles(Element element)
-/* 106:    */  {
-/* 107:107 */    if (element.getNodeName().equals("polygon")) {
-/* 108:108 */      return true;
-/* 109:    */    }
-/* 110:    */    
-/* 111:111 */    if ((element.getNodeName().equals("path")) && 
-/* 112:112 */      (!"arc".equals(element.getAttributeNS("http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd", "type")))) {
-/* 113:113 */      return true;
-/* 114:    */    }
-/* 115:    */    
-/* 117:117 */    return false;
-/* 118:    */  }
-/* 119:    */}
+package org.newdawn.slick.svg.inkscape;
+
+import java.util.ArrayList;
+import java.util.StringTokenizer;
+import org.newdawn.slick.geom.Polygon;
+import org.newdawn.slick.geom.Shape;
+import org.newdawn.slick.geom.Transform;
+import org.newdawn.slick.svg.Diagram;
+import org.newdawn.slick.svg.Figure;
+import org.newdawn.slick.svg.Loader;
+import org.newdawn.slick.svg.NonGeometricData;
+import org.newdawn.slick.svg.ParsingException;
+import org.w3c.dom.Element;
+
+public class PolygonProcessor
+  implements ElementProcessor
+{
+  private static int processPoly(Polygon poly, Element element, StringTokenizer tokens)
+    throws ParsingException
+  {
+    int count = 0;
+    ArrayList pts = new ArrayList();
+    boolean moved = false;
+    boolean closed = false;
+    while (tokens.hasMoreTokens())
+    {
+      String nextToken = tokens.nextToken();
+      if (!nextToken.equals("L"))
+      {
+        if (nextToken.equals("z"))
+        {
+          closed = true;
+          break;
+        }
+        if (nextToken.equals("M"))
+        {
+          if (!moved) {
+            moved = true;
+          } else {
+            return 0;
+          }
+        }
+        else
+        {
+          if (nextToken.equals("C")) {
+            return 0;
+          }
+          String tokenX = nextToken;
+          String tokenY = tokens.nextToken();
+          try
+          {
+            float local_x = Float.parseFloat(tokenX);
+            float local_y = Float.parseFloat(tokenY);
+            poly.addPoint(local_x, local_y);
+            count++;
+          }
+          catch (NumberFormatException local_x)
+          {
+            throw new ParsingException(element.getAttribute("id"), "Invalid token in points list", local_x);
+          }
+        }
+      }
+    }
+    poly.setClosed(closed);
+    return count;
+  }
+  
+  public void process(Loader loader, Element element, Diagram diagram, Transform local_t)
+    throws ParsingException
+  {
+    Transform transform = Util.getTransform(element);
+    transform = new Transform(local_t, transform);
+    String points = element.getAttribute("points");
+    if (element.getNodeName().equals("path")) {
+      points = element.getAttribute("d");
+    }
+    StringTokenizer tokens = new StringTokenizer(points, ", ");
+    Polygon poly = new Polygon();
+    int count = processPoly(poly, element, tokens);
+    NonGeometricData data = Util.getNonGeometricData(element);
+    if (count > 3)
+    {
+      Shape shape = poly.transform(transform);
+      diagram.addFigure(new Figure(5, shape, data, transform));
+    }
+  }
+  
+  public boolean handles(Element element)
+  {
+    if (element.getNodeName().equals("polygon")) {
+      return true;
+    }
+    return (element.getNodeName().equals("path")) && (!"arc".equals(element.getAttributeNS("http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd", "type")));
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.newdawn.slick.svg.inkscape.PolygonProcessor
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

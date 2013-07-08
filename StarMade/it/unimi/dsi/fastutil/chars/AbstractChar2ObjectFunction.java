@@ -1,57 +1,68 @@
-/*   1:    */package it.unimi.dsi.fastutil.chars;
-/*   2:    */
-/*   3:    */import java.io.Serializable;
-/*   4:    */
-/*  63:    */public abstract class AbstractChar2ObjectFunction<V>
-/*  64:    */  implements Char2ObjectFunction<V>, Serializable
-/*  65:    */{
-/*  66:    */  public static final long serialVersionUID = -4940583368468432370L;
-/*  67:    */  protected V defRetValue;
-/*  68:    */  
-/*  69:    */  public void defaultReturnValue(V rv)
-/*  70:    */  {
-/*  71: 71 */    this.defRetValue = rv;
-/*  72:    */  }
-/*  73:    */  
-/*  74: 74 */  public V defaultReturnValue() { return this.defRetValue; }
-/*  75:    */  
-/*  76:    */  public V put(char key, V value) {
-/*  77: 77 */    throw new UnsupportedOperationException();
-/*  78:    */  }
-/*  79:    */  
-/*  80: 80 */  public V remove(char key) { throw new UnsupportedOperationException(); }
-/*  81:    */  
-/*  82:    */  public void clear() {
-/*  83: 83 */    throw new UnsupportedOperationException();
-/*  84:    */  }
-/*  85:    */  
-/*  86: 86 */  public boolean containsKey(Object ok) { return containsKey(((Character)ok).charValue()); }
-/*  87:    */  
-/*  92:    */  public V get(Object ok)
-/*  93:    */  {
-/*  94: 94 */    char k = ((Character)ok).charValue();
-/*  95: 95 */    return containsKey(k) ? get(k) : null;
-/*  96:    */  }
-/*  97:    */  
-/* 101:    */  public V put(Character ok, V ov)
-/* 102:    */  {
-/* 103:103 */    char k = ok.charValue();
-/* 104:104 */    boolean containsKey = containsKey(k);
-/* 105:105 */    V v = put(k, ov);
-/* 106:106 */    return containsKey ? v : null;
-/* 107:    */  }
-/* 108:    */  
-/* 112:    */  public V remove(Object ok)
-/* 113:    */  {
-/* 114:114 */    char k = ((Character)ok).charValue();
-/* 115:115 */    boolean containsKey = containsKey(k);
-/* 116:116 */    V v = remove(k);
-/* 117:117 */    return containsKey ? v : null;
-/* 118:    */  }
-/* 119:    */}
+package it.unimi.dsi.fastutil.chars;
+
+import java.io.Serializable;
+
+public abstract class AbstractChar2ObjectFunction<V>
+  implements Char2ObjectFunction<V>, Serializable
+{
+  public static final long serialVersionUID = -4940583368468432370L;
+  protected V defRetValue;
+  
+  public void defaultReturnValue(V local_rv)
+  {
+    this.defRetValue = local_rv;
+  }
+  
+  public V defaultReturnValue()
+  {
+    return this.defRetValue;
+  }
+  
+  public V put(char key, V value)
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  public V remove(char key)
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  public void clear()
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  public boolean containsKey(Object local_ok)
+  {
+    return containsKey(((Character)local_ok).charValue());
+  }
+  
+  public V get(Object local_ok)
+  {
+    char local_k = ((Character)local_ok).charValue();
+    return containsKey(local_k) ? get(local_k) : null;
+  }
+  
+  public V put(Character local_ok, V local_ov)
+  {
+    char local_k = local_ok.charValue();
+    boolean containsKey = containsKey(local_k);
+    V local_v = put(local_k, local_ov);
+    return containsKey ? local_v : null;
+  }
+  
+  public V remove(Object local_ok)
+  {
+    char local_k = ((Character)local_ok).charValue();
+    boolean containsKey = containsKey(local_k);
+    V local_v = remove(local_k);
+    return containsKey ? local_v : null;
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.chars.AbstractChar2ObjectFunction
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

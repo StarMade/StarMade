@@ -21,7 +21,7 @@ public abstract class Statement
   boolean isTransactionStatement;
   boolean isExplain;
   String sql;
-  long id;
+  long field_2142;
   long compileTimestamp;
   HsqlNameManager.HsqlName[] readTableNames = HsqlNameManager.HsqlName.emptyArray;
   HsqlNameManager.HsqlName[] writeTableNames = HsqlNameManager.HsqlName.emptyArray;
@@ -102,12 +102,12 @@ public abstract class Statement
   
   public final void setID(long paramLong)
   {
-    this.id = paramLong;
+    this.field_2142 = paramLong;
   }
   
   public final long getID()
   {
-    return this.id;
+    return this.field_2142;
   }
   
   public final int getType()
@@ -229,7 +229,7 @@ public abstract class Statement
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.Statement
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

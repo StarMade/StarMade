@@ -1,20 +1,32 @@
-/*  1:   */package it.unimi.dsi.fastutil.floats;
-/*  2:   */
-/* 55:   */public abstract class AbstractFloatListIterator
-/* 56:   */  extends AbstractFloatBidirectionalIterator
-/* 57:   */  implements FloatListIterator
-/* 58:   */{
-/* 59:59 */  public void set(Float ok) { set(ok.floatValue()); }
-/* 60:   */  
-/* 61:61 */  public void add(Float ok) { add(ok.floatValue()); }
-/* 62:   */  
-/* 63:63 */  public void set(float k) { throw new UnsupportedOperationException(); }
-/* 64:   */  
-/* 65:65 */  public void add(float k) { throw new UnsupportedOperationException(); }
-/* 66:   */}
+package it.unimi.dsi.fastutil.floats;
+
+public abstract class AbstractFloatListIterator
+  extends AbstractFloatBidirectionalIterator
+  implements FloatListIterator
+{
+  public void set(Float local_ok)
+  {
+    set(local_ok.floatValue());
+  }
+  
+  public void add(Float local_ok)
+  {
+    add(local_ok.floatValue());
+  }
+  
+  public void set(float local_k)
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  public void add(float local_k)
+  {
+    throw new UnsupportedOperationException();
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.floats.AbstractFloatListIterator
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -7,7 +7,7 @@ public class WrapperIterator
 {
   private static final Object[] emptyelements = new Object[0];
   private Object[] elements;
-  private int i;
+  private int field_337;
   private boolean chained;
   private Iterator it1;
   private Iterator it2;
@@ -65,10 +65,10 @@ public class WrapperIterator
     if (this.elements == null) {
       return false;
     }
-    while ((this.notNull) && (this.i < this.elements.length) && (this.elements[this.i] == null)) {
-      this.i += 1;
+    while ((this.notNull) && (this.field_337 < this.elements.length) && (this.elements[this.field_337] == null)) {
+      this.field_337 += 1;
     }
-    if (this.i < this.elements.length) {
+    if (this.field_337 < this.elements.length) {
       return true;
     }
     this.elements = null;
@@ -99,7 +99,7 @@ public class WrapperIterator
       }
     }
     if (hasNext()) {
-      return this.elements[(this.i++)];
+      return this.elements[(this.field_337++)];
     }
     throw new NoSuchElementException();
   }
@@ -126,7 +126,7 @@ public class WrapperIterator
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.lib.WrapperIterator
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

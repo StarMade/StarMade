@@ -305,7 +305,7 @@ public final class HsqlNameManager
       }
       if (paramString.startsWith("SYS_"))
       {
-        int i = paramString.lastIndexOf(95) + 1;
+        int i = paramString.lastIndexOf('_') + 1;
         try
         {
           int j = Integer.parseInt(paramString.substring(i));
@@ -430,7 +430,7 @@ public final class HsqlNameManager
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.HsqlNameManager
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

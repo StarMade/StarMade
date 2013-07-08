@@ -1,31 +1,33 @@
-/*  1:   */package org.dom4j.tree;
-/*  2:   */
-/*  3:   */import org.dom4j.Comment;
-/*  4:   */import org.dom4j.Element;
-/*  5:   */import org.dom4j.Node;
-/*  6:   */
-/* 31:   */public class FlyweightComment
-/* 32:   */  extends AbstractComment
-/* 33:   */  implements Comment
-/* 34:   */{
-/* 35:   */  protected String text;
-/* 36:   */  
-/* 37:   */  public FlyweightComment(String text)
-/* 38:   */  {
-/* 39:39 */    this.text = text;
-/* 40:   */  }
-/* 41:   */  
-/* 42:   */  public String getText() {
-/* 43:43 */    return this.text;
-/* 44:   */  }
-/* 45:   */  
-/* 46:   */  protected Node createXPathResult(Element parent) {
-/* 47:47 */    return new DefaultComment(parent, getText());
-/* 48:   */  }
-/* 49:   */}
+package org.dom4j.tree;
+
+import org.dom4j.Comment;
+import org.dom4j.Element;
+import org.dom4j.Node;
+
+public class FlyweightComment
+  extends AbstractComment
+  implements Comment
+{
+  protected String text;
+  
+  public FlyweightComment(String text)
+  {
+    this.text = text;
+  }
+  
+  public String getText()
+  {
+    return this.text;
+  }
+  
+  protected Node createXPathResult(Element parent)
+  {
+    return new DefaultComment(parent, getText());
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.dom4j.tree.FlyweightComment
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

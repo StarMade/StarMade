@@ -1,89 +1,107 @@
-/*  1:   */package org.schema.game.common.data.element;
-/*  2:   */
-/*  3:   */import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
-/*  4:   */import jL;
-/*  5:   */import java.io.PrintStream;
-/*  6:   */import java.util.Collection;
-/*  7:   */import ka;
-/*  8:   */
-/*  9:   */public abstract class CustomOutputUnit extends ElementCollection
-/* 10:   */{
-/* 11:11 */  private q output = new q(0, 0, 0);
-/* 12:   */  
-/* 16:16 */  public q getOutput() { return this.output; }
-/* 17:   */  
-/* 18:   */  public void onChangeFinished() {
-/* 19:19 */    super.onChangeFinished();
-/* 20:20 */    le localle1 = new le();
-/* 21:21 */    int i = 0;
-/* 22:   */    try {
-/* 23:23 */      localq = new q();
-/* 24:24 */      for (localIterator = getNeighboringCollection().iterator(); localIterator.hasNext();) {
-/* 25:25 */        getPosFromIndex(((Long)localIterator.next()).longValue(), localq);
-/* 26:   */        
-/* 27:   */        le localle2;
-/* 28:   */        
-/* 29:29 */        if (((localle2 = getController().getSegmentBuffer().a(localq, false, localle1)) != null) && (localle2.a())) {
-/* 30:30 */          this.output.b(localq);
-/* 31:   */          
-/* 32:32 */          i = 1;
-/* 33:33 */          break;
-/* 34:   */        }
-/* 35:   */      } } catch (java.io.IOException localIOException) { java.util.Iterator localIterator;
-/* 36:36 */      localq = null;
-/* 37:   */      
-/* 40:40 */      localIOException.printStackTrace();
-/* 41:   */    } catch (InterruptedException localInterruptedException) {
-/* 42:38 */      q localq = null;
-/* 43:   */      
-/* 44:40 */      localInterruptedException.printStackTrace();
-/* 45:   */    }
-/* 46:   */    
-/* 47:41 */    if (i == 0)
-/* 48:42 */      this.output.b(getSignificator());
-/* 49:   */  }
-/* 50:   */  
-/* 51:   */  public void setMainPiece(le paramle, boolean paramBoolean) {
-/* 52:46 */    System.err.println("SET NEW MAIN PIECE: " + paramle.a(new q()) + "; ACTIVE: " + paramBoolean);
-/* 53:47 */    if (paramBoolean) { le localle;
-/* 54:48 */      q localq; java.util.Iterator localIterator; if (paramle.a().a().isOnServer())
-/* 55:   */      {
-/* 56:50 */        localle = new le();
-/* 57:   */        
-/* 58:52 */        localq = new q();
-/* 59:53 */        for (localIterator = getNeighboringCollection().iterator(); localIterator.hasNext();) {
-/* 60:54 */          getPosFromIndex(((Long)localIterator.next()).longValue(), localq);
-/* 61:55 */          if (!paramle.a(localq)) {
-/* 62:   */            try
-/* 63:   */            {
-/* 64:58 */              paramle.a().a().getSegmentBuffer().a(localq, false, localle);
-/* 65:59 */              if (localle.a())
-/* 66:   */              {
-/* 67:   */                s locals;
-/* 68:62 */                (locals = new s()).a(localq.a, localq.b, localq.c, -2);
-/* 69:63 */                ((ka)getController()).getBlockActivationBuffer().enqueue(locals);
-/* 70:   */              }
-/* 71:65 */            } catch (java.io.IOException localIOException) { 
-/* 72:   */              
-/* 77:71 */                localIOException;
-/* 78:   */            }
-/* 79:   */            catch (InterruptedException localInterruptedException) {
-/* 80:68 */              
-/* 81:   */              
-/* 83:71 */                localInterruptedException;
-/* 84:   */            }
-/* 85:   */          }
-/* 86:   */        }
-/* 87:   */      }
-/* 88:   */      
-/* 90:75 */      System.err.println("NEW OUTPUT SET: " + paramle.a(new q()) + "; ACTIVE: " + paramBoolean);
-/* 91:76 */      this.output.b(paramle.a(new q()));
-/* 92:   */    }
-/* 93:   */  }
-/* 94:   */}
+package org.schema.game.common.data.element;
+
+import class_46;
+import class_48;
+import class_753;
+import class_796;
+import class_886;
+import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.Collection;
+import java.util.Iterator;
+import org.schema.game.common.controller.SegmentController;
+import org.schema.game.common.data.world.Segment;
+
+public abstract class CustomOutputUnit
+  extends ElementCollection
+{
+  private class_48 output = new class_48(0, 0, 0);
+  
+  public class_48 getOutput()
+  {
+    return this.output;
+  }
+  
+  public void onChangeFinished()
+  {
+    super.onChangeFinished();
+    class_796 localclass_7961 = new class_796();
+    int i = 0;
+    try
+    {
+      localclass_48 = new class_48();
+      Iterator localIterator = getNeighboringCollection().iterator();
+      while (localIterator.hasNext())
+      {
+        getPosFromIndex(((Long)localIterator.next()).longValue(), localclass_48);
+        class_796 localclass_7962;
+        if (((localclass_7962 = getController().getSegmentBuffer().a10(localclass_48, false, localclass_7961)) != null) && (localclass_7962.a10()))
+        {
+          this.output.b1(localclass_48);
+          i = 1;
+          break;
+        }
+      }
+    }
+    catch (IOException localIOException)
+    {
+      localclass_48 = null;
+      localIOException.printStackTrace();
+    }
+    catch (InterruptedException localInterruptedException)
+    {
+      class_48 localclass_48 = null;
+      localInterruptedException.printStackTrace();
+    }
+    if (i == 0) {
+      this.output.b1(getSignificator());
+    }
+  }
+  
+  public void setMainPiece(class_796 paramclass_796, boolean paramBoolean)
+  {
+    System.err.println("SET NEW MAIN PIECE: " + paramclass_796.a2(new class_48()) + "; ACTIVE: " + paramBoolean);
+    if (paramBoolean)
+    {
+      if (paramclass_796.a7().a15().isOnServer())
+      {
+        class_796 localclass_796 = new class_796();
+        class_48 localclass_48 = new class_48();
+        Iterator localIterator = getNeighboringCollection().iterator();
+        while (localIterator.hasNext())
+        {
+          getPosFromIndex(((Long)localIterator.next()).longValue(), localclass_48);
+          if (!paramclass_796.a1(localclass_48)) {
+            try
+            {
+              paramclass_796.a7().a15().getSegmentBuffer().a10(localclass_48, false, localclass_796);
+              if (localclass_796.a10())
+              {
+                class_46 localclass_46;
+                (localclass_46 = new class_46()).a(localclass_48.field_475, localclass_48.field_476, localclass_48.field_477, -2);
+                ((class_753)getController()).getBlockActivationBuffer().enqueue(localclass_46);
+              }
+            }
+            catch (IOException localIOException)
+            {
+              localIOException;
+            }
+            catch (InterruptedException localInterruptedException)
+            {
+              localInterruptedException;
+            }
+          }
+        }
+      }
+      System.err.println("NEW OUTPUT SET: " + paramclass_796.a2(new class_48()) + "; ACTIVE: " + paramBoolean);
+      this.output.b1(paramclass_796.a2(new class_48()));
+    }
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.game.common.data.element.CustomOutputUnit
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

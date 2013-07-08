@@ -23,7 +23,7 @@ class VecMathI18N
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     javax.vecmath.VecMathI18N
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -150,7 +150,7 @@ public class Configuration
   protected boolean ncr = true;
   protected String cssPrefix;
   protected String replacementCharEncoding = "WIN1252";
-  protected TagTable tt;
+  protected TagTable field_1881;
   protected Report report;
   protected int definedTags;
   protected char[] newline = System.getProperty("line.separator").toCharArray();
@@ -247,7 +247,7 @@ public class Configuration
     if (this.word2000)
     {
       this.definedTags |= 2;
-      this.tt.defineTag((short)2, "o:p");
+      this.field_1881.defineTag((short)2, "o:p");
     }
     if (this.xmlTags) {
       this.xHTML = false;
@@ -529,7 +529,7 @@ public class Configuration
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.w3c.tidy.Configuration
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

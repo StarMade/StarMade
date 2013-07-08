@@ -234,7 +234,7 @@ class ConnectionDialogSwing
     {
       try
       {
-        if (this.mURL.getText().indexOf(171) >= 0) {
+        if (this.mURL.getText().indexOf('«') >= 0) {
           throw new Exception("please specify db path");
         }
         this.mConnection = createConnection(this.mDriver.getText(), this.mURL.getText(), this.mUser.getText(), new String(this.mPassword.getPassword()));
@@ -296,7 +296,7 @@ class ConnectionDialogSwing
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.util.ConnectionDialogSwing
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

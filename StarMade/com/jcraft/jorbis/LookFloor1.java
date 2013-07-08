@@ -9,9 +9,9 @@ class LookFloor1
   int[] hineighbor = new int[63];
   int[] loneighbor = new int[63];
   int posts;
-  int n;
+  int field_1898;
   int quant_q;
-  InfoFloor1 vi;
+  InfoFloor1 field_1899;
   int phrasebits;
   int postbits;
   int frames;
@@ -27,7 +27,7 @@ class LookFloor1
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     com.jcraft.jorbis.LookFloor1
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

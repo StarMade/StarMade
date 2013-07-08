@@ -12,7 +12,7 @@ public abstract class RowSetNavigator
   implements RangeIterator
 {
   SessionInterface session;
-  long id;
+  long field_385;
   int size;
   int mode;
   boolean isIterator;
@@ -21,12 +21,12 @@ public abstract class RowSetNavigator
   
   public void setId(long paramLong)
   {
-    this.id = paramLong;
+    this.field_385 = paramLong;
   }
   
   public long getId()
   {
-    return this.id;
+    return this.field_385;
   }
   
   public abstract Object[] getCurrent();
@@ -262,7 +262,7 @@ public abstract class RowSetNavigator
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.navigator.RowSetNavigator
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

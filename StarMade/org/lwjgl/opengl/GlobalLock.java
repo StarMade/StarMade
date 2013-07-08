@@ -1,12 +1,12 @@
-/*  1:   */package org.lwjgl.opengl;
-/*  2:   */
-/* 37:   */final class GlobalLock
-/* 38:   */{
-/* 39:39 */  static final Object lock = new Object();
-/* 40:   */}
+package org.lwjgl.opengl;
+
+final class GlobalLock
+{
+  static final Object lock = new Object();
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.lwjgl.opengl.GlobalLock
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

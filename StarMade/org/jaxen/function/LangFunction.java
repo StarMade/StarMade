@@ -1,79 +1,73 @@
-/*   1:    */package org.jaxen.function;
-/*   2:    */
-/*   3:    */import java.util.Iterator;
-/*   4:    */import java.util.List;
-/*   5:    */import org.jaxen.Context;
-/*   6:    */import org.jaxen.Function;
-/*   7:    */import org.jaxen.FunctionCallException;
-/*   8:    */import org.jaxen.Navigator;
-/*   9:    */import org.jaxen.UnsupportedAxisException;
-/*  10:    */
-/* 121:    */public class LangFunction
-/* 122:    */  implements Function
-/* 123:    */{
-/* 124:    */  private static final String LANG_LOCALNAME = "lang";
-/* 125:    */  private static final String XMLNS_URI = "http://www.w3.org/XML/1998/namespace";
-/* 126:    */  
-/* 127:    */  public Object call(Context context, List args)
-/* 128:    */    throws FunctionCallException
-/* 129:    */  {
-/* 130:130 */    if (args.size() != 1) {
-/* 131:131 */      throw new FunctionCallException("lang() requires exactly one argument.");
-/* 132:    */    }
-/* 133:    */    
-/* 134:134 */    Object arg = args.get(0);
-/* 135:    */    try
-/* 136:    */    {
-/* 137:137 */      return evaluate(context.getNodeSet(), arg, context.getNavigator());
-/* 138:    */    }
-/* 139:    */    catch (UnsupportedAxisException e) {
-/* 140:140 */      throw new FunctionCallException("Can't evaluate lang()", e);
-/* 141:    */    }
-/* 142:    */  }
-/* 143:    */  
-/* 146:    */  private static Boolean evaluate(List contextNodes, Object lang, Navigator nav)
-/* 147:    */    throws UnsupportedAxisException
-/* 148:    */  {
-/* 149:149 */    return evaluate(contextNodes.get(0), StringFunction.evaluate(lang, nav), nav) ? Boolean.TRUE : Boolean.FALSE;
-/* 150:    */  }
-/* 151:    */  
-/* 155:    */  private static boolean evaluate(Object node, String lang, Navigator nav)
-/* 156:    */    throws UnsupportedAxisException
-/* 157:    */  {
-/* 158:158 */    Object element = node;
-/* 159:159 */    if (!nav.isElement(element)) {
-/* 160:160 */      element = nav.getParentNode(node);
-/* 161:    */    }
-/* 162:162 */    while ((element != null) && (nav.isElement(element)))
-/* 163:    */    {
-/* 164:164 */      Iterator attrs = nav.getAttributeAxisIterator(element);
-/* 165:165 */      while (attrs.hasNext())
-/* 166:    */      {
-/* 167:167 */        Object attr = attrs.next();
-/* 168:168 */        if (("lang".equals(nav.getAttributeName(attr))) && ("http://www.w3.org/XML/1998/namespace".equals(nav.getAttributeNamespaceUri(attr))))
-/* 169:    */        {
-/* 171:171 */          return isSublang(nav.getAttributeStringValue(attr), lang);
-/* 172:    */        }
-/* 173:    */      }
-/* 174:    */      
-/* 175:175 */      element = nav.getParentNode(element);
-/* 176:    */    }
-/* 177:177 */    return false;
-/* 178:    */  }
-/* 179:    */  
-/* 180:    */  private static boolean isSublang(String sublang, String lang)
-/* 181:    */  {
-/* 182:182 */    if (sublang.equalsIgnoreCase(lang))
-/* 183:    */    {
-/* 184:184 */      return true;
-/* 185:    */    }
-/* 186:186 */    int ll = lang.length();
-/* 187:187 */    return (sublang.length() > ll) && (sublang.charAt(ll) == '-') && (sublang.substring(0, ll).equalsIgnoreCase(lang));
-/* 188:    */  }
-/* 189:    */}
+package org.jaxen.function;
+
+import java.util.Iterator;
+import java.util.List;
+import org.jaxen.Context;
+import org.jaxen.Function;
+import org.jaxen.FunctionCallException;
+import org.jaxen.Navigator;
+import org.jaxen.UnsupportedAxisException;
+
+public class LangFunction
+  implements Function
+{
+  private static final String LANG_LOCALNAME = "lang";
+  private static final String XMLNS_URI = "http://www.w3.org/XML/1998/namespace";
+  
+  public Object call(Context context, List args)
+    throws FunctionCallException
+  {
+    if (args.size() != 1) {
+      throw new FunctionCallException("lang() requires exactly one argument.");
+    }
+    Object arg = args.get(0);
+    try
+    {
+      return evaluate(context.getNodeSet(), arg, context.getNavigator());
+    }
+    catch (UnsupportedAxisException local_e)
+    {
+      throw new FunctionCallException("Can't evaluate lang()", local_e);
+    }
+  }
+  
+  private static Boolean evaluate(List contextNodes, Object lang, Navigator nav)
+    throws UnsupportedAxisException
+  {
+    return evaluate(contextNodes.get(0), StringFunction.evaluate(lang, nav), nav) ? Boolean.TRUE : Boolean.FALSE;
+  }
+  
+  private static boolean evaluate(Object node, String lang, Navigator nav)
+    throws UnsupportedAxisException
+  {
+    Object element = node;
+    if (!nav.isElement(element)) {}
+    for (element = nav.getParentNode(node); (element != null) && (nav.isElement(element)); element = nav.getParentNode(element))
+    {
+      Iterator attrs = nav.getAttributeAxisIterator(element);
+      while (attrs.hasNext())
+      {
+        Object attr = attrs.next();
+        if (("lang".equals(nav.getAttributeName(attr))) && ("http://www.w3.org/XML/1998/namespace".equals(nav.getAttributeNamespaceUri(attr)))) {
+          return isSublang(nav.getAttributeStringValue(attr), lang);
+        }
+      }
+    }
+    return false;
+  }
+  
+  private static boolean isSublang(String sublang, String lang)
+  {
+    if (sublang.equalsIgnoreCase(lang)) {
+      return true;
+    }
+    int local_ll = lang.length();
+    return (sublang.length() > local_ll) && (sublang.charAt(local_ll) == '-') && (sublang.substring(0, local_ll).equalsIgnoreCase(lang));
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.jaxen.function.LangFunction
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

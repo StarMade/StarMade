@@ -323,7 +323,7 @@ public class Node
   {
     if (paramLexer.configuration.trimEmpty)
     {
-      TagTable localTagTable = paramLexer.configuration.tt;
+      TagTable localTagTable = paramLexer.configuration.field_1881;
       if (paramLexer.canPrune(paramNode))
       {
         if (paramNode.type != 4) {
@@ -342,7 +342,7 @@ public class Node
   
   public static void trimTrailingSpace(Lexer paramLexer, Node paramNode1, Node paramNode2)
   {
-    TagTable localTagTable = paramLexer.configuration.tt;
+    TagTable localTagTable = paramLexer.configuration.field_1881;
     if ((paramNode2 != null) && (paramNode2.type == 4))
     {
       if (paramNode2.end > paramNode2.start)
@@ -466,7 +466,7 @@ public class Node
   public static void trimSpaces(Lexer paramLexer, Node paramNode)
   {
     Node localNode = paramNode.content;
-    TagTable localTagTable = paramLexer.configuration.tt;
+    TagTable localTagTable = paramLexer.configuration.field_1881;
     if ((localNode != null) && (localNode.type == 4) && (paramNode.tag != localTagTable.tagPre)) {
       trimInitialSpace(paramLexer, paramNode, localNode);
     }
@@ -488,7 +488,7 @@ public class Node
   
   public static void insertDocType(Lexer paramLexer, Node paramNode1, Node paramNode2)
   {
-    TagTable localTagTable = paramLexer.configuration.tt;
+    TagTable localTagTable = paramLexer.configuration.field_1881;
     paramLexer.report.warning(paramLexer, paramNode1, paramNode2, (short)34);
     while (paramNode1.tag != localTagTable.tagHtml) {
       paramNode1 = paramNode1.parent;
@@ -793,7 +793,7 @@ public class Node
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.w3c.tidy.Node
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

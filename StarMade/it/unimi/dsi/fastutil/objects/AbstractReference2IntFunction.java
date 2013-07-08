@@ -1,55 +1,63 @@
-/*   1:    */package it.unimi.dsi.fastutil.objects;
-/*   2:    */
-/*   3:    */import java.io.Serializable;
-/*   4:    */
-/*  63:    */public abstract class AbstractReference2IntFunction<K>
-/*  64:    */  implements Reference2IntFunction<K>, Serializable
-/*  65:    */{
-/*  66:    */  public static final long serialVersionUID = -4940583368468432370L;
-/*  67:    */  protected int defRetValue;
-/*  68:    */  
-/*  69:    */  public void defaultReturnValue(int rv)
-/*  70:    */  {
-/*  71: 71 */    this.defRetValue = rv;
-/*  72:    */  }
-/*  73:    */  
-/*  74: 74 */  public int defaultReturnValue() { return this.defRetValue; }
-/*  75:    */  
-/*  76:    */  public int put(K key, int value) {
-/*  77: 77 */    throw new UnsupportedOperationException();
-/*  78:    */  }
-/*  79:    */  
-/*  80: 80 */  public int removeInt(Object key) { throw new UnsupportedOperationException(); }
-/*  81:    */  
-/*  82:    */  public void clear() {
-/*  83: 83 */    throw new UnsupportedOperationException();
-/*  84:    */  }
-/*  85:    */  
-/*  89:    */  public Integer get(Object ok)
-/*  90:    */  {
-/*  91: 91 */    Object k = ok;
-/*  92: 92 */    return containsKey(k) ? Integer.valueOf(getInt(k)) : null;
-/*  93:    */  }
-/*  94:    */  
-/*  98:    */  public Integer put(K ok, Integer ov)
-/*  99:    */  {
-/* 100:100 */    K k = ok;
-/* 101:101 */    boolean containsKey = containsKey(k);
-/* 102:102 */    int v = put(k, ov.intValue());
-/* 103:103 */    return containsKey ? Integer.valueOf(v) : null;
-/* 104:    */  }
-/* 105:    */  
-/* 109:    */  public Integer remove(Object ok)
-/* 110:    */  {
-/* 111:111 */    Object k = ok;
-/* 112:112 */    boolean containsKey = containsKey(k);
-/* 113:113 */    int v = removeInt(k);
-/* 114:114 */    return containsKey ? Integer.valueOf(v) : null;
-/* 115:    */  }
-/* 116:    */}
+package it.unimi.dsi.fastutil.objects;
+
+import java.io.Serializable;
+
+public abstract class AbstractReference2IntFunction<K>
+  implements Reference2IntFunction<K>, Serializable
+{
+  public static final long serialVersionUID = -4940583368468432370L;
+  protected int defRetValue;
+  
+  public void defaultReturnValue(int local_rv)
+  {
+    this.defRetValue = local_rv;
+  }
+  
+  public int defaultReturnValue()
+  {
+    return this.defRetValue;
+  }
+  
+  public int put(K key, int value)
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  public int removeInt(Object key)
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  public void clear()
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  public Integer get(Object local_ok)
+  {
+    Object local_k = local_ok;
+    return containsKey(local_k) ? Integer.valueOf(getInt(local_k)) : null;
+  }
+  
+  public Integer put(K local_ok, Integer local_ov)
+  {
+    K local_k = local_ok;
+    boolean containsKey = containsKey(local_k);
+    int local_v = put(local_k, local_ov.intValue());
+    return containsKey ? Integer.valueOf(local_v) : null;
+  }
+  
+  public Integer remove(Object local_ok)
+  {
+    Object local_k = local_ok;
+    boolean containsKey = containsKey(local_k);
+    int local_v = removeInt(local_k);
+    return containsKey ? Integer.valueOf(local_v) : null;
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.objects.AbstractReference2IntFunction
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

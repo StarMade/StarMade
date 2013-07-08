@@ -14,7 +14,7 @@ public class BinaryData
   public static final BinaryData singleBitOne = new BinaryData(new byte[] { -128 }, 1L);
   public static final byte[] zeroLengthBytes = new byte[0];
   public static final BinaryData zeroLengthBinary = new BinaryData(zeroLengthBytes, false);
-  long id;
+  long field_300;
   protected byte[] data;
   private boolean isBits;
   private long bitLength;
@@ -187,12 +187,12 @@ public class BinaryData
   
   public long getId()
   {
-    return this.id;
+    return this.field_300;
   }
   
   public void setId(long paramLong)
   {
-    this.id = paramLong;
+    this.field_300 = paramLong;
   }
   
   public int getStreamBlockSize()
@@ -243,7 +243,7 @@ public class BinaryData
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.types.BinaryData
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

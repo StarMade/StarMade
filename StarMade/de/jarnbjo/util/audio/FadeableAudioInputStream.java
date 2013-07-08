@@ -1,64 +1,69 @@
-/*  1:   */package de.jarnbjo.util.audio;
-/*  2:   */
-/*  3:   */import java.io.IOException;
-/*  4:   */import javax.sound.sampled.AudioInputStream;
-/*  5:   */
-/*  6:   */public class FadeableAudioInputStream extends AudioInputStream
-/*  7:   */{
-/*  8:   */  private AudioInputStream stream;
-/*  9: 9 */  private boolean fading = false;
-/* 10:10 */  private double phi = 0.0D;
-/* 11:   */  
-/* 12:   */  public FadeableAudioInputStream(AudioInputStream stream) throws IOException {
-/* 13:13 */    super(stream, stream.getFormat(), -1L);
-/* 14:   */  }
-/* 15:   */  
-/* 16:   */  public void fadeOut() {
-/* 17:17 */    this.fading = true;
-/* 18:18 */    this.phi = 0.0D;
-/* 19:   */  }
-/* 20:   */  
-/* 21:   */  public int read(byte[] b) throws IOException {
-/* 22:22 */    return read(b, 0, b.length);
-/* 23:   */  }
-/* 24:   */  
-/* 25:   */  public int read(byte[] b, int offset, int length) throws IOException {
-/* 26:26 */    int read = super.read(b, offset, length);
-/* 27:   */    
-/* 30:30 */    if (this.fading) {
-/* 31:31 */      int j = 0;int l = 0;int r = 0;
-/* 32:32 */      double gain = 0.0D;
-/* 33:   */      
-/* 34:34 */      for (int i = offset; i < offset + read; i += 4) {
-/* 35:35 */        j = i;
-/* 36:36 */        l = b[(j++)] & 0xFF;
-/* 37:37 */        l |= b[(j++)] << 8;
-/* 38:38 */        r = b[(j++)] & 0xFF;
-/* 39:39 */        r |= b[j] << 8;
-/* 40:   */        
-/* 41:41 */        if (this.phi < 1.570796326794897D) {
-/* 42:42 */          this.phi += 1.5E-005D;
-/* 43:   */        }
-/* 44:   */        
-/* 45:45 */        gain = Math.cos(this.phi);
-/* 46:   */        
-/* 48:48 */        l = (int)(l * gain);
-/* 49:49 */        r = (int)(r * gain);
-/* 50:   */        
-/* 51:51 */        j = i;
-/* 52:52 */        b[(j++)] = ((byte)(l & 0xFF));
-/* 53:53 */        b[(j++)] = ((byte)(l >> 8 & 0xFF));
-/* 54:54 */        b[(j++)] = ((byte)(r & 0xFF));
-/* 55:55 */        b[(j++)] = ((byte)(r >> 8 & 0xFF));
-/* 56:   */      }
-/* 57:   */    }
-/* 58:   */    
-/* 59:59 */    return read;
-/* 60:   */  }
-/* 61:   */}
+package de.jarnbjo.util.audio;
+
+import java.io.IOException;
+import javax.sound.sampled.AudioInputStream;
+
+public class FadeableAudioInputStream
+  extends AudioInputStream
+{
+  private AudioInputStream stream;
+  private boolean fading = false;
+  private double phi = 0.0D;
+  
+  public FadeableAudioInputStream(AudioInputStream stream)
+    throws IOException
+  {
+    super(stream, stream.getFormat(), -1L);
+  }
+  
+  public void fadeOut()
+  {
+    this.fading = true;
+    this.phi = 0.0D;
+  }
+  
+  public int read(byte[] local_b)
+    throws IOException
+  {
+    return read(local_b, 0, local_b.length);
+  }
+  
+  public int read(byte[] local_b, int offset, int length)
+    throws IOException
+  {
+    int read = super.read(local_b, offset, length);
+    if (this.fading)
+    {
+      int local_j = 0;
+      int local_l = 0;
+      int local_r = 0;
+      double gain = 0.0D;
+      for (int local_i = offset; local_i < offset + read; local_i += 4)
+      {
+        local_j = local_i;
+        local_l = local_b[(local_j++)] & 0xFF;
+        local_l |= local_b[(local_j++)] << 8;
+        local_r = local_b[(local_j++)] & 0xFF;
+        local_r |= local_b[local_j] << 8;
+        if (this.phi < 1.570796326794897D) {
+          this.phi += 1.5E-005D;
+        }
+        gain = Math.cos(this.phi);
+        local_l = (int)(local_l * gain);
+        local_r = (int)(local_r * gain);
+        local_j = local_i;
+        local_b[(local_j++)] = ((byte)(local_l & 0xFF));
+        local_b[(local_j++)] = ((byte)(local_l >> 8 & 0xFF));
+        local_b[(local_j++)] = ((byte)(local_r & 0xFF));
+        local_b[(local_j++)] = ((byte)(local_r >> 8 & 0xFF));
+      }
+    }
+    return read;
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     de.jarnbjo.util.audio.FadeableAudioInputStream
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

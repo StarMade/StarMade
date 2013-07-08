@@ -1,247 +1,306 @@
-/*   1:    */package it.unimi.dsi.fastutil.chars;
-/*   2:    */
-/*   3:    */import it.unimi.dsi.fastutil.objects.AbstractObjectIterator;
-/*   4:    */import it.unimi.dsi.fastutil.objects.AbstractObjectSet;
-/*   5:    */import it.unimi.dsi.fastutil.objects.ObjectArrays;
-/*   6:    */import it.unimi.dsi.fastutil.objects.ObjectIterator;
-/*   7:    */import it.unimi.dsi.fastutil.objects.ReferenceArraySet;
-/*   8:    */import it.unimi.dsi.fastutil.objects.ReferenceCollection;
-/*   9:    */import it.unimi.dsi.fastutil.objects.ReferenceCollections;
-/*  10:    */import java.io.IOException;
-/*  11:    */import java.io.ObjectInputStream;
-/*  12:    */import java.io.ObjectOutputStream;
-/*  13:    */import java.io.Serializable;
-/*  14:    */import java.util.Map;
-/*  15:    */import java.util.Map.Entry;
-/*  16:    */import java.util.NoSuchElementException;
-/*  17:    */
-/*  65:    */public class Char2ReferenceArrayMap<V>
-/*  66:    */  extends AbstractChar2ReferenceMap<V>
-/*  67:    */  implements Serializable, Cloneable
-/*  68:    */{
-/*  69:    */  private static final long serialVersionUID = 1L;
-/*  70:    */  private transient char[] key;
-/*  71:    */  private transient Object[] value;
-/*  72:    */  private int size;
-/*  73:    */  
-/*  74:    */  public Char2ReferenceArrayMap(char[] key, Object[] value)
-/*  75:    */  {
-/*  76: 76 */    this.key = key;
-/*  77: 77 */    this.value = value;
-/*  78: 78 */    this.size = key.length;
-/*  79: 79 */    if (key.length != value.length) throw new IllegalArgumentException("Keys and values have different lengths (" + key.length + ", " + value.length + ")");
-/*  80:    */  }
-/*  81:    */  
-/*  82:    */  public Char2ReferenceArrayMap()
-/*  83:    */  {
-/*  84: 84 */    this.key = CharArrays.EMPTY_ARRAY;
-/*  85: 85 */    this.value = ObjectArrays.EMPTY_ARRAY;
-/*  86:    */  }
-/*  87:    */  
-/*  90:    */  public Char2ReferenceArrayMap(int capacity)
-/*  91:    */  {
-/*  92: 92 */    this.key = new char[capacity];
-/*  93: 93 */    this.value = new Object[capacity];
-/*  94:    */  }
-/*  95:    */  
-/*  98:    */  public Char2ReferenceArrayMap(Char2ReferenceMap<V> m)
-/*  99:    */  {
-/* 100:100 */    this(m.size());
-/* 101:101 */    putAll(m);
-/* 102:    */  }
-/* 103:    */  
-/* 106:    */  public Char2ReferenceArrayMap(Map<? extends Character, ? extends V> m)
-/* 107:    */  {
-/* 108:108 */    this(m.size());
-/* 109:109 */    putAll(m);
-/* 110:    */  }
-/* 111:    */  
-/* 118:    */  public Char2ReferenceArrayMap(char[] key, Object[] value, int size)
-/* 119:    */  {
-/* 120:120 */    this.key = key;
-/* 121:121 */    this.value = value;
-/* 122:122 */    this.size = size;
-/* 123:123 */    if (key.length != value.length) throw new IllegalArgumentException("Keys and values have different lengths (" + key.length + ", " + value.length + ")");
-/* 124:124 */    if (size > key.length) throw new IllegalArgumentException("The provided size (" + size + ") is larger than or equal to the backing-arrays size (" + key.length + ")");
-/* 125:    */  }
-/* 126:    */  
-/* 127:    */  private final class EntrySet extends AbstractObjectSet<Char2ReferenceMap.Entry<V>> implements Char2ReferenceMap.FastEntrySet<V> { private EntrySet() {}
-/* 128:    */    
-/* 129:129 */    public ObjectIterator<Char2ReferenceMap.Entry<V>> iterator() { new AbstractObjectIterator() {
-/* 130:130 */        int next = 0;
-/* 131:    */        
-/* 132:132 */        public boolean hasNext() { return this.next < Char2ReferenceArrayMap.this.size; }
-/* 133:    */        
-/* 134:    */        public Char2ReferenceMap.Entry<V> next()
-/* 135:    */        {
-/* 136:136 */          if (!hasNext()) throw new NoSuchElementException();
-/* 137:137 */          return new AbstractChar2ReferenceMap.BasicEntry(Char2ReferenceArrayMap.this.key[this.next], Char2ReferenceArrayMap.this.value[(this.next++)]);
-/* 138:    */        }
-/* 139:    */      }; }
-/* 140:    */    
-/* 141:    */    public ObjectIterator<Char2ReferenceMap.Entry<V>> fastIterator() {
-/* 142:142 */      new AbstractObjectIterator() {
-/* 143:143 */        int next = 0;
-/* 144:144 */        final AbstractChar2ReferenceMap.BasicEntry<V> entry = new AbstractChar2ReferenceMap.BasicEntry('\000', null);
-/* 145:    */        
-/* 146:146 */        public boolean hasNext() { return this.next < Char2ReferenceArrayMap.this.size; }
-/* 147:    */        
-/* 148:    */        public Char2ReferenceMap.Entry<V> next()
-/* 149:    */        {
-/* 150:150 */          if (!hasNext()) throw new NoSuchElementException();
-/* 151:151 */          this.entry.key = Char2ReferenceArrayMap.this.key[this.next];
-/* 152:152 */          this.entry.value = Char2ReferenceArrayMap.this.value[(this.next++)];
-/* 153:153 */          return this.entry;
-/* 154:    */        }
-/* 155:    */      };
-/* 156:    */    }
-/* 157:    */    
-/* 158:158 */    public int size() { return Char2ReferenceArrayMap.this.size; }
-/* 159:    */    
-/* 160:    */    public boolean contains(Object o)
-/* 161:    */    {
-/* 162:162 */      if (!(o instanceof Map.Entry)) return false;
-/* 163:163 */      Map.Entry<Character, V> e = (Map.Entry)o;
-/* 164:164 */      char k = ((Character)e.getKey()).charValue();
-/* 165:165 */      return (Char2ReferenceArrayMap.this.containsKey(k)) && (Char2ReferenceArrayMap.this.get(k) == e.getValue());
-/* 166:    */    }
-/* 167:    */  }
-/* 168:    */  
-/* 169:169 */  public Char2ReferenceMap.FastEntrySet<V> char2ReferenceEntrySet() { return new EntrySet(null); }
-/* 170:    */  
-/* 171:    */  private int findKey(char k)
-/* 172:    */  {
-/* 173:173 */    char[] key = this.key;
-/* 174:174 */    for (int i = this.size; i-- != 0;) if (key[i] == k) return i;
-/* 175:175 */    return -1;
-/* 176:    */  }
-/* 177:    */  
-/* 182:    */  public V get(char k)
-/* 183:    */  {
-/* 184:184 */    char[] key = this.key;
-/* 185:185 */    for (int i = this.size; i-- != 0;) if (key[i] == k) return this.value[i];
-/* 186:186 */    return this.defRetValue;
-/* 187:    */  }
-/* 188:    */  
-/* 189:    */  public int size() {
-/* 190:190 */    return this.size;
-/* 191:    */  }
-/* 192:    */  
-/* 194:    */  public void clear()
-/* 195:    */  {
-/* 196:196 */    for (int i = this.size; i-- != 0;)
-/* 197:    */    {
-/* 201:201 */      this.value[i] = null;
-/* 202:    */    }
-/* 203:    */    
-/* 205:205 */    this.size = 0;
-/* 206:    */  }
-/* 207:    */  
-/* 208:    */  public boolean containsKey(char k)
-/* 209:    */  {
-/* 210:210 */    return findKey(k) != -1;
-/* 211:    */  }
-/* 212:    */  
-/* 214:    */  public boolean containsValue(Object v)
-/* 215:    */  {
-/* 216:216 */    for (int i = this.size; i-- != 0;) if (this.value[i] == v) return true;
-/* 217:217 */    return false;
-/* 218:    */  }
-/* 219:    */  
-/* 220:    */  public boolean isEmpty()
-/* 221:    */  {
-/* 222:222 */    return this.size == 0;
-/* 223:    */  }
-/* 224:    */  
-/* 226:    */  public V put(char k, V v)
-/* 227:    */  {
-/* 228:228 */    int oldKey = findKey(k);
-/* 229:229 */    if (oldKey != -1) {
-/* 230:230 */      V oldValue = this.value[oldKey];
-/* 231:231 */      this.value[oldKey] = v;
-/* 232:232 */      return oldValue;
-/* 233:    */    }
-/* 234:234 */    if (this.size == this.key.length) {
-/* 235:235 */      char[] newKey = new char[this.size == 0 ? 2 : this.size * 2];
-/* 236:236 */      Object[] newValue = new Object[this.size == 0 ? 2 : this.size * 2];
-/* 237:237 */      for (int i = this.size; i-- != 0;) {
-/* 238:238 */        newKey[i] = this.key[i];
-/* 239:239 */        newValue[i] = this.value[i];
-/* 240:    */      }
-/* 241:241 */      this.key = newKey;
-/* 242:242 */      this.value = newValue;
-/* 243:    */    }
-/* 244:244 */    this.key[this.size] = k;
-/* 245:245 */    this.value[this.size] = v;
-/* 246:246 */    this.size += 1;
-/* 247:247 */    return this.defRetValue;
-/* 248:    */  }
-/* 249:    */  
-/* 256:    */  public V remove(char k)
-/* 257:    */  {
-/* 258:258 */    int oldPos = findKey(k);
-/* 259:259 */    if (oldPos == -1) return this.defRetValue;
-/* 260:260 */    V oldValue = this.value[oldPos];
-/* 261:261 */    int tail = this.size - oldPos - 1;
-/* 262:262 */    for (int i = 0; i < tail; i++) {
-/* 263:263 */      this.key[(oldPos + i)] = this.key[(oldPos + i + 1)];
-/* 264:264 */      this.value[(oldPos + i)] = this.value[(oldPos + i + 1)];
-/* 265:    */    }
-/* 266:266 */    this.size -= 1;
-/* 267:    */    
-/* 271:271 */    this.value[this.size] = null;
-/* 272:    */    
-/* 273:273 */    return oldValue;
-/* 274:    */  }
-/* 275:    */  
-/* 278:    */  public CharSet keySet()
-/* 279:    */  {
-/* 280:280 */    return new CharArraySet(this.key, this.size);
-/* 281:    */  }
-/* 282:    */  
-/* 283:    */  public ReferenceCollection<V> values()
-/* 284:    */  {
-/* 285:285 */    return ReferenceCollections.unmodifiable(new ReferenceArraySet(this.value, this.size));
-/* 286:    */  }
-/* 287:    */  
-/* 292:    */  public Char2ReferenceArrayMap<V> clone()
-/* 293:    */  {
-/* 294:    */    Char2ReferenceArrayMap<V> c;
-/* 295:    */    
-/* 298:    */    try
-/* 299:    */    {
-/* 300:300 */      c = (Char2ReferenceArrayMap)super.clone();
-/* 301:    */    }
-/* 302:    */    catch (CloneNotSupportedException cantHappen) {
-/* 303:303 */      throw new InternalError();
-/* 304:    */    }
-/* 305:305 */    c.key = ((char[])this.key.clone());
-/* 306:306 */    c.value = ((Object[])this.value.clone());
-/* 307:307 */    return c;
-/* 308:    */  }
-/* 309:    */  
-/* 310:    */  private void writeObject(ObjectOutputStream s) throws IOException {
-/* 311:311 */    s.defaultWriteObject();
-/* 312:312 */    for (int i = 0; i < this.size; i++) {
-/* 313:313 */      s.writeChar(this.key[i]);
-/* 314:314 */      s.writeObject(this.value[i]);
-/* 315:    */    }
-/* 316:    */  }
-/* 317:    */  
-/* 318:    */  private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException
-/* 319:    */  {
-/* 320:320 */    s.defaultReadObject();
-/* 321:321 */    this.key = new char[this.size];
-/* 322:322 */    this.value = new Object[this.size];
-/* 323:323 */    for (int i = 0; i < this.size; i++) {
-/* 324:324 */      this.key[i] = s.readChar();
-/* 325:325 */      this.value[i] = s.readObject();
-/* 326:    */    }
-/* 327:    */  }
-/* 328:    */}
+package it.unimi.dsi.fastutil.chars;
+
+import it.unimi.dsi.fastutil.objects.AbstractObjectIterator;
+import it.unimi.dsi.fastutil.objects.AbstractObjectSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrays;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
+import it.unimi.dsi.fastutil.objects.ReferenceArraySet;
+import it.unimi.dsi.fastutil.objects.ReferenceCollection;
+import it.unimi.dsi.fastutil.objects.ReferenceCollections;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.NoSuchElementException;
+
+public class Char2ReferenceArrayMap<V>
+  extends AbstractChar2ReferenceMap<V>
+  implements Serializable, Cloneable
+{
+  private static final long serialVersionUID = 1L;
+  private transient char[] key;
+  private transient Object[] value;
+  private int size;
+  
+  public Char2ReferenceArrayMap(char[] key, Object[] value)
+  {
+    this.key = key;
+    this.value = value;
+    this.size = key.length;
+    if (key.length != value.length) {
+      throw new IllegalArgumentException("Keys and values have different lengths (" + key.length + ", " + value.length + ")");
+    }
+  }
+  
+  public Char2ReferenceArrayMap()
+  {
+    this.key = CharArrays.EMPTY_ARRAY;
+    this.value = ObjectArrays.EMPTY_ARRAY;
+  }
+  
+  public Char2ReferenceArrayMap(int capacity)
+  {
+    this.key = new char[capacity];
+    this.value = new Object[capacity];
+  }
+  
+  public Char2ReferenceArrayMap(Char2ReferenceMap<V> local_m)
+  {
+    this(local_m.size());
+    putAll(local_m);
+  }
+  
+  public Char2ReferenceArrayMap(Map<? extends Character, ? extends V> local_m)
+  {
+    this(local_m.size());
+    putAll(local_m);
+  }
+  
+  public Char2ReferenceArrayMap(char[] key, Object[] value, int size)
+  {
+    this.key = key;
+    this.value = value;
+    this.size = size;
+    if (key.length != value.length) {
+      throw new IllegalArgumentException("Keys and values have different lengths (" + key.length + ", " + value.length + ")");
+    }
+    if (size > key.length) {
+      throw new IllegalArgumentException("The provided size (" + size + ") is larger than or equal to the backing-arrays size (" + key.length + ")");
+    }
+  }
+  
+  public Char2ReferenceMap.FastEntrySet<V> char2ReferenceEntrySet()
+  {
+    return new EntrySet(null);
+  }
+  
+  private int findKey(char local_k)
+  {
+    char[] key = this.key;
+    int local_i = this.size;
+    while (local_i-- != 0) {
+      if (key[local_i] == local_k) {
+        return local_i;
+      }
+    }
+    return -1;
+  }
+  
+  public V get(char local_k)
+  {
+    char[] key = this.key;
+    int local_i = this.size;
+    while (local_i-- != 0) {
+      if (key[local_i] == local_k) {
+        return this.value[local_i];
+      }
+    }
+    return this.defRetValue;
+  }
+  
+  public int size()
+  {
+    return this.size;
+  }
+  
+  public void clear()
+  {
+    int local_i = this.size;
+    while (local_i-- != 0) {
+      this.value[local_i] = null;
+    }
+    this.size = 0;
+  }
+  
+  public boolean containsKey(char local_k)
+  {
+    return findKey(local_k) != -1;
+  }
+  
+  public boolean containsValue(Object local_v)
+  {
+    int local_i = this.size;
+    while (local_i-- != 0) {
+      if (this.value[local_i] == local_v) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  public boolean isEmpty()
+  {
+    return this.size == 0;
+  }
+  
+  public V put(char local_k, V local_v)
+  {
+    int oldKey = findKey(local_k);
+    if (oldKey != -1)
+    {
+      V oldValue = this.value[oldKey];
+      this.value[oldKey] = local_v;
+      return oldValue;
+    }
+    if (this.size == this.key.length)
+    {
+      char[] oldValue = new char[this.size == 0 ? 2 : this.size * 2];
+      Object[] newValue = new Object[this.size == 0 ? 2 : this.size * 2];
+      int local_i = this.size;
+      while (local_i-- != 0)
+      {
+        oldValue[local_i] = this.key[local_i];
+        newValue[local_i] = this.value[local_i];
+      }
+      this.key = oldValue;
+      this.value = newValue;
+    }
+    this.key[this.size] = local_k;
+    this.value[this.size] = local_v;
+    this.size += 1;
+    return this.defRetValue;
+  }
+  
+  public V remove(char local_k)
+  {
+    int oldPos = findKey(local_k);
+    if (oldPos == -1) {
+      return this.defRetValue;
+    }
+    V oldValue = this.value[oldPos];
+    int tail = this.size - oldPos - 1;
+    for (int local_i = 0; local_i < tail; local_i++)
+    {
+      this.key[(oldPos + local_i)] = this.key[(oldPos + local_i + 1)];
+      this.value[(oldPos + local_i)] = this.value[(oldPos + local_i + 1)];
+    }
+    this.size -= 1;
+    this.value[this.size] = null;
+    return oldValue;
+  }
+  
+  public CharSet keySet()
+  {
+    return new CharArraySet(this.key, this.size);
+  }
+  
+  public ReferenceCollection<V> values()
+  {
+    return ReferenceCollections.unmodifiable(new ReferenceArraySet(this.value, this.size));
+  }
+  
+  public Char2ReferenceArrayMap<V> clone()
+  {
+    Char2ReferenceArrayMap<V> local_c;
+    try
+    {
+      local_c = (Char2ReferenceArrayMap)super.clone();
+    }
+    catch (CloneNotSupportedException cantHappen)
+    {
+      throw new InternalError();
+    }
+    local_c.key = ((char[])this.key.clone());
+    local_c.value = ((Object[])this.value.clone());
+    return local_c;
+  }
+  
+  private void writeObject(ObjectOutputStream local_s)
+    throws IOException
+  {
+    local_s.defaultWriteObject();
+    for (int local_i = 0; local_i < this.size; local_i++)
+    {
+      local_s.writeChar(this.key[local_i]);
+      local_s.writeObject(this.value[local_i]);
+    }
+  }
+  
+  private void readObject(ObjectInputStream local_s)
+    throws IOException, ClassNotFoundException
+  {
+    local_s.defaultReadObject();
+    this.key = new char[this.size];
+    this.value = new Object[this.size];
+    for (int local_i = 0; local_i < this.size; local_i++)
+    {
+      this.key[local_i] = local_s.readChar();
+      this.value[local_i] = local_s.readObject();
+    }
+  }
+  
+  private final class EntrySet
+    extends AbstractObjectSet<Char2ReferenceMap.Entry<V>>
+    implements Char2ReferenceMap.FastEntrySet<V>
+  {
+    private EntrySet() {}
+    
+    public ObjectIterator<Char2ReferenceMap.Entry<V>> iterator()
+    {
+      new AbstractObjectIterator()
+      {
+        int next = 0;
+        
+        public boolean hasNext()
+        {
+          return this.next < Char2ReferenceArrayMap.this.size;
+        }
+        
+        public Char2ReferenceMap.Entry<V> next()
+        {
+          if (!hasNext()) {
+            throw new NoSuchElementException();
+          }
+          return new AbstractChar2ReferenceMap.BasicEntry(Char2ReferenceArrayMap.this.key[this.next], Char2ReferenceArrayMap.this.value[(this.next++)]);
+        }
+      };
+    }
+    
+    public ObjectIterator<Char2ReferenceMap.Entry<V>> fastIterator()
+    {
+      new AbstractObjectIterator()
+      {
+        int next = 0;
+        final AbstractChar2ReferenceMap.BasicEntry<V> entry = new AbstractChar2ReferenceMap.BasicEntry('\000', null);
+        
+        public boolean hasNext()
+        {
+          return this.next < Char2ReferenceArrayMap.this.size;
+        }
+        
+        public Char2ReferenceMap.Entry<V> next()
+        {
+          if (!hasNext()) {
+            throw new NoSuchElementException();
+          }
+          this.entry.key = Char2ReferenceArrayMap.this.key[this.next];
+          this.entry.value = Char2ReferenceArrayMap.this.value[(this.next++)];
+          return this.entry;
+        }
+      };
+    }
+    
+    public int size()
+    {
+      return Char2ReferenceArrayMap.this.size;
+    }
+    
+    public boolean contains(Object local_o)
+    {
+      if (!(local_o instanceof Map.Entry)) {
+        return false;
+      }
+      Map.Entry<Character, V> local_e = (Map.Entry)local_o;
+      char local_k = ((Character)local_e.getKey()).charValue();
+      return (Char2ReferenceArrayMap.this.containsKey(local_k)) && (Char2ReferenceArrayMap.this.get(local_k) == local_e.getValue());
+    }
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.chars.Char2ReferenceArrayMap
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

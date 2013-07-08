@@ -1,115 +1,121 @@
-/*   1:    */package org.schema.game.common.controller.elements.explosive;
-/*   2:    */
-/*   3:    */import com.bulletphysics.linearmath.Transform;
-/*   4:    */import java.io.PrintStream;
-/*   5:    */import java.util.ArrayList;
-/*   6:    */import java.util.Collection;
-/*   7:    */import java.util.Iterator;
-/*   8:    */import java.util.List;
-/*   9:    */import javax.vecmath.Vector3f;
-/*  10:    */import kd;
-/*  11:    */import lA;
-/*  12:    */import lE;
-/*  13:    */import le;
-/*  14:    */import org.schema.game.common.controller.EditableSendableSegmentController;
-/*  15:    */import org.schema.game.common.controller.SegmentController;
-/*  16:    */import org.schema.game.common.controller.elements.ElementCollectionManager;
-/*  17:    */import org.schema.game.common.controller.elements.UpdatableCollectionManager;
-/*  18:    */import org.schema.game.common.controller.elements.UsableControllableSingleElementManager;
-/*  19:    */import org.schema.game.common.data.element.ElementCollection;
-/*  20:    */import org.schema.game.network.objects.NetworkPlayer;
-/*  21:    */import org.schema.game.network.objects.NetworkSegmentController;
-/*  22:    */import org.schema.schine.network.objects.remote.RemoteBooleanArray;
-/*  23:    */import org.schema.schine.network.objects.remote.RemoteBuffer;
-/*  24:    */import org.schema.schine.network.objects.remote.RemoteField;
-/*  25:    */import org.schema.schine.network.objects.remote.RemoteVector3f;
-/*  26:    */import q;
-/*  27:    */import xq;
-/*  28:    */
-/*  50:    */public class ExplosiveElementManager
-/*  51:    */  extends UsableControllableSingleElementManager
-/*  52:    */  implements UpdatableCollectionManager
-/*  53:    */{
-/*  54:    */  private ExplosiveCollectionManager explosiveManager;
-/*  55: 55 */  private final ArrayList explosions = new ArrayList();
-/*  56:    */  
-/*  57: 57 */  public ExplosiveElementManager(SegmentController paramSegmentController) { super(new ExplosiveCollectionManager(paramSegmentController), paramSegmentController);
-/*  58: 58 */    this.explosiveManager = ((ExplosiveCollectionManager)getCollection());
-/*  59:    */  }
-/*  60:    */  
-/*  61: 61 */  public void addExplosion(q paramq, Vector3f paramVector3f, EditableSendableSegmentController paramEditableSendableSegmentController, le paramle) { paramle = null;
-/*  62: 62 */    for (Iterator localIterator = getCollection().getCollection().iterator(); localIterator.hasNext();)
-/*  63: 63 */      if ((localObject1 = (ExplosiveUnit)localIterator.next()).getNeighboringCollection().contains(Long.valueOf(ElementCollection.getIndex(paramq)))) {
-/*  64: 64 */        paramle = (le)localObject1;
-/*  65: 65 */        break;
-/*  66:    */      }
-/*  67:    */    Object localObject1;
-/*  68: 68 */    if (paramle != null)
-/*  69: 69 */      synchronized (this.explosions)
-/*  70:    */      {
-/*  71: 71 */        localObject1 = new ExplosiveElementManager.Explosion(this, new q(paramq), new Vector3f(paramVector3f), (EditableSendableSegmentController)getSegmentController(), paramEditableSendableSegmentController, (byte)0);
-/*  72: 72 */        if (!this.explosions.contains(localObject1)) {
-/*  73: 73 */          System.err.println("[EXPLOSION] INITIATING EXPLOSION " + paramVector3f);
-/*  74: 74 */          this.explosions.add(localObject1);
-/*  75:    */        }
-/*  76: 76 */        paramq = new ExplosiveElementManager.Explosion(this, new q(paramq), new Vector3f(paramVector3f), (EditableSendableSegmentController)getSegmentController(), (EditableSendableSegmentController)getSegmentController(), (byte)1);
-/*  77: 77 */        if (!this.explosions.contains(paramq)) {
-/*  78: 78 */          this.explosions.add(paramq);
-/*  79:    */        }
-/*  80: 80 */        return;
-/*  81:    */      }
-/*  82:    */  }
-/*  83:    */  
-/*  84:    */  public float getActualExplosive() {
-/*  85:    */    float f;
-/*  86: 86 */    if ((f = this.explosiveManager.getTotalExplosive()) == 0.0F) {
-/*  87: 87 */      return 0.0F;
-/*  88:    */    }
-/*  89: 89 */    return f;
-/*  90:    */  }
-/*  91:    */  
-/*  97:    */  public ElementCollectionManager getNewCollectionManager(le paramle)
-/*  98:    */  {
-/*  99: 99 */    return new ExplosiveCollectionManager(getSegmentController());
-/* 100:    */  }
-/* 101:    */  
-/* 106:    */  public void handle(lA paramlA)
-/* 107:    */  {
-/* 108:108 */    if (!((Boolean)paramlA.jdField_a_of_type_LE.a().activeControllerMask.get(1).get()).booleanValue()) {
-/* 109:109 */      return;
-/* 110:    */    }
-/* 111:    */    
-/* 112:112 */    if (!kd.a.equals(paramlA.jdField_a_of_type_JavaLangObject))
-/* 113:    */    {
-/* 114:114 */      return;
-/* 115:    */    }
-/* 116:    */    
-/* 117:117 */    getActualExplosive();
-/* 118:    */  }
-/* 119:    */  
-/* 122:    */  public void onControllerChange() {}
-/* 123:    */  
-/* 125:    */  public void update(xq arg1)
-/* 126:    */  {
-/* 127:127 */    synchronized (this.explosions) {
-/* 128:128 */      while (!this.explosions.isEmpty()) {
-/* 129:129 */        ExplosiveElementManager.Explosion localExplosion = (ExplosiveElementManager.Explosion)this.explosions.remove(0);
-/* 130:130 */        System.err.println("Executing explosion for " + ExplosiveElementManager.Explosion.access$000(localExplosion));
-/* 131:    */        Transform localTransform;
-/* 132:132 */        (localTransform = new Transform()).setIdentity();
-/* 133:133 */        localTransform.origin.set(ExplosiveElementManager.Explosion.access$100(localExplosion));
-/* 134:    */        
-/* 135:135 */        ExplosiveElementManager.Explosion.access$000(localExplosion).handleExplosion(localTransform, 16.0F, 200.0F, ExplosiveElementManager.Explosion.access$200(localExplosion), ExplosiveElementManager.Explosion.access$300(localExplosion));
-/* 136:136 */        ExplosiveElementManager.Explosion.access$000(localExplosion).getNetworkObject().explosions.add(new RemoteVector3f(ExplosiveElementManager.Explosion.access$000(localExplosion).getNetworkObject(), ExplosiveElementManager.Explosion.access$100(localExplosion)));
-/* 137:    */      }
-/* 138:    */      
-/* 139:139 */      return;
-/* 140:    */    }
-/* 141:    */  }
-/* 142:    */}
+package org.schema.game.common.controller.elements.explosive;
+
+import class_48;
+import class_747;
+import class_748;
+import class_755;
+import class_796;
+import class_941;
+import com.bulletphysics.linearmath.Transform;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import javax.vecmath.Vector3f;
+import org.schema.game.common.controller.EditableSendableSegmentController;
+import org.schema.game.common.controller.SegmentController;
+import org.schema.game.common.controller.elements.ElementCollectionManager;
+import org.schema.game.common.controller.elements.UpdatableCollectionManager;
+import org.schema.game.common.controller.elements.UsableControllableSingleElementManager;
+import org.schema.game.common.data.element.ElementCollection;
+import org.schema.game.network.objects.NetworkPlayer;
+import org.schema.game.network.objects.NetworkSegmentController;
+import org.schema.schine.network.objects.remote.RemoteBooleanArray;
+import org.schema.schine.network.objects.remote.RemoteBuffer;
+import org.schema.schine.network.objects.remote.RemoteField;
+import org.schema.schine.network.objects.remote.RemoteVector3f;
+
+public class ExplosiveElementManager
+  extends UsableControllableSingleElementManager
+  implements UpdatableCollectionManager
+{
+  private ExplosiveCollectionManager explosiveManager = (ExplosiveCollectionManager)getCollection();
+  private final ArrayList explosions = new ArrayList();
+  
+  public ExplosiveElementManager(SegmentController paramSegmentController)
+  {
+    super(new ExplosiveCollectionManager(paramSegmentController), paramSegmentController);
+  }
+  
+  public void addExplosion(class_48 paramclass_48, Vector3f paramVector3f, EditableSendableSegmentController paramEditableSendableSegmentController, class_796 paramclass_796)
+  {
+    paramclass_796 = null;
+    Iterator localIterator = getCollection().getCollection().iterator();
+    Object localObject1;
+    while (localIterator.hasNext()) {
+      if ((localObject1 = (ExplosiveUnit)localIterator.next()).getNeighboringCollection().contains(Long.valueOf(ElementCollection.getIndex(paramclass_48))))
+      {
+        paramclass_796 = (class_796)localObject1;
+        break;
+      }
+    }
+    if (paramclass_796 != null) {
+      synchronized (this.explosions)
+      {
+        localObject1 = new ExplosiveElementManager.Explosion(this, new class_48(paramclass_48), new Vector3f(paramVector3f), (EditableSendableSegmentController)getSegmentController(), paramEditableSendableSegmentController, (byte)0);
+        if (!this.explosions.contains(localObject1))
+        {
+          System.err.println("[EXPLOSION] INITIATING EXPLOSION " + paramVector3f);
+          this.explosions.add(localObject1);
+        }
+        paramclass_48 = new ExplosiveElementManager.Explosion(this, new class_48(paramclass_48), new Vector3f(paramVector3f), (EditableSendableSegmentController)getSegmentController(), (EditableSendableSegmentController)getSegmentController(), (byte)1);
+        if (!this.explosions.contains(paramclass_48)) {
+          this.explosions.add(paramclass_48);
+        }
+        return;
+      }
+    }
+  }
+  
+  public float getActualExplosive()
+  {
+    float f;
+    if ((f = this.explosiveManager.getTotalExplosive()) == 0.0F) {
+      return 0.0F;
+    }
+    return f;
+  }
+  
+  public ElementCollectionManager getNewCollectionManager(class_796 paramclass_796)
+  {
+    return new ExplosiveCollectionManager(getSegmentController());
+  }
+  
+  public void handle(class_755 paramclass_755)
+  {
+    if (!((Boolean)paramclass_755.jdField_field_1015_of_type_Class_748.a127().activeControllerMask.get(1).get()).booleanValue()) {
+      return;
+    }
+    if (!class_747.field_136.equals(paramclass_755.jdField_field_1015_of_type_JavaLangObject)) {
+      return;
+    }
+    getActualExplosive();
+  }
+  
+  public void onControllerChange() {}
+  
+  public void update(class_941 arg1)
+  {
+    synchronized (this.explosions)
+    {
+      while (!this.explosions.isEmpty())
+      {
+        ExplosiveElementManager.Explosion localExplosion = (ExplosiveElementManager.Explosion)this.explosions.remove(0);
+        System.err.println("Executing explosion for " + ExplosiveElementManager.Explosion.access$000(localExplosion));
+        Transform localTransform;
+        (localTransform = new Transform()).setIdentity();
+        localTransform.origin.set(ExplosiveElementManager.Explosion.access$100(localExplosion));
+        ExplosiveElementManager.Explosion.access$000(localExplosion).handleExplosion(localTransform, 16.0F, 200.0F, ExplosiveElementManager.Explosion.access$200(localExplosion), ExplosiveElementManager.Explosion.access$300(localExplosion));
+        ExplosiveElementManager.Explosion.access$000(localExplosion).getNetworkObject().explosions.add(new RemoteVector3f(ExplosiveElementManager.Explosion.access$000(localExplosion).getNetworkObject(), ExplosiveElementManager.Explosion.access$100(localExplosion)));
+      }
+      return;
+    }
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.game.common.controller.elements.explosive.ExplosiveElementManager
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

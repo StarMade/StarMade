@@ -7,7 +7,7 @@ public class LineGroupReader
 {
   private static final String[] defaultContinuations = { " ", "*" };
   private static final String[] defaultIgnoredStarts = { "--" };
-  static final String LS = System.getProperty("line.separator", "\n");
+  static final String field_2040 = System.getProperty("line.separator", "\n");
   LineNumberReader reader;
   String nextStartLine = null;
   int startLineNumber = 0;
@@ -144,14 +144,14 @@ public class LineGroupReader
   {
     StringBuffer localStringBuffer = new StringBuffer();
     for (int i = paramInt; i < paramHsqlArrayList.size(); i++) {
-      localStringBuffer.append(paramHsqlArrayList.get(i)).append(LS);
+      localStringBuffer.append(paramHsqlArrayList.get(i)).append(field_2040);
     }
     return localStringBuffer.toString();
   }
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.lib.LineGroupReader
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

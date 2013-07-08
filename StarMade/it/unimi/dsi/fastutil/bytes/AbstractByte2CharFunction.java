@@ -1,57 +1,68 @@
-/*   1:    */package it.unimi.dsi.fastutil.bytes;
-/*   2:    */
-/*   3:    */import java.io.Serializable;
-/*   4:    */
-/*  64:    */public abstract class AbstractByte2CharFunction
-/*  65:    */  implements Byte2CharFunction, Serializable
-/*  66:    */{
-/*  67:    */  public static final long serialVersionUID = -4940583368468432370L;
-/*  68:    */  protected char defRetValue;
-/*  69:    */  
-/*  70:    */  public void defaultReturnValue(char rv)
-/*  71:    */  {
-/*  72: 72 */    this.defRetValue = rv;
-/*  73:    */  }
-/*  74:    */  
-/*  75: 75 */  public char defaultReturnValue() { return this.defRetValue; }
-/*  76:    */  
-/*  77:    */  public char put(byte key, char value) {
-/*  78: 78 */    throw new UnsupportedOperationException();
-/*  79:    */  }
-/*  80:    */  
-/*  81: 81 */  public char remove(byte key) { throw new UnsupportedOperationException(); }
-/*  82:    */  
-/*  83:    */  public void clear() {
-/*  84: 84 */    throw new UnsupportedOperationException();
-/*  85:    */  }
-/*  86:    */  
-/*  87: 87 */  public boolean containsKey(Object ok) { return containsKey(((Byte)ok).byteValue()); }
-/*  88:    */  
-/*  93:    */  public Character get(Object ok)
-/*  94:    */  {
-/*  95: 95 */    byte k = ((Byte)ok).byteValue();
-/*  96: 96 */    return containsKey(k) ? Character.valueOf(get(k)) : null;
-/*  97:    */  }
-/*  98:    */  
-/* 102:    */  public Character put(Byte ok, Character ov)
-/* 103:    */  {
-/* 104:104 */    byte k = ok.byteValue();
-/* 105:105 */    boolean containsKey = containsKey(k);
-/* 106:106 */    char v = put(k, ov.charValue());
-/* 107:107 */    return containsKey ? Character.valueOf(v) : null;
-/* 108:    */  }
-/* 109:    */  
-/* 113:    */  public Character remove(Object ok)
-/* 114:    */  {
-/* 115:115 */    byte k = ((Byte)ok).byteValue();
-/* 116:116 */    boolean containsKey = containsKey(k);
-/* 117:117 */    char v = remove(k);
-/* 118:118 */    return containsKey ? Character.valueOf(v) : null;
-/* 119:    */  }
-/* 120:    */}
+package it.unimi.dsi.fastutil.bytes;
+
+import java.io.Serializable;
+
+public abstract class AbstractByte2CharFunction
+  implements Byte2CharFunction, Serializable
+{
+  public static final long serialVersionUID = -4940583368468432370L;
+  protected char defRetValue;
+  
+  public void defaultReturnValue(char local_rv)
+  {
+    this.defRetValue = local_rv;
+  }
+  
+  public char defaultReturnValue()
+  {
+    return this.defRetValue;
+  }
+  
+  public char put(byte key, char value)
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  public char remove(byte key)
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  public void clear()
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  public boolean containsKey(Object local_ok)
+  {
+    return containsKey(((Byte)local_ok).byteValue());
+  }
+  
+  public Character get(Object local_ok)
+  {
+    byte local_k = ((Byte)local_ok).byteValue();
+    return containsKey(local_k) ? Character.valueOf(get(local_k)) : null;
+  }
+  
+  public Character put(Byte local_ok, Character local_ov)
+  {
+    byte local_k = local_ok.byteValue();
+    boolean containsKey = containsKey(local_k);
+    char local_v = put(local_k, local_ov.charValue());
+    return containsKey ? Character.valueOf(local_v) : null;
+  }
+  
+  public Character remove(Object local_ok)
+  {
+    byte local_k = ((Byte)local_ok).byteValue();
+    boolean containsKey = containsKey(local_k);
+    char local_v = remove(local_k);
+    return containsKey ? Character.valueOf(local_v) : null;
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.bytes.AbstractByte2CharFunction
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

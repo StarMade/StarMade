@@ -66,18 +66,18 @@ public class Matrix4d
   
   public Matrix4d(Quat4d paramQuat4d, Vector3d paramVector3d, double paramDouble)
   {
-    this.m00 = (paramDouble * (1.0D - 2.0D * paramQuat4d.y * paramQuat4d.y - 2.0D * paramQuat4d.z * paramQuat4d.z));
-    this.m10 = (paramDouble * (2.0D * (paramQuat4d.x * paramQuat4d.y + paramQuat4d.w * paramQuat4d.z)));
-    this.m20 = (paramDouble * (2.0D * (paramQuat4d.x * paramQuat4d.z - paramQuat4d.w * paramQuat4d.y)));
-    this.m01 = (paramDouble * (2.0D * (paramQuat4d.x * paramQuat4d.y - paramQuat4d.w * paramQuat4d.z)));
-    this.m11 = (paramDouble * (1.0D - 2.0D * paramQuat4d.x * paramQuat4d.x - 2.0D * paramQuat4d.z * paramQuat4d.z));
-    this.m21 = (paramDouble * (2.0D * (paramQuat4d.y * paramQuat4d.z + paramQuat4d.w * paramQuat4d.x)));
-    this.m02 = (paramDouble * (2.0D * (paramQuat4d.x * paramQuat4d.z + paramQuat4d.w * paramQuat4d.y)));
-    this.m12 = (paramDouble * (2.0D * (paramQuat4d.y * paramQuat4d.z - paramQuat4d.w * paramQuat4d.x)));
-    this.m22 = (paramDouble * (1.0D - 2.0D * paramQuat4d.x * paramQuat4d.x - 2.0D * paramQuat4d.y * paramQuat4d.y));
-    this.m03 = paramVector3d.x;
-    this.m13 = paramVector3d.y;
-    this.m23 = paramVector3d.z;
+    this.m00 = (paramDouble * (1.0D - 2.0D * paramQuat4d.field_601 * paramQuat4d.field_601 - 2.0D * paramQuat4d.field_602 * paramQuat4d.field_602));
+    this.m10 = (paramDouble * (2.0D * (paramQuat4d.field_600 * paramQuat4d.field_601 + paramQuat4d.field_603 * paramQuat4d.field_602)));
+    this.m20 = (paramDouble * (2.0D * (paramQuat4d.field_600 * paramQuat4d.field_602 - paramQuat4d.field_603 * paramQuat4d.field_601)));
+    this.m01 = (paramDouble * (2.0D * (paramQuat4d.field_600 * paramQuat4d.field_601 - paramQuat4d.field_603 * paramQuat4d.field_602)));
+    this.m11 = (paramDouble * (1.0D - 2.0D * paramQuat4d.field_600 * paramQuat4d.field_600 - 2.0D * paramQuat4d.field_602 * paramQuat4d.field_602));
+    this.m21 = (paramDouble * (2.0D * (paramQuat4d.field_601 * paramQuat4d.field_602 + paramQuat4d.field_603 * paramQuat4d.field_600)));
+    this.m02 = (paramDouble * (2.0D * (paramQuat4d.field_600 * paramQuat4d.field_602 + paramQuat4d.field_603 * paramQuat4d.field_601)));
+    this.m12 = (paramDouble * (2.0D * (paramQuat4d.field_601 * paramQuat4d.field_602 - paramQuat4d.field_603 * paramQuat4d.field_600)));
+    this.m22 = (paramDouble * (1.0D - 2.0D * paramQuat4d.field_600 * paramQuat4d.field_600 - 2.0D * paramQuat4d.field_601 * paramQuat4d.field_601));
+    this.m03 = paramVector3d.field_612;
+    this.m13 = paramVector3d.field_613;
+    this.m23 = paramVector3d.field_614;
     this.m30 = 0.0D;
     this.m31 = 0.0D;
     this.m32 = 0.0D;
@@ -86,18 +86,18 @@ public class Matrix4d
   
   public Matrix4d(Quat4f paramQuat4f, Vector3d paramVector3d, double paramDouble)
   {
-    this.m00 = (paramDouble * (1.0D - 2.0D * paramQuat4f.y * paramQuat4f.y - 2.0D * paramQuat4f.z * paramQuat4f.z));
-    this.m10 = (paramDouble * (2.0D * (paramQuat4f.x * paramQuat4f.y + paramQuat4f.w * paramQuat4f.z)));
-    this.m20 = (paramDouble * (2.0D * (paramQuat4f.x * paramQuat4f.z - paramQuat4f.w * paramQuat4f.y)));
-    this.m01 = (paramDouble * (2.0D * (paramQuat4f.x * paramQuat4f.y - paramQuat4f.w * paramQuat4f.z)));
-    this.m11 = (paramDouble * (1.0D - 2.0D * paramQuat4f.x * paramQuat4f.x - 2.0D * paramQuat4f.z * paramQuat4f.z));
-    this.m21 = (paramDouble * (2.0D * (paramQuat4f.y * paramQuat4f.z + paramQuat4f.w * paramQuat4f.x)));
-    this.m02 = (paramDouble * (2.0D * (paramQuat4f.x * paramQuat4f.z + paramQuat4f.w * paramQuat4f.y)));
-    this.m12 = (paramDouble * (2.0D * (paramQuat4f.y * paramQuat4f.z - paramQuat4f.w * paramQuat4f.x)));
-    this.m22 = (paramDouble * (1.0D - 2.0D * paramQuat4f.x * paramQuat4f.x - 2.0D * paramQuat4f.y * paramQuat4f.y));
-    this.m03 = paramVector3d.x;
-    this.m13 = paramVector3d.y;
-    this.m23 = paramVector3d.z;
+    this.m00 = (paramDouble * (1.0D - 2.0D * paramQuat4f.field_597 * paramQuat4f.field_597 - 2.0D * paramQuat4f.field_598 * paramQuat4f.field_598));
+    this.m10 = (paramDouble * (2.0D * (paramQuat4f.field_596 * paramQuat4f.field_597 + paramQuat4f.field_599 * paramQuat4f.field_598)));
+    this.m20 = (paramDouble * (2.0D * (paramQuat4f.field_596 * paramQuat4f.field_598 - paramQuat4f.field_599 * paramQuat4f.field_597)));
+    this.m01 = (paramDouble * (2.0D * (paramQuat4f.field_596 * paramQuat4f.field_597 - paramQuat4f.field_599 * paramQuat4f.field_598)));
+    this.m11 = (paramDouble * (1.0D - 2.0D * paramQuat4f.field_596 * paramQuat4f.field_596 - 2.0D * paramQuat4f.field_598 * paramQuat4f.field_598));
+    this.m21 = (paramDouble * (2.0D * (paramQuat4f.field_597 * paramQuat4f.field_598 + paramQuat4f.field_599 * paramQuat4f.field_596)));
+    this.m02 = (paramDouble * (2.0D * (paramQuat4f.field_596 * paramQuat4f.field_598 + paramQuat4f.field_599 * paramQuat4f.field_597)));
+    this.m12 = (paramDouble * (2.0D * (paramQuat4f.field_597 * paramQuat4f.field_598 - paramQuat4f.field_599 * paramQuat4f.field_596)));
+    this.m22 = (paramDouble * (1.0D - 2.0D * paramQuat4f.field_596 * paramQuat4f.field_596 - 2.0D * paramQuat4f.field_597 * paramQuat4f.field_597));
+    this.m03 = paramVector3d.field_612;
+    this.m13 = paramVector3d.field_613;
+    this.m23 = paramVector3d.field_614;
     this.m30 = 0.0D;
     this.m31 = 0.0D;
     this.m32 = 0.0D;
@@ -149,15 +149,15 @@ public class Matrix4d
     this.m00 = (paramMatrix3f.m00 * paramDouble);
     this.m01 = (paramMatrix3f.m01 * paramDouble);
     this.m02 = (paramMatrix3f.m02 * paramDouble);
-    this.m03 = paramVector3d.x;
+    this.m03 = paramVector3d.field_612;
     this.m10 = (paramMatrix3f.m10 * paramDouble);
     this.m11 = (paramMatrix3f.m11 * paramDouble);
     this.m12 = (paramMatrix3f.m12 * paramDouble);
-    this.m13 = paramVector3d.y;
+    this.m13 = paramVector3d.field_613;
     this.m20 = (paramMatrix3f.m20 * paramDouble);
     this.m21 = (paramMatrix3f.m21 * paramDouble);
     this.m22 = (paramMatrix3f.m22 * paramDouble);
-    this.m23 = paramVector3d.z;
+    this.m23 = paramVector3d.field_614;
     this.m30 = 0.0D;
     this.m31 = 0.0D;
     this.m32 = 0.0D;
@@ -169,15 +169,15 @@ public class Matrix4d
     this.m00 = (paramMatrix3d.m00 * paramDouble);
     this.m01 = (paramMatrix3d.m01 * paramDouble);
     this.m02 = (paramMatrix3d.m02 * paramDouble);
-    this.m03 = paramVector3d.x;
+    this.m03 = paramVector3d.field_612;
     this.m10 = (paramMatrix3d.m10 * paramDouble);
     this.m11 = (paramMatrix3d.m11 * paramDouble);
     this.m12 = (paramMatrix3d.m12 * paramDouble);
-    this.m13 = paramVector3d.y;
+    this.m13 = paramVector3d.field_613;
     this.m20 = (paramMatrix3d.m20 * paramDouble);
     this.m21 = (paramMatrix3d.m21 * paramDouble);
     this.m22 = (paramMatrix3d.m22 * paramDouble);
-    this.m23 = paramVector3d.z;
+    this.m23 = paramVector3d.field_614;
     this.m30 = 0.0D;
     this.m31 = 0.0D;
     this.m32 = 0.0D;
@@ -378,31 +378,31 @@ public class Matrix4d
   {
     if (paramInt == 0)
     {
-      paramVector4d.x = this.m00;
-      paramVector4d.y = this.m01;
-      paramVector4d.z = this.m02;
-      paramVector4d.w = this.m03;
+      paramVector4d.field_600 = this.m00;
+      paramVector4d.field_601 = this.m01;
+      paramVector4d.field_602 = this.m02;
+      paramVector4d.field_603 = this.m03;
     }
     else if (paramInt == 1)
     {
-      paramVector4d.x = this.m10;
-      paramVector4d.y = this.m11;
-      paramVector4d.z = this.m12;
-      paramVector4d.w = this.m13;
+      paramVector4d.field_600 = this.m10;
+      paramVector4d.field_601 = this.m11;
+      paramVector4d.field_602 = this.m12;
+      paramVector4d.field_603 = this.m13;
     }
     else if (paramInt == 2)
     {
-      paramVector4d.x = this.m20;
-      paramVector4d.y = this.m21;
-      paramVector4d.z = this.m22;
-      paramVector4d.w = this.m23;
+      paramVector4d.field_600 = this.m20;
+      paramVector4d.field_601 = this.m21;
+      paramVector4d.field_602 = this.m22;
+      paramVector4d.field_603 = this.m23;
     }
     else if (paramInt == 3)
     {
-      paramVector4d.x = this.m30;
-      paramVector4d.y = this.m31;
-      paramVector4d.z = this.m32;
-      paramVector4d.w = this.m33;
+      paramVector4d.field_600 = this.m30;
+      paramVector4d.field_601 = this.m31;
+      paramVector4d.field_602 = this.m32;
+      paramVector4d.field_603 = this.m33;
     }
     else
     {
@@ -450,31 +450,31 @@ public class Matrix4d
   {
     if (paramInt == 0)
     {
-      paramVector4d.x = this.m00;
-      paramVector4d.y = this.m10;
-      paramVector4d.z = this.m20;
-      paramVector4d.w = this.m30;
+      paramVector4d.field_600 = this.m00;
+      paramVector4d.field_601 = this.m10;
+      paramVector4d.field_602 = this.m20;
+      paramVector4d.field_603 = this.m30;
     }
     else if (paramInt == 1)
     {
-      paramVector4d.x = this.m01;
-      paramVector4d.y = this.m11;
-      paramVector4d.z = this.m21;
-      paramVector4d.w = this.m31;
+      paramVector4d.field_600 = this.m01;
+      paramVector4d.field_601 = this.m11;
+      paramVector4d.field_602 = this.m21;
+      paramVector4d.field_603 = this.m31;
     }
     else if (paramInt == 2)
     {
-      paramVector4d.x = this.m02;
-      paramVector4d.y = this.m12;
-      paramVector4d.z = this.m22;
-      paramVector4d.w = this.m32;
+      paramVector4d.field_600 = this.m02;
+      paramVector4d.field_601 = this.m12;
+      paramVector4d.field_602 = this.m22;
+      paramVector4d.field_603 = this.m32;
     }
     else if (paramInt == 3)
     {
-      paramVector4d.x = this.m03;
-      paramVector4d.y = this.m13;
-      paramVector4d.z = this.m23;
-      paramVector4d.w = this.m33;
+      paramVector4d.field_600 = this.m03;
+      paramVector4d.field_601 = this.m13;
+      paramVector4d.field_602 = this.m23;
+      paramVector4d.field_603 = this.m33;
     }
     else
     {
@@ -564,9 +564,9 @@ public class Matrix4d
     paramMatrix3d.m20 = arrayOfDouble1[6];
     paramMatrix3d.m21 = arrayOfDouble1[7];
     paramMatrix3d.m22 = arrayOfDouble1[8];
-    paramVector3d.x = this.m03;
-    paramVector3d.y = this.m13;
-    paramVector3d.z = this.m23;
+    paramVector3d.field_612 = this.m03;
+    paramVector3d.field_613 = this.m13;
+    paramVector3d.field_614 = this.m23;
     return Matrix3d.max3(arrayOfDouble2);
   }
   
@@ -584,9 +584,9 @@ public class Matrix4d
     paramMatrix3f.m20 = ((float)arrayOfDouble1[6]);
     paramMatrix3f.m21 = ((float)arrayOfDouble1[7]);
     paramMatrix3f.m22 = ((float)arrayOfDouble1[8]);
-    paramVector3d.x = this.m03;
-    paramVector3d.y = this.m13;
-    paramVector3d.z = this.m23;
+    paramVector3d.field_612 = this.m03;
+    paramVector3d.field_613 = this.m13;
+    paramVector3d.field_614 = this.m23;
     return Matrix3d.max3(arrayOfDouble2);
   }
   
@@ -598,33 +598,33 @@ public class Matrix4d
     double d = 0.25D * (1.0D + arrayOfDouble1[0] + arrayOfDouble1[4] + arrayOfDouble1[8]);
     if ((d < 0.0D ? -d : d) >= 1.E-030D)
     {
-      paramQuat4f.w = ((float)Math.sqrt(d));
-      d = 0.25D / paramQuat4f.w;
-      paramQuat4f.x = ((float)((arrayOfDouble1[7] - arrayOfDouble1[5]) * d));
-      paramQuat4f.y = ((float)((arrayOfDouble1[2] - arrayOfDouble1[6]) * d));
-      paramQuat4f.z = ((float)((arrayOfDouble1[3] - arrayOfDouble1[1]) * d));
+      paramQuat4f.field_599 = ((float)Math.sqrt(d));
+      d = 0.25D / paramQuat4f.field_599;
+      paramQuat4f.field_596 = ((float)((arrayOfDouble1[7] - arrayOfDouble1[5]) * d));
+      paramQuat4f.field_597 = ((float)((arrayOfDouble1[2] - arrayOfDouble1[6]) * d));
+      paramQuat4f.field_598 = ((float)((arrayOfDouble1[3] - arrayOfDouble1[1]) * d));
       return;
     }
-    paramQuat4f.w = 0.0F;
+    paramQuat4f.field_599 = 0.0F;
     d = -0.5D * (arrayOfDouble1[4] + arrayOfDouble1[8]);
     if ((d < 0.0D ? -d : d) >= 1.E-030D)
     {
-      paramQuat4f.x = ((float)Math.sqrt(d));
-      d = 0.5D / paramQuat4f.x;
-      paramQuat4f.y = ((float)(arrayOfDouble1[3] * d));
-      paramQuat4f.z = ((float)(arrayOfDouble1[6] * d));
+      paramQuat4f.field_596 = ((float)Math.sqrt(d));
+      d = 0.5D / paramQuat4f.field_596;
+      paramQuat4f.field_597 = ((float)(arrayOfDouble1[3] * d));
+      paramQuat4f.field_598 = ((float)(arrayOfDouble1[6] * d));
       return;
     }
-    paramQuat4f.x = 0.0F;
+    paramQuat4f.field_596 = 0.0F;
     d = 0.5D * (1.0D - arrayOfDouble1[8]);
     if ((d < 0.0D ? -d : d) >= 1.E-030D)
     {
-      paramQuat4f.y = ((float)Math.sqrt(d));
-      paramQuat4f.z = ((float)(arrayOfDouble1[7] / (2.0D * paramQuat4f.y)));
+      paramQuat4f.field_597 = ((float)Math.sqrt(d));
+      paramQuat4f.field_598 = ((float)(arrayOfDouble1[7] / (2.0D * paramQuat4f.field_597)));
       return;
     }
-    paramQuat4f.y = 0.0F;
-    paramQuat4f.z = 1.0F;
+    paramQuat4f.field_597 = 0.0F;
+    paramQuat4f.field_598 = 1.0F;
   }
   
   public final void get(Quat4d paramQuat4d)
@@ -635,40 +635,40 @@ public class Matrix4d
     double d = 0.25D * (1.0D + arrayOfDouble1[0] + arrayOfDouble1[4] + arrayOfDouble1[8]);
     if ((d < 0.0D ? -d : d) >= 1.E-030D)
     {
-      paramQuat4d.w = Math.sqrt(d);
-      d = 0.25D / paramQuat4d.w;
-      paramQuat4d.x = ((arrayOfDouble1[7] - arrayOfDouble1[5]) * d);
-      paramQuat4d.y = ((arrayOfDouble1[2] - arrayOfDouble1[6]) * d);
-      paramQuat4d.z = ((arrayOfDouble1[3] - arrayOfDouble1[1]) * d);
+      paramQuat4d.field_603 = Math.sqrt(d);
+      d = 0.25D / paramQuat4d.field_603;
+      paramQuat4d.field_600 = ((arrayOfDouble1[7] - arrayOfDouble1[5]) * d);
+      paramQuat4d.field_601 = ((arrayOfDouble1[2] - arrayOfDouble1[6]) * d);
+      paramQuat4d.field_602 = ((arrayOfDouble1[3] - arrayOfDouble1[1]) * d);
       return;
     }
-    paramQuat4d.w = 0.0D;
+    paramQuat4d.field_603 = 0.0D;
     d = -0.5D * (arrayOfDouble1[4] + arrayOfDouble1[8]);
     if ((d < 0.0D ? -d : d) >= 1.E-030D)
     {
-      paramQuat4d.x = Math.sqrt(d);
-      d = 0.5D / paramQuat4d.x;
-      paramQuat4d.y = (arrayOfDouble1[3] * d);
-      paramQuat4d.z = (arrayOfDouble1[6] * d);
+      paramQuat4d.field_600 = Math.sqrt(d);
+      d = 0.5D / paramQuat4d.field_600;
+      paramQuat4d.field_601 = (arrayOfDouble1[3] * d);
+      paramQuat4d.field_602 = (arrayOfDouble1[6] * d);
       return;
     }
-    paramQuat4d.x = 0.0D;
+    paramQuat4d.field_600 = 0.0D;
     d = 0.5D * (1.0D - arrayOfDouble1[8]);
     if ((d < 0.0D ? -d : d) >= 1.E-030D)
     {
-      paramQuat4d.y = Math.sqrt(d);
-      paramQuat4d.z = (arrayOfDouble1[7] / (2.0D * paramQuat4d.y));
+      paramQuat4d.field_601 = Math.sqrt(d);
+      paramQuat4d.field_602 = (arrayOfDouble1[7] / (2.0D * paramQuat4d.field_601));
       return;
     }
-    paramQuat4d.y = 0.0D;
-    paramQuat4d.z = 1.0D;
+    paramQuat4d.field_601 = 0.0D;
+    paramQuat4d.field_602 = 1.0D;
   }
   
   public final void get(Vector3d paramVector3d)
   {
-    paramVector3d.x = this.m03;
-    paramVector3d.y = this.m13;
-    paramVector3d.z = this.m23;
+    paramVector3d.field_612 = this.m03;
+    paramVector3d.field_613 = this.m13;
+    paramVector3d.field_614 = this.m23;
   }
   
   public final void getRotationScale(Matrix3f paramMatrix3f)
@@ -785,28 +785,28 @@ public class Matrix4d
     switch (paramInt)
     {
     case 0: 
-      this.m00 = paramVector4d.x;
-      this.m01 = paramVector4d.y;
-      this.m02 = paramVector4d.z;
-      this.m03 = paramVector4d.w;
+      this.m00 = paramVector4d.field_600;
+      this.m01 = paramVector4d.field_601;
+      this.m02 = paramVector4d.field_602;
+      this.m03 = paramVector4d.field_603;
       break;
     case 1: 
-      this.m10 = paramVector4d.x;
-      this.m11 = paramVector4d.y;
-      this.m12 = paramVector4d.z;
-      this.m13 = paramVector4d.w;
+      this.m10 = paramVector4d.field_600;
+      this.m11 = paramVector4d.field_601;
+      this.m12 = paramVector4d.field_602;
+      this.m13 = paramVector4d.field_603;
       break;
     case 2: 
-      this.m20 = paramVector4d.x;
-      this.m21 = paramVector4d.y;
-      this.m22 = paramVector4d.z;
-      this.m23 = paramVector4d.w;
+      this.m20 = paramVector4d.field_600;
+      this.m21 = paramVector4d.field_601;
+      this.m22 = paramVector4d.field_602;
+      this.m23 = paramVector4d.field_603;
       break;
     case 3: 
-      this.m30 = paramVector4d.x;
-      this.m31 = paramVector4d.y;
-      this.m32 = paramVector4d.z;
-      this.m33 = paramVector4d.w;
+      this.m30 = paramVector4d.field_600;
+      this.m31 = paramVector4d.field_601;
+      this.m32 = paramVector4d.field_602;
+      this.m33 = paramVector4d.field_603;
       break;
     default: 
       throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix4d4"));
@@ -884,28 +884,28 @@ public class Matrix4d
     switch (paramInt)
     {
     case 0: 
-      this.m00 = paramVector4d.x;
-      this.m10 = paramVector4d.y;
-      this.m20 = paramVector4d.z;
-      this.m30 = paramVector4d.w;
+      this.m00 = paramVector4d.field_600;
+      this.m10 = paramVector4d.field_601;
+      this.m20 = paramVector4d.field_602;
+      this.m30 = paramVector4d.field_603;
       break;
     case 1: 
-      this.m01 = paramVector4d.x;
-      this.m11 = paramVector4d.y;
-      this.m21 = paramVector4d.z;
-      this.m31 = paramVector4d.w;
+      this.m01 = paramVector4d.field_600;
+      this.m11 = paramVector4d.field_601;
+      this.m21 = paramVector4d.field_602;
+      this.m31 = paramVector4d.field_603;
       break;
     case 2: 
-      this.m02 = paramVector4d.x;
-      this.m12 = paramVector4d.y;
-      this.m22 = paramVector4d.z;
-      this.m32 = paramVector4d.w;
+      this.m02 = paramVector4d.field_600;
+      this.m12 = paramVector4d.field_601;
+      this.m22 = paramVector4d.field_602;
+      this.m32 = paramVector4d.field_603;
       break;
     case 3: 
-      this.m03 = paramVector4d.x;
-      this.m13 = paramVector4d.y;
-      this.m23 = paramVector4d.z;
-      this.m33 = paramVector4d.w;
+      this.m03 = paramVector4d.field_600;
+      this.m13 = paramVector4d.field_601;
+      this.m23 = paramVector4d.field_602;
+      this.m33 = paramVector4d.field_603;
       break;
     default: 
       throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix4d7"));
@@ -1176,15 +1176,15 @@ public class Matrix4d
   
   public final void set(Quat4d paramQuat4d)
   {
-    this.m00 = (1.0D - 2.0D * paramQuat4d.y * paramQuat4d.y - 2.0D * paramQuat4d.z * paramQuat4d.z);
-    this.m10 = (2.0D * (paramQuat4d.x * paramQuat4d.y + paramQuat4d.w * paramQuat4d.z));
-    this.m20 = (2.0D * (paramQuat4d.x * paramQuat4d.z - paramQuat4d.w * paramQuat4d.y));
-    this.m01 = (2.0D * (paramQuat4d.x * paramQuat4d.y - paramQuat4d.w * paramQuat4d.z));
-    this.m11 = (1.0D - 2.0D * paramQuat4d.x * paramQuat4d.x - 2.0D * paramQuat4d.z * paramQuat4d.z);
-    this.m21 = (2.0D * (paramQuat4d.y * paramQuat4d.z + paramQuat4d.w * paramQuat4d.x));
-    this.m02 = (2.0D * (paramQuat4d.x * paramQuat4d.z + paramQuat4d.w * paramQuat4d.y));
-    this.m12 = (2.0D * (paramQuat4d.y * paramQuat4d.z - paramQuat4d.w * paramQuat4d.x));
-    this.m22 = (1.0D - 2.0D * paramQuat4d.x * paramQuat4d.x - 2.0D * paramQuat4d.y * paramQuat4d.y);
+    this.m00 = (1.0D - 2.0D * paramQuat4d.field_601 * paramQuat4d.field_601 - 2.0D * paramQuat4d.field_602 * paramQuat4d.field_602);
+    this.m10 = (2.0D * (paramQuat4d.field_600 * paramQuat4d.field_601 + paramQuat4d.field_603 * paramQuat4d.field_602));
+    this.m20 = (2.0D * (paramQuat4d.field_600 * paramQuat4d.field_602 - paramQuat4d.field_603 * paramQuat4d.field_601));
+    this.m01 = (2.0D * (paramQuat4d.field_600 * paramQuat4d.field_601 - paramQuat4d.field_603 * paramQuat4d.field_602));
+    this.m11 = (1.0D - 2.0D * paramQuat4d.field_600 * paramQuat4d.field_600 - 2.0D * paramQuat4d.field_602 * paramQuat4d.field_602);
+    this.m21 = (2.0D * (paramQuat4d.field_601 * paramQuat4d.field_602 + paramQuat4d.field_603 * paramQuat4d.field_600));
+    this.m02 = (2.0D * (paramQuat4d.field_600 * paramQuat4d.field_602 + paramQuat4d.field_603 * paramQuat4d.field_601));
+    this.m12 = (2.0D * (paramQuat4d.field_601 * paramQuat4d.field_602 - paramQuat4d.field_603 * paramQuat4d.field_600));
+    this.m22 = (1.0D - 2.0D * paramQuat4d.field_600 * paramQuat4d.field_600 - 2.0D * paramQuat4d.field_601 * paramQuat4d.field_601);
     this.m03 = 0.0D;
     this.m13 = 0.0D;
     this.m23 = 0.0D;
@@ -1196,7 +1196,7 @@ public class Matrix4d
   
   public final void set(AxisAngle4d paramAxisAngle4d)
   {
-    double d1 = Math.sqrt(paramAxisAngle4d.x * paramAxisAngle4d.x + paramAxisAngle4d.y * paramAxisAngle4d.y + paramAxisAngle4d.z * paramAxisAngle4d.z);
+    double d1 = Math.sqrt(paramAxisAngle4d.field_589 * paramAxisAngle4d.field_589 + paramAxisAngle4d.field_590 * paramAxisAngle4d.field_590 + paramAxisAngle4d.field_591 * paramAxisAngle4d.field_591);
     if (d1 < 1.0E-010D)
     {
       this.m00 = 1.0D;
@@ -1212,9 +1212,9 @@ public class Matrix4d
     else
     {
       d1 = 1.0D / d1;
-      double d2 = paramAxisAngle4d.x * d1;
-      double d3 = paramAxisAngle4d.y * d1;
-      double d4 = paramAxisAngle4d.z * d1;
+      double d2 = paramAxisAngle4d.field_589 * d1;
+      double d3 = paramAxisAngle4d.field_590 * d1;
+      double d4 = paramAxisAngle4d.field_591 * d1;
       double d5 = Math.sin(paramAxisAngle4d.angle);
       double d6 = Math.cos(paramAxisAngle4d.angle);
       double d7 = 1.0D - d6;
@@ -1242,15 +1242,15 @@ public class Matrix4d
   
   public final void set(Quat4f paramQuat4f)
   {
-    this.m00 = (1.0D - 2.0D * paramQuat4f.y * paramQuat4f.y - 2.0D * paramQuat4f.z * paramQuat4f.z);
-    this.m10 = (2.0D * (paramQuat4f.x * paramQuat4f.y + paramQuat4f.w * paramQuat4f.z));
-    this.m20 = (2.0D * (paramQuat4f.x * paramQuat4f.z - paramQuat4f.w * paramQuat4f.y));
-    this.m01 = (2.0D * (paramQuat4f.x * paramQuat4f.y - paramQuat4f.w * paramQuat4f.z));
-    this.m11 = (1.0D - 2.0D * paramQuat4f.x * paramQuat4f.x - 2.0D * paramQuat4f.z * paramQuat4f.z);
-    this.m21 = (2.0D * (paramQuat4f.y * paramQuat4f.z + paramQuat4f.w * paramQuat4f.x));
-    this.m02 = (2.0D * (paramQuat4f.x * paramQuat4f.z + paramQuat4f.w * paramQuat4f.y));
-    this.m12 = (2.0D * (paramQuat4f.y * paramQuat4f.z - paramQuat4f.w * paramQuat4f.x));
-    this.m22 = (1.0D - 2.0D * paramQuat4f.x * paramQuat4f.x - 2.0D * paramQuat4f.y * paramQuat4f.y);
+    this.m00 = (1.0D - 2.0D * paramQuat4f.field_597 * paramQuat4f.field_597 - 2.0D * paramQuat4f.field_598 * paramQuat4f.field_598);
+    this.m10 = (2.0D * (paramQuat4f.field_596 * paramQuat4f.field_597 + paramQuat4f.field_599 * paramQuat4f.field_598));
+    this.m20 = (2.0D * (paramQuat4f.field_596 * paramQuat4f.field_598 - paramQuat4f.field_599 * paramQuat4f.field_597));
+    this.m01 = (2.0D * (paramQuat4f.field_596 * paramQuat4f.field_597 - paramQuat4f.field_599 * paramQuat4f.field_598));
+    this.m11 = (1.0D - 2.0D * paramQuat4f.field_596 * paramQuat4f.field_596 - 2.0D * paramQuat4f.field_598 * paramQuat4f.field_598);
+    this.m21 = (2.0D * (paramQuat4f.field_597 * paramQuat4f.field_598 + paramQuat4f.field_599 * paramQuat4f.field_596));
+    this.m02 = (2.0D * (paramQuat4f.field_596 * paramQuat4f.field_598 + paramQuat4f.field_599 * paramQuat4f.field_597));
+    this.m12 = (2.0D * (paramQuat4f.field_597 * paramQuat4f.field_598 - paramQuat4f.field_599 * paramQuat4f.field_596));
+    this.m22 = (1.0D - 2.0D * paramQuat4f.field_596 * paramQuat4f.field_596 - 2.0D * paramQuat4f.field_597 * paramQuat4f.field_597);
     this.m03 = 0.0D;
     this.m13 = 0.0D;
     this.m23 = 0.0D;
@@ -1262,7 +1262,7 @@ public class Matrix4d
   
   public final void set(AxisAngle4f paramAxisAngle4f)
   {
-    double d1 = Math.sqrt(paramAxisAngle4f.x * paramAxisAngle4f.x + paramAxisAngle4f.y * paramAxisAngle4f.y + paramAxisAngle4f.z * paramAxisAngle4f.z);
+    double d1 = Math.sqrt(paramAxisAngle4f.field_586 * paramAxisAngle4f.field_586 + paramAxisAngle4f.field_587 * paramAxisAngle4f.field_587 + paramAxisAngle4f.field_588 * paramAxisAngle4f.field_588);
     if (d1 < 1.0E-010D)
     {
       this.m00 = 1.0D;
@@ -1278,9 +1278,9 @@ public class Matrix4d
     else
     {
       d1 = 1.0D / d1;
-      double d2 = paramAxisAngle4f.x * d1;
-      double d3 = paramAxisAngle4f.y * d1;
-      double d4 = paramAxisAngle4f.z * d1;
+      double d2 = paramAxisAngle4f.field_586 * d1;
+      double d3 = paramAxisAngle4f.field_587 * d1;
+      double d4 = paramAxisAngle4f.field_588 * d1;
       double d5 = Math.sin(paramAxisAngle4f.angle);
       double d6 = Math.cos(paramAxisAngle4f.angle);
       double d7 = 1.0D - d6;
@@ -1308,18 +1308,18 @@ public class Matrix4d
   
   public final void set(Quat4d paramQuat4d, Vector3d paramVector3d, double paramDouble)
   {
-    this.m00 = (paramDouble * (1.0D - 2.0D * paramQuat4d.y * paramQuat4d.y - 2.0D * paramQuat4d.z * paramQuat4d.z));
-    this.m10 = (paramDouble * (2.0D * (paramQuat4d.x * paramQuat4d.y + paramQuat4d.w * paramQuat4d.z)));
-    this.m20 = (paramDouble * (2.0D * (paramQuat4d.x * paramQuat4d.z - paramQuat4d.w * paramQuat4d.y)));
-    this.m01 = (paramDouble * (2.0D * (paramQuat4d.x * paramQuat4d.y - paramQuat4d.w * paramQuat4d.z)));
-    this.m11 = (paramDouble * (1.0D - 2.0D * paramQuat4d.x * paramQuat4d.x - 2.0D * paramQuat4d.z * paramQuat4d.z));
-    this.m21 = (paramDouble * (2.0D * (paramQuat4d.y * paramQuat4d.z + paramQuat4d.w * paramQuat4d.x)));
-    this.m02 = (paramDouble * (2.0D * (paramQuat4d.x * paramQuat4d.z + paramQuat4d.w * paramQuat4d.y)));
-    this.m12 = (paramDouble * (2.0D * (paramQuat4d.y * paramQuat4d.z - paramQuat4d.w * paramQuat4d.x)));
-    this.m22 = (paramDouble * (1.0D - 2.0D * paramQuat4d.x * paramQuat4d.x - 2.0D * paramQuat4d.y * paramQuat4d.y));
-    this.m03 = paramVector3d.x;
-    this.m13 = paramVector3d.y;
-    this.m23 = paramVector3d.z;
+    this.m00 = (paramDouble * (1.0D - 2.0D * paramQuat4d.field_601 * paramQuat4d.field_601 - 2.0D * paramQuat4d.field_602 * paramQuat4d.field_602));
+    this.m10 = (paramDouble * (2.0D * (paramQuat4d.field_600 * paramQuat4d.field_601 + paramQuat4d.field_603 * paramQuat4d.field_602)));
+    this.m20 = (paramDouble * (2.0D * (paramQuat4d.field_600 * paramQuat4d.field_602 - paramQuat4d.field_603 * paramQuat4d.field_601)));
+    this.m01 = (paramDouble * (2.0D * (paramQuat4d.field_600 * paramQuat4d.field_601 - paramQuat4d.field_603 * paramQuat4d.field_602)));
+    this.m11 = (paramDouble * (1.0D - 2.0D * paramQuat4d.field_600 * paramQuat4d.field_600 - 2.0D * paramQuat4d.field_602 * paramQuat4d.field_602));
+    this.m21 = (paramDouble * (2.0D * (paramQuat4d.field_601 * paramQuat4d.field_602 + paramQuat4d.field_603 * paramQuat4d.field_600)));
+    this.m02 = (paramDouble * (2.0D * (paramQuat4d.field_600 * paramQuat4d.field_602 + paramQuat4d.field_603 * paramQuat4d.field_601)));
+    this.m12 = (paramDouble * (2.0D * (paramQuat4d.field_601 * paramQuat4d.field_602 - paramQuat4d.field_603 * paramQuat4d.field_600)));
+    this.m22 = (paramDouble * (1.0D - 2.0D * paramQuat4d.field_600 * paramQuat4d.field_600 - 2.0D * paramQuat4d.field_601 * paramQuat4d.field_601));
+    this.m03 = paramVector3d.field_612;
+    this.m13 = paramVector3d.field_613;
+    this.m23 = paramVector3d.field_614;
     this.m30 = 0.0D;
     this.m31 = 0.0D;
     this.m32 = 0.0D;
@@ -1328,18 +1328,18 @@ public class Matrix4d
   
   public final void set(Quat4f paramQuat4f, Vector3d paramVector3d, double paramDouble)
   {
-    this.m00 = (paramDouble * (1.0D - 2.0D * paramQuat4f.y * paramQuat4f.y - 2.0D * paramQuat4f.z * paramQuat4f.z));
-    this.m10 = (paramDouble * (2.0D * (paramQuat4f.x * paramQuat4f.y + paramQuat4f.w * paramQuat4f.z)));
-    this.m20 = (paramDouble * (2.0D * (paramQuat4f.x * paramQuat4f.z - paramQuat4f.w * paramQuat4f.y)));
-    this.m01 = (paramDouble * (2.0D * (paramQuat4f.x * paramQuat4f.y - paramQuat4f.w * paramQuat4f.z)));
-    this.m11 = (paramDouble * (1.0D - 2.0D * paramQuat4f.x * paramQuat4f.x - 2.0D * paramQuat4f.z * paramQuat4f.z));
-    this.m21 = (paramDouble * (2.0D * (paramQuat4f.y * paramQuat4f.z + paramQuat4f.w * paramQuat4f.x)));
-    this.m02 = (paramDouble * (2.0D * (paramQuat4f.x * paramQuat4f.z + paramQuat4f.w * paramQuat4f.y)));
-    this.m12 = (paramDouble * (2.0D * (paramQuat4f.y * paramQuat4f.z - paramQuat4f.w * paramQuat4f.x)));
-    this.m22 = (paramDouble * (1.0D - 2.0D * paramQuat4f.x * paramQuat4f.x - 2.0D * paramQuat4f.y * paramQuat4f.y));
-    this.m03 = paramVector3d.x;
-    this.m13 = paramVector3d.y;
-    this.m23 = paramVector3d.z;
+    this.m00 = (paramDouble * (1.0D - 2.0D * paramQuat4f.field_597 * paramQuat4f.field_597 - 2.0D * paramQuat4f.field_598 * paramQuat4f.field_598));
+    this.m10 = (paramDouble * (2.0D * (paramQuat4f.field_596 * paramQuat4f.field_597 + paramQuat4f.field_599 * paramQuat4f.field_598)));
+    this.m20 = (paramDouble * (2.0D * (paramQuat4f.field_596 * paramQuat4f.field_598 - paramQuat4f.field_599 * paramQuat4f.field_597)));
+    this.m01 = (paramDouble * (2.0D * (paramQuat4f.field_596 * paramQuat4f.field_597 - paramQuat4f.field_599 * paramQuat4f.field_598)));
+    this.m11 = (paramDouble * (1.0D - 2.0D * paramQuat4f.field_596 * paramQuat4f.field_596 - 2.0D * paramQuat4f.field_598 * paramQuat4f.field_598));
+    this.m21 = (paramDouble * (2.0D * (paramQuat4f.field_597 * paramQuat4f.field_598 + paramQuat4f.field_599 * paramQuat4f.field_596)));
+    this.m02 = (paramDouble * (2.0D * (paramQuat4f.field_596 * paramQuat4f.field_598 + paramQuat4f.field_599 * paramQuat4f.field_597)));
+    this.m12 = (paramDouble * (2.0D * (paramQuat4f.field_597 * paramQuat4f.field_598 - paramQuat4f.field_599 * paramQuat4f.field_596)));
+    this.m22 = (paramDouble * (1.0D - 2.0D * paramQuat4f.field_596 * paramQuat4f.field_596 - 2.0D * paramQuat4f.field_597 * paramQuat4f.field_597));
+    this.m03 = paramVector3d.field_612;
+    this.m13 = paramVector3d.field_613;
+    this.m23 = paramVector3d.field_614;
     this.m30 = 0.0D;
     this.m31 = 0.0D;
     this.m32 = 0.0D;
@@ -1348,18 +1348,18 @@ public class Matrix4d
   
   public final void set(Quat4f paramQuat4f, Vector3f paramVector3f, float paramFloat)
   {
-    this.m00 = (paramFloat * (1.0D - 2.0D * paramQuat4f.y * paramQuat4f.y - 2.0D * paramQuat4f.z * paramQuat4f.z));
-    this.m10 = (paramFloat * (2.0D * (paramQuat4f.x * paramQuat4f.y + paramQuat4f.w * paramQuat4f.z)));
-    this.m20 = (paramFloat * (2.0D * (paramQuat4f.x * paramQuat4f.z - paramQuat4f.w * paramQuat4f.y)));
-    this.m01 = (paramFloat * (2.0D * (paramQuat4f.x * paramQuat4f.y - paramQuat4f.w * paramQuat4f.z)));
-    this.m11 = (paramFloat * (1.0D - 2.0D * paramQuat4f.x * paramQuat4f.x - 2.0D * paramQuat4f.z * paramQuat4f.z));
-    this.m21 = (paramFloat * (2.0D * (paramQuat4f.y * paramQuat4f.z + paramQuat4f.w * paramQuat4f.x)));
-    this.m02 = (paramFloat * (2.0D * (paramQuat4f.x * paramQuat4f.z + paramQuat4f.w * paramQuat4f.y)));
-    this.m12 = (paramFloat * (2.0D * (paramQuat4f.y * paramQuat4f.z - paramQuat4f.w * paramQuat4f.x)));
-    this.m22 = (paramFloat * (1.0D - 2.0D * paramQuat4f.x * paramQuat4f.x - 2.0D * paramQuat4f.y * paramQuat4f.y));
-    this.m03 = paramVector3f.x;
-    this.m13 = paramVector3f.y;
-    this.m23 = paramVector3f.z;
+    this.m00 = (paramFloat * (1.0D - 2.0D * paramQuat4f.field_597 * paramQuat4f.field_597 - 2.0D * paramQuat4f.field_598 * paramQuat4f.field_598));
+    this.m10 = (paramFloat * (2.0D * (paramQuat4f.field_596 * paramQuat4f.field_597 + paramQuat4f.field_599 * paramQuat4f.field_598)));
+    this.m20 = (paramFloat * (2.0D * (paramQuat4f.field_596 * paramQuat4f.field_598 - paramQuat4f.field_599 * paramQuat4f.field_597)));
+    this.m01 = (paramFloat * (2.0D * (paramQuat4f.field_596 * paramQuat4f.field_597 - paramQuat4f.field_599 * paramQuat4f.field_598)));
+    this.m11 = (paramFloat * (1.0D - 2.0D * paramQuat4f.field_596 * paramQuat4f.field_596 - 2.0D * paramQuat4f.field_598 * paramQuat4f.field_598));
+    this.m21 = (paramFloat * (2.0D * (paramQuat4f.field_597 * paramQuat4f.field_598 + paramQuat4f.field_599 * paramQuat4f.field_596)));
+    this.m02 = (paramFloat * (2.0D * (paramQuat4f.field_596 * paramQuat4f.field_598 + paramQuat4f.field_599 * paramQuat4f.field_597)));
+    this.m12 = (paramFloat * (2.0D * (paramQuat4f.field_597 * paramQuat4f.field_598 - paramQuat4f.field_599 * paramQuat4f.field_596)));
+    this.m22 = (paramFloat * (1.0D - 2.0D * paramQuat4f.field_596 * paramQuat4f.field_596 - 2.0D * paramQuat4f.field_597 * paramQuat4f.field_597));
+    this.m03 = paramVector3f.field_615;
+    this.m13 = paramVector3f.field_616;
+    this.m23 = paramVector3f.field_617;
     this.m30 = 0.0D;
     this.m31 = 0.0D;
     this.m32 = 0.0D;
@@ -1636,15 +1636,15 @@ public class Matrix4d
     this.m00 = 1.0D;
     this.m01 = 0.0D;
     this.m02 = 0.0D;
-    this.m03 = paramVector3d.x;
+    this.m03 = paramVector3d.field_612;
     this.m10 = 0.0D;
     this.m11 = 1.0D;
     this.m12 = 0.0D;
-    this.m13 = paramVector3d.y;
+    this.m13 = paramVector3d.field_613;
     this.m20 = 0.0D;
     this.m21 = 0.0D;
     this.m22 = 1.0D;
-    this.m23 = paramVector3d.z;
+    this.m23 = paramVector3d.field_614;
     this.m30 = 0.0D;
     this.m31 = 0.0D;
     this.m32 = 0.0D;
@@ -1656,15 +1656,15 @@ public class Matrix4d
     this.m00 = paramDouble;
     this.m01 = 0.0D;
     this.m02 = 0.0D;
-    this.m03 = paramVector3d.x;
+    this.m03 = paramVector3d.field_612;
     this.m10 = 0.0D;
     this.m11 = paramDouble;
     this.m12 = 0.0D;
-    this.m13 = paramVector3d.y;
+    this.m13 = paramVector3d.field_613;
     this.m20 = 0.0D;
     this.m21 = 0.0D;
     this.m22 = paramDouble;
-    this.m23 = paramVector3d.z;
+    this.m23 = paramVector3d.field_614;
     this.m30 = 0.0D;
     this.m31 = 0.0D;
     this.m32 = 0.0D;
@@ -1676,15 +1676,15 @@ public class Matrix4d
     this.m00 = paramDouble;
     this.m01 = 0.0D;
     this.m02 = 0.0D;
-    this.m03 = (paramDouble * paramVector3d.x);
+    this.m03 = (paramDouble * paramVector3d.field_612);
     this.m10 = 0.0D;
     this.m11 = paramDouble;
     this.m12 = 0.0D;
-    this.m13 = (paramDouble * paramVector3d.y);
+    this.m13 = (paramDouble * paramVector3d.field_613);
     this.m20 = 0.0D;
     this.m21 = 0.0D;
     this.m22 = paramDouble;
-    this.m23 = (paramDouble * paramVector3d.z);
+    this.m23 = (paramDouble * paramVector3d.field_614);
     this.m30 = 0.0D;
     this.m31 = 0.0D;
     this.m32 = 0.0D;
@@ -1696,15 +1696,15 @@ public class Matrix4d
     this.m00 = (paramMatrix3f.m00 * paramFloat);
     this.m01 = (paramMatrix3f.m01 * paramFloat);
     this.m02 = (paramMatrix3f.m02 * paramFloat);
-    this.m03 = paramVector3f.x;
+    this.m03 = paramVector3f.field_615;
     this.m10 = (paramMatrix3f.m10 * paramFloat);
     this.m11 = (paramMatrix3f.m11 * paramFloat);
     this.m12 = (paramMatrix3f.m12 * paramFloat);
-    this.m13 = paramVector3f.y;
+    this.m13 = paramVector3f.field_616;
     this.m20 = (paramMatrix3f.m20 * paramFloat);
     this.m21 = (paramMatrix3f.m21 * paramFloat);
     this.m22 = (paramMatrix3f.m22 * paramFloat);
-    this.m23 = paramVector3f.z;
+    this.m23 = paramVector3f.field_617;
     this.m30 = 0.0D;
     this.m31 = 0.0D;
     this.m32 = 0.0D;
@@ -1716,15 +1716,15 @@ public class Matrix4d
     this.m00 = (paramMatrix3d.m00 * paramDouble);
     this.m01 = (paramMatrix3d.m01 * paramDouble);
     this.m02 = (paramMatrix3d.m02 * paramDouble);
-    this.m03 = paramVector3d.x;
+    this.m03 = paramVector3d.field_612;
     this.m10 = (paramMatrix3d.m10 * paramDouble);
     this.m11 = (paramMatrix3d.m11 * paramDouble);
     this.m12 = (paramMatrix3d.m12 * paramDouble);
-    this.m13 = paramVector3d.y;
+    this.m13 = paramVector3d.field_613;
     this.m20 = (paramMatrix3d.m20 * paramDouble);
     this.m21 = (paramMatrix3d.m21 * paramDouble);
     this.m22 = (paramMatrix3d.m22 * paramDouble);
-    this.m23 = paramVector3d.z;
+    this.m23 = paramVector3d.field_614;
     this.m30 = 0.0D;
     this.m31 = 0.0D;
     this.m32 = 0.0D;
@@ -1733,9 +1733,9 @@ public class Matrix4d
   
   public final void setTranslation(Vector3d paramVector3d)
   {
-    this.m03 = paramVector3d.x;
-    this.m13 = paramVector3d.y;
-    this.m23 = paramVector3d.z;
+    this.m03 = paramVector3d.field_612;
+    this.m13 = paramVector3d.field_613;
+    this.m23 = paramVector3d.field_614;
   }
   
   public final void rotX(double paramDouble)
@@ -2235,118 +2235,118 @@ public class Matrix4d
   
   public final void transform(Tuple4d paramTuple4d1, Tuple4d paramTuple4d2)
   {
-    double d1 = this.m00 * paramTuple4d1.x + this.m01 * paramTuple4d1.y + this.m02 * paramTuple4d1.z + this.m03 * paramTuple4d1.w;
-    double d2 = this.m10 * paramTuple4d1.x + this.m11 * paramTuple4d1.y + this.m12 * paramTuple4d1.z + this.m13 * paramTuple4d1.w;
-    double d3 = this.m20 * paramTuple4d1.x + this.m21 * paramTuple4d1.y + this.m22 * paramTuple4d1.z + this.m23 * paramTuple4d1.w;
-    paramTuple4d2.w = (this.m30 * paramTuple4d1.x + this.m31 * paramTuple4d1.y + this.m32 * paramTuple4d1.z + this.m33 * paramTuple4d1.w);
-    paramTuple4d2.x = d1;
-    paramTuple4d2.y = d2;
-    paramTuple4d2.z = d3;
+    double d1 = this.m00 * paramTuple4d1.field_600 + this.m01 * paramTuple4d1.field_601 + this.m02 * paramTuple4d1.field_602 + this.m03 * paramTuple4d1.field_603;
+    double d2 = this.m10 * paramTuple4d1.field_600 + this.m11 * paramTuple4d1.field_601 + this.m12 * paramTuple4d1.field_602 + this.m13 * paramTuple4d1.field_603;
+    double d3 = this.m20 * paramTuple4d1.field_600 + this.m21 * paramTuple4d1.field_601 + this.m22 * paramTuple4d1.field_602 + this.m23 * paramTuple4d1.field_603;
+    paramTuple4d2.field_603 = (this.m30 * paramTuple4d1.field_600 + this.m31 * paramTuple4d1.field_601 + this.m32 * paramTuple4d1.field_602 + this.m33 * paramTuple4d1.field_603);
+    paramTuple4d2.field_600 = d1;
+    paramTuple4d2.field_601 = d2;
+    paramTuple4d2.field_602 = d3;
   }
   
   public final void transform(Tuple4d paramTuple4d)
   {
-    double d1 = this.m00 * paramTuple4d.x + this.m01 * paramTuple4d.y + this.m02 * paramTuple4d.z + this.m03 * paramTuple4d.w;
-    double d2 = this.m10 * paramTuple4d.x + this.m11 * paramTuple4d.y + this.m12 * paramTuple4d.z + this.m13 * paramTuple4d.w;
-    double d3 = this.m20 * paramTuple4d.x + this.m21 * paramTuple4d.y + this.m22 * paramTuple4d.z + this.m23 * paramTuple4d.w;
-    paramTuple4d.w = (this.m30 * paramTuple4d.x + this.m31 * paramTuple4d.y + this.m32 * paramTuple4d.z + this.m33 * paramTuple4d.w);
-    paramTuple4d.x = d1;
-    paramTuple4d.y = d2;
-    paramTuple4d.z = d3;
+    double d1 = this.m00 * paramTuple4d.field_600 + this.m01 * paramTuple4d.field_601 + this.m02 * paramTuple4d.field_602 + this.m03 * paramTuple4d.field_603;
+    double d2 = this.m10 * paramTuple4d.field_600 + this.m11 * paramTuple4d.field_601 + this.m12 * paramTuple4d.field_602 + this.m13 * paramTuple4d.field_603;
+    double d3 = this.m20 * paramTuple4d.field_600 + this.m21 * paramTuple4d.field_601 + this.m22 * paramTuple4d.field_602 + this.m23 * paramTuple4d.field_603;
+    paramTuple4d.field_603 = (this.m30 * paramTuple4d.field_600 + this.m31 * paramTuple4d.field_601 + this.m32 * paramTuple4d.field_602 + this.m33 * paramTuple4d.field_603);
+    paramTuple4d.field_600 = d1;
+    paramTuple4d.field_601 = d2;
+    paramTuple4d.field_602 = d3;
   }
   
   public final void transform(Tuple4f paramTuple4f1, Tuple4f paramTuple4f2)
   {
-    float f1 = (float)(this.m00 * paramTuple4f1.x + this.m01 * paramTuple4f1.y + this.m02 * paramTuple4f1.z + this.m03 * paramTuple4f1.w);
-    float f2 = (float)(this.m10 * paramTuple4f1.x + this.m11 * paramTuple4f1.y + this.m12 * paramTuple4f1.z + this.m13 * paramTuple4f1.w);
-    float f3 = (float)(this.m20 * paramTuple4f1.x + this.m21 * paramTuple4f1.y + this.m22 * paramTuple4f1.z + this.m23 * paramTuple4f1.w);
-    paramTuple4f2.w = ((float)(this.m30 * paramTuple4f1.x + this.m31 * paramTuple4f1.y + this.m32 * paramTuple4f1.z + this.m33 * paramTuple4f1.w));
-    paramTuple4f2.x = f1;
-    paramTuple4f2.y = f2;
-    paramTuple4f2.z = f3;
+    float f1 = (float)(this.m00 * paramTuple4f1.field_596 + this.m01 * paramTuple4f1.field_597 + this.m02 * paramTuple4f1.field_598 + this.m03 * paramTuple4f1.field_599);
+    float f2 = (float)(this.m10 * paramTuple4f1.field_596 + this.m11 * paramTuple4f1.field_597 + this.m12 * paramTuple4f1.field_598 + this.m13 * paramTuple4f1.field_599);
+    float f3 = (float)(this.m20 * paramTuple4f1.field_596 + this.m21 * paramTuple4f1.field_597 + this.m22 * paramTuple4f1.field_598 + this.m23 * paramTuple4f1.field_599);
+    paramTuple4f2.field_599 = ((float)(this.m30 * paramTuple4f1.field_596 + this.m31 * paramTuple4f1.field_597 + this.m32 * paramTuple4f1.field_598 + this.m33 * paramTuple4f1.field_599));
+    paramTuple4f2.field_596 = f1;
+    paramTuple4f2.field_597 = f2;
+    paramTuple4f2.field_598 = f3;
   }
   
   public final void transform(Tuple4f paramTuple4f)
   {
-    float f1 = (float)(this.m00 * paramTuple4f.x + this.m01 * paramTuple4f.y + this.m02 * paramTuple4f.z + this.m03 * paramTuple4f.w);
-    float f2 = (float)(this.m10 * paramTuple4f.x + this.m11 * paramTuple4f.y + this.m12 * paramTuple4f.z + this.m13 * paramTuple4f.w);
-    float f3 = (float)(this.m20 * paramTuple4f.x + this.m21 * paramTuple4f.y + this.m22 * paramTuple4f.z + this.m23 * paramTuple4f.w);
-    paramTuple4f.w = ((float)(this.m30 * paramTuple4f.x + this.m31 * paramTuple4f.y + this.m32 * paramTuple4f.z + this.m33 * paramTuple4f.w));
-    paramTuple4f.x = f1;
-    paramTuple4f.y = f2;
-    paramTuple4f.z = f3;
+    float f1 = (float)(this.m00 * paramTuple4f.field_596 + this.m01 * paramTuple4f.field_597 + this.m02 * paramTuple4f.field_598 + this.m03 * paramTuple4f.field_599);
+    float f2 = (float)(this.m10 * paramTuple4f.field_596 + this.m11 * paramTuple4f.field_597 + this.m12 * paramTuple4f.field_598 + this.m13 * paramTuple4f.field_599);
+    float f3 = (float)(this.m20 * paramTuple4f.field_596 + this.m21 * paramTuple4f.field_597 + this.m22 * paramTuple4f.field_598 + this.m23 * paramTuple4f.field_599);
+    paramTuple4f.field_599 = ((float)(this.m30 * paramTuple4f.field_596 + this.m31 * paramTuple4f.field_597 + this.m32 * paramTuple4f.field_598 + this.m33 * paramTuple4f.field_599));
+    paramTuple4f.field_596 = f1;
+    paramTuple4f.field_597 = f2;
+    paramTuple4f.field_598 = f3;
   }
   
   public final void transform(Point3d paramPoint3d1, Point3d paramPoint3d2)
   {
-    double d1 = this.m00 * paramPoint3d1.x + this.m01 * paramPoint3d1.y + this.m02 * paramPoint3d1.z + this.m03;
-    double d2 = this.m10 * paramPoint3d1.x + this.m11 * paramPoint3d1.y + this.m12 * paramPoint3d1.z + this.m13;
-    paramPoint3d2.z = (this.m20 * paramPoint3d1.x + this.m21 * paramPoint3d1.y + this.m22 * paramPoint3d1.z + this.m23);
-    paramPoint3d2.x = d1;
-    paramPoint3d2.y = d2;
+    double d1 = this.m00 * paramPoint3d1.field_612 + this.m01 * paramPoint3d1.field_613 + this.m02 * paramPoint3d1.field_614 + this.m03;
+    double d2 = this.m10 * paramPoint3d1.field_612 + this.m11 * paramPoint3d1.field_613 + this.m12 * paramPoint3d1.field_614 + this.m13;
+    paramPoint3d2.field_614 = (this.m20 * paramPoint3d1.field_612 + this.m21 * paramPoint3d1.field_613 + this.m22 * paramPoint3d1.field_614 + this.m23);
+    paramPoint3d2.field_612 = d1;
+    paramPoint3d2.field_613 = d2;
   }
   
   public final void transform(Point3d paramPoint3d)
   {
-    double d1 = this.m00 * paramPoint3d.x + this.m01 * paramPoint3d.y + this.m02 * paramPoint3d.z + this.m03;
-    double d2 = this.m10 * paramPoint3d.x + this.m11 * paramPoint3d.y + this.m12 * paramPoint3d.z + this.m13;
-    paramPoint3d.z = (this.m20 * paramPoint3d.x + this.m21 * paramPoint3d.y + this.m22 * paramPoint3d.z + this.m23);
-    paramPoint3d.x = d1;
-    paramPoint3d.y = d2;
+    double d1 = this.m00 * paramPoint3d.field_612 + this.m01 * paramPoint3d.field_613 + this.m02 * paramPoint3d.field_614 + this.m03;
+    double d2 = this.m10 * paramPoint3d.field_612 + this.m11 * paramPoint3d.field_613 + this.m12 * paramPoint3d.field_614 + this.m13;
+    paramPoint3d.field_614 = (this.m20 * paramPoint3d.field_612 + this.m21 * paramPoint3d.field_613 + this.m22 * paramPoint3d.field_614 + this.m23);
+    paramPoint3d.field_612 = d1;
+    paramPoint3d.field_613 = d2;
   }
   
   public final void transform(Point3f paramPoint3f1, Point3f paramPoint3f2)
   {
-    float f1 = (float)(this.m00 * paramPoint3f1.x + this.m01 * paramPoint3f1.y + this.m02 * paramPoint3f1.z + this.m03);
-    float f2 = (float)(this.m10 * paramPoint3f1.x + this.m11 * paramPoint3f1.y + this.m12 * paramPoint3f1.z + this.m13);
-    paramPoint3f2.z = ((float)(this.m20 * paramPoint3f1.x + this.m21 * paramPoint3f1.y + this.m22 * paramPoint3f1.z + this.m23));
-    paramPoint3f2.x = f1;
-    paramPoint3f2.y = f2;
+    float f1 = (float)(this.m00 * paramPoint3f1.field_615 + this.m01 * paramPoint3f1.field_616 + this.m02 * paramPoint3f1.field_617 + this.m03);
+    float f2 = (float)(this.m10 * paramPoint3f1.field_615 + this.m11 * paramPoint3f1.field_616 + this.m12 * paramPoint3f1.field_617 + this.m13);
+    paramPoint3f2.field_617 = ((float)(this.m20 * paramPoint3f1.field_615 + this.m21 * paramPoint3f1.field_616 + this.m22 * paramPoint3f1.field_617 + this.m23));
+    paramPoint3f2.field_615 = f1;
+    paramPoint3f2.field_616 = f2;
   }
   
   public final void transform(Point3f paramPoint3f)
   {
-    float f1 = (float)(this.m00 * paramPoint3f.x + this.m01 * paramPoint3f.y + this.m02 * paramPoint3f.z + this.m03);
-    float f2 = (float)(this.m10 * paramPoint3f.x + this.m11 * paramPoint3f.y + this.m12 * paramPoint3f.z + this.m13);
-    paramPoint3f.z = ((float)(this.m20 * paramPoint3f.x + this.m21 * paramPoint3f.y + this.m22 * paramPoint3f.z + this.m23));
-    paramPoint3f.x = f1;
-    paramPoint3f.y = f2;
+    float f1 = (float)(this.m00 * paramPoint3f.field_615 + this.m01 * paramPoint3f.field_616 + this.m02 * paramPoint3f.field_617 + this.m03);
+    float f2 = (float)(this.m10 * paramPoint3f.field_615 + this.m11 * paramPoint3f.field_616 + this.m12 * paramPoint3f.field_617 + this.m13);
+    paramPoint3f.field_617 = ((float)(this.m20 * paramPoint3f.field_615 + this.m21 * paramPoint3f.field_616 + this.m22 * paramPoint3f.field_617 + this.m23));
+    paramPoint3f.field_615 = f1;
+    paramPoint3f.field_616 = f2;
   }
   
   public final void transform(Vector3d paramVector3d1, Vector3d paramVector3d2)
   {
-    double d1 = this.m00 * paramVector3d1.x + this.m01 * paramVector3d1.y + this.m02 * paramVector3d1.z;
-    double d2 = this.m10 * paramVector3d1.x + this.m11 * paramVector3d1.y + this.m12 * paramVector3d1.z;
-    paramVector3d2.z = (this.m20 * paramVector3d1.x + this.m21 * paramVector3d1.y + this.m22 * paramVector3d1.z);
-    paramVector3d2.x = d1;
-    paramVector3d2.y = d2;
+    double d1 = this.m00 * paramVector3d1.field_612 + this.m01 * paramVector3d1.field_613 + this.m02 * paramVector3d1.field_614;
+    double d2 = this.m10 * paramVector3d1.field_612 + this.m11 * paramVector3d1.field_613 + this.m12 * paramVector3d1.field_614;
+    paramVector3d2.field_614 = (this.m20 * paramVector3d1.field_612 + this.m21 * paramVector3d1.field_613 + this.m22 * paramVector3d1.field_614);
+    paramVector3d2.field_612 = d1;
+    paramVector3d2.field_613 = d2;
   }
   
   public final void transform(Vector3d paramVector3d)
   {
-    double d1 = this.m00 * paramVector3d.x + this.m01 * paramVector3d.y + this.m02 * paramVector3d.z;
-    double d2 = this.m10 * paramVector3d.x + this.m11 * paramVector3d.y + this.m12 * paramVector3d.z;
-    paramVector3d.z = (this.m20 * paramVector3d.x + this.m21 * paramVector3d.y + this.m22 * paramVector3d.z);
-    paramVector3d.x = d1;
-    paramVector3d.y = d2;
+    double d1 = this.m00 * paramVector3d.field_612 + this.m01 * paramVector3d.field_613 + this.m02 * paramVector3d.field_614;
+    double d2 = this.m10 * paramVector3d.field_612 + this.m11 * paramVector3d.field_613 + this.m12 * paramVector3d.field_614;
+    paramVector3d.field_614 = (this.m20 * paramVector3d.field_612 + this.m21 * paramVector3d.field_613 + this.m22 * paramVector3d.field_614);
+    paramVector3d.field_612 = d1;
+    paramVector3d.field_613 = d2;
   }
   
   public final void transform(Vector3f paramVector3f1, Vector3f paramVector3f2)
   {
-    float f1 = (float)(this.m00 * paramVector3f1.x + this.m01 * paramVector3f1.y + this.m02 * paramVector3f1.z);
-    float f2 = (float)(this.m10 * paramVector3f1.x + this.m11 * paramVector3f1.y + this.m12 * paramVector3f1.z);
-    paramVector3f2.z = ((float)(this.m20 * paramVector3f1.x + this.m21 * paramVector3f1.y + this.m22 * paramVector3f1.z));
-    paramVector3f2.x = f1;
-    paramVector3f2.y = f2;
+    float f1 = (float)(this.m00 * paramVector3f1.field_615 + this.m01 * paramVector3f1.field_616 + this.m02 * paramVector3f1.field_617);
+    float f2 = (float)(this.m10 * paramVector3f1.field_615 + this.m11 * paramVector3f1.field_616 + this.m12 * paramVector3f1.field_617);
+    paramVector3f2.field_617 = ((float)(this.m20 * paramVector3f1.field_615 + this.m21 * paramVector3f1.field_616 + this.m22 * paramVector3f1.field_617));
+    paramVector3f2.field_615 = f1;
+    paramVector3f2.field_616 = f2;
   }
   
   public final void transform(Vector3f paramVector3f)
   {
-    float f1 = (float)(this.m00 * paramVector3f.x + this.m01 * paramVector3f.y + this.m02 * paramVector3f.z);
-    float f2 = (float)(this.m10 * paramVector3f.x + this.m11 * paramVector3f.y + this.m12 * paramVector3f.z);
-    paramVector3f.z = ((float)(this.m20 * paramVector3f.x + this.m21 * paramVector3f.y + this.m22 * paramVector3f.z));
-    paramVector3f.x = f1;
-    paramVector3f.y = f2;
+    float f1 = (float)(this.m00 * paramVector3f.field_615 + this.m01 * paramVector3f.field_616 + this.m02 * paramVector3f.field_617);
+    float f2 = (float)(this.m10 * paramVector3f.field_615 + this.m11 * paramVector3f.field_616 + this.m12 * paramVector3f.field_617);
+    paramVector3f.field_617 = ((float)(this.m20 * paramVector3f.field_615 + this.m21 * paramVector3f.field_616 + this.m22 * paramVector3f.field_617));
+    paramVector3f.field_615 = f1;
+    paramVector3f.field_616 = f2;
   }
   
   public final void setRotation(Matrix3d paramMatrix3d)
@@ -2386,15 +2386,15 @@ public class Matrix4d
     double[] arrayOfDouble1 = new double[9];
     double[] arrayOfDouble2 = new double[3];
     getScaleRotate(arrayOfDouble2, arrayOfDouble1);
-    this.m00 = ((1.0D - 2.0F * paramQuat4f.y * paramQuat4f.y - 2.0F * paramQuat4f.z * paramQuat4f.z) * arrayOfDouble2[0]);
-    this.m10 = (2.0D * (paramQuat4f.x * paramQuat4f.y + paramQuat4f.w * paramQuat4f.z) * arrayOfDouble2[0]);
-    this.m20 = (2.0D * (paramQuat4f.x * paramQuat4f.z - paramQuat4f.w * paramQuat4f.y) * arrayOfDouble2[0]);
-    this.m01 = (2.0D * (paramQuat4f.x * paramQuat4f.y - paramQuat4f.w * paramQuat4f.z) * arrayOfDouble2[1]);
-    this.m11 = ((1.0D - 2.0F * paramQuat4f.x * paramQuat4f.x - 2.0F * paramQuat4f.z * paramQuat4f.z) * arrayOfDouble2[1]);
-    this.m21 = (2.0D * (paramQuat4f.y * paramQuat4f.z + paramQuat4f.w * paramQuat4f.x) * arrayOfDouble2[1]);
-    this.m02 = (2.0D * (paramQuat4f.x * paramQuat4f.z + paramQuat4f.w * paramQuat4f.y) * arrayOfDouble2[2]);
-    this.m12 = (2.0D * (paramQuat4f.y * paramQuat4f.z - paramQuat4f.w * paramQuat4f.x) * arrayOfDouble2[2]);
-    this.m22 = ((1.0D - 2.0F * paramQuat4f.x * paramQuat4f.x - 2.0F * paramQuat4f.y * paramQuat4f.y) * arrayOfDouble2[2]);
+    this.m00 = ((1.0D - 2.0F * paramQuat4f.field_597 * paramQuat4f.field_597 - 2.0F * paramQuat4f.field_598 * paramQuat4f.field_598) * arrayOfDouble2[0]);
+    this.m10 = (2.0D * (paramQuat4f.field_596 * paramQuat4f.field_597 + paramQuat4f.field_599 * paramQuat4f.field_598) * arrayOfDouble2[0]);
+    this.m20 = (2.0D * (paramQuat4f.field_596 * paramQuat4f.field_598 - paramQuat4f.field_599 * paramQuat4f.field_597) * arrayOfDouble2[0]);
+    this.m01 = (2.0D * (paramQuat4f.field_596 * paramQuat4f.field_597 - paramQuat4f.field_599 * paramQuat4f.field_598) * arrayOfDouble2[1]);
+    this.m11 = ((1.0D - 2.0F * paramQuat4f.field_596 * paramQuat4f.field_596 - 2.0F * paramQuat4f.field_598 * paramQuat4f.field_598) * arrayOfDouble2[1]);
+    this.m21 = (2.0D * (paramQuat4f.field_597 * paramQuat4f.field_598 + paramQuat4f.field_599 * paramQuat4f.field_596) * arrayOfDouble2[1]);
+    this.m02 = (2.0D * (paramQuat4f.field_596 * paramQuat4f.field_598 + paramQuat4f.field_599 * paramQuat4f.field_597) * arrayOfDouble2[2]);
+    this.m12 = (2.0D * (paramQuat4f.field_597 * paramQuat4f.field_598 - paramQuat4f.field_599 * paramQuat4f.field_596) * arrayOfDouble2[2]);
+    this.m22 = ((1.0D - 2.0F * paramQuat4f.field_596 * paramQuat4f.field_596 - 2.0F * paramQuat4f.field_597 * paramQuat4f.field_597) * arrayOfDouble2[2]);
   }
   
   public final void setRotation(Quat4d paramQuat4d)
@@ -2402,15 +2402,15 @@ public class Matrix4d
     double[] arrayOfDouble1 = new double[9];
     double[] arrayOfDouble2 = new double[3];
     getScaleRotate(arrayOfDouble2, arrayOfDouble1);
-    this.m00 = ((1.0D - 2.0D * paramQuat4d.y * paramQuat4d.y - 2.0D * paramQuat4d.z * paramQuat4d.z) * arrayOfDouble2[0]);
-    this.m10 = (2.0D * (paramQuat4d.x * paramQuat4d.y + paramQuat4d.w * paramQuat4d.z) * arrayOfDouble2[0]);
-    this.m20 = (2.0D * (paramQuat4d.x * paramQuat4d.z - paramQuat4d.w * paramQuat4d.y) * arrayOfDouble2[0]);
-    this.m01 = (2.0D * (paramQuat4d.x * paramQuat4d.y - paramQuat4d.w * paramQuat4d.z) * arrayOfDouble2[1]);
-    this.m11 = ((1.0D - 2.0D * paramQuat4d.x * paramQuat4d.x - 2.0D * paramQuat4d.z * paramQuat4d.z) * arrayOfDouble2[1]);
-    this.m21 = (2.0D * (paramQuat4d.y * paramQuat4d.z + paramQuat4d.w * paramQuat4d.x) * arrayOfDouble2[1]);
-    this.m02 = (2.0D * (paramQuat4d.x * paramQuat4d.z + paramQuat4d.w * paramQuat4d.y) * arrayOfDouble2[2]);
-    this.m12 = (2.0D * (paramQuat4d.y * paramQuat4d.z - paramQuat4d.w * paramQuat4d.x) * arrayOfDouble2[2]);
-    this.m22 = ((1.0D - 2.0D * paramQuat4d.x * paramQuat4d.x - 2.0D * paramQuat4d.y * paramQuat4d.y) * arrayOfDouble2[2]);
+    this.m00 = ((1.0D - 2.0D * paramQuat4d.field_601 * paramQuat4d.field_601 - 2.0D * paramQuat4d.field_602 * paramQuat4d.field_602) * arrayOfDouble2[0]);
+    this.m10 = (2.0D * (paramQuat4d.field_600 * paramQuat4d.field_601 + paramQuat4d.field_603 * paramQuat4d.field_602) * arrayOfDouble2[0]);
+    this.m20 = (2.0D * (paramQuat4d.field_600 * paramQuat4d.field_602 - paramQuat4d.field_603 * paramQuat4d.field_601) * arrayOfDouble2[0]);
+    this.m01 = (2.0D * (paramQuat4d.field_600 * paramQuat4d.field_601 - paramQuat4d.field_603 * paramQuat4d.field_602) * arrayOfDouble2[1]);
+    this.m11 = ((1.0D - 2.0D * paramQuat4d.field_600 * paramQuat4d.field_600 - 2.0D * paramQuat4d.field_602 * paramQuat4d.field_602) * arrayOfDouble2[1]);
+    this.m21 = (2.0D * (paramQuat4d.field_601 * paramQuat4d.field_602 + paramQuat4d.field_603 * paramQuat4d.field_600) * arrayOfDouble2[1]);
+    this.m02 = (2.0D * (paramQuat4d.field_600 * paramQuat4d.field_602 + paramQuat4d.field_603 * paramQuat4d.field_601) * arrayOfDouble2[2]);
+    this.m12 = (2.0D * (paramQuat4d.field_601 * paramQuat4d.field_602 - paramQuat4d.field_603 * paramQuat4d.field_600) * arrayOfDouble2[2]);
+    this.m22 = ((1.0D - 2.0D * paramQuat4d.field_600 * paramQuat4d.field_600 - 2.0D * paramQuat4d.field_601 * paramQuat4d.field_601) * arrayOfDouble2[2]);
   }
   
   public final void setRotation(AxisAngle4d paramAxisAngle4d)
@@ -2418,16 +2418,16 @@ public class Matrix4d
     double[] arrayOfDouble1 = new double[9];
     double[] arrayOfDouble2 = new double[3];
     getScaleRotate(arrayOfDouble2, arrayOfDouble1);
-    double d1 = 1.0D / Math.sqrt(paramAxisAngle4d.x * paramAxisAngle4d.x + paramAxisAngle4d.y * paramAxisAngle4d.y + paramAxisAngle4d.z * paramAxisAngle4d.z);
-    double d2 = paramAxisAngle4d.x * d1;
-    double d3 = paramAxisAngle4d.y * d1;
-    double d4 = paramAxisAngle4d.z * d1;
+    double d1 = 1.0D / Math.sqrt(paramAxisAngle4d.field_589 * paramAxisAngle4d.field_589 + paramAxisAngle4d.field_590 * paramAxisAngle4d.field_590 + paramAxisAngle4d.field_591 * paramAxisAngle4d.field_591);
+    double d2 = paramAxisAngle4d.field_589 * d1;
+    double d3 = paramAxisAngle4d.field_590 * d1;
+    double d4 = paramAxisAngle4d.field_591 * d1;
     double d5 = Math.sin(paramAxisAngle4d.angle);
     double d6 = Math.cos(paramAxisAngle4d.angle);
     double d7 = 1.0D - d6;
-    double d8 = paramAxisAngle4d.x * paramAxisAngle4d.z;
-    double d9 = paramAxisAngle4d.x * paramAxisAngle4d.y;
-    double d10 = paramAxisAngle4d.y * paramAxisAngle4d.z;
+    double d8 = paramAxisAngle4d.field_589 * paramAxisAngle4d.field_591;
+    double d9 = paramAxisAngle4d.field_589 * paramAxisAngle4d.field_590;
+    double d10 = paramAxisAngle4d.field_590 * paramAxisAngle4d.field_591;
     this.m00 = ((d7 * d2 * d2 + d6) * arrayOfDouble2[0]);
     this.m01 = ((d7 * d9 - d5 * d4) * arrayOfDouble2[1]);
     this.m02 = ((d7 * d8 + d5 * d3) * arrayOfDouble2[2]);
@@ -2530,7 +2530,7 @@ public class Matrix4d
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     javax.vecmath.Matrix4d
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -42,31 +42,31 @@ public class Vector2f
   
   public final float dot(Vector2f paramVector2f)
   {
-    return this.x * paramVector2f.x + this.y * paramVector2f.y;
+    return this.field_577 * paramVector2f.field_577 + this.field_578 * paramVector2f.field_578;
   }
   
   public final float length()
   {
-    return (float)Math.sqrt(this.x * this.x + this.y * this.y);
+    return (float)Math.sqrt(this.field_577 * this.field_577 + this.field_578 * this.field_578);
   }
   
   public final float lengthSquared()
   {
-    return this.x * this.x + this.y * this.y;
+    return this.field_577 * this.field_577 + this.field_578 * this.field_578;
   }
   
   public final void normalize(Vector2f paramVector2f)
   {
-    float f = (float)(1.0D / Math.sqrt(paramVector2f.x * paramVector2f.x + paramVector2f.y * paramVector2f.y));
-    paramVector2f.x *= f;
-    paramVector2f.y *= f;
+    float f = (float)(1.0D / Math.sqrt(paramVector2f.field_577 * paramVector2f.field_577 + paramVector2f.field_578 * paramVector2f.field_578));
+    paramVector2f.field_577 *= f;
+    paramVector2f.field_578 *= f;
   }
   
   public final void normalize()
   {
-    float f = (float)(1.0D / Math.sqrt(this.x * this.x + this.y * this.y));
-    this.x *= f;
-    this.y *= f;
+    float f = (float)(1.0D / Math.sqrt(this.field_577 * this.field_577 + this.field_578 * this.field_578));
+    this.field_577 *= f;
+    this.field_578 *= f;
   }
   
   public final float angle(Vector2f paramVector2f)
@@ -83,7 +83,7 @@ public class Vector2f
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     javax.vecmath.Vector2f
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -1,95 +1,114 @@
-/*   1:    */package com.bulletphysics.linearmath;
-/*   2:    */
-/*   3:    */import com.bulletphysics..Stack;
-/*   4:    */import javax.vecmath.Quat4f;
-/*   5:    */import javax.vecmath.Vector3f;
-/*   6:    */
-/*  35:    */public class QuaternionUtil
-/*  36:    */{
-/*  37:    */  public static float getAngle(Quat4f q)
-/*  38:    */  {
-/*  39: 39 */    float s = 2.0F * (float)Math.acos(q.w);
-/*  40: 40 */    return s;
-/*  41:    */  }
-/*  42:    */  
-/*  43:    */  public static void setRotation(Quat4f q, Vector3f axis, float angle) {
-/*  44: 44 */    float d = axis.length();
-/*  45: 45 */    assert (d != 0.0F);
-/*  46: 46 */    float s = (float)Math.sin(angle * 0.5F) / d;
-/*  47: 47 */    q.set(axis.x * s, axis.y * s, axis.z * s, (float)Math.cos(angle * 0.5F));
-/*  48:    */  }
-/*  49:    */  
-/*  50:    */  public static Quat4f shortestArcQuat(Vector3f arg0, Vector3f arg1, Quat4f arg2)
-/*  51:    */  {
-/*  52: 52 */    .Stack localStack = .Stack.get(); try { localStack.push$javax$vecmath$Vector3f();Vector3f c = localStack.get$javax$vecmath$Vector3f();
-/*  53: 53 */      c.cross(v0, v1);
-/*  54: 54 */      float d = v0.dot(v1);
-/*  55:    */      
-/*  56: 56 */      if (d < -0.9999998807907105D)
-/*  57:    */      {
-/*  58: 58 */        out.set(0.0F, 1.0F, 0.0F, 0.0F);
-/*  59: 59 */        return out;
-/*  60:    */      }
-/*  61:    */      
-/*  62: 62 */      float s = (float)Math.sqrt((1.0F + d) * 2.0F);
-/*  63: 63 */      float rs = 1.0F / s;
-/*  64:    */      
-/*  65: 65 */      out.set(c.x * rs, c.y * rs, c.z * rs, s * 0.5F);
-/*  66: 66 */      return out; } finally { localStack.pop$javax$vecmath$Vector3f();
-/*  67:    */    }
-/*  68:    */  }
-/*  69:    */  
-/*  70: 70 */  public static void mul(Quat4f q, Vector3f w) { float rx = q.w * w.x + q.y * w.z - q.z * w.y;
-/*  71: 71 */    float ry = q.w * w.y + q.z * w.x - q.x * w.z;
-/*  72: 72 */    float rz = q.w * w.z + q.x * w.y - q.y * w.x;
-/*  73: 73 */    float rw = -q.x * w.x - q.y * w.y - q.z * w.z;
-/*  74: 74 */    q.set(rx, ry, rz, rw);
-/*  75:    */  }
-/*  76:    */  
-/*  77:    */  public static Vector3f quatRotate(Quat4f arg0, Vector3f arg1, Vector3f arg2) {
-/*  78: 78 */    .Stack localStack = .Stack.get(); try { localStack.push$javax$vecmath$Quat4f();Quat4f q = localStack.get$javax$vecmath$Quat4f(rotation);
-/*  79: 79 */      mul(q, v);
-/*  80:    */      
-/*  81: 81 */      Quat4f tmp = localStack.get$javax$vecmath$Quat4f();
-/*  82: 82 */      inverse(tmp, rotation);
-/*  83: 83 */      q.mul(tmp);
-/*  84:    */      
-/*  85: 85 */      out.set(q.x, q.y, q.z);
-/*  86: 86 */      return out; } finally { localStack.pop$javax$vecmath$Quat4f();
-/*  87:    */    }
-/*  88:    */  }
-/*  89:    */  
-/*  90: 90 */  public static void inverse(Quat4f q) { q.x = (-q.x);
-/*  91: 91 */    q.y = (-q.y);
-/*  92: 92 */    q.z = (-q.z);
-/*  93:    */  }
-/*  94:    */  
-/*  95:    */  public static void inverse(Quat4f q, Quat4f src) {
-/*  96: 96 */    q.x = (-src.x);
-/*  97: 97 */    q.y = (-src.y);
-/*  98: 98 */    q.z = (-src.z);
-/*  99: 99 */    q.w = src.w;
-/* 100:    */  }
-/* 101:    */  
-/* 102:    */  public static void setEuler(Quat4f q, float yaw, float pitch, float roll) {
-/* 103:103 */    float halfYaw = yaw * 0.5F;
-/* 104:104 */    float halfPitch = pitch * 0.5F;
-/* 105:105 */    float halfRoll = roll * 0.5F;
-/* 106:106 */    float cosYaw = (float)Math.cos(halfYaw);
-/* 107:107 */    float sinYaw = (float)Math.sin(halfYaw);
-/* 108:108 */    float cosPitch = (float)Math.cos(halfPitch);
-/* 109:109 */    float sinPitch = (float)Math.sin(halfPitch);
-/* 110:110 */    float cosRoll = (float)Math.cos(halfRoll);
-/* 111:111 */    float sinRoll = (float)Math.sin(halfRoll);
-/* 112:112 */    q.x = (cosRoll * sinPitch * cosYaw + sinRoll * cosPitch * sinYaw);
-/* 113:113 */    q.y = (cosRoll * cosPitch * sinYaw - sinRoll * sinPitch * cosYaw);
-/* 114:114 */    q.z = (sinRoll * cosPitch * cosYaw - cosRoll * sinPitch * sinYaw);
-/* 115:115 */    q.w = (cosRoll * cosPitch * cosYaw + sinRoll * sinPitch * sinYaw);
-/* 116:    */  }
-/* 117:    */}
+package com.bulletphysics.linearmath;
+
+import com.bulletphysics..Stack;
+import javax.vecmath.Quat4f;
+import javax.vecmath.Vector3f;
+
+public class QuaternionUtil
+{
+  public static float getAngle(Quat4f local_q)
+  {
+    float local_s = 2.0F * (float)Math.acos(local_q.field_599);
+    return local_s;
+  }
+  
+  public static void setRotation(Quat4f local_q, Vector3f axis, float angle)
+  {
+    float local_d = axis.length();
+    assert (local_d != 0.0F);
+    float local_s = (float)Math.sin(angle * 0.5F) / local_d;
+    local_q.set(axis.field_615 * local_s, axis.field_616 * local_s, axis.field_617 * local_s, (float)Math.cos(angle * 0.5F));
+  }
+  
+  public static Quat4f shortestArcQuat(Vector3f arg0, Vector3f arg1, Quat4f arg2)
+  {
+    .Stack localStack = .Stack.get();
+    try
+    {
+      localStack.push$javax$vecmath$Vector3f();
+      Vector3f local_c = localStack.get$javax$vecmath$Vector3f();
+      local_c.cross(local_v0, local_v1);
+      float local_d = local_v0.dot(local_v1);
+      if (local_d < -0.9999998807907105D)
+      {
+        out.set(0.0F, 1.0F, 0.0F, 0.0F);
+        return out;
+      }
+      float local_s = (float)Math.sqrt((1.0F + local_d) * 2.0F);
+      float local_rs = 1.0F / local_s;
+      out.set(local_c.field_615 * local_rs, local_c.field_616 * local_rs, local_c.field_617 * local_rs, local_s * 0.5F);
+      return out;
+    }
+    finally
+    {
+      localStack.pop$javax$vecmath$Vector3f();
+    }
+  }
+  
+  public static void mul(Quat4f local_q, Vector3f local_w)
+  {
+    float local_rx = local_q.field_599 * local_w.field_615 + local_q.field_597 * local_w.field_617 - local_q.field_598 * local_w.field_616;
+    float local_ry = local_q.field_599 * local_w.field_616 + local_q.field_598 * local_w.field_615 - local_q.field_596 * local_w.field_617;
+    float local_rz = local_q.field_599 * local_w.field_617 + local_q.field_596 * local_w.field_616 - local_q.field_597 * local_w.field_615;
+    float local_rw = -local_q.field_596 * local_w.field_615 - local_q.field_597 * local_w.field_616 - local_q.field_598 * local_w.field_617;
+    local_q.set(local_rx, local_ry, local_rz, local_rw);
+  }
+  
+  public static Vector3f quatRotate(Quat4f arg0, Vector3f arg1, Vector3f arg2)
+  {
+    .Stack localStack = .Stack.get();
+    try
+    {
+      localStack.push$javax$vecmath$Quat4f();
+      Quat4f local_q = localStack.get$javax$vecmath$Quat4f(rotation);
+      mul(local_q, local_v);
+      Quat4f tmp = localStack.get$javax$vecmath$Quat4f();
+      inverse(tmp, rotation);
+      local_q.mul(tmp);
+      out.set(local_q.field_596, local_q.field_597, local_q.field_598);
+      return out;
+    }
+    finally
+    {
+      localStack.pop$javax$vecmath$Quat4f();
+    }
+  }
+  
+  public static void inverse(Quat4f local_q)
+  {
+    local_q.field_596 = (-local_q.field_596);
+    local_q.field_597 = (-local_q.field_597);
+    local_q.field_598 = (-local_q.field_598);
+  }
+  
+  public static void inverse(Quat4f local_q, Quat4f src)
+  {
+    local_q.field_596 = (-src.field_596);
+    local_q.field_597 = (-src.field_597);
+    local_q.field_598 = (-src.field_598);
+    local_q.field_599 = src.field_599;
+  }
+  
+  public static void setEuler(Quat4f local_q, float yaw, float pitch, float roll)
+  {
+    float halfYaw = yaw * 0.5F;
+    float halfPitch = pitch * 0.5F;
+    float halfRoll = roll * 0.5F;
+    float cosYaw = (float)Math.cos(halfYaw);
+    float sinYaw = (float)Math.sin(halfYaw);
+    float cosPitch = (float)Math.cos(halfPitch);
+    float sinPitch = (float)Math.sin(halfPitch);
+    float cosRoll = (float)Math.cos(halfRoll);
+    float sinRoll = (float)Math.sin(halfRoll);
+    local_q.field_596 = (cosRoll * sinPitch * cosYaw + sinRoll * cosPitch * sinYaw);
+    local_q.field_597 = (cosRoll * cosPitch * sinYaw - sinRoll * sinPitch * cosYaw);
+    local_q.field_598 = (sinRoll * cosPitch * cosYaw - cosRoll * sinPitch * sinYaw);
+    local_q.field_599 = (cosRoll * cosPitch * cosYaw + sinRoll * sinPitch * sinYaw);
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     com.bulletphysics.linearmath.QuaternionUtil
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

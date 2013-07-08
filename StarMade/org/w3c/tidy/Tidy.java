@@ -33,7 +33,7 @@ public class Tidy
   {
     TagTable localTagTable = new TagTable();
     localTagTable.setConfiguration(this.configuration);
-    this.configuration.tt = localTagTable;
+    this.configuration.field_1881 = localTagTable;
     this.configuration.errfile = null;
     this.stderr = new PrintWriter(System.err, true);
     this.errout = this.stderr;
@@ -214,7 +214,7 @@ public class Tidy
         }
         return null;
       }
-      localObject = new Clean(this.configuration.tt);
+      localObject = new Clean(this.configuration.field_1881);
       ((Clean)localObject).nestedEmphasis(localNode1);
       ((Clean)localObject).list2BQ(localNode1);
       ((Clean)localObject).bQ2Div(localNode1);
@@ -282,7 +282,7 @@ public class Tidy
         } else {
           localLexer.fixDocType(localNode1);
         }
-        localObject = localNode1.findBody(this.configuration.tt);
+        localObject = localNode1.findBody(this.configuration.field_1881);
         if (localObject != null)
         {
           localPPrint = new PPrint(this.configuration);
@@ -1263,7 +1263,7 @@ public class Tidy
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.w3c.tidy.Tidy
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

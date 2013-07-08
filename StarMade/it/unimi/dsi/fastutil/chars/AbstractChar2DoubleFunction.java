@@ -1,57 +1,68 @@
-/*   1:    */package it.unimi.dsi.fastutil.chars;
-/*   2:    */
-/*   3:    */import java.io.Serializable;
-/*   4:    */
-/*  64:    */public abstract class AbstractChar2DoubleFunction
-/*  65:    */  implements Char2DoubleFunction, Serializable
-/*  66:    */{
-/*  67:    */  public static final long serialVersionUID = -4940583368468432370L;
-/*  68:    */  protected double defRetValue;
-/*  69:    */  
-/*  70:    */  public void defaultReturnValue(double rv)
-/*  71:    */  {
-/*  72: 72 */    this.defRetValue = rv;
-/*  73:    */  }
-/*  74:    */  
-/*  75: 75 */  public double defaultReturnValue() { return this.defRetValue; }
-/*  76:    */  
-/*  77:    */  public double put(char key, double value) {
-/*  78: 78 */    throw new UnsupportedOperationException();
-/*  79:    */  }
-/*  80:    */  
-/*  81: 81 */  public double remove(char key) { throw new UnsupportedOperationException(); }
-/*  82:    */  
-/*  83:    */  public void clear() {
-/*  84: 84 */    throw new UnsupportedOperationException();
-/*  85:    */  }
-/*  86:    */  
-/*  87: 87 */  public boolean containsKey(Object ok) { return containsKey(((Character)ok).charValue()); }
-/*  88:    */  
-/*  93:    */  public Double get(Object ok)
-/*  94:    */  {
-/*  95: 95 */    char k = ((Character)ok).charValue();
-/*  96: 96 */    return containsKey(k) ? Double.valueOf(get(k)) : null;
-/*  97:    */  }
-/*  98:    */  
-/* 102:    */  public Double put(Character ok, Double ov)
-/* 103:    */  {
-/* 104:104 */    char k = ok.charValue();
-/* 105:105 */    boolean containsKey = containsKey(k);
-/* 106:106 */    double v = put(k, ov.doubleValue());
-/* 107:107 */    return containsKey ? Double.valueOf(v) : null;
-/* 108:    */  }
-/* 109:    */  
-/* 113:    */  public Double remove(Object ok)
-/* 114:    */  {
-/* 115:115 */    char k = ((Character)ok).charValue();
-/* 116:116 */    boolean containsKey = containsKey(k);
-/* 117:117 */    double v = remove(k);
-/* 118:118 */    return containsKey ? Double.valueOf(v) : null;
-/* 119:    */  }
-/* 120:    */}
+package it.unimi.dsi.fastutil.chars;
+
+import java.io.Serializable;
+
+public abstract class AbstractChar2DoubleFunction
+  implements Char2DoubleFunction, Serializable
+{
+  public static final long serialVersionUID = -4940583368468432370L;
+  protected double defRetValue;
+  
+  public void defaultReturnValue(double local_rv)
+  {
+    this.defRetValue = local_rv;
+  }
+  
+  public double defaultReturnValue()
+  {
+    return this.defRetValue;
+  }
+  
+  public double put(char key, double value)
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  public double remove(char key)
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  public void clear()
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  public boolean containsKey(Object local_ok)
+  {
+    return containsKey(((Character)local_ok).charValue());
+  }
+  
+  public Double get(Object local_ok)
+  {
+    char local_k = ((Character)local_ok).charValue();
+    return containsKey(local_k) ? Double.valueOf(get(local_k)) : null;
+  }
+  
+  public Double put(Character local_ok, Double local_ov)
+  {
+    char local_k = local_ok.charValue();
+    boolean containsKey = containsKey(local_k);
+    double local_v = put(local_k, local_ov.doubleValue());
+    return containsKey ? Double.valueOf(local_v) : null;
+  }
+  
+  public Double remove(Object local_ok)
+  {
+    char local_k = ((Character)local_ok).charValue();
+    boolean containsKey = containsKey(local_k);
+    double local_v = remove(local_k);
+    return containsKey ? Double.valueOf(local_v) : null;
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.chars.AbstractChar2DoubleFunction
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

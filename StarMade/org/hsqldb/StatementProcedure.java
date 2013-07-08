@@ -141,7 +141,7 @@ public class StatementProcedure
       }
     }
     Result localResult2 = localResult1;
-    localResult1 = Result.newCallResponse(getParametersMetaData().getParameterTypes(), this.id, paramSession.sessionContext.dynamicArguments);
+    localResult1 = Result.newCallResponse(getParametersMetaData().getParameterTypes(), this.field_2142, paramSession.sessionContext.dynamicArguments);
     if (this.procedure.returnsTable())
     {
       localResult1.addChainedResult(localResult2);
@@ -281,7 +281,7 @@ public class StatementProcedure
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.StatementProcedure
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -1,100 +1,129 @@
-/*   1:    */package it.unimi.dsi.fastutil.objects;
-/*   2:    */
-/*   3:    */import java.lang.reflect.Array;
-/*   4:    */import java.util.AbstractCollection;
-/*   5:    */import java.util.Collection;
-/*   6:    */import java.util.Iterator;
-/*   7:    */
-/*  49:    */public abstract class AbstractReferenceCollection<K>
-/*  50:    */  extends AbstractCollection<K>
-/*  51:    */  implements ReferenceCollection<K>
-/*  52:    */{
-/*  53:    */  public Object[] toArray()
-/*  54:    */  {
-/*  55: 55 */    Object[] a = new Object[size()];
-/*  56: 56 */    ObjectIterators.unwrap(iterator(), a);
-/*  57: 57 */    return a;
-/*  58:    */  }
-/*  59:    */  
-/*  60:    */  public <T> T[] toArray(T[] a) {
-/*  61: 61 */    if (a.length < size()) a = (Object[])Array.newInstance(a.getClass().getComponentType(), size());
-/*  62: 62 */    ObjectIterators.unwrap(iterator(), a);
-/*  63: 63 */    return a;
-/*  64:    */  }
-/*  65:    */  
-/*  69:    */  public boolean addAll(Collection<? extends K> c)
-/*  70:    */  {
-/*  71: 71 */    boolean retVal = false;
-/*  72: 72 */    Iterator<? extends K> i = c.iterator();
-/*  73: 73 */    int n = c.size();
-/*  74: 74 */    while (n-- != 0) if (add(i.next())) retVal = true;
-/*  75: 75 */    return retVal;
-/*  76:    */  }
-/*  77:    */  
-/*  78: 78 */  public boolean add(K k) { throw new UnsupportedOperationException(); }
-/*  79:    */  
-/*  80:    */  @Deprecated
-/*  81:    */  public ObjectIterator<K> objectIterator()
-/*  82:    */  {
-/*  83: 83 */    return iterator();
-/*  84:    */  }
-/*  85:    */  
-/*  87:    */  public abstract ObjectIterator<K> iterator();
-/*  88:    */  
-/*  90:    */  public boolean containsAll(Collection<?> c)
-/*  91:    */  {
-/*  92: 92 */    int n = c.size();
-/*  93: 93 */    Iterator<?> i = c.iterator();
-/*  94: 94 */    while (n-- != 0) if (!contains(i.next())) return false;
-/*  95: 95 */    return true;
-/*  96:    */  }
-/*  97:    */  
-/* 101:    */  public boolean retainAll(Collection<?> c)
-/* 102:    */  {
-/* 103:103 */    boolean retVal = false;
-/* 104:104 */    int n = size();
-/* 105:105 */    Iterator<?> i = iterator();
-/* 106:106 */    while (n-- != 0) {
-/* 107:107 */      if (!c.contains(i.next())) {
-/* 108:108 */        i.remove();
-/* 109:109 */        retVal = true;
-/* 110:    */      }
-/* 111:    */    }
-/* 112:112 */    return retVal;
-/* 113:    */  }
-/* 114:    */  
-/* 119:    */  public boolean removeAll(Collection<?> c)
-/* 120:    */  {
-/* 121:121 */    boolean retVal = false;
-/* 122:122 */    int n = c.size();
-/* 123:123 */    Iterator<?> i = c.iterator();
-/* 124:124 */    while (n-- != 0) if (remove(i.next())) retVal = true;
-/* 125:125 */    return retVal;
-/* 126:    */  }
-/* 127:    */  
-/* 128:128 */  public boolean isEmpty() { return size() == 0; }
-/* 129:    */  
-/* 130:    */  public String toString() {
-/* 131:131 */    StringBuilder s = new StringBuilder();
-/* 132:132 */    ObjectIterator<K> i = iterator();
-/* 133:133 */    int n = size();
-/* 134:    */    
-/* 135:135 */    boolean first = true;
-/* 136:136 */    s.append("{");
-/* 137:137 */    while (n-- != 0) {
-/* 138:138 */      if (first) first = false; else
-/* 139:139 */        s.append(", ");
-/* 140:140 */      Object k = i.next();
-/* 141:141 */      if (this == k) s.append("(this collection)"); else
-/* 142:142 */        s.append(String.valueOf(k));
-/* 143:    */    }
-/* 144:144 */    s.append("}");
-/* 145:145 */    return s.toString();
-/* 146:    */  }
-/* 147:    */}
+package it.unimi.dsi.fastutil.objects;
+
+import java.lang.reflect.Array;
+import java.util.AbstractCollection;
+import java.util.Collection;
+import java.util.Iterator;
+
+public abstract class AbstractReferenceCollection<K>
+  extends AbstractCollection<K>
+  implements ReferenceCollection<K>
+{
+  public Object[] toArray()
+  {
+    Object[] local_a = new Object[size()];
+    ObjectIterators.unwrap(iterator(), local_a);
+    return local_a;
+  }
+  
+  public <T> T[] toArray(T[] local_a)
+  {
+    if (local_a.length < size()) {
+      local_a = (Object[])Array.newInstance(local_a.getClass().getComponentType(), size());
+    }
+    ObjectIterators.unwrap(iterator(), local_a);
+    return local_a;
+  }
+  
+  public boolean addAll(Collection<? extends K> local_c)
+  {
+    boolean retVal = false;
+    Iterator<? extends K> local_i = local_c.iterator();
+    int local_n = local_c.size();
+    while (local_n-- != 0) {
+      if (add(local_i.next())) {
+        retVal = true;
+      }
+    }
+    return retVal;
+  }
+  
+  public boolean add(K local_k)
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  @Deprecated
+  public ObjectIterator<K> objectIterator()
+  {
+    return iterator();
+  }
+  
+  public abstract ObjectIterator<K> iterator();
+  
+  public boolean containsAll(Collection<?> local_c)
+  {
+    int local_n = local_c.size();
+    Iterator<?> local_i = local_c.iterator();
+    while (local_n-- != 0) {
+      if (!contains(local_i.next())) {
+        return false;
+      }
+    }
+    return true;
+  }
+  
+  public boolean retainAll(Collection<?> local_c)
+  {
+    boolean retVal = false;
+    int local_n = size();
+    Iterator<?> local_i = iterator();
+    while (local_n-- != 0) {
+      if (!local_c.contains(local_i.next()))
+      {
+        local_i.remove();
+        retVal = true;
+      }
+    }
+    return retVal;
+  }
+  
+  public boolean removeAll(Collection<?> local_c)
+  {
+    boolean retVal = false;
+    int local_n = local_c.size();
+    Iterator<?> local_i = local_c.iterator();
+    while (local_n-- != 0) {
+      if (remove(local_i.next())) {
+        retVal = true;
+      }
+    }
+    return retVal;
+  }
+  
+  public boolean isEmpty()
+  {
+    return size() == 0;
+  }
+  
+  public String toString()
+  {
+    StringBuilder local_s = new StringBuilder();
+    ObjectIterator<K> local_i = iterator();
+    int local_n = size();
+    boolean first = true;
+    local_s.append("{");
+    while (local_n-- != 0)
+    {
+      if (first) {
+        first = false;
+      } else {
+        local_s.append(", ");
+      }
+      Object local_k = local_i.next();
+      if (this == local_k) {
+        local_s.append("(this collection)");
+      } else {
+        local_s.append(String.valueOf(local_k));
+      }
+    }
+    local_s.append("}");
+    return local_s.toString();
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.objects.AbstractReferenceCollection
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

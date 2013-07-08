@@ -76,7 +76,7 @@ public class AuthBeanMultiplexer
   public void setAuthFunctionBeans(String paramString, List<AuthFunctionBean> paramList)
   {
     if ((paramString == null) || (paramString.length() != 16)) {
-      throw new IllegalArgumentException(new StringBuilder().append("Database name not exactly 16 characters long: ").append(paramString).toString());
+      throw new IllegalArgumentException("Database name not exactly 16 characters long: " + paramString);
     }
     Object localObject = (List)beans.get(paramString);
     if (localObject == null)
@@ -106,13 +106,13 @@ public class AuthBeanMultiplexer
     throws Exception
   {
     if ((paramString1 == null) || (paramString1.length() != 16)) {
-      throw new IllegalStateException(new StringBuilder().append("Internal problem.  Database name not exactly 16 characters long: ").append(paramString1).toString());
+      throw new IllegalStateException("Internal problem.  Database name not exactly 16 characters long: " + paramString1);
     }
     List localList = (List)beans.get(paramString1);
     if (localList == null)
     {
-      logger.error(new StringBuilder().append("Database '").append(paramString1).append("' has not been set up with ").append(AuthBeanMultiplexer.class.getName()).toString());
-      throw new IllegalArgumentException(new StringBuilder().append("Database '").append(paramString1).append("' has not been set up with ").append(AuthBeanMultiplexer.class.getName()).toString());
+      logger.error("Database '" + paramString1 + "' has not been set up with " + AuthBeanMultiplexer.class.getName());
+      throw new IllegalArgumentException("Database '" + paramString1 + "' has not been set up with " + AuthBeanMultiplexer.class.getName());
     }
     Object localObject = null;
     Iterator localIterator = localList.iterator();
@@ -129,7 +129,7 @@ public class AuthBeanMultiplexer
         if (localObject == null) {
           localObject = localRuntimeException;
         }
-        logger.error(new StringBuilder().append("System failure of an AuthFunctionBean: ").append(localRuntimeException.getMessage() == null ? localRuntimeException.toString() : localRuntimeException.getMessage()).toString());
+        logger.error("System failure of an AuthFunctionBean: " + (localRuntimeException.getMessage() == null ? localRuntimeException.toString() : localRuntimeException.getMessage()));
       }
       catch (Exception localException)
       {
@@ -141,7 +141,7 @@ public class AuthBeanMultiplexer
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.auth.AuthBeanMultiplexer
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

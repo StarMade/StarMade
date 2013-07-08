@@ -15,7 +15,7 @@ final class ScaledRAFileInJar
   long fileLength;
   boolean bufferDirty = true;
   byte[] buffer = new byte[4096];
-  HsqlByteArrayInputStream ba = new HsqlByteArrayInputStream(this.buffer);
+  HsqlByteArrayInputStream field_80 = new HsqlByteArrayInputStream(this.buffer);
   long bufferOffset;
   long seekPosition;
   long realPosition;
@@ -74,9 +74,9 @@ final class ScaledRAFileInJar
     if ((this.bufferDirty) || (this.seekPosition < this.bufferOffset) || (this.seekPosition >= this.bufferOffset + this.buffer.length)) {
       readIntoBuffer();
     }
-    this.ba.reset();
-    this.ba.skip(this.seekPosition - this.bufferOffset);
-    int i = this.ba.read();
+    this.field_80.reset();
+    this.field_80.skip(this.seekPosition - this.bufferOffset);
+    int i = this.field_80.read();
     this.seekPosition += 1L;
     return i;
   }
@@ -95,9 +95,9 @@ final class ScaledRAFileInJar
     if ((this.bufferDirty) || (this.seekPosition < this.bufferOffset) || (this.seekPosition >= this.bufferOffset + this.buffer.length)) {
       readIntoBuffer();
     }
-    this.ba.reset();
-    this.ba.skip(this.seekPosition - this.bufferOffset);
-    int i = this.ba.readInt();
+    this.field_80.reset();
+    this.field_80.skip(this.seekPosition - this.bufferOffset);
+    int i = this.field_80.readInt();
     this.seekPosition += 4L;
     return i;
   }
@@ -108,9 +108,9 @@ final class ScaledRAFileInJar
     if ((this.bufferDirty) || (this.seekPosition < this.bufferOffset) || (this.seekPosition >= this.bufferOffset + this.buffer.length)) {
       readIntoBuffer();
     }
-    this.ba.reset();
-    this.ba.skip(this.seekPosition - this.bufferOffset);
-    int i = this.ba.read(paramArrayOfByte, paramInt1, paramInt2);
+    this.field_80.reset();
+    this.field_80.skip(this.seekPosition - this.bufferOffset);
+    int i = this.field_80.read(paramArrayOfByte, paramInt1, paramInt2);
     this.seekPosition += i;
     if (i < paramInt2)
     {
@@ -213,7 +213,7 @@ final class ScaledRAFileInJar
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.persist.ScaledRAFileInJar
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

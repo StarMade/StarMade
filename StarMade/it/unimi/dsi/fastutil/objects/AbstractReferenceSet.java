@@ -1,39 +1,49 @@
-/*  1:   */package it.unimi.dsi.fastutil.objects;
-/*  2:   */
-/*  3:   */import java.util.Set;
-/*  4:   */
-/* 42:   */public abstract class AbstractReferenceSet<K>
-/* 43:   */  extends AbstractReferenceCollection<K>
-/* 44:   */  implements Cloneable, ReferenceSet<K>
-/* 45:   */{
-/* 46:   */  public abstract ObjectIterator<K> iterator();
-/* 47:   */  
-/* 48:   */  public boolean equals(Object o)
-/* 49:   */  {
-/* 50:50 */    if (o == this) return true;
-/* 51:51 */    if (!(o instanceof Set)) return false;
-/* 52:52 */    Set<?> s = (Set)o;
-/* 53:53 */    if (s.size() != size()) return false;
-/* 54:54 */    return containsAll(s);
-/* 55:   */  }
-/* 56:   */  
-/* 62:   */  public int hashCode()
-/* 63:   */  {
-/* 64:64 */    int h = 0;int n = size();
-/* 65:65 */    ObjectIterator<K> i = iterator();
-/* 66:   */    
-/* 67:67 */    while (n-- != 0) {
-/* 68:68 */      K k = i.next();
-/* 69:69 */      h += (k == null ? 0 : System.identityHashCode(k));
-/* 70:   */    }
-/* 71:71 */    return h;
-/* 72:   */  }
-/* 73:   */  
-/* 74:74 */  public boolean remove(Object k) { throw new UnsupportedOperationException(); }
-/* 75:   */}
+package it.unimi.dsi.fastutil.objects;
+
+import java.util.Set;
+
+public abstract class AbstractReferenceSet<K>
+  extends AbstractReferenceCollection<K>
+  implements Cloneable, ReferenceSet<K>
+{
+  public abstract ObjectIterator<K> iterator();
+  
+  public boolean equals(Object local_o)
+  {
+    if (local_o == this) {
+      return true;
+    }
+    if (!(local_o instanceof Set)) {
+      return false;
+    }
+    Set<?> local_s = (Set)local_o;
+    if (local_s.size() != size()) {
+      return false;
+    }
+    return containsAll(local_s);
+  }
+  
+  public int hashCode()
+  {
+    int local_h = 0;
+    int local_n = size();
+    ObjectIterator<K> local_i = iterator();
+    while (local_n-- != 0)
+    {
+      K local_k = local_i.next();
+      local_h += (local_k == null ? 0 : System.identityHashCode(local_k));
+    }
+    return local_h;
+  }
+  
+  public boolean remove(Object local_k)
+  {
+    throw new UnsupportedOperationException();
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.objects.AbstractReferenceSet
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

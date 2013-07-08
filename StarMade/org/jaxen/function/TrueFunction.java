@@ -1,32 +1,30 @@
-/*   1:    */package org.jaxen.function;
-/*   2:    */
-/*   3:    */import java.util.List;
-/*   4:    */import org.jaxen.Context;
-/*   5:    */import org.jaxen.Function;
-/*   6:    */import org.jaxen.FunctionCallException;
-/*   7:    */
-/*  81:    */public class TrueFunction
-/*  82:    */  implements Function
-/*  83:    */{
-/*  84:    */  public Object call(Context context, List args)
-/*  85:    */    throws FunctionCallException
-/*  86:    */  {
-/*  87: 87 */    if (args.size() == 0)
-/*  88:    */    {
-/*  89: 89 */      return evaluate();
-/*  90:    */    }
-/*  91:    */    
-/*  92: 92 */    throw new FunctionCallException("true() requires no arguments.");
-/*  93:    */  }
-/*  94:    */  
-/* 100:    */  public static Boolean evaluate()
-/* 101:    */  {
-/* 102:102 */    return Boolean.TRUE;
-/* 103:    */  }
-/* 104:    */}
+package org.jaxen.function;
+
+import java.util.List;
+import org.jaxen.Context;
+import org.jaxen.Function;
+import org.jaxen.FunctionCallException;
+
+public class TrueFunction
+  implements Function
+{
+  public Object call(Context context, List args)
+    throws FunctionCallException
+  {
+    if (args.size() == 0) {
+      return evaluate();
+    }
+    throw new FunctionCallException("true() requires no arguments.");
+  }
+  
+  public static Boolean evaluate()
+  {
+    return Boolean.TRUE;
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.jaxen.function.TrueFunction
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

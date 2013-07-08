@@ -1,55 +1,144 @@
-/*  1:   */package it.unimi.dsi.fastutil.chars;
-/*  2:   */
-/* 14:   */public class CharPriorityQueues
-/* 15:   */{
-/* 16:   */  public static class SynchronizedPriorityQueue
-/* 17:   */    implements CharPriorityQueue
-/* 18:   */  {
-/* 19:   */    public static final long serialVersionUID = -7046029254386353129L;
-/* 20:   */    
-/* 31:   */    protected final CharPriorityQueue q;
-/* 32:   */    
-/* 43:   */    protected final Object sync;
-/* 44:   */    
-/* 55:   */    protected SynchronizedPriorityQueue(CharPriorityQueue q, Object sync)
-/* 56:   */    {
-/* 57:57 */      this.q = q;
-/* 58:58 */      this.sync = sync;
-/* 59:   */    }
-/* 60:   */    
-/* 61:61 */    protected SynchronizedPriorityQueue(CharPriorityQueue q) { this.q = q;
-/* 62:62 */      this.sync = this; }
-/* 63:   */    
-/* 64:64 */    public void enqueue(char x) { synchronized (this.sync) { this.q.enqueue(x); } }
-/* 65:65 */    public char dequeueChar() { synchronized (this.sync) { return this.q.dequeueChar(); } }
-/* 66:66 */    public char firstChar() { synchronized (this.sync) { return this.q.firstChar(); } }
-/* 67:67 */    public char lastChar() { synchronized (this.sync) { return this.q.lastChar(); } }
-/* 68:68 */    public boolean isEmpty() { synchronized (this.sync) { return this.q.isEmpty(); } }
-/* 69:69 */    public int size() { synchronized (this.sync) { return this.q.size(); } }
-/* 70:70 */    public void clear() { synchronized (this.sync) { this.q.clear(); } }
-/* 71:71 */    public void changed() { synchronized (this.sync) { this.q.changed(); } }
-/* 72:72 */    public CharComparator comparator() { synchronized (this.sync) { return this.q.comparator(); } }
-/* 73:73 */    public void enqueue(Character x) { synchronized (this.sync) { this.q.enqueue(x); } }
-/* 74:74 */    public Character dequeue() { synchronized (this.sync) { return (Character)this.q.dequeue(); } }
-/* 75:75 */    public Character first() { synchronized (this.sync) { return (Character)this.q.first(); } }
-/* 76:76 */    public Character last() { synchronized (this.sync) { return (Character)this.q.last();
-/* 77:   */      }
-/* 78:   */    }
-/* 79:   */  }
-/* 80:   */  
-/* 81:   */  public static CharPriorityQueue synchronize(CharPriorityQueue q)
-/* 82:   */  {
-/* 83:83 */    return new SynchronizedPriorityQueue(q);
-/* 84:   */  }
-/* 85:   */  
-/* 88:   */  public static CharPriorityQueue synchronize(CharPriorityQueue q, Object sync)
-/* 89:   */  {
-/* 90:90 */    return new SynchronizedPriorityQueue(q, sync);
-/* 91:   */  }
-/* 92:   */}
+package it.unimi.dsi.fastutil.chars;
+
+public class CharPriorityQueues
+{
+  public static CharPriorityQueue synchronize(CharPriorityQueue local_q)
+  {
+    return new SynchronizedPriorityQueue(local_q);
+  }
+  
+  public static CharPriorityQueue synchronize(CharPriorityQueue local_q, Object sync)
+  {
+    return new SynchronizedPriorityQueue(local_q, sync);
+  }
+  
+  public static class SynchronizedPriorityQueue
+    implements CharPriorityQueue
+  {
+    public static final long serialVersionUID = -7046029254386353129L;
+    protected final CharPriorityQueue field_62;
+    protected final Object sync;
+    
+    protected SynchronizedPriorityQueue(CharPriorityQueue local_q, Object sync)
+    {
+      this.field_62 = local_q;
+      this.sync = sync;
+    }
+    
+    protected SynchronizedPriorityQueue(CharPriorityQueue local_q)
+    {
+      this.field_62 = local_q;
+      this.sync = this;
+    }
+    
+    public void enqueue(char local_x)
+    {
+      synchronized (this.sync)
+      {
+        this.field_62.enqueue(local_x);
+      }
+    }
+    
+    public char dequeueChar()
+    {
+      synchronized (this.sync)
+      {
+        return this.field_62.dequeueChar();
+      }
+    }
+    
+    public char firstChar()
+    {
+      synchronized (this.sync)
+      {
+        return this.field_62.firstChar();
+      }
+    }
+    
+    public char lastChar()
+    {
+      synchronized (this.sync)
+      {
+        return this.field_62.lastChar();
+      }
+    }
+    
+    public boolean isEmpty()
+    {
+      synchronized (this.sync)
+      {
+        return this.field_62.isEmpty();
+      }
+    }
+    
+    public int size()
+    {
+      synchronized (this.sync)
+      {
+        return this.field_62.size();
+      }
+    }
+    
+    public void clear()
+    {
+      synchronized (this.sync)
+      {
+        this.field_62.clear();
+      }
+    }
+    
+    public void changed()
+    {
+      synchronized (this.sync)
+      {
+        this.field_62.changed();
+      }
+    }
+    
+    public CharComparator comparator()
+    {
+      synchronized (this.sync)
+      {
+        return this.field_62.comparator();
+      }
+    }
+    
+    public void enqueue(Character local_x)
+    {
+      synchronized (this.sync)
+      {
+        this.field_62.enqueue(local_x);
+      }
+    }
+    
+    public Character dequeue()
+    {
+      synchronized (this.sync)
+      {
+        return (Character)this.field_62.dequeue();
+      }
+    }
+    
+    public Character first()
+    {
+      synchronized (this.sync)
+      {
+        return (Character)this.field_62.first();
+      }
+    }
+    
+    public Character last()
+    {
+      synchronized (this.sync)
+      {
+        return (Character)this.field_62.last();
+      }
+    }
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.chars.CharPriorityQueues
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

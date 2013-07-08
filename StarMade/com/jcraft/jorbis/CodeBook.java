@@ -1,412 +1,511 @@
-/*   1:    */package com.jcraft.jorbis;
-/*   2:    */
-/*   3:    */import com.jcraft.jogg.Buffer;
-/*   4:    */
-/*  30:    */class CodeBook
-/*  31:    */{
-/*  32:    */  int dim;
-/*  33:    */  int entries;
-/*  34:    */  StaticCodeBook c;
-/*  35:    */  float[] valuelist;
-/*  36:    */  int[] codelist;
-/*  37:    */  DecodeAux decode_tree;
-/*  38:    */  private int[] t;
-/*  39:    */  
-/*  40:    */  int encode(int a, Buffer b)
-/*  41:    */  {
-/*  42: 42 */    b.write(this.codelist[a], this.c.lengthlist[a]);
-/*  43: 43 */    return this.c.lengthlist[a];
-/*  44:    */  }
-/*  45:    */  
-/*  60:    */  int errorv(float[] a)
-/*  61:    */  {
-/*  62: 62 */    int best = best(a, 1);
-/*  63: 63 */    for (int k = 0; k < this.dim; k++) {
-/*  64: 64 */      a[k] = this.valuelist[(best * this.dim + k)];
-/*  65:    */    }
-/*  66: 66 */    return best;
-/*  67:    */  }
-/*  68:    */  
-/*  69:    */  int encodev(int best, float[] a, Buffer b)
-/*  70:    */  {
-/*  71: 71 */    for (int k = 0; k < this.dim; k++) {
-/*  72: 72 */      a[k] = this.valuelist[(best * this.dim + k)];
-/*  73:    */    }
-/*  74: 74 */    return encode(best, b);
-/*  75:    */  }
-/*  76:    */  
-/*  78:    */  int encodevs(float[] a, Buffer b, int step, int addmul)
-/*  79:    */  {
-/*  80: 80 */    int best = besterror(a, step, addmul);
-/*  81: 81 */    return encode(best, b);
-/*  82:    */  }
-/*  83:    */  
-/*  84:    */  CodeBook()
-/*  85:    */  {
-/*  86: 34 */    this.c = new StaticCodeBook();
-/*  87:    */    
-/* 136: 84 */    this.t = new int[15];
-/* 137:    */  }
-/* 138:    */  
-/* 139: 87 */  synchronized int decodevs_add(float[] a, int offset, Buffer b, int n) { int step = n / this.dim;
-/* 140:    */    
-/* 143: 91 */    if (this.t.length < step) {
-/* 144: 92 */      this.t = new int[step];
-/* 145:    */    }
-/* 146:    */    
-/* 147: 95 */    for (int i = 0; i < step; i++) {
-/* 148: 96 */      int entry = decode(b);
-/* 149: 97 */      if (entry == -1)
-/* 150: 98 */        return -1;
-/* 151: 99 */      this.t[i] = (entry * this.dim);
-/* 152:    */    }
-/* 153:101 */    i = 0; for (int o = 0; i < this.dim; o += step) {
-/* 154:102 */      for (int j = 0; j < step; j++) {
-/* 155:103 */        a[(offset + o + j)] += this.valuelist[(this.t[j] + i)];
-/* 156:    */      }
-/* 157:101 */      i++;
-/* 158:    */    }
-/* 159:    */    
-/* 163:107 */    return 0;
-/* 164:    */  }
-/* 165:    */  
-/* 167:    */  int decodev_add(float[] a, int offset, Buffer b, int n)
-/* 168:    */  {
-/* 169:    */    int i;
-/* 170:114 */    if (this.dim > 8) {
-/* 171:115 */      for (i = 0; i < n;) {
-/* 172:116 */        int entry = decode(b);
-/* 173:117 */        if (entry == -1)
-/* 174:118 */          return -1;
-/* 175:119 */        t = entry * this.dim;
-/* 176:120 */        for (j = 0; j < this.dim;)
-/* 177:121 */          a[(offset + i++)] += this.valuelist[(t + j++)];
-/* 178:    */      }
-/* 179:    */    }
-/* 180:    */    int t;
-/* 181:    */    int j;
-/* 182:126 */    for (int i = 0; i < n;) {
-/* 183:127 */      int entry = decode(b);
-/* 184:128 */      if (entry == -1)
-/* 185:129 */        return -1;
-/* 186:130 */      int t = entry * this.dim;
-/* 187:131 */      int j = 0;
-/* 188:132 */      switch (this.dim) {
-/* 189:    */      case 8: 
-/* 190:134 */        a[(offset + i++)] += this.valuelist[(t + j++)];
-/* 191:    */      case 7: 
-/* 192:136 */        a[(offset + i++)] += this.valuelist[(t + j++)];
-/* 193:    */      case 6: 
-/* 194:138 */        a[(offset + i++)] += this.valuelist[(t + j++)];
-/* 195:    */      case 5: 
-/* 196:140 */        a[(offset + i++)] += this.valuelist[(t + j++)];
-/* 197:    */      case 4: 
-/* 198:142 */        a[(offset + i++)] += this.valuelist[(t + j++)];
-/* 199:    */      case 3: 
-/* 200:144 */        a[(offset + i++)] += this.valuelist[(t + j++)];
-/* 201:    */      case 2: 
-/* 202:146 */        a[(offset + i++)] += this.valuelist[(t + j++)];
-/* 203:    */      case 1: 
-/* 204:148 */        a[(offset + i++)] += this.valuelist[(t + j++)];
-/* 205:    */      }
-/* 206:    */      
-/* 207:    */    }
-/* 208:    */    
-/* 210:154 */    return 0;
-/* 211:    */  }
-/* 212:    */  
-/* 215:    */  int decodev_set(float[] a, int offset, Buffer b, int n)
-/* 216:    */  {
-/* 217:161 */    for (int i = 0; i < n;) {
-/* 218:162 */      int entry = decode(b);
-/* 219:163 */      if (entry == -1)
-/* 220:164 */        return -1;
-/* 221:165 */      t = entry * this.dim;
-/* 222:166 */      for (j = 0; j < this.dim;)
-/* 223:167 */        a[(offset + i++)] = this.valuelist[(t + j++)]; }
-/* 224:    */    int t;
-/* 225:    */    int j;
-/* 226:170 */    return 0;
-/* 227:    */  }
-/* 228:    */  
-/* 229:    */  int decodevv_add(float[][] a, int offset, int ch, Buffer b, int n)
-/* 230:    */  {
-/* 231:175 */    int chptr = 0;
-/* 232:    */    
-/* 233:177 */    for (int i = offset / ch; i < (offset + n) / ch;) {
-/* 234:178 */      int entry = decode(b);
-/* 235:179 */      if (entry == -1) {
-/* 236:180 */        return -1;
-/* 237:    */      }
-/* 238:182 */      int t = entry * this.dim;
-/* 239:183 */      for (int j = 0; j < this.dim; j++) {
-/* 240:184 */        a[(chptr++)][i] += this.valuelist[(t + j)];
-/* 241:185 */        if (chptr == ch) {
-/* 242:186 */          chptr = 0;
-/* 243:187 */          i++;
-/* 244:    */        }
-/* 245:    */      }
-/* 246:    */    }
-/* 247:191 */    return 0;
-/* 248:    */  }
-/* 249:    */  
-/* 264:    */  int decode(Buffer b)
-/* 265:    */  {
-/* 266:210 */    int ptr = 0;
-/* 267:211 */    DecodeAux t = this.decode_tree;
-/* 268:212 */    int lok = b.look(t.tabn);
-/* 269:    */    
-/* 270:214 */    if (lok >= 0) {
-/* 271:215 */      ptr = t.tab[lok];
-/* 272:216 */      b.adv(t.tabl[lok]);
-/* 273:217 */      if (ptr <= 0) {
-/* 274:218 */        return -ptr;
-/* 275:    */      }
-/* 276:    */    }
-/* 277:    */    do {
-/* 278:222 */      switch (b.read1()) {
-/* 279:    */      case 0: 
-/* 280:224 */        ptr = t.ptr0[ptr];
-/* 281:225 */        break;
-/* 282:    */      case 1: 
-/* 283:227 */        ptr = t.ptr1[ptr];
-/* 284:228 */        break;
-/* 285:    */      case -1: 
-/* 286:    */      default: 
-/* 287:231 */        return -1;
-/* 288:    */      }
-/* 289:    */      
-/* 290:234 */    } while (ptr > 0);
-/* 291:235 */    return -ptr;
-/* 292:    */  }
-/* 293:    */  
-/* 294:    */  int decodevs(float[] a, int index, Buffer b, int step, int addmul)
-/* 295:    */  {
-/* 296:240 */    int entry = decode(b);
-/* 297:241 */    if (entry == -1)
-/* 298:242 */      return -1;
-/* 299:243 */    switch (addmul) {
-/* 300:    */    case -1: 
-/* 301:245 */      int i = 0; for (int o = 0; i < this.dim; o += step) {
-/* 302:246 */        a[(index + o)] = this.valuelist[(entry * this.dim + i)];i++;
-/* 303:    */      }
-/* 304:247 */      break;
-/* 305:    */    case 0: 
-/* 306:249 */      int i = 0; for (int o = 0; i < this.dim; o += step) {
-/* 307:250 */        a[(index + o)] += this.valuelist[(entry * this.dim + i)];i++;
-/* 308:    */      }
-/* 309:251 */      break;
-/* 310:    */    case 1: 
-/* 311:253 */      int i = 0; for (int o = 0; i < this.dim; o += step) {
-/* 312:254 */        a[(index + o)] *= this.valuelist[(entry * this.dim + i)];i++;
-/* 313:    */      }
-/* 314:255 */      break;
-/* 315:    */    }
-/* 316:    */    
-/* 317:    */    
-/* 318:259 */    return entry;
-/* 319:    */  }
-/* 320:    */  
-/* 322:    */  int best(float[] a, int step)
-/* 323:    */  {
-/* 324:265 */    int besti = -1;
-/* 325:266 */    float best = 0.0F;
-/* 326:267 */    int e = 0;
-/* 327:268 */    for (int i = 0; i < this.entries; i++) {
-/* 328:269 */      if (this.c.lengthlist[i] > 0) {
-/* 329:270 */        float _this = dist(this.dim, this.valuelist, e, a, step);
-/* 330:271 */        if ((besti == -1) || (_this < best)) {
-/* 331:272 */          best = _this;
-/* 332:273 */          besti = i;
-/* 333:    */        }
-/* 334:    */      }
-/* 335:276 */      e += this.dim;
-/* 336:    */    }
-/* 337:278 */    return besti;
-/* 338:    */  }
-/* 339:    */  
-/* 341:    */  int besterror(float[] a, int step, int addmul)
-/* 342:    */  {
-/* 343:284 */    int best = best(a, step);
-/* 344:285 */    switch (addmul) {
-/* 345:    */    case 0: 
-/* 346:287 */      int i = 0; for (int o = 0; i < this.dim; o += step) {
-/* 347:288 */        a[o] -= this.valuelist[(best * this.dim + i)];i++;
-/* 348:    */      }
-/* 349:289 */      break;
-/* 350:    */    case 1: 
-/* 351:291 */      int i = 0; for (int o = 0; i < this.dim; o += step) {
-/* 352:292 */        float val = this.valuelist[(best * this.dim + i)];
-/* 353:293 */        if (val == 0.0F) {
-/* 354:294 */          a[o] = 0.0F;
-/* 355:    */        }
-/* 356:    */        else {
-/* 357:297 */          a[o] /= val;
-/* 358:    */        }
-/* 359:291 */        i++;
-/* 360:    */      }
-/* 361:    */    }
-/* 362:    */    
-/* 363:    */    
-/* 370:302 */    return best;
-/* 371:    */  }
-/* 372:    */  
-/* 375:    */  private static float dist(int el, float[] ref, int index, float[] b, int step)
-/* 376:    */  {
-/* 377:309 */    float acc = 0.0F;
-/* 378:310 */    for (int i = 0; i < el; i++) {
-/* 379:311 */      float val = ref[(index + i)] - b[(i * step)];
-/* 380:312 */      acc += val * val;
-/* 381:    */    }
-/* 382:314 */    return acc;
-/* 383:    */  }
-/* 384:    */  
-/* 385:    */  int init_decode(StaticCodeBook s) {
-/* 386:318 */    this.c = s;
-/* 387:319 */    this.entries = s.entries;
-/* 388:320 */    this.dim = s.dim;
-/* 389:321 */    this.valuelist = s.unquantize();
-/* 390:    */    
-/* 391:323 */    this.decode_tree = make_decode_tree();
-/* 392:324 */    if (this.decode_tree == null) {
-/* 393:325 */      clear();
-/* 394:326 */      return -1;
-/* 395:    */    }
-/* 396:328 */    return 0;
-/* 397:    */  }
-/* 398:    */  
-/* 401:    */  static int[] make_words(int[] l, int n)
-/* 402:    */  {
-/* 403:335 */    int[] marker = new int[33];
-/* 404:336 */    int[] r = new int[n];
-/* 405:    */    
-/* 406:338 */    for (int i = 0; i < n; i++) {
-/* 407:339 */      int length = l[i];
-/* 408:340 */      if (length > 0) {
-/* 409:341 */        int entry = marker[length];
-/* 410:    */        
-/* 417:349 */        if ((length < 32) && (entry >>> length != 0))
-/* 418:    */        {
-/* 420:352 */          return null;
-/* 421:    */        }
-/* 422:354 */        r[i] = entry;
-/* 423:    */        
-/* 427:359 */        for (int j = length; j > 0; j--) {
-/* 428:360 */          if ((marker[j] & 0x1) != 0)
-/* 429:    */          {
-/* 430:362 */            if (j == 1) {
-/* 431:363 */              marker[1] += 1;break;
-/* 432:    */            }
-/* 433:365 */            marker[j] = (marker[(j - 1)] << 1);
-/* 434:366 */            break;
-/* 435:    */          }
-/* 436:    */          
-/* 437:369 */          marker[j] += 1;
-/* 438:    */        }
-/* 439:    */        
-/* 444:376 */        for (int j = length + 1; j < 33; j++) {
-/* 445:377 */          if (marker[j] >>> 1 != entry) break;
-/* 446:378 */          entry = marker[j];
-/* 447:379 */          marker[j] = (marker[(j - 1)] << 1);
-/* 448:    */        }
-/* 449:    */      }
-/* 450:    */    }
-/* 451:    */    
-/* 458:390 */    for (int i = 0; i < n; i++) {
-/* 459:391 */      int temp = 0;
-/* 460:392 */      for (int j = 0; j < l[i]; j++) {
-/* 461:393 */        temp <<= 1;
-/* 462:394 */        temp |= r[i] >>> j & 0x1;
-/* 463:    */      }
-/* 464:396 */      r[i] = temp;
-/* 465:    */    }
-/* 466:    */    
-/* 467:399 */    return r;
-/* 468:    */  }
-/* 469:    */  
-/* 470:    */  DecodeAux make_decode_tree()
-/* 471:    */  {
-/* 472:404 */    int top = 0;
-/* 473:405 */    DecodeAux t = new DecodeAux();
-/* 474:406 */    int[] ptr0 = t.ptr0 = new int[this.entries * 2];
-/* 475:407 */    int[] ptr1 = t.ptr1 = new int[this.entries * 2];
-/* 476:408 */    int[] codelist = make_words(this.c.lengthlist, this.c.entries);
-/* 477:    */    
-/* 478:410 */    if (codelist == null)
-/* 479:411 */      return null;
-/* 480:412 */    t.aux = (this.entries * 2);
-/* 481:    */    
-/* 482:414 */    for (int i = 0; i < this.entries; i++) {
-/* 483:415 */      if (this.c.lengthlist[i] > 0) {
-/* 484:416 */        int ptr = 0;
-/* 485:    */        
-/* 486:418 */        for (int j = 0; j < this.c.lengthlist[i] - 1; j++) {
-/* 487:419 */          int bit = codelist[i] >>> j & 0x1;
-/* 488:420 */          if (bit == 0) {
-/* 489:421 */            if (ptr0[ptr] == 0) {
-/* 490:422 */              ptr0[ptr] = (++top);
-/* 491:    */            }
-/* 492:424 */            ptr = ptr0[ptr];
-/* 493:    */          }
-/* 494:    */          else {
-/* 495:427 */            if (ptr1[ptr] == 0) {
-/* 496:428 */              ptr1[ptr] = (++top);
-/* 497:    */            }
-/* 498:430 */            ptr = ptr1[ptr];
-/* 499:    */          }
-/* 500:    */        }
-/* 501:    */        
-/* 502:434 */        if ((codelist[i] >>> j & 0x1) == 0) {
-/* 503:435 */          ptr0[ptr] = (-i);
-/* 504:    */        }
-/* 505:    */        else {
-/* 506:438 */          ptr1[ptr] = (-i);
-/* 507:    */        }
-/* 508:    */      }
-/* 509:    */    }
-/* 510:    */    
-/* 512:444 */    t.tabn = (Util.ilog(this.entries) - 4);
-/* 513:    */    
-/* 514:446 */    if (t.tabn < 5)
-/* 515:447 */      t.tabn = 5;
-/* 516:448 */    int n = 1 << t.tabn;
-/* 517:449 */    t.tab = new int[n];
-/* 518:450 */    t.tabl = new int[n];
-/* 519:451 */    for (int i = 0; i < n; i++) {
-/* 520:452 */      int p = 0;
-/* 521:453 */      int j = 0;
-/* 522:454 */      for (j = 0; (j < t.tabn) && ((p > 0) || (j == 0)); j++) {
-/* 523:455 */        if ((i & 1 << j) != 0) {
-/* 524:456 */          p = ptr1[p];
-/* 525:    */        }
-/* 526:    */        else {
-/* 527:459 */          p = ptr0[p];
-/* 528:    */        }
-/* 529:    */      }
-/* 530:462 */      t.tab[i] = p;
-/* 531:463 */      t.tabl[i] = j;
-/* 532:    */    }
-/* 533:    */    
-/* 534:466 */    return t;
-/* 535:    */  }
-/* 536:    */  
-/* 537:    */  void clear() {}
-/* 538:    */  
-/* 539:    */  class DecodeAux
-/* 540:    */  {
-/* 541:    */    int[] tab;
-/* 542:    */    int[] tabl;
-/* 543:    */    int tabn;
-/* 544:    */    int[] ptr0;
-/* 545:    */    int[] ptr1;
-/* 546:    */    int aux;
-/* 547:    */    
-/* 548:    */    DecodeAux() {}
-/* 549:    */  }
-/* 550:    */}
+package com.jcraft.jorbis;
+
+import com.jcraft.jogg.Buffer;
+
+class CodeBook
+{
+  int dim;
+  int entries;
+  StaticCodeBook field_1691 = new StaticCodeBook();
+  float[] valuelist;
+  int[] codelist;
+  DecodeAux decode_tree;
+  private int[] field_1692 = new int[15];
+  
+  int encode(int paramInt, Buffer paramBuffer)
+  {
+    paramBuffer.write(this.codelist[paramInt], this.field_1691.lengthlist[paramInt]);
+    return this.field_1691.lengthlist[paramInt];
+  }
+  
+  int errorv(float[] paramArrayOfFloat)
+  {
+    int i = best(paramArrayOfFloat, 1);
+    for (int j = 0; j < this.dim; j++) {
+      paramArrayOfFloat[j] = this.valuelist[(i * this.dim + j)];
+    }
+    return i;
+  }
+  
+  int encodev(int paramInt, float[] paramArrayOfFloat, Buffer paramBuffer)
+  {
+    for (int i = 0; i < this.dim; i++) {
+      paramArrayOfFloat[i] = this.valuelist[(paramInt * this.dim + i)];
+    }
+    return encode(paramInt, paramBuffer);
+  }
+  
+  int encodevs(float[] paramArrayOfFloat, Buffer paramBuffer, int paramInt1, int paramInt2)
+  {
+    int i = besterror(paramArrayOfFloat, paramInt1, paramInt2);
+    return encode(i, paramBuffer);
+  }
+  
+  synchronized int decodevs_add(float[] paramArrayOfFloat, int paramInt1, Buffer paramBuffer, int paramInt2)
+  {
+    int i = paramInt2 / this.dim;
+    if (this.field_1692.length < i) {
+      this.field_1692 = new int[i];
+    }
+    for (int k = 0; k < i; k++)
+    {
+      int j = decode(paramBuffer);
+      if (j == -1) {
+        return -1;
+      }
+      this.field_1692[k] = (j * this.dim);
+    }
+    k = 0;
+    int n = 0;
+    while (k < this.dim)
+    {
+      for (int m = 0; m < i; m++) {
+        paramArrayOfFloat[(paramInt1 + n + m)] += this.valuelist[(this.field_1692[m] + k)];
+      }
+      k++;
+      n += i;
+    }
+    return 0;
+  }
+  
+  int decodev_add(float[] paramArrayOfFloat, int paramInt1, Buffer paramBuffer, int paramInt2)
+  {
+    int i;
+    int k;
+    int m;
+    int j;
+    if (this.dim > 8)
+    {
+      i = 0;
+      while (i < paramInt2)
+      {
+        k = decode(paramBuffer);
+        if (k == -1) {
+          return -1;
+        }
+        m = k * this.dim;
+        j = 0;
+        while (j < this.dim) {
+          paramArrayOfFloat[(paramInt1 + i++)] += this.valuelist[(m + j++)];
+        }
+      }
+    }
+    else
+    {
+      i = 0;
+      while (i < paramInt2)
+      {
+        k = decode(paramBuffer);
+        if (k == -1) {
+          return -1;
+        }
+        m = k * this.dim;
+        j = 0;
+        switch (this.dim)
+        {
+        case 8: 
+          paramArrayOfFloat[(paramInt1 + i++)] += this.valuelist[(m + j++)];
+        case 7: 
+          paramArrayOfFloat[(paramInt1 + i++)] += this.valuelist[(m + j++)];
+        case 6: 
+          paramArrayOfFloat[(paramInt1 + i++)] += this.valuelist[(m + j++)];
+        case 5: 
+          paramArrayOfFloat[(paramInt1 + i++)] += this.valuelist[(m + j++)];
+        case 4: 
+          paramArrayOfFloat[(paramInt1 + i++)] += this.valuelist[(m + j++)];
+        case 3: 
+          paramArrayOfFloat[(paramInt1 + i++)] += this.valuelist[(m + j++)];
+        case 2: 
+          paramArrayOfFloat[(paramInt1 + i++)] += this.valuelist[(m + j++)];
+        case 1: 
+          paramArrayOfFloat[(paramInt1 + i++)] += this.valuelist[(m + j++)];
+        }
+      }
+    }
+    return 0;
+  }
+  
+  int decodev_set(float[] paramArrayOfFloat, int paramInt1, Buffer paramBuffer, int paramInt2)
+  {
+    int i = 0;
+    while (i < paramInt2)
+    {
+      int k = decode(paramBuffer);
+      if (k == -1) {
+        return -1;
+      }
+      int m = k * this.dim;
+      int j = 0;
+      while (j < this.dim) {
+        paramArrayOfFloat[(paramInt1 + i++)] = this.valuelist[(m + j++)];
+      }
+    }
+    return 0;
+  }
+  
+  int decodevv_add(float[][] paramArrayOfFloat, int paramInt1, int paramInt2, Buffer paramBuffer, int paramInt3)
+  {
+    int m = 0;
+    int i = paramInt1 / paramInt2;
+    while (i < (paramInt1 + paramInt3) / paramInt2)
+    {
+      int k = decode(paramBuffer);
+      if (k == -1) {
+        return -1;
+      }
+      int n = k * this.dim;
+      for (int j = 0; j < this.dim; j++)
+      {
+        paramArrayOfFloat[(m++)][i] += this.valuelist[(n + j)];
+        if (m == paramInt2)
+        {
+          m = 0;
+          i++;
+        }
+      }
+    }
+    return 0;
+  }
+  
+  int decode(Buffer paramBuffer)
+  {
+    int i = 0;
+    DecodeAux localDecodeAux = this.decode_tree;
+    int j = paramBuffer.look(localDecodeAux.tabn);
+    if (j >= 0)
+    {
+      i = localDecodeAux.tab[j];
+      paramBuffer.adv(localDecodeAux.tabl[j]);
+      if (i <= 0) {
+        return -i;
+      }
+    }
+    do
+    {
+      switch (paramBuffer.read1())
+      {
+      case 0: 
+        i = localDecodeAux.ptr0[i];
+        break;
+      case 1: 
+        i = localDecodeAux.ptr1[i];
+        break;
+      case -1: 
+      default: 
+        return -1;
+      }
+    } while (i > 0);
+    return -i;
+  }
+  
+  int decodevs(float[] paramArrayOfFloat, int paramInt1, Buffer paramBuffer, int paramInt2, int paramInt3)
+  {
+    int i = decode(paramBuffer);
+    if (i == -1) {
+      return -1;
+    }
+    switch (paramInt3)
+    {
+    case -1: 
+      int j = 0;
+      int k = 0;
+      while (j < this.dim)
+      {
+        paramArrayOfFloat[(paramInt1 + k)] = this.valuelist[(i * this.dim + j)];
+        j++;
+        k += paramInt2;
+      }
+      break;
+    case 0: 
+      int m = 0;
+      int n = 0;
+      while (m < this.dim)
+      {
+        paramArrayOfFloat[(paramInt1 + n)] += this.valuelist[(i * this.dim + m)];
+        m++;
+        n += paramInt2;
+      }
+      break;
+    case 1: 
+      int i1 = 0;
+      int i2 = 0;
+      for (;;)
+      {
+        paramArrayOfFloat[(paramInt1 + i2)] *= this.valuelist[(i * this.dim + i1)];
+        i1++;
+        i2 += paramInt2;
+        if (i1 >= this.dim) {
+          break;
+        }
+      }
+    }
+    return i;
+  }
+  
+  int best(float[] paramArrayOfFloat, int paramInt)
+  {
+    EncodeAuxNearestMatch localEncodeAuxNearestMatch = this.field_1691.nearest_tree;
+    EncodeAuxThreshMatch localEncodeAuxThreshMatch = this.field_1691.thresh_tree;
+    int i = 0;
+    int m;
+    if (localEncodeAuxThreshMatch != null)
+    {
+      int j = 0;
+      m = 0;
+      n = paramInt * (this.dim - 1);
+      while (m < this.dim)
+      {
+        for (i1 = 0; i1 < localEncodeAuxThreshMatch.threshvals - 1; i1++) {
+          if (paramArrayOfFloat[n] < localEncodeAuxThreshMatch.quantthresh[i1]) {
+            break;
+          }
+        }
+        j = j * localEncodeAuxThreshMatch.quantvals + localEncodeAuxThreshMatch.quantmap[i1];
+        m++;
+        n -= paramInt;
+      }
+      if (this.field_1691.lengthlist[j] > 0) {
+        return j;
+      }
+    }
+    if (localEncodeAuxNearestMatch != null)
+    {
+      for (;;)
+      {
+        float f1 = 0.0F;
+        m = localEncodeAuxNearestMatch.field_1869[i];
+        n = localEncodeAuxNearestMatch.field_1870[i];
+        i1 = 0;
+        int i2 = 0;
+        while (i1 < this.dim)
+        {
+          f1 = (float)(f1 + (this.valuelist[(m + i1)] - this.valuelist[(n + i1)]) * (paramArrayOfFloat[i2] - (this.valuelist[(m + i1)] + this.valuelist[(n + i1)]) * 0.5D));
+          i1++;
+          i2 += paramInt;
+        }
+        if (f1 > 0.0D) {
+          i = -localEncodeAuxNearestMatch.ptr0[i];
+        } else {
+          i = -localEncodeAuxNearestMatch.ptr1[i];
+        }
+        if (i <= 0) {
+          break;
+        }
+      }
+      return -i;
+    }
+    int k = -1;
+    float f2 = 0.0F;
+    int n = 0;
+    for (int i1 = 0; i1 < this.entries; i1++)
+    {
+      if (this.field_1691.lengthlist[i1] > 0)
+      {
+        float f3 = dist(this.dim, this.valuelist, n, paramArrayOfFloat, paramInt);
+        if ((k == -1) || (f3 < f2))
+        {
+          f2 = f3;
+          k = i1;
+        }
+      }
+      n += this.dim;
+    }
+    return k;
+  }
+  
+  int besterror(float[] paramArrayOfFloat, int paramInt1, int paramInt2)
+  {
+    int i = best(paramArrayOfFloat, paramInt1);
+    switch (paramInt2)
+    {
+    case 0: 
+      int j = 0;
+      int k = 0;
+      while (j < this.dim)
+      {
+        paramArrayOfFloat[k] -= this.valuelist[(i * this.dim + j)];
+        j++;
+        k += paramInt1;
+      }
+      break;
+    case 1: 
+      int m = 0;
+      int n = 0;
+      while (m < this.dim)
+      {
+        float f = this.valuelist[(i * this.dim + m)];
+        if (f == 0.0F) {
+          paramArrayOfFloat[n] = 0.0F;
+        } else {
+          paramArrayOfFloat[n] /= f;
+        }
+        m++;
+        n += paramInt1;
+      }
+    }
+    return i;
+  }
+  
+  void clear() {}
+  
+  private static float dist(int paramInt1, float[] paramArrayOfFloat1, int paramInt2, float[] paramArrayOfFloat2, int paramInt3)
+  {
+    float f1 = 0.0F;
+    for (int i = 0; i < paramInt1; i++)
+    {
+      float f2 = paramArrayOfFloat1[(paramInt2 + i)] - paramArrayOfFloat2[(i * paramInt3)];
+      f1 += f2 * f2;
+    }
+    return f1;
+  }
+  
+  int init_decode(StaticCodeBook paramStaticCodeBook)
+  {
+    this.field_1691 = paramStaticCodeBook;
+    this.entries = paramStaticCodeBook.entries;
+    this.dim = paramStaticCodeBook.dim;
+    this.valuelist = paramStaticCodeBook.unquantize();
+    this.decode_tree = make_decode_tree();
+    if (this.decode_tree == null)
+    {
+      clear();
+      return -1;
+    }
+    return 0;
+  }
+  
+  static int[] make_words(int[] paramArrayOfInt, int paramInt)
+  {
+    int[] arrayOfInt1 = new int[33];
+    int[] arrayOfInt2 = new int[paramInt];
+    int k;
+    int m;
+    for (int i = 0; i < paramInt; i++)
+    {
+      j = paramArrayOfInt[i];
+      if (j > 0)
+      {
+        k = arrayOfInt1[j];
+        if ((j < 32) && (k >>> j != 0)) {
+          return null;
+        }
+        arrayOfInt2[i] = k;
+        for (m = j; m > 0; m--)
+        {
+          if ((arrayOfInt1[m] & 0x1) != 0)
+          {
+            if (m == 1)
+            {
+              arrayOfInt1[1] += 1;
+              break;
+            }
+            arrayOfInt1[m] = (arrayOfInt1[(m - 1)] << 1);
+            break;
+          }
+          arrayOfInt1[m] += 1;
+        }
+        for (m = j + 1; m < 33; m++)
+        {
+          if (arrayOfInt1[m] >>> 1 != k) {
+            break;
+          }
+          k = arrayOfInt1[m];
+          arrayOfInt1[m] = (arrayOfInt1[(m - 1)] << 1);
+        }
+      }
+    }
+    for (int j = 0; j < paramInt; j++)
+    {
+      k = 0;
+      for (m = 0; m < paramArrayOfInt[j]; m++)
+      {
+        k <<= 1;
+        k |= arrayOfInt2[j] >>> m & 0x1;
+      }
+      arrayOfInt2[j] = k;
+    }
+    return arrayOfInt2;
+  }
+  
+  DecodeAux make_decode_tree()
+  {
+    int i = 0;
+    DecodeAux localDecodeAux = new DecodeAux();
+    int[] arrayOfInt1 = localDecodeAux.ptr0 = new int[this.entries * 2];
+    int[] arrayOfInt2 = localDecodeAux.ptr1 = new int[this.entries * 2];
+    int[] arrayOfInt3 = make_words(this.field_1691.lengthlist, this.field_1691.entries);
+    if (arrayOfInt3 == null) {
+      return null;
+    }
+    localDecodeAux.aux = (this.entries * 2);
+    int n;
+    for (int j = 0; j < this.entries; j++) {
+      if (this.field_1691.lengthlist[j] > 0)
+      {
+        k = 0;
+        for (m = 0; m < this.field_1691.lengthlist[j] - 1; m++)
+        {
+          n = arrayOfInt3[j] >>> m & 0x1;
+          if (n == 0)
+          {
+            if (arrayOfInt1[k] == 0) {
+              arrayOfInt1[k] = (++i);
+            }
+            k = arrayOfInt1[k];
+          }
+          else
+          {
+            if (arrayOfInt2[k] == 0) {
+              arrayOfInt2[k] = (++i);
+            }
+            k = arrayOfInt2[k];
+          }
+        }
+        if ((arrayOfInt3[j] >>> m & 0x1) == 0) {
+          arrayOfInt1[k] = (-j);
+        } else {
+          arrayOfInt2[k] = (-j);
+        }
+      }
+    }
+    localDecodeAux.tabn = (ilog(this.entries) - 4);
+    if (localDecodeAux.tabn < 5) {
+      localDecodeAux.tabn = 5;
+    }
+    int k = 1 << localDecodeAux.tabn;
+    localDecodeAux.tab = new int[k];
+    localDecodeAux.tabl = new int[k];
+    for (int m = 0; m < k; m++)
+    {
+      n = 0;
+      int i1 = 0;
+      for (i1 = 0; (i1 < localDecodeAux.tabn) && ((n > 0) || (i1 == 0)); i1++) {
+        if ((m & 1 << i1) != 0) {
+          n = arrayOfInt2[n];
+        } else {
+          n = arrayOfInt1[n];
+        }
+      }
+      localDecodeAux.tab[m] = n;
+      localDecodeAux.tabl[m] = i1;
+    }
+    return localDecodeAux;
+  }
+  
+  private static int ilog(int paramInt)
+  {
+    int i = 0;
+    while (paramInt != 0)
+    {
+      i++;
+      paramInt >>>= 1;
+    }
+    return i;
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     com.jcraft.jorbis.CodeBook
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

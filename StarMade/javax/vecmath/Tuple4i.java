@@ -6,166 +6,166 @@ public abstract class Tuple4i
   implements Serializable, Cloneable
 {
   static final long serialVersionUID = 8064614250942616720L;
-  public int x;
-  public int y;
-  public int z;
-  public int w;
+  public int field_582;
+  public int field_583;
+  public int field_584;
+  public int field_585;
   
   public Tuple4i(int paramInt1, int paramInt2, int paramInt3, int paramInt4)
   {
-    this.x = paramInt1;
-    this.y = paramInt2;
-    this.z = paramInt3;
-    this.w = paramInt4;
+    this.field_582 = paramInt1;
+    this.field_583 = paramInt2;
+    this.field_584 = paramInt3;
+    this.field_585 = paramInt4;
   }
   
   public Tuple4i(int[] paramArrayOfInt)
   {
-    this.x = paramArrayOfInt[0];
-    this.y = paramArrayOfInt[1];
-    this.z = paramArrayOfInt[2];
-    this.w = paramArrayOfInt[3];
+    this.field_582 = paramArrayOfInt[0];
+    this.field_583 = paramArrayOfInt[1];
+    this.field_584 = paramArrayOfInt[2];
+    this.field_585 = paramArrayOfInt[3];
   }
   
   public Tuple4i(Tuple4i paramTuple4i)
   {
-    this.x = paramTuple4i.x;
-    this.y = paramTuple4i.y;
-    this.z = paramTuple4i.z;
-    this.w = paramTuple4i.w;
+    this.field_582 = paramTuple4i.field_582;
+    this.field_583 = paramTuple4i.field_583;
+    this.field_584 = paramTuple4i.field_584;
+    this.field_585 = paramTuple4i.field_585;
   }
   
   public Tuple4i()
   {
-    this.x = 0;
-    this.y = 0;
-    this.z = 0;
-    this.w = 0;
+    this.field_582 = 0;
+    this.field_583 = 0;
+    this.field_584 = 0;
+    this.field_585 = 0;
   }
   
   public final void set(int paramInt1, int paramInt2, int paramInt3, int paramInt4)
   {
-    this.x = paramInt1;
-    this.y = paramInt2;
-    this.z = paramInt3;
-    this.w = paramInt4;
+    this.field_582 = paramInt1;
+    this.field_583 = paramInt2;
+    this.field_584 = paramInt3;
+    this.field_585 = paramInt4;
   }
   
   public final void set(int[] paramArrayOfInt)
   {
-    this.x = paramArrayOfInt[0];
-    this.y = paramArrayOfInt[1];
-    this.z = paramArrayOfInt[2];
-    this.w = paramArrayOfInt[3];
+    this.field_582 = paramArrayOfInt[0];
+    this.field_583 = paramArrayOfInt[1];
+    this.field_584 = paramArrayOfInt[2];
+    this.field_585 = paramArrayOfInt[3];
   }
   
   public final void set(Tuple4i paramTuple4i)
   {
-    this.x = paramTuple4i.x;
-    this.y = paramTuple4i.y;
-    this.z = paramTuple4i.z;
-    this.w = paramTuple4i.w;
+    this.field_582 = paramTuple4i.field_582;
+    this.field_583 = paramTuple4i.field_583;
+    this.field_584 = paramTuple4i.field_584;
+    this.field_585 = paramTuple4i.field_585;
   }
   
   public final void get(int[] paramArrayOfInt)
   {
-    paramArrayOfInt[0] = this.x;
-    paramArrayOfInt[1] = this.y;
-    paramArrayOfInt[2] = this.z;
-    paramArrayOfInt[3] = this.w;
+    paramArrayOfInt[0] = this.field_582;
+    paramArrayOfInt[1] = this.field_583;
+    paramArrayOfInt[2] = this.field_584;
+    paramArrayOfInt[3] = this.field_585;
   }
   
   public final void get(Tuple4i paramTuple4i)
   {
-    paramTuple4i.x = this.x;
-    paramTuple4i.y = this.y;
-    paramTuple4i.z = this.z;
-    paramTuple4i.w = this.w;
+    paramTuple4i.field_582 = this.field_582;
+    paramTuple4i.field_583 = this.field_583;
+    paramTuple4i.field_584 = this.field_584;
+    paramTuple4i.field_585 = this.field_585;
   }
   
   public final void add(Tuple4i paramTuple4i1, Tuple4i paramTuple4i2)
   {
-    paramTuple4i1.x += paramTuple4i2.x;
-    paramTuple4i1.y += paramTuple4i2.y;
-    paramTuple4i1.z += paramTuple4i2.z;
-    paramTuple4i1.w += paramTuple4i2.w;
+    paramTuple4i1.field_582 += paramTuple4i2.field_582;
+    paramTuple4i1.field_583 += paramTuple4i2.field_583;
+    paramTuple4i1.field_584 += paramTuple4i2.field_584;
+    paramTuple4i1.field_585 += paramTuple4i2.field_585;
   }
   
   public final void add(Tuple4i paramTuple4i)
   {
-    this.x += paramTuple4i.x;
-    this.y += paramTuple4i.y;
-    this.z += paramTuple4i.z;
-    this.w += paramTuple4i.w;
+    this.field_582 += paramTuple4i.field_582;
+    this.field_583 += paramTuple4i.field_583;
+    this.field_584 += paramTuple4i.field_584;
+    this.field_585 += paramTuple4i.field_585;
   }
   
   public final void sub(Tuple4i paramTuple4i1, Tuple4i paramTuple4i2)
   {
-    paramTuple4i1.x -= paramTuple4i2.x;
-    paramTuple4i1.y -= paramTuple4i2.y;
-    paramTuple4i1.z -= paramTuple4i2.z;
-    paramTuple4i1.w -= paramTuple4i2.w;
+    paramTuple4i1.field_582 -= paramTuple4i2.field_582;
+    paramTuple4i1.field_583 -= paramTuple4i2.field_583;
+    paramTuple4i1.field_584 -= paramTuple4i2.field_584;
+    paramTuple4i1.field_585 -= paramTuple4i2.field_585;
   }
   
   public final void sub(Tuple4i paramTuple4i)
   {
-    this.x -= paramTuple4i.x;
-    this.y -= paramTuple4i.y;
-    this.z -= paramTuple4i.z;
-    this.w -= paramTuple4i.w;
+    this.field_582 -= paramTuple4i.field_582;
+    this.field_583 -= paramTuple4i.field_583;
+    this.field_584 -= paramTuple4i.field_584;
+    this.field_585 -= paramTuple4i.field_585;
   }
   
   public final void negate(Tuple4i paramTuple4i)
   {
-    this.x = (-paramTuple4i.x);
-    this.y = (-paramTuple4i.y);
-    this.z = (-paramTuple4i.z);
-    this.w = (-paramTuple4i.w);
+    this.field_582 = (-paramTuple4i.field_582);
+    this.field_583 = (-paramTuple4i.field_583);
+    this.field_584 = (-paramTuple4i.field_584);
+    this.field_585 = (-paramTuple4i.field_585);
   }
   
   public final void negate()
   {
-    this.x = (-this.x);
-    this.y = (-this.y);
-    this.z = (-this.z);
-    this.w = (-this.w);
+    this.field_582 = (-this.field_582);
+    this.field_583 = (-this.field_583);
+    this.field_584 = (-this.field_584);
+    this.field_585 = (-this.field_585);
   }
   
   public final void scale(int paramInt, Tuple4i paramTuple4i)
   {
-    this.x = (paramInt * paramTuple4i.x);
-    this.y = (paramInt * paramTuple4i.y);
-    this.z = (paramInt * paramTuple4i.z);
-    this.w = (paramInt * paramTuple4i.w);
+    this.field_582 = (paramInt * paramTuple4i.field_582);
+    this.field_583 = (paramInt * paramTuple4i.field_583);
+    this.field_584 = (paramInt * paramTuple4i.field_584);
+    this.field_585 = (paramInt * paramTuple4i.field_585);
   }
   
   public final void scale(int paramInt)
   {
-    this.x *= paramInt;
-    this.y *= paramInt;
-    this.z *= paramInt;
-    this.w *= paramInt;
+    this.field_582 *= paramInt;
+    this.field_583 *= paramInt;
+    this.field_584 *= paramInt;
+    this.field_585 *= paramInt;
   }
   
   public final void scaleAdd(int paramInt, Tuple4i paramTuple4i1, Tuple4i paramTuple4i2)
   {
-    this.x = (paramInt * paramTuple4i1.x + paramTuple4i2.x);
-    this.y = (paramInt * paramTuple4i1.y + paramTuple4i2.y);
-    this.z = (paramInt * paramTuple4i1.z + paramTuple4i2.z);
-    this.w = (paramInt * paramTuple4i1.w + paramTuple4i2.w);
+    this.field_582 = (paramInt * paramTuple4i1.field_582 + paramTuple4i2.field_582);
+    this.field_583 = (paramInt * paramTuple4i1.field_583 + paramTuple4i2.field_583);
+    this.field_584 = (paramInt * paramTuple4i1.field_584 + paramTuple4i2.field_584);
+    this.field_585 = (paramInt * paramTuple4i1.field_585 + paramTuple4i2.field_585);
   }
   
   public final void scaleAdd(int paramInt, Tuple4i paramTuple4i)
   {
-    this.x = (paramInt * this.x + paramTuple4i.x);
-    this.y = (paramInt * this.y + paramTuple4i.y);
-    this.z = (paramInt * this.z + paramTuple4i.z);
-    this.w = (paramInt * this.w + paramTuple4i.w);
+    this.field_582 = (paramInt * this.field_582 + paramTuple4i.field_582);
+    this.field_583 = (paramInt * this.field_583 + paramTuple4i.field_583);
+    this.field_584 = (paramInt * this.field_584 + paramTuple4i.field_584);
+    this.field_585 = (paramInt * this.field_585 + paramTuple4i.field_585);
   }
   
   public String toString()
   {
-    return "(" + this.x + ", " + this.y + ", " + this.z + ", " + this.w + ")";
+    return "(" + this.field_582 + ", " + this.field_583 + ", " + this.field_584 + ", " + this.field_585 + ")";
   }
   
   public boolean equals(Object paramObject)
@@ -173,7 +173,7 @@ public abstract class Tuple4i
     try
     {
       Tuple4i localTuple4i = (Tuple4i)paramObject;
-      return (this.x == localTuple4i.x) && (this.y == localTuple4i.y) && (this.z == localTuple4i.z) && (this.w == localTuple4i.w);
+      return (this.field_582 == localTuple4i.field_582) && (this.field_583 == localTuple4i.field_583) && (this.field_584 == localTuple4i.field_584) && (this.field_585 == localTuple4i.field_585);
     }
     catch (NullPointerException localNullPointerException)
     {
@@ -186,163 +186,163 @@ public abstract class Tuple4i
   public int hashCode()
   {
     long l = 1L;
-    l = 31L * l + this.x;
-    l = 31L * l + this.y;
-    l = 31L * l + this.z;
-    l = 31L * l + this.w;
+    l = 31L * l + this.field_582;
+    l = 31L * l + this.field_583;
+    l = 31L * l + this.field_584;
+    l = 31L * l + this.field_585;
     return (int)(l ^ l >> 32);
   }
   
   public final void clamp(int paramInt1, int paramInt2, Tuple4i paramTuple4i)
   {
-    if (paramTuple4i.x > paramInt2) {
-      this.x = paramInt2;
-    } else if (paramTuple4i.x < paramInt1) {
-      this.x = paramInt1;
+    if (paramTuple4i.field_582 > paramInt2) {
+      this.field_582 = paramInt2;
+    } else if (paramTuple4i.field_582 < paramInt1) {
+      this.field_582 = paramInt1;
     } else {
-      this.x = paramTuple4i.x;
+      this.field_582 = paramTuple4i.field_582;
     }
-    if (paramTuple4i.y > paramInt2) {
-      this.y = paramInt2;
-    } else if (paramTuple4i.y < paramInt1) {
-      this.y = paramInt1;
+    if (paramTuple4i.field_583 > paramInt2) {
+      this.field_583 = paramInt2;
+    } else if (paramTuple4i.field_583 < paramInt1) {
+      this.field_583 = paramInt1;
     } else {
-      this.y = paramTuple4i.y;
+      this.field_583 = paramTuple4i.field_583;
     }
-    if (paramTuple4i.z > paramInt2) {
-      this.z = paramInt2;
-    } else if (paramTuple4i.z < paramInt1) {
-      this.z = paramInt1;
+    if (paramTuple4i.field_584 > paramInt2) {
+      this.field_584 = paramInt2;
+    } else if (paramTuple4i.field_584 < paramInt1) {
+      this.field_584 = paramInt1;
     } else {
-      this.z = paramTuple4i.z;
+      this.field_584 = paramTuple4i.field_584;
     }
-    if (paramTuple4i.w > paramInt2) {
-      this.w = paramInt2;
-    } else if (paramTuple4i.w < paramInt1) {
-      this.w = paramInt1;
+    if (paramTuple4i.field_585 > paramInt2) {
+      this.field_585 = paramInt2;
+    } else if (paramTuple4i.field_585 < paramInt1) {
+      this.field_585 = paramInt1;
     } else {
-      this.w = paramTuple4i.w;
+      this.field_585 = paramTuple4i.field_585;
     }
   }
   
   public final void clampMin(int paramInt, Tuple4i paramTuple4i)
   {
-    if (paramTuple4i.x < paramInt) {
-      this.x = paramInt;
+    if (paramTuple4i.field_582 < paramInt) {
+      this.field_582 = paramInt;
     } else {
-      this.x = paramTuple4i.x;
+      this.field_582 = paramTuple4i.field_582;
     }
-    if (paramTuple4i.y < paramInt) {
-      this.y = paramInt;
+    if (paramTuple4i.field_583 < paramInt) {
+      this.field_583 = paramInt;
     } else {
-      this.y = paramTuple4i.y;
+      this.field_583 = paramTuple4i.field_583;
     }
-    if (paramTuple4i.z < paramInt) {
-      this.z = paramInt;
+    if (paramTuple4i.field_584 < paramInt) {
+      this.field_584 = paramInt;
     } else {
-      this.z = paramTuple4i.z;
+      this.field_584 = paramTuple4i.field_584;
     }
-    if (paramTuple4i.w < paramInt) {
-      this.w = paramInt;
+    if (paramTuple4i.field_585 < paramInt) {
+      this.field_585 = paramInt;
     } else {
-      this.w = paramTuple4i.w;
+      this.field_585 = paramTuple4i.field_585;
     }
   }
   
   public final void clampMax(int paramInt, Tuple4i paramTuple4i)
   {
-    if (paramTuple4i.x > paramInt) {
-      this.x = paramInt;
+    if (paramTuple4i.field_582 > paramInt) {
+      this.field_582 = paramInt;
     } else {
-      this.x = paramTuple4i.x;
+      this.field_582 = paramTuple4i.field_582;
     }
-    if (paramTuple4i.y > paramInt) {
-      this.y = paramInt;
+    if (paramTuple4i.field_583 > paramInt) {
+      this.field_583 = paramInt;
     } else {
-      this.y = paramTuple4i.y;
+      this.field_583 = paramTuple4i.field_583;
     }
-    if (paramTuple4i.z > paramInt) {
-      this.z = paramInt;
+    if (paramTuple4i.field_584 > paramInt) {
+      this.field_584 = paramInt;
     } else {
-      this.z = paramTuple4i.z;
+      this.field_584 = paramTuple4i.field_584;
     }
-    if (paramTuple4i.w > paramInt) {
-      this.w = paramInt;
+    if (paramTuple4i.field_585 > paramInt) {
+      this.field_585 = paramInt;
     } else {
-      this.w = paramTuple4i.z;
+      this.field_585 = paramTuple4i.field_584;
     }
   }
   
   public final void absolute(Tuple4i paramTuple4i)
   {
-    this.x = Math.abs(paramTuple4i.x);
-    this.y = Math.abs(paramTuple4i.y);
-    this.z = Math.abs(paramTuple4i.z);
-    this.w = Math.abs(paramTuple4i.w);
+    this.field_582 = Math.abs(paramTuple4i.field_582);
+    this.field_583 = Math.abs(paramTuple4i.field_583);
+    this.field_584 = Math.abs(paramTuple4i.field_584);
+    this.field_585 = Math.abs(paramTuple4i.field_585);
   }
   
   public final void clamp(int paramInt1, int paramInt2)
   {
-    if (this.x > paramInt2) {
-      this.x = paramInt2;
-    } else if (this.x < paramInt1) {
-      this.x = paramInt1;
+    if (this.field_582 > paramInt2) {
+      this.field_582 = paramInt2;
+    } else if (this.field_582 < paramInt1) {
+      this.field_582 = paramInt1;
     }
-    if (this.y > paramInt2) {
-      this.y = paramInt2;
-    } else if (this.y < paramInt1) {
-      this.y = paramInt1;
+    if (this.field_583 > paramInt2) {
+      this.field_583 = paramInt2;
+    } else if (this.field_583 < paramInt1) {
+      this.field_583 = paramInt1;
     }
-    if (this.z > paramInt2) {
-      this.z = paramInt2;
-    } else if (this.z < paramInt1) {
-      this.z = paramInt1;
+    if (this.field_584 > paramInt2) {
+      this.field_584 = paramInt2;
+    } else if (this.field_584 < paramInt1) {
+      this.field_584 = paramInt1;
     }
-    if (this.w > paramInt2) {
-      this.w = paramInt2;
-    } else if (this.w < paramInt1) {
-      this.w = paramInt1;
+    if (this.field_585 > paramInt2) {
+      this.field_585 = paramInt2;
+    } else if (this.field_585 < paramInt1) {
+      this.field_585 = paramInt1;
     }
   }
   
   public final void clampMin(int paramInt)
   {
-    if (this.x < paramInt) {
-      this.x = paramInt;
+    if (this.field_582 < paramInt) {
+      this.field_582 = paramInt;
     }
-    if (this.y < paramInt) {
-      this.y = paramInt;
+    if (this.field_583 < paramInt) {
+      this.field_583 = paramInt;
     }
-    if (this.z < paramInt) {
-      this.z = paramInt;
+    if (this.field_584 < paramInt) {
+      this.field_584 = paramInt;
     }
-    if (this.w < paramInt) {
-      this.w = paramInt;
+    if (this.field_585 < paramInt) {
+      this.field_585 = paramInt;
     }
   }
   
   public final void clampMax(int paramInt)
   {
-    if (this.x > paramInt) {
-      this.x = paramInt;
+    if (this.field_582 > paramInt) {
+      this.field_582 = paramInt;
     }
-    if (this.y > paramInt) {
-      this.y = paramInt;
+    if (this.field_583 > paramInt) {
+      this.field_583 = paramInt;
     }
-    if (this.z > paramInt) {
-      this.z = paramInt;
+    if (this.field_584 > paramInt) {
+      this.field_584 = paramInt;
     }
-    if (this.w > paramInt) {
-      this.w = paramInt;
+    if (this.field_585 > paramInt) {
+      this.field_585 = paramInt;
     }
   }
   
   public final void absolute()
   {
-    this.x = Math.abs(this.x);
-    this.y = Math.abs(this.y);
-    this.z = Math.abs(this.z);
-    this.w = Math.abs(this.w);
+    this.field_582 = Math.abs(this.field_582);
+    this.field_583 = Math.abs(this.field_583);
+    this.field_584 = Math.abs(this.field_584);
+    this.field_585 = Math.abs(this.field_585);
   }
   
   public Object clone()
@@ -359,7 +359,7 @@ public abstract class Tuple4i
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     javax.vecmath.Tuple4i
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

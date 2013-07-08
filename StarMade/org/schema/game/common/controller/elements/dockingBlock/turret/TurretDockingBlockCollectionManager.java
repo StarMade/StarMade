@@ -1,33 +1,33 @@
-/*  1:   */package org.schema.game.common.controller.elements.dockingBlock.turret;
-/*  2:   */
-/*  3:   */import le;
-/*  4:   */import org.schema.game.common.controller.SegmentController;
-/*  5:   */import org.schema.game.common.controller.elements.dockingBlock.DockingBlockCollectionManager;
-/*  6:   */import q;
-/*  7:   */
-/*  8:   */public class TurretDockingBlockCollectionManager
-/*  9:   */  extends DockingBlockCollectionManager
-/* 10:   */{
-/* 11:   */  public TurretDockingBlockCollectionManager(le paramle, SegmentController paramSegmentController)
-/* 12:   */  {
-/* 13:13 */    super(paramle, paramSegmentController, (short)88);
-/* 14:   */  }
-/* 15:   */  
-/* 18:   */  public void getDockingMoved(q paramq1, q paramq2)
-/* 19:   */  {
-/* 20:20 */    getDockingArea(paramq1, paramq2);
-/* 21:21 */    paramq2.b += paramq2.b - paramq1.b - 1;
-/* 22:22 */    paramq1.b = -1;
-/* 23:   */  }
-/* 24:   */  
-/* 28:   */  public boolean needsUpdate()
-/* 29:   */  {
-/* 30:30 */    return false;
-/* 31:   */  }
-/* 32:   */}
+package org.schema.game.common.controller.elements.dockingBlock.turret;
+
+import class_48;
+import class_796;
+import org.schema.game.common.controller.SegmentController;
+import org.schema.game.common.controller.elements.dockingBlock.DockingBlockCollectionManager;
+
+public class TurretDockingBlockCollectionManager
+  extends DockingBlockCollectionManager
+{
+  public TurretDockingBlockCollectionManager(class_796 paramclass_796, SegmentController paramSegmentController)
+  {
+    super(paramclass_796, paramSegmentController, (short)88);
+  }
+  
+  public void getDockingMoved(class_48 paramclass_481, class_48 paramclass_482)
+  {
+    getDockingArea(paramclass_481, paramclass_482);
+    paramclass_482.field_476 += paramclass_482.field_476 - paramclass_481.field_476 - 1;
+    paramclass_481.field_476 = -1;
+  }
+  
+  public boolean needsUpdate()
+  {
+    return false;
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.game.common.controller.elements.dockingBlock.turret.TurretDockingBlockCollectionManager
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

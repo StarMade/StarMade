@@ -9,7 +9,7 @@ public class ConnectionSetting
   private String driver;
   private String url;
   private String user;
-  private String pw;
+  private String field_1774;
   
   String getName()
   {
@@ -33,7 +33,7 @@ public class ConnectionSetting
   
   String getPassword()
   {
-    return this.pw;
+    return this.field_1774;
   }
   
   private ConnectionSetting() {}
@@ -44,7 +44,7 @@ public class ConnectionSetting
     this.driver = paramString2;
     this.url = paramString3;
     this.user = paramString4;
-    this.pw = paramString5;
+    this.field_1774 = paramString5;
   }
   
   public boolean equals(Object paramObject)
@@ -69,7 +69,7 @@ public class ConnectionSetting
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.util.ConnectionSetting
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

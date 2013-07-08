@@ -1019,7 +1019,7 @@ public class FunctionCustom
         arrayOfByte2 = BitMap.not(arrayOfByte1);
         break;
       case 80: 
-        arrayOfByte2 = BitMap.or(arrayOfByte1, (byte[])localObject8);
+        arrayOfByte2 = BitMap.or1(arrayOfByte1, (byte[])localObject8);
         break;
       case 81: 
         arrayOfByte2 = BitMap.xor(arrayOfByte1, (byte[])localObject8);
@@ -2048,17 +2048,17 @@ public class FunctionCustom
     case 151: 
     case 152: 
     case 153: 
-      return new StringBuffer(this.name).append("(").append(")").toString();
+      return this.name + "(" + ")";
     case 144: 
       localObject = Tokens.getSQLTSIString(((Number)this.nodes[0].getValue(null)).intValue());
-      return new StringBuffer("TIMESTAMPADD").append("(").append((String)localObject).append(",").append(this.nodes[1].getSQL()).append(",").append(this.nodes[2].getSQL()).append(")").toString();
+      return "TIMESTAMPADD" + "(" + (String)localObject + "," + this.nodes[1].getSQL() + "," + this.nodes[2].getSQL() + ")";
     case 145: 
       localObject = Tokens.getSQLTSIString(((Number)this.nodes[0].getValue(null)).intValue());
-      return new StringBuffer("TIMESTAMPDIFF").append("(").append((String)localObject).append(",").append(this.nodes[1].getSQL()).append(",").append(this.nodes[2].getSQL()).append(")").toString();
+      return "TIMESTAMPDIFF" + "(" + (String)localObject + "," + this.nodes[1].getSQL() + "," + this.nodes[2].getSQL() + ")";
     case 92: 
-      return new StringBuffer(this.nodes[0].getSQL()).append(' ').append('+').append(this.nodes[1].getSQL()).toString();
+      return this.nodes[0].getSQL() + ' ' + '+' + this.nodes[1].getSQL();
     case 93: 
-      return new StringBuffer(this.nodes[0].getSQL()).append(' ').append('-').append(this.nodes[1].getSQL()).toString();
+      return this.nodes[0].getSQL() + ' ' + '-' + this.nodes[1].getSQL();
     case 117: 
     case 157: 
       localObject = new StringBuffer(this.name).append('(');
@@ -2100,7 +2100,7 @@ public class FunctionCustom
     case 137: 
     case 139: 
     case 142: 
-      return new StringBuffer(this.name).append('(').append(this.nodes[0].getSQL()).append(')').toString();
+      return this.name + '(' + this.nodes[0].getSQL() + ')';
     case 76: 
     case 77: 
     case 78: 
@@ -2119,7 +2119,7 @@ public class FunctionCustom
     case 147: 
     case 148: 
     case 150: 
-      return new StringBuffer(this.name).append('(').append(this.nodes[0].getSQL()).append(",").append(this.nodes[1].getSQL()).append(')').toString();
+      return this.name + '(' + this.nodes[0].getSQL() + "," + this.nodes[1].getSQL() + ')';
     case 98: 
       localObject = new StringBuffer(this.name).append('(');
       ((StringBuffer)localObject).append("ROW_COUNT");
@@ -2127,7 +2127,7 @@ public class FunctionCustom
       return ((StringBuffer)localObject).toString();
     case 123: 
     case 131: 
-      return new StringBuffer(this.name).append('(').append(this.nodes[0].getSQL()).append(",").append(this.nodes[1].getSQL()).append(",").append(this.nodes[2].getSQL()).append(')').toString();
+      return this.name + '(' + this.nodes[0].getSQL() + "," + this.nodes[1].getSQL() + "," + this.nodes[2].getSQL() + ')';
     }
     return super.getSQL();
   }
@@ -2370,7 +2370,7 @@ public class FunctionCustom
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.FunctionCustom
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

@@ -1,119 +1,205 @@
-/*   1:    */package it.unimi.dsi.fastutil.bytes;
-/*   2:    */
-/*   3:    */import java.io.Serializable;
-/*   4:    */import java.util.Collection;
-/*   5:    */
-/*  53:    */public class ByteSets
-/*  54:    */{
-/*  55:    */  public static class EmptySet
-/*  56:    */    extends ByteCollections.EmptyCollection
-/*  57:    */    implements ByteSet, Serializable, Cloneable
-/*  58:    */  {
-/*  59:    */    public static final long serialVersionUID = -7046029254386353129L;
-/*  60:    */    
-/*  61: 61 */    public boolean remove(byte ok) { throw new UnsupportedOperationException(); }
-/*  62: 62 */    public Object clone() { return ByteSets.EMPTY_SET; }
-/*  63: 63 */    private Object readResolve() { return ByteSets.EMPTY_SET; }
-/*  64:    */  }
-/*  65:    */  
-/*  71: 71 */  public static final EmptySet EMPTY_SET = new EmptySet();
-/*  72:    */  
-/*  73:    */  public static class Singleton
-/*  74:    */    extends AbstractByteSet
-/*  75:    */    implements Serializable, Cloneable
-/*  76:    */  {
-/*  77:    */    public static final long serialVersionUID = -7046029254386353129L;
-/*  78:    */    protected final byte element;
-/*  79:    */    
-/*  80: 80 */    protected Singleton(byte element) { this.element = element; }
-/*  81:    */    
-/*  82: 82 */    public boolean add(byte k) { throw new UnsupportedOperationException(); }
-/*  83: 83 */    public boolean contains(byte k) { return k == this.element; }
-/*  84: 84 */    public boolean addAll(Collection<? extends Byte> c) { throw new UnsupportedOperationException(); }
-/*  85: 85 */    public boolean removeAll(Collection<?> c) { throw new UnsupportedOperationException(); }
-/*  86: 86 */    public boolean retainAll(Collection<?> c) { throw new UnsupportedOperationException(); }
-/*  87:    */    
-/*  88:    */    public byte[] toByteArray() {
-/*  89: 89 */      byte[] a = new byte[1];
-/*  90: 90 */      a[0] = this.element;
-/*  91: 91 */      return a; }
-/*  92:    */    
-/*  93: 93 */    public boolean addAll(ByteCollection c) { throw new UnsupportedOperationException(); }
-/*  94: 94 */    public boolean removeAll(ByteCollection c) { throw new UnsupportedOperationException(); }
-/*  95: 95 */    public boolean retainAll(ByteCollection c) { throw new UnsupportedOperationException(); }
-/*  96:    */    
-/*  98: 98 */    public ByteListIterator iterator() { return ByteIterators.singleton(this.element); }
-/*  99:    */    
-/* 100:100 */    public int size() { return 1; }
-/* 101:    */    
-/* 102:102 */    public Object clone() { return this; }
-/* 103:    */  }
-/* 104:    */  
-/* 112:    */  public static ByteSet singleton(byte element)
-/* 113:    */  {
-/* 114:114 */    return new Singleton(element);
-/* 115:    */  }
-/* 116:    */  
-/* 126:    */  public static ByteSet singleton(Byte element)
-/* 127:    */  {
-/* 128:128 */    return new Singleton(element.byteValue());
-/* 129:    */  }
-/* 130:    */  
-/* 132:    */  public static class SynchronizedSet
-/* 133:    */    extends ByteCollections.SynchronizedCollection
-/* 134:    */    implements ByteSet, Serializable
-/* 135:    */  {
-/* 136:    */    public static final long serialVersionUID = -7046029254386353129L;
-/* 137:    */    
-/* 138:    */    protected SynchronizedSet(ByteSet s, Object sync)
-/* 139:    */    {
-/* 140:140 */      super(sync);
-/* 141:    */    }
-/* 142:    */    
-/* 144:144 */    protected SynchronizedSet(ByteSet s) { super(); }
-/* 145:    */    
-/* 146:    */    public boolean remove(byte k) {
-/* 147:147 */      synchronized (this.sync) { return this.collection.remove(Byte.valueOf(k)); } }
-/* 148:148 */    public boolean equals(Object o) { synchronized (this.sync) { return this.collection.equals(o); } }
-/* 149:149 */    public int hashCode() { synchronized (this.sync) { return this.collection.hashCode();
-/* 150:    */      }
-/* 151:    */    }
-/* 152:    */  }
-/* 153:    */  
-/* 157:    */  public static ByteSet synchronize(ByteSet s)
-/* 158:    */  {
-/* 159:159 */    return new SynchronizedSet(s);
-/* 160:    */  }
-/* 161:    */  
-/* 167:    */  public static ByteSet synchronize(ByteSet s, Object sync)
-/* 168:    */  {
-/* 169:169 */    return new SynchronizedSet(s, sync);
-/* 170:    */  }
-/* 171:    */  
-/* 172:    */  public static class UnmodifiableSet
-/* 173:    */    extends ByteCollections.UnmodifiableCollection
-/* 174:    */    implements ByteSet, Serializable
-/* 175:    */  {
-/* 176:    */    public static final long serialVersionUID = -7046029254386353129L;
-/* 177:    */    
-/* 178:    */    protected UnmodifiableSet(ByteSet s)
-/* 179:    */    {
-/* 180:180 */      super();
-/* 181:    */    }
-/* 182:    */    
-/* 183:183 */    public boolean remove(byte k) { throw new UnsupportedOperationException(); }
-/* 184:184 */    public boolean equals(Object o) { return this.collection.equals(o); }
-/* 185:185 */    public int hashCode() { return this.collection.hashCode(); }
-/* 186:    */  }
-/* 187:    */  
-/* 193:    */  public static ByteSet unmodifiable(ByteSet s)
-/* 194:    */  {
-/* 195:195 */    return new UnmodifiableSet(s);
-/* 196:    */  }
-/* 197:    */}
+package it.unimi.dsi.fastutil.bytes;
+
+import java.io.Serializable;
+import java.util.Collection;
+
+public class ByteSets
+{
+  public static final EmptySet EMPTY_SET = new EmptySet();
+  
+  public static ByteSet singleton(byte element)
+  {
+    return new Singleton(element);
+  }
+  
+  public static ByteSet singleton(Byte element)
+  {
+    return new Singleton(element.byteValue());
+  }
+  
+  public static ByteSet synchronize(ByteSet local_s)
+  {
+    return new SynchronizedSet(local_s);
+  }
+  
+  public static ByteSet synchronize(ByteSet local_s, Object sync)
+  {
+    return new SynchronizedSet(local_s, sync);
+  }
+  
+  public static ByteSet unmodifiable(ByteSet local_s)
+  {
+    return new UnmodifiableSet(local_s);
+  }
+  
+  public static class UnmodifiableSet
+    extends ByteCollections.UnmodifiableCollection
+    implements ByteSet, Serializable
+  {
+    public static final long serialVersionUID = -7046029254386353129L;
+    
+    protected UnmodifiableSet(ByteSet local_s)
+    {
+      super();
+    }
+    
+    public boolean remove(byte local_k)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public boolean equals(Object local_o)
+    {
+      return this.collection.equals(local_o);
+    }
+    
+    public int hashCode()
+    {
+      return this.collection.hashCode();
+    }
+  }
+  
+  public static class SynchronizedSet
+    extends ByteCollections.SynchronizedCollection
+    implements ByteSet, Serializable
+  {
+    public static final long serialVersionUID = -7046029254386353129L;
+    
+    protected SynchronizedSet(ByteSet local_s, Object sync)
+    {
+      super(sync);
+    }
+    
+    protected SynchronizedSet(ByteSet local_s)
+    {
+      super();
+    }
+    
+    public boolean remove(byte local_k)
+    {
+      synchronized (this.sync)
+      {
+        return this.collection.remove(Byte.valueOf(local_k));
+      }
+    }
+    
+    public boolean equals(Object local_o)
+    {
+      synchronized (this.sync)
+      {
+        return this.collection.equals(local_o);
+      }
+    }
+    
+    public int hashCode()
+    {
+      synchronized (this.sync)
+      {
+        return this.collection.hashCode();
+      }
+    }
+  }
+  
+  public static class Singleton
+    extends AbstractByteSet
+    implements Serializable, Cloneable
+  {
+    public static final long serialVersionUID = -7046029254386353129L;
+    protected final byte element;
+    
+    protected Singleton(byte element)
+    {
+      this.element = element;
+    }
+    
+    public boolean add(byte local_k)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public boolean contains(byte local_k)
+    {
+      return local_k == this.element;
+    }
+    
+    public boolean addAll(Collection<? extends Byte> local_c)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public boolean removeAll(Collection<?> local_c)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public boolean retainAll(Collection<?> local_c)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public byte[] toByteArray()
+    {
+      byte[] local_a = new byte[1];
+      local_a[0] = this.element;
+      return local_a;
+    }
+    
+    public boolean addAll(ByteCollection local_c)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public boolean removeAll(ByteCollection local_c)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public boolean retainAll(ByteCollection local_c)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public ByteListIterator iterator()
+    {
+      return ByteIterators.singleton(this.element);
+    }
+    
+    public int size()
+    {
+      return 1;
+    }
+    
+    public Object clone()
+    {
+      return this;
+    }
+  }
+  
+  public static class EmptySet
+    extends ByteCollections.EmptyCollection
+    implements ByteSet, Serializable, Cloneable
+  {
+    public static final long serialVersionUID = -7046029254386353129L;
+    
+    public boolean remove(byte local_ok)
+    {
+      throw new UnsupportedOperationException();
+    }
+    
+    public Object clone()
+    {
+      return ByteSets.EMPTY_SET;
+    }
+    
+    private Object readResolve()
+    {
+      return ByteSets.EMPTY_SET;
+    }
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.bytes.ByteSets
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

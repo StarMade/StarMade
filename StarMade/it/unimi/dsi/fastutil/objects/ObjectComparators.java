@@ -1,33 +1,40 @@
-/*  1:   */package it.unimi.dsi.fastutil.objects;
-/*  2:   */
-/*  3:   */import java.util.Comparator;
-/*  4:   */
-/* 49:   */public class ObjectComparators
-/* 50:   */{
-/* 51:51 */  public static final Comparator NATURAL_COMPARATOR = new Comparator() {
-/* 52:   */    public final int compare(Object a, Object b) {
-/* 53:53 */      return ((Comparable)a).compareTo(b);
-/* 54:   */    }
-/* 55:   */  };
-/* 56:   */  
-/* 58:58 */  public static final Comparator OPPOSITE_COMPARATOR = new Comparator() {
-/* 59:   */    public final int compare(Object a, Object b) {
-/* 60:60 */      return ((Comparable)b).compareTo(a);
-/* 61:   */    }
-/* 62:   */  };
-/* 63:   */  
-/* 67:   */  public static <K> Comparator<K> oppositeComparator(Comparator<K> c)
-/* 68:   */  {
-/* 69:69 */    new Comparator() {
-/* 70:70 */      private final Comparator<K> comparator = this.val$c;
-/* 71:   */      
-/* 72:72 */      public final int compare(K a, K b) { return -this.comparator.compare(a, b); }
-/* 73:   */    };
-/* 74:   */  }
-/* 75:   */}
+package it.unimi.dsi.fastutil.objects;
+
+import java.util.Comparator;
+
+public class ObjectComparators
+{
+  public static final Comparator NATURAL_COMPARATOR = new Comparator()
+  {
+    public final int compare(Object local_a, Object local_b)
+    {
+      return ((Comparable)local_a).compareTo(local_b);
+    }
+  };
+  public static final Comparator OPPOSITE_COMPARATOR = new Comparator()
+  {
+    public final int compare(Object local_a, Object local_b)
+    {
+      return ((Comparable)local_b).compareTo(local_a);
+    }
+  };
+  
+  public static <K> Comparator<K> oppositeComparator(Comparator<K> local_c)
+  {
+    new Comparator()
+    {
+      private final Comparator<K> comparator = this.val$c;
+      
+      public final int compare(K local_a, K local_b)
+      {
+        return -this.comparator.compare(local_a, local_b);
+      }
+    };
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.objects.ObjectComparators
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

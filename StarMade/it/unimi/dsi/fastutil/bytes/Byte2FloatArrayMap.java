@@ -1,233 +1,301 @@
-/*   1:    */package it.unimi.dsi.fastutil.bytes;
-/*   2:    */
-/*   3:    */import it.unimi.dsi.fastutil.floats.FloatArraySet;
-/*   4:    */import it.unimi.dsi.fastutil.floats.FloatArrays;
-/*   5:    */import it.unimi.dsi.fastutil.floats.FloatCollection;
-/*   6:    */import it.unimi.dsi.fastutil.floats.FloatCollections;
-/*   7:    */import it.unimi.dsi.fastutil.objects.AbstractObjectIterator;
-/*   8:    */import it.unimi.dsi.fastutil.objects.AbstractObjectSet;
-/*   9:    */import it.unimi.dsi.fastutil.objects.ObjectIterator;
-/*  10:    */import java.io.IOException;
-/*  11:    */import java.io.ObjectInputStream;
-/*  12:    */import java.io.ObjectOutputStream;
-/*  13:    */import java.io.Serializable;
-/*  14:    */import java.util.Map;
-/*  15:    */import java.util.Map.Entry;
-/*  16:    */import java.util.NoSuchElementException;
-/*  17:    */
-/*  66:    */public class Byte2FloatArrayMap
-/*  67:    */  extends AbstractByte2FloatMap
-/*  68:    */  implements Serializable, Cloneable
-/*  69:    */{
-/*  70:    */  private static final long serialVersionUID = 1L;
-/*  71:    */  private transient byte[] key;
-/*  72:    */  private transient float[] value;
-/*  73:    */  private int size;
-/*  74:    */  
-/*  75:    */  public Byte2FloatArrayMap(byte[] key, float[] value)
-/*  76:    */  {
-/*  77: 77 */    this.key = key;
-/*  78: 78 */    this.value = value;
-/*  79: 79 */    this.size = key.length;
-/*  80: 80 */    if (key.length != value.length) throw new IllegalArgumentException("Keys and values have different lengths (" + key.length + ", " + value.length + ")");
-/*  81:    */  }
-/*  82:    */  
-/*  83:    */  public Byte2FloatArrayMap()
-/*  84:    */  {
-/*  85: 85 */    this.key = ByteArrays.EMPTY_ARRAY;
-/*  86: 86 */    this.value = FloatArrays.EMPTY_ARRAY;
-/*  87:    */  }
-/*  88:    */  
-/*  91:    */  public Byte2FloatArrayMap(int capacity)
-/*  92:    */  {
-/*  93: 93 */    this.key = new byte[capacity];
-/*  94: 94 */    this.value = new float[capacity];
-/*  95:    */  }
-/*  96:    */  
-/*  99:    */  public Byte2FloatArrayMap(Byte2FloatMap m)
-/* 100:    */  {
-/* 101:101 */    this(m.size());
-/* 102:102 */    putAll(m);
-/* 103:    */  }
-/* 104:    */  
-/* 107:    */  public Byte2FloatArrayMap(Map<? extends Byte, ? extends Float> m)
-/* 108:    */  {
-/* 109:109 */    this(m.size());
-/* 110:110 */    putAll(m);
-/* 111:    */  }
-/* 112:    */  
-/* 119:    */  public Byte2FloatArrayMap(byte[] key, float[] value, int size)
-/* 120:    */  {
-/* 121:121 */    this.key = key;
-/* 122:122 */    this.value = value;
-/* 123:123 */    this.size = size;
-/* 124:124 */    if (key.length != value.length) throw new IllegalArgumentException("Keys and values have different lengths (" + key.length + ", " + value.length + ")");
-/* 125:125 */    if (size > key.length) throw new IllegalArgumentException("The provided size (" + size + ") is larger than or equal to the backing-arrays size (" + key.length + ")");
-/* 126:    */  }
-/* 127:    */  
-/* 128:    */  private final class EntrySet extends AbstractObjectSet<Byte2FloatMap.Entry> implements Byte2FloatMap.FastEntrySet { private EntrySet() {}
-/* 129:    */    
-/* 130:130 */    public ObjectIterator<Byte2FloatMap.Entry> iterator() { new AbstractObjectIterator() {
-/* 131:131 */        int next = 0;
-/* 132:    */        
-/* 133:133 */        public boolean hasNext() { return this.next < Byte2FloatArrayMap.this.size; }
-/* 134:    */        
-/* 135:    */        public Byte2FloatMap.Entry next()
-/* 136:    */        {
-/* 137:137 */          if (!hasNext()) throw new NoSuchElementException();
-/* 138:138 */          return new AbstractByte2FloatMap.BasicEntry(Byte2FloatArrayMap.this.key[this.next], Byte2FloatArrayMap.this.value[(this.next++)]);
-/* 139:    */        }
-/* 140:    */      }; }
-/* 141:    */    
-/* 142:    */    public ObjectIterator<Byte2FloatMap.Entry> fastIterator() {
-/* 143:143 */      new AbstractObjectIterator() {
-/* 144:144 */        int next = 0;
-/* 145:145 */        final AbstractByte2FloatMap.BasicEntry entry = new AbstractByte2FloatMap.BasicEntry((byte)0, 0.0F);
-/* 146:    */        
-/* 147:147 */        public boolean hasNext() { return this.next < Byte2FloatArrayMap.this.size; }
-/* 148:    */        
-/* 149:    */        public Byte2FloatMap.Entry next()
-/* 150:    */        {
-/* 151:151 */          if (!hasNext()) throw new NoSuchElementException();
-/* 152:152 */          this.entry.key = Byte2FloatArrayMap.this.key[this.next];
-/* 153:153 */          this.entry.value = Byte2FloatArrayMap.this.value[(this.next++)];
-/* 154:154 */          return this.entry;
-/* 155:    */        }
-/* 156:    */      };
-/* 157:    */    }
-/* 158:    */    
-/* 159:159 */    public int size() { return Byte2FloatArrayMap.this.size; }
-/* 160:    */    
-/* 161:    */    public boolean contains(Object o)
-/* 162:    */    {
-/* 163:163 */      if (!(o instanceof Map.Entry)) return false;
-/* 164:164 */      Map.Entry<Byte, Float> e = (Map.Entry)o;
-/* 165:165 */      byte k = ((Byte)e.getKey()).byteValue();
-/* 166:166 */      return (Byte2FloatArrayMap.this.containsKey(k)) && (Byte2FloatArrayMap.this.get(k) == ((Float)e.getValue()).floatValue());
-/* 167:    */    }
-/* 168:    */  }
-/* 169:    */  
-/* 170:170 */  public Byte2FloatMap.FastEntrySet byte2FloatEntrySet() { return new EntrySet(null); }
-/* 171:    */  
-/* 172:    */  private int findKey(byte k) {
-/* 173:173 */    byte[] key = this.key;
-/* 174:174 */    for (int i = this.size; i-- != 0;) if (key[i] == k) return i;
-/* 175:175 */    return -1;
-/* 176:    */  }
-/* 177:    */  
-/* 182:    */  public float get(byte k)
-/* 183:    */  {
-/* 184:184 */    byte[] key = this.key;
-/* 185:185 */    for (int i = this.size; i-- != 0;) if (key[i] == k) return this.value[i];
-/* 186:186 */    return this.defRetValue;
-/* 187:    */  }
-/* 188:    */  
-/* 189:    */  public int size() {
-/* 190:190 */    return this.size;
-/* 191:    */  }
-/* 192:    */  
-/* 193:    */  public void clear()
-/* 194:    */  {
-/* 195:195 */    this.size = 0;
-/* 196:    */  }
-/* 197:    */  
-/* 198:    */  public boolean containsKey(byte k) {
-/* 199:199 */    return findKey(k) != -1;
-/* 200:    */  }
-/* 201:    */  
-/* 202:    */  public boolean containsValue(float v)
-/* 203:    */  {
-/* 204:204 */    for (int i = this.size; i-- != 0;) if (this.value[i] == v) return true;
-/* 205:205 */    return false;
-/* 206:    */  }
-/* 207:    */  
-/* 208:    */  public boolean isEmpty() {
-/* 209:209 */    return this.size == 0;
-/* 210:    */  }
-/* 211:    */  
-/* 212:    */  public float put(byte k, float v)
-/* 213:    */  {
-/* 214:214 */    int oldKey = findKey(k);
-/* 215:215 */    if (oldKey != -1) {
-/* 216:216 */      float oldValue = this.value[oldKey];
-/* 217:217 */      this.value[oldKey] = v;
-/* 218:218 */      return oldValue;
-/* 219:    */    }
-/* 220:220 */    if (this.size == this.key.length) {
-/* 221:221 */      byte[] newKey = new byte[this.size == 0 ? 2 : this.size * 2];
-/* 222:222 */      float[] newValue = new float[this.size == 0 ? 2 : this.size * 2];
-/* 223:223 */      for (int i = this.size; i-- != 0;) {
-/* 224:224 */        newKey[i] = this.key[i];
-/* 225:225 */        newValue[i] = this.value[i];
-/* 226:    */      }
-/* 227:227 */      this.key = newKey;
-/* 228:228 */      this.value = newValue;
-/* 229:    */    }
-/* 230:230 */    this.key[this.size] = k;
-/* 231:231 */    this.value[this.size] = v;
-/* 232:232 */    this.size += 1;
-/* 233:233 */    return this.defRetValue;
-/* 234:    */  }
-/* 235:    */  
-/* 236:    */  public float remove(byte k)
-/* 237:    */  {
-/* 238:238 */    int oldPos = findKey(k);
-/* 239:239 */    if (oldPos == -1) return this.defRetValue;
-/* 240:240 */    float oldValue = this.value[oldPos];
-/* 241:241 */    int tail = this.size - oldPos - 1;
-/* 242:242 */    for (int i = 0; i < tail; i++) {
-/* 243:243 */      this.key[(oldPos + i)] = this.key[(oldPos + i + 1)];
-/* 244:244 */      this.value[(oldPos + i)] = this.value[(oldPos + i + 1)];
-/* 245:    */    }
-/* 246:246 */    this.size -= 1;
-/* 247:247 */    return oldValue;
-/* 248:    */  }
-/* 249:    */  
-/* 250:    */  public ByteSet keySet()
-/* 251:    */  {
-/* 252:252 */    return new ByteArraySet(this.key, this.size);
-/* 253:    */  }
-/* 254:    */  
-/* 255:    */  public FloatCollection values() {
-/* 256:256 */    return FloatCollections.unmodifiable(new FloatArraySet(this.value, this.size));
-/* 257:    */  }
-/* 258:    */  
-/* 262:    */  public Byte2FloatArrayMap clone()
-/* 263:    */  {
-/* 264:    */    Byte2FloatArrayMap c;
-/* 265:    */    
-/* 267:    */    try
-/* 268:    */    {
-/* 269:269 */      c = (Byte2FloatArrayMap)super.clone();
-/* 270:    */    }
-/* 271:    */    catch (CloneNotSupportedException cantHappen) {
-/* 272:272 */      throw new InternalError();
-/* 273:    */    }
-/* 274:274 */    c.key = ((byte[])this.key.clone());
-/* 275:275 */    c.value = ((float[])this.value.clone());
-/* 276:276 */    return c;
-/* 277:    */  }
-/* 278:    */  
-/* 279:279 */  private void writeObject(ObjectOutputStream s) throws IOException { s.defaultWriteObject();
-/* 280:280 */    for (int i = 0; i < this.size; i++) {
-/* 281:281 */      s.writeByte(this.key[i]);
-/* 282:282 */      s.writeFloat(this.value[i]);
-/* 283:    */    }
-/* 284:    */  }
-/* 285:    */  
-/* 286:    */  private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
-/* 287:287 */    s.defaultReadObject();
-/* 288:288 */    this.key = new byte[this.size];
-/* 289:289 */    this.value = new float[this.size];
-/* 290:290 */    for (int i = 0; i < this.size; i++) {
-/* 291:291 */      this.key[i] = s.readByte();
-/* 292:292 */      this.value[i] = s.readFloat();
-/* 293:    */    }
-/* 294:    */  }
-/* 295:    */}
+package it.unimi.dsi.fastutil.bytes;
+
+import it.unimi.dsi.fastutil.floats.FloatArraySet;
+import it.unimi.dsi.fastutil.floats.FloatArrays;
+import it.unimi.dsi.fastutil.floats.FloatCollection;
+import it.unimi.dsi.fastutil.floats.FloatCollections;
+import it.unimi.dsi.fastutil.objects.AbstractObjectIterator;
+import it.unimi.dsi.fastutil.objects.AbstractObjectSet;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.NoSuchElementException;
+
+public class Byte2FloatArrayMap
+  extends AbstractByte2FloatMap
+  implements Serializable, Cloneable
+{
+  private static final long serialVersionUID = 1L;
+  private transient byte[] key;
+  private transient float[] value;
+  private int size;
+  
+  public Byte2FloatArrayMap(byte[] key, float[] value)
+  {
+    this.key = key;
+    this.value = value;
+    this.size = key.length;
+    if (key.length != value.length) {
+      throw new IllegalArgumentException("Keys and values have different lengths (" + key.length + ", " + value.length + ")");
+    }
+  }
+  
+  public Byte2FloatArrayMap()
+  {
+    this.key = ByteArrays.EMPTY_ARRAY;
+    this.value = FloatArrays.EMPTY_ARRAY;
+  }
+  
+  public Byte2FloatArrayMap(int capacity)
+  {
+    this.key = new byte[capacity];
+    this.value = new float[capacity];
+  }
+  
+  public Byte2FloatArrayMap(Byte2FloatMap local_m)
+  {
+    this(local_m.size());
+    putAll(local_m);
+  }
+  
+  public Byte2FloatArrayMap(Map<? extends Byte, ? extends Float> local_m)
+  {
+    this(local_m.size());
+    putAll(local_m);
+  }
+  
+  public Byte2FloatArrayMap(byte[] key, float[] value, int size)
+  {
+    this.key = key;
+    this.value = value;
+    this.size = size;
+    if (key.length != value.length) {
+      throw new IllegalArgumentException("Keys and values have different lengths (" + key.length + ", " + value.length + ")");
+    }
+    if (size > key.length) {
+      throw new IllegalArgumentException("The provided size (" + size + ") is larger than or equal to the backing-arrays size (" + key.length + ")");
+    }
+  }
+  
+  public Byte2FloatMap.FastEntrySet byte2FloatEntrySet()
+  {
+    return new EntrySet(null);
+  }
+  
+  private int findKey(byte local_k)
+  {
+    byte[] key = this.key;
+    int local_i = this.size;
+    while (local_i-- != 0) {
+      if (key[local_i] == local_k) {
+        return local_i;
+      }
+    }
+    return -1;
+  }
+  
+  public float get(byte local_k)
+  {
+    byte[] key = this.key;
+    int local_i = this.size;
+    while (local_i-- != 0) {
+      if (key[local_i] == local_k) {
+        return this.value[local_i];
+      }
+    }
+    return this.defRetValue;
+  }
+  
+  public int size()
+  {
+    return this.size;
+  }
+  
+  public void clear()
+  {
+    this.size = 0;
+  }
+  
+  public boolean containsKey(byte local_k)
+  {
+    return findKey(local_k) != -1;
+  }
+  
+  public boolean containsValue(float local_v)
+  {
+    int local_i = this.size;
+    while (local_i-- != 0) {
+      if (this.value[local_i] == local_v) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  public boolean isEmpty()
+  {
+    return this.size == 0;
+  }
+  
+  public float put(byte local_k, float local_v)
+  {
+    int oldKey = findKey(local_k);
+    if (oldKey != -1)
+    {
+      float oldValue = this.value[oldKey];
+      this.value[oldKey] = local_v;
+      return oldValue;
+    }
+    if (this.size == this.key.length)
+    {
+      byte[] oldValue = new byte[this.size == 0 ? 2 : this.size * 2];
+      float[] newValue = new float[this.size == 0 ? 2 : this.size * 2];
+      int local_i = this.size;
+      while (local_i-- != 0)
+      {
+        oldValue[local_i] = this.key[local_i];
+        newValue[local_i] = this.value[local_i];
+      }
+      this.key = oldValue;
+      this.value = newValue;
+    }
+    this.key[this.size] = local_k;
+    this.value[this.size] = local_v;
+    this.size += 1;
+    return this.defRetValue;
+  }
+  
+  public float remove(byte local_k)
+  {
+    int oldPos = findKey(local_k);
+    if (oldPos == -1) {
+      return this.defRetValue;
+    }
+    float oldValue = this.value[oldPos];
+    int tail = this.size - oldPos - 1;
+    for (int local_i = 0; local_i < tail; local_i++)
+    {
+      this.key[(oldPos + local_i)] = this.key[(oldPos + local_i + 1)];
+      this.value[(oldPos + local_i)] = this.value[(oldPos + local_i + 1)];
+    }
+    this.size -= 1;
+    return oldValue;
+  }
+  
+  public ByteSet keySet()
+  {
+    return new ByteArraySet(this.key, this.size);
+  }
+  
+  public FloatCollection values()
+  {
+    return FloatCollections.unmodifiable(new FloatArraySet(this.value, this.size));
+  }
+  
+  public Byte2FloatArrayMap clone()
+  {
+    Byte2FloatArrayMap local_c;
+    try
+    {
+      local_c = (Byte2FloatArrayMap)super.clone();
+    }
+    catch (CloneNotSupportedException cantHappen)
+    {
+      throw new InternalError();
+    }
+    local_c.key = ((byte[])this.key.clone());
+    local_c.value = ((float[])this.value.clone());
+    return local_c;
+  }
+  
+  private void writeObject(ObjectOutputStream local_s)
+    throws IOException
+  {
+    local_s.defaultWriteObject();
+    for (int local_i = 0; local_i < this.size; local_i++)
+    {
+      local_s.writeByte(this.key[local_i]);
+      local_s.writeFloat(this.value[local_i]);
+    }
+  }
+  
+  private void readObject(ObjectInputStream local_s)
+    throws IOException, ClassNotFoundException
+  {
+    local_s.defaultReadObject();
+    this.key = new byte[this.size];
+    this.value = new float[this.size];
+    for (int local_i = 0; local_i < this.size; local_i++)
+    {
+      this.key[local_i] = local_s.readByte();
+      this.value[local_i] = local_s.readFloat();
+    }
+  }
+  
+  private final class EntrySet
+    extends AbstractObjectSet<Byte2FloatMap.Entry>
+    implements Byte2FloatMap.FastEntrySet
+  {
+    private EntrySet() {}
+    
+    public ObjectIterator<Byte2FloatMap.Entry> iterator()
+    {
+      new AbstractObjectIterator()
+      {
+        int next = 0;
+        
+        public boolean hasNext()
+        {
+          return this.next < Byte2FloatArrayMap.this.size;
+        }
+        
+        public Byte2FloatMap.Entry next()
+        {
+          if (!hasNext()) {
+            throw new NoSuchElementException();
+          }
+          return new AbstractByte2FloatMap.BasicEntry(Byte2FloatArrayMap.this.key[this.next], Byte2FloatArrayMap.this.value[(this.next++)]);
+        }
+      };
+    }
+    
+    public ObjectIterator<Byte2FloatMap.Entry> fastIterator()
+    {
+      new AbstractObjectIterator()
+      {
+        int next = 0;
+        final AbstractByte2FloatMap.BasicEntry entry = new AbstractByte2FloatMap.BasicEntry((byte)0, 0.0F);
+        
+        public boolean hasNext()
+        {
+          return this.next < Byte2FloatArrayMap.this.size;
+        }
+        
+        public Byte2FloatMap.Entry next()
+        {
+          if (!hasNext()) {
+            throw new NoSuchElementException();
+          }
+          this.entry.key = Byte2FloatArrayMap.this.key[this.next];
+          this.entry.value = Byte2FloatArrayMap.this.value[(this.next++)];
+          return this.entry;
+        }
+      };
+    }
+    
+    public int size()
+    {
+      return Byte2FloatArrayMap.this.size;
+    }
+    
+    public boolean contains(Object local_o)
+    {
+      if (!(local_o instanceof Map.Entry)) {
+        return false;
+      }
+      Map.Entry<Byte, Float> local_e = (Map.Entry)local_o;
+      byte local_k = ((Byte)local_e.getKey()).byteValue();
+      return (Byte2FloatArrayMap.this.containsKey(local_k)) && (Byte2FloatArrayMap.this.get(local_k) == ((Float)local_e.getValue()).floatValue());
+    }
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.bytes.Byte2FloatArrayMap
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

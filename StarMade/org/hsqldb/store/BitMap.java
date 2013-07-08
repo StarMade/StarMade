@@ -320,7 +320,7 @@ public class BitMap
     return arrayOfByte;
   }
   
-  public static byte[] or(byte[] paramArrayOfByte1, byte[] paramArrayOfByte2)
+  public static byte[] or1(byte[] paramArrayOfByte1, byte[] paramArrayOfByte2)
   {
     int i = paramArrayOfByte1.length > paramArrayOfByte2.length ? paramArrayOfByte1.length : paramArrayOfByte2.length;
     int j = paramArrayOfByte1.length > paramArrayOfByte2.length ? paramArrayOfByte2.length : paramArrayOfByte1.length;
@@ -411,7 +411,7 @@ public class BitMap
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.store.BitMap
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

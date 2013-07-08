@@ -1,109 +1,201 @@
-/*   1:    */package it.unimi.dsi.fastutil.bytes;
-/*   2:    */
-/*   3:    */import it.unimi.dsi.fastutil.objects.AbstractObjectCollection;
-/*   4:    */import it.unimi.dsi.fastutil.objects.AbstractObjectIterator;
-/*   5:    */import it.unimi.dsi.fastutil.objects.ObjectBidirectionalIterator;
-/*   6:    */import it.unimi.dsi.fastutil.objects.ObjectCollection;
-/*   7:    */import it.unimi.dsi.fastutil.objects.ObjectIterator;
-/*   8:    */import it.unimi.dsi.fastutil.objects.ObjectSortedSet;
-/*   9:    */import java.util.Map.Entry;
-/*  10:    */
-/*  50:    */public abstract class AbstractByte2ObjectSortedMap<V>
-/*  51:    */  extends AbstractByte2ObjectMap<V>
-/*  52:    */  implements Byte2ObjectSortedMap<V>
-/*  53:    */{
-/*  54:    */  public static final long serialVersionUID = -1773560792952436569L;
-/*  55:    */  
-/*  56:    */  public Byte2ObjectSortedMap<V> headMap(Byte to)
-/*  57:    */  {
-/*  58: 58 */    return headMap(to.byteValue());
-/*  59:    */  }
-/*  60:    */  
-/*  61:    */  public Byte2ObjectSortedMap<V> tailMap(Byte from) {
-/*  62: 62 */    return tailMap(from.byteValue());
-/*  63:    */  }
-/*  64:    */  
-/*  65:    */  public Byte2ObjectSortedMap<V> subMap(Byte from, Byte to) {
-/*  66: 66 */    return subMap(from.byteValue(), to.byteValue());
-/*  67:    */  }
-/*  68:    */  
-/*  69:    */  public Byte firstKey() {
-/*  70: 70 */    return Byte.valueOf(firstByteKey());
-/*  71:    */  }
-/*  72:    */  
-/*  73:    */  public Byte lastKey() {
-/*  74: 74 */    return Byte.valueOf(lastByteKey());
-/*  75:    */  }
-/*  76:    */  
-/*  88: 88 */  public ByteSortedSet keySet() { return new KeySet(); }
-/*  89:    */  
-/*  90:    */  protected class KeySet extends AbstractByteSortedSet { protected KeySet() {}
-/*  91:    */    
-/*  92: 92 */    public boolean contains(byte k) { return AbstractByte2ObjectSortedMap.this.containsKey(k); }
-/*  93: 93 */    public int size() { return AbstractByte2ObjectSortedMap.this.size(); }
-/*  94: 94 */    public void clear() { AbstractByte2ObjectSortedMap.this.clear(); }
-/*  95: 95 */    public ByteComparator comparator() { return AbstractByte2ObjectSortedMap.this.comparator(); }
-/*  96: 96 */    public byte firstByte() { return AbstractByte2ObjectSortedMap.this.firstByteKey(); }
-/*  97: 97 */    public byte lastByte() { return AbstractByte2ObjectSortedMap.this.lastByteKey(); }
-/*  98:    */    
-/*  99: 99 */    public ByteSortedSet headSet(byte to) { return AbstractByte2ObjectSortedMap.this.headMap(to).keySet(); }
-/* 100:100 */    public ByteSortedSet tailSet(byte from) { return AbstractByte2ObjectSortedMap.this.tailMap(from).keySet(); }
-/* 101:101 */    public ByteSortedSet subSet(byte from, byte to) { return AbstractByte2ObjectSortedMap.this.subMap(from, to).keySet(); }
-/* 102:    */    
-/* 103:103 */    public ByteBidirectionalIterator iterator(byte from) { return new AbstractByte2ObjectSortedMap.KeySetIterator(AbstractByte2ObjectSortedMap.this.entrySet().iterator(new AbstractByte2ObjectMap.BasicEntry(from, null))); }
-/* 104:104 */    public ByteBidirectionalIterator iterator() { return new AbstractByte2ObjectSortedMap.KeySetIterator(AbstractByte2ObjectSortedMap.this.entrySet().iterator()); }
-/* 105:    */  }
-/* 106:    */  
-/* 109:    */  protected static class KeySetIterator<V>
-/* 110:    */    extends AbstractByteBidirectionalIterator
-/* 111:    */  {
-/* 112:    */    protected final ObjectBidirectionalIterator<Map.Entry<Byte, V>> i;
-/* 113:    */    
-/* 116:    */    public KeySetIterator(ObjectBidirectionalIterator<Map.Entry<Byte, V>> i)
-/* 117:    */    {
-/* 118:118 */      this.i = i;
-/* 119:    */    }
-/* 120:    */    
-/* 121:121 */    public byte nextByte() { return ((Byte)((Map.Entry)this.i.next()).getKey()).byteValue(); }
-/* 122:122 */    public byte previousByte() { return ((Byte)((Map.Entry)this.i.previous()).getKey()).byteValue(); }
-/* 123:    */    
-/* 124:124 */    public boolean hasNext() { return this.i.hasNext(); }
-/* 125:125 */    public boolean hasPrevious() { return this.i.hasPrevious(); }
-/* 126:    */  }
-/* 127:    */  
-/* 143:143 */  public ObjectCollection<V> values() { return new ValuesCollection(); }
-/* 144:    */  
-/* 145:    */  protected class ValuesCollection extends AbstractObjectCollection<V> {
-/* 146:    */    protected ValuesCollection() {}
-/* 147:    */    
-/* 148:148 */    public ObjectIterator<V> iterator() { return new AbstractByte2ObjectSortedMap.ValuesIterator(AbstractByte2ObjectSortedMap.this.entrySet().iterator()); }
-/* 149:149 */    public boolean contains(Object k) { return AbstractByte2ObjectSortedMap.this.containsValue(k); }
-/* 150:150 */    public int size() { return AbstractByte2ObjectSortedMap.this.size(); }
-/* 151:151 */    public void clear() { AbstractByte2ObjectSortedMap.this.clear(); }
-/* 152:    */  }
-/* 153:    */  
-/* 156:    */  protected static class ValuesIterator<V>
-/* 157:    */    extends AbstractObjectIterator<V>
-/* 158:    */  {
-/* 159:    */    protected final ObjectBidirectionalIterator<Map.Entry<Byte, V>> i;
-/* 160:    */    
-/* 163:    */    public ValuesIterator(ObjectBidirectionalIterator<Map.Entry<Byte, V>> i)
-/* 164:    */    {
-/* 165:165 */      this.i = i;
-/* 166:    */    }
-/* 167:    */    
-/* 168:168 */    public V next() { return ((Map.Entry)this.i.next()).getValue(); }
-/* 169:169 */    public boolean hasNext() { return this.i.hasNext(); }
-/* 170:    */  }
-/* 171:    */  
-/* 172:    */  public ObjectSortedSet<Map.Entry<Byte, V>> entrySet()
-/* 173:    */  {
-/* 174:174 */    return byte2ObjectEntrySet();
-/* 175:    */  }
-/* 176:    */}
+package it.unimi.dsi.fastutil.bytes;
+
+import it.unimi.dsi.fastutil.objects.AbstractObjectCollection;
+import it.unimi.dsi.fastutil.objects.AbstractObjectIterator;
+import it.unimi.dsi.fastutil.objects.ObjectBidirectionalIterator;
+import it.unimi.dsi.fastutil.objects.ObjectCollection;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
+import it.unimi.dsi.fastutil.objects.ObjectSortedSet;
+import java.util.Map.Entry;
+
+public abstract class AbstractByte2ObjectSortedMap<V>
+  extends AbstractByte2ObjectMap<V>
+  implements Byte2ObjectSortedMap<V>
+{
+  public static final long serialVersionUID = -1773560792952436569L;
+  
+  public Byte2ObjectSortedMap<V> headMap(Byte local_to)
+  {
+    return headMap(local_to.byteValue());
+  }
+  
+  public Byte2ObjectSortedMap<V> tailMap(Byte from)
+  {
+    return tailMap(from.byteValue());
+  }
+  
+  public Byte2ObjectSortedMap<V> subMap(Byte from, Byte local_to)
+  {
+    return subMap(from.byteValue(), local_to.byteValue());
+  }
+  
+  public Byte firstKey()
+  {
+    return Byte.valueOf(firstByteKey());
+  }
+  
+  public Byte lastKey()
+  {
+    return Byte.valueOf(lastByteKey());
+  }
+  
+  public ByteSortedSet keySet()
+  {
+    return new KeySet();
+  }
+  
+  public ObjectCollection<V> values()
+  {
+    return new ValuesCollection();
+  }
+  
+  public ObjectSortedSet<Map.Entry<Byte, V>> entrySet()
+  {
+    return byte2ObjectEntrySet();
+  }
+  
+  protected static class ValuesIterator<V>
+    extends AbstractObjectIterator<V>
+  {
+    protected final ObjectBidirectionalIterator<Map.Entry<Byte, V>> field_3;
+    
+    public ValuesIterator(ObjectBidirectionalIterator<Map.Entry<Byte, V>> local_i)
+    {
+      this.field_3 = local_i;
+    }
+    
+    public V next()
+    {
+      return ((Map.Entry)this.field_3.next()).getValue();
+    }
+    
+    public boolean hasNext()
+    {
+      return this.field_3.hasNext();
+    }
+  }
+  
+  protected class ValuesCollection
+    extends AbstractObjectCollection<V>
+  {
+    protected ValuesCollection() {}
+    
+    public ObjectIterator<V> iterator()
+    {
+      return new AbstractByte2ObjectSortedMap.ValuesIterator(AbstractByte2ObjectSortedMap.this.entrySet().iterator());
+    }
+    
+    public boolean contains(Object local_k)
+    {
+      return AbstractByte2ObjectSortedMap.this.containsValue(local_k);
+    }
+    
+    public int size()
+    {
+      return AbstractByte2ObjectSortedMap.this.size();
+    }
+    
+    public void clear()
+    {
+      AbstractByte2ObjectSortedMap.this.clear();
+    }
+  }
+  
+  protected static class KeySetIterator<V>
+    extends AbstractByteBidirectionalIterator
+  {
+    protected final ObjectBidirectionalIterator<Map.Entry<Byte, V>> field_58;
+    
+    public KeySetIterator(ObjectBidirectionalIterator<Map.Entry<Byte, V>> local_i)
+    {
+      this.field_58 = local_i;
+    }
+    
+    public byte nextByte()
+    {
+      return ((Byte)((Map.Entry)this.field_58.next()).getKey()).byteValue();
+    }
+    
+    public byte previousByte()
+    {
+      return ((Byte)((Map.Entry)this.field_58.previous()).getKey()).byteValue();
+    }
+    
+    public boolean hasNext()
+    {
+      return this.field_58.hasNext();
+    }
+    
+    public boolean hasPrevious()
+    {
+      return this.field_58.hasPrevious();
+    }
+  }
+  
+  protected class KeySet
+    extends AbstractByteSortedSet
+  {
+    protected KeySet() {}
+    
+    public boolean contains(byte local_k)
+    {
+      return AbstractByte2ObjectSortedMap.this.containsKey(local_k);
+    }
+    
+    public int size()
+    {
+      return AbstractByte2ObjectSortedMap.this.size();
+    }
+    
+    public void clear()
+    {
+      AbstractByte2ObjectSortedMap.this.clear();
+    }
+    
+    public ByteComparator comparator()
+    {
+      return AbstractByte2ObjectSortedMap.this.comparator();
+    }
+    
+    public byte firstByte()
+    {
+      return AbstractByte2ObjectSortedMap.this.firstByteKey();
+    }
+    
+    public byte lastByte()
+    {
+      return AbstractByte2ObjectSortedMap.this.lastByteKey();
+    }
+    
+    public ByteSortedSet headSet(byte local_to)
+    {
+      return AbstractByte2ObjectSortedMap.this.headMap(local_to).keySet();
+    }
+    
+    public ByteSortedSet tailSet(byte from)
+    {
+      return AbstractByte2ObjectSortedMap.this.tailMap(from).keySet();
+    }
+    
+    public ByteSortedSet subSet(byte from, byte local_to)
+    {
+      return AbstractByte2ObjectSortedMap.this.subMap(from, local_to).keySet();
+    }
+    
+    public ByteBidirectionalIterator iterator(byte from)
+    {
+      return new AbstractByte2ObjectSortedMap.KeySetIterator(AbstractByte2ObjectSortedMap.this.entrySet().iterator(new AbstractByte2ObjectMap.BasicEntry(from, null)));
+    }
+    
+    public ByteBidirectionalIterator iterator()
+    {
+      return new AbstractByte2ObjectSortedMap.KeySetIterator(AbstractByte2ObjectSortedMap.this.entrySet().iterator());
+    }
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.bytes.AbstractByte2ObjectSortedMap
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

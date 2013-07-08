@@ -991,7 +991,7 @@ public class Logger
       switch (this.database.defaultIsolationLevel)
       {
       case 2: 
-        str = new StringBuffer("READ").append(' ').append("COMMITTED").toString().toLowerCase();
+        str = ("READ" + ' ' + "COMMITTED").toLowerCase();
         break;
       case 8: 
         str = "SERIALIZABLE".toLowerCase();
@@ -1542,7 +1542,7 @@ public class Logger
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.persist.Logger
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

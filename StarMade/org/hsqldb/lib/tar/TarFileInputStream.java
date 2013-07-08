@@ -40,7 +40,7 @@ public class TarFileInputStream
       throw new FileNotFoundException(paramFile.getAbsolutePath());
     }
     if (!paramFile.canRead()) {
-      throw new IOException(RB.read_denied.getString(new String[] { paramFile.getAbsolutePath() }));
+      throw new IOException(class_1436.read_denied.getString(new String[] { paramFile.getAbsolutePath() }));
     }
     this.readBufferBlocks = paramInt2;
     this.compressionType = paramInt1;
@@ -54,7 +54,7 @@ public class TarFileInputStream
       this.readStream = new GZIPInputStream(new FileInputStream(paramFile), this.readBuffer.length);
       break;
     default: 
-      throw new IllegalArgumentException(RB.compression_unknown.getString(paramInt1));
+      throw new IllegalArgumentException(class_1436.compression_unknown.getString(paramInt1));
     }
   }
   
@@ -69,7 +69,7 @@ public class TarFileInputStream
     int i = this.readStream.read(this.readBuffer, 0, paramInt * 512);
     this.bytesRead += i;
     if (i != paramInt * 512) {
-      throw new TarMalformatException(RB.insufficient_read.getString(paramInt * 512, i));
+      throw new TarMalformatException(class_1436.insufficient_read.getString(paramInt * 512, i));
     }
   }
   
@@ -82,7 +82,7 @@ public class TarFileInputStream
     {
       int k = this.readStream.read(this.readBuffer, i, j - i);
       if (k < 0) {
-        throw new EOFException(RB.decompression_ranout.getString(i, j));
+        throw new EOFException(class_1436.decompression_ranout.getString(i, j));
       }
       this.bytesRead += k;
       i += k;
@@ -131,7 +131,7 @@ public class TarFileInputStream
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.lib.tar.TarFileInputStream
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

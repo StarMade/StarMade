@@ -1,57 +1,68 @@
-/*   1:    */package it.unimi.dsi.fastutil.shorts;
-/*   2:    */
-/*   3:    */import java.io.Serializable;
-/*   4:    */
-/*  64:    */public abstract class AbstractShort2BooleanFunction
-/*  65:    */  implements Short2BooleanFunction, Serializable
-/*  66:    */{
-/*  67:    */  public static final long serialVersionUID = -4940583368468432370L;
-/*  68:    */  protected boolean defRetValue;
-/*  69:    */  
-/*  70:    */  public void defaultReturnValue(boolean rv)
-/*  71:    */  {
-/*  72: 72 */    this.defRetValue = rv;
-/*  73:    */  }
-/*  74:    */  
-/*  75: 75 */  public boolean defaultReturnValue() { return this.defRetValue; }
-/*  76:    */  
-/*  77:    */  public boolean put(short key, boolean value) {
-/*  78: 78 */    throw new UnsupportedOperationException();
-/*  79:    */  }
-/*  80:    */  
-/*  81: 81 */  public boolean remove(short key) { throw new UnsupportedOperationException(); }
-/*  82:    */  
-/*  83:    */  public void clear() {
-/*  84: 84 */    throw new UnsupportedOperationException();
-/*  85:    */  }
-/*  86:    */  
-/*  87: 87 */  public boolean containsKey(Object ok) { return containsKey(((Short)ok).shortValue()); }
-/*  88:    */  
-/*  93:    */  public Boolean get(Object ok)
-/*  94:    */  {
-/*  95: 95 */    short k = ((Short)ok).shortValue();
-/*  96: 96 */    return containsKey(k) ? Boolean.valueOf(get(k)) : null;
-/*  97:    */  }
-/*  98:    */  
-/* 102:    */  public Boolean put(Short ok, Boolean ov)
-/* 103:    */  {
-/* 104:104 */    short k = ok.shortValue();
-/* 105:105 */    boolean containsKey = containsKey(k);
-/* 106:106 */    boolean v = put(k, ov.booleanValue());
-/* 107:107 */    return containsKey ? Boolean.valueOf(v) : null;
-/* 108:    */  }
-/* 109:    */  
-/* 113:    */  public Boolean remove(Object ok)
-/* 114:    */  {
-/* 115:115 */    short k = ((Short)ok).shortValue();
-/* 116:116 */    boolean containsKey = containsKey(k);
-/* 117:117 */    boolean v = remove(k);
-/* 118:118 */    return containsKey ? Boolean.valueOf(v) : null;
-/* 119:    */  }
-/* 120:    */}
+package it.unimi.dsi.fastutil.shorts;
+
+import java.io.Serializable;
+
+public abstract class AbstractShort2BooleanFunction
+  implements Short2BooleanFunction, Serializable
+{
+  public static final long serialVersionUID = -4940583368468432370L;
+  protected boolean defRetValue;
+  
+  public void defaultReturnValue(boolean local_rv)
+  {
+    this.defRetValue = local_rv;
+  }
+  
+  public boolean defaultReturnValue()
+  {
+    return this.defRetValue;
+  }
+  
+  public boolean put(short key, boolean value)
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  public boolean remove(short key)
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  public void clear()
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  public boolean containsKey(Object local_ok)
+  {
+    return containsKey(((Short)local_ok).shortValue());
+  }
+  
+  public Boolean get(Object local_ok)
+  {
+    short local_k = ((Short)local_ok).shortValue();
+    return containsKey(local_k) ? Boolean.valueOf(get(local_k)) : null;
+  }
+  
+  public Boolean put(Short local_ok, Boolean local_ov)
+  {
+    short local_k = local_ok.shortValue();
+    boolean containsKey = containsKey(local_k);
+    boolean local_v = put(local_k, local_ov.booleanValue());
+    return containsKey ? Boolean.valueOf(local_v) : null;
+  }
+  
+  public Boolean remove(Object local_ok)
+  {
+    short local_k = ((Short)local_ok).shortValue();
+    boolean containsKey = containsKey(local_k);
+    boolean local_v = remove(local_k);
+    return containsKey ? Boolean.valueOf(local_v) : null;
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.shorts.AbstractShort2BooleanFunction
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

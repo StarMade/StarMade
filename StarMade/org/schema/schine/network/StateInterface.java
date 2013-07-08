@@ -1,9 +1,9 @@
 package org.schema.schine.network;
 
+import class_1079;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ThreadPoolExecutor;
 import org.schema.schine.network.objects.Sendable;
-import wB;
 
 public abstract interface StateInterface
 {
@@ -47,9 +47,9 @@ public abstract interface StateInterface
   
   public abstract void needsNotify(Sendable paramSendable);
   
-  public abstract String onAutoComplete(String paramString1, wB paramwB, String paramString2);
+  public abstract String onAutoComplete(String paramString1, class_1079 paramclass_1079, String paramString2);
   
-  public abstract void onStringCommand(String paramString1, wB paramwB, String paramString2);
+  public abstract void onStringCommand(String paramString1, class_1079 paramclass_1079, String paramString2);
   
   public abstract boolean onChatTextEnterHook(ChatSystem paramChatSystem, String paramString, boolean paramBoolean);
   
@@ -57,7 +57,7 @@ public abstract interface StateInterface
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.schine.network.StateInterface
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

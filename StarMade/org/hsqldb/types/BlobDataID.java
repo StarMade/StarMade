@@ -9,17 +9,17 @@ import org.hsqldb.result.ResultLob;
 public class BlobDataID
   implements BlobData
 {
-  long id;
+  long field_300;
   long length = -1L;
   
   public BlobDataID(long paramLong)
   {
-    this.id = paramLong;
+    this.field_300 = paramLong;
   }
   
   public BlobData duplicate(SessionInterface paramSessionInterface)
   {
-    ResultLob localResultLob = ResultLob.newLobDuplicateRequest(this.id);
+    ResultLob localResultLob = ResultLob.newLobDuplicateRequest(this.field_300);
     Result localResult = paramSessionInterface.execute(localResultLob);
     if (localResult.isError()) {
       throw localResult.getException();
@@ -48,7 +48,7 @@ public class BlobDataID
   
   public byte[] getBytes(SessionInterface paramSessionInterface, long paramLong, int paramInt)
   {
-    ResultLob localResultLob = ResultLob.newLobGetBytesRequest(this.id, paramLong, paramInt);
+    ResultLob localResultLob = ResultLob.newLobGetBytesRequest(this.field_300, paramLong, paramInt);
     Result localResult = paramSessionInterface.execute(localResultLob);
     if (localResult.isError()) {
       throw Error.error(localResult);
@@ -58,7 +58,7 @@ public class BlobDataID
   
   public BlobData getBlob(SessionInterface paramSessionInterface, long paramLong1, long paramLong2)
   {
-    ResultLob localResultLob = ResultLob.newLobGetRequest(this.id, paramLong1, paramLong2);
+    ResultLob localResultLob = ResultLob.newLobGetRequest(this.field_300, paramLong1, paramLong2);
     Result localResult = paramSessionInterface.execute(localResultLob);
     if (localResult.isError()) {
       throw Error.error(localResult);
@@ -69,12 +69,12 @@ public class BlobDataID
   
   public long getId()
   {
-    return this.id;
+    return this.field_300;
   }
   
   public void setId(long paramLong)
   {
-    this.id = paramLong;
+    this.field_300 = paramLong;
   }
   
   public int getStreamBlockSize()
@@ -92,7 +92,7 @@ public class BlobDataID
     if (this.length > -1L) {
       return this.length;
     }
-    ResultLob localResultLob = ResultLob.newLobGetLengthRequest(this.id);
+    ResultLob localResultLob = ResultLob.newLobGetLengthRequest(this.field_300);
     Result localResult = paramSessionInterface.execute(localResultLob);
     if (localResult.isError()) {
       throw localResult.getException();
@@ -113,7 +113,7 @@ public class BlobDataID
   
   public long position(SessionInterface paramSessionInterface, BlobData paramBlobData, long paramLong)
   {
-    ResultLob localResultLob = ResultLob.newLobGetCharPatternPositionRequest(this.id, paramBlobData.getId(), paramLong);
+    ResultLob localResultLob = ResultLob.newLobGetCharPatternPositionRequest(this.field_300, paramBlobData.getId(), paramLong);
     Result localResult = paramSessionInterface.execute(localResultLob);
     if (localResult.isError()) {
       throw localResult.getException();
@@ -123,7 +123,7 @@ public class BlobDataID
   
   public long position(SessionInterface paramSessionInterface, byte[] paramArrayOfByte, long paramLong)
   {
-    ResultLob localResultLob = ResultLob.newLobGetBytePatternPositionRequest(this.id, paramArrayOfByte, paramLong);
+    ResultLob localResultLob = ResultLob.newLobGetBytePatternPositionRequest(this.field_300, paramArrayOfByte, paramLong);
     Result localResult = paramSessionInterface.execute(localResultLob);
     if (localResult.isError()) {
       throw localResult.getException();
@@ -133,7 +133,7 @@ public class BlobDataID
   
   public long nonZeroLength(SessionInterface paramSessionInterface)
   {
-    ResultLob localResultLob = ResultLob.newLobGetTruncateLength(this.id);
+    ResultLob localResultLob = ResultLob.newLobGetTruncateLength(this.field_300);
     Result localResult = paramSessionInterface.execute(localResultLob);
     if (localResult.isError()) {
       throw localResult.getException();
@@ -152,7 +152,7 @@ public class BlobDataID
       System.arraycopy(paramArrayOfByte, paramInt1, localObject, 0, paramInt2);
       paramArrayOfByte = (byte[])localObject;
     }
-    Object localObject = ResultLob.newLobSetBytesRequest(this.id, paramLong, paramArrayOfByte);
+    Object localObject = ResultLob.newLobSetBytesRequest(this.field_300, paramLong, paramArrayOfByte);
     Result localResult = paramSessionInterface.execute((Result)localObject);
     if (localResult.isError()) {
       throw localResult.getException();
@@ -180,7 +180,7 @@ public class BlobDataID
   
   public void truncate(SessionInterface paramSessionInterface, long paramLong)
   {
-    ResultLob localResultLob = ResultLob.newLobTruncateRequest(this.id, paramLong);
+    ResultLob localResultLob = ResultLob.newLobTruncateRequest(this.field_300, paramLong);
     Result localResult = paramSessionInterface.execute(localResultLob);
     if (localResult.isError()) {
       throw localResult.getException();
@@ -195,19 +195,19 @@ public class BlobDataID
   public boolean equals(Object paramObject)
   {
     if ((paramObject instanceof BlobDataID)) {
-      return this.id == ((BlobDataID)paramObject).id;
+      return this.field_300 == ((BlobDataID)paramObject).field_300;
     }
     return false;
   }
   
   public int hashCode()
   {
-    return (int)this.id;
+    return (int)this.field_300;
   }
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.types.BlobDataID
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

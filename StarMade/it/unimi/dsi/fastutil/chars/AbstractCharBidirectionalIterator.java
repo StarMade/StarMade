@@ -1,23 +1,31 @@
-/*  1:   */package it.unimi.dsi.fastutil.chars;
-/*  2:   */
-/* 54:   */public abstract class AbstractCharBidirectionalIterator
-/* 55:   */  extends AbstractCharIterator
-/* 56:   */  implements CharBidirectionalIterator
-/* 57:   */{
-/* 58:58 */  public char previousChar() { return previous().charValue(); }
-/* 59:   */  
-/* 60:60 */  public Character previous() { return Character.valueOf(previousChar()); }
-/* 61:   */  
-/* 63:   */  public int back(int n)
-/* 64:   */  {
-/* 65:65 */    int i = n;
-/* 66:66 */    while ((i-- != 0) && (hasPrevious())) previousChar();
-/* 67:67 */    return n - i - 1;
-/* 68:   */  }
-/* 69:   */}
+package it.unimi.dsi.fastutil.chars;
+
+public abstract class AbstractCharBidirectionalIterator
+  extends AbstractCharIterator
+  implements CharBidirectionalIterator
+{
+  public char previousChar()
+  {
+    return previous().charValue();
+  }
+  
+  public Character previous()
+  {
+    return Character.valueOf(previousChar());
+  }
+  
+  public int back(int local_n)
+  {
+    int local_i = local_n;
+    while ((local_i-- != 0) && (hasPrevious())) {
+      previousChar();
+    }
+    return local_n - local_i - 1;
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.chars.AbstractCharBidirectionalIterator
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

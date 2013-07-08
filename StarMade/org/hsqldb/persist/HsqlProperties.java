@@ -24,7 +24,7 @@ public class HsqlProperties
   protected int[] errorCodes = ValuePool.emptyIntArray;
   protected String[] errorKeys = ValuePool.emptyStringArray;
   protected boolean resource = false;
-  protected FileAccess fa;
+  protected FileAccess field_1710;
   protected HashMap metaData;
   public static final int indexName = 0;
   public static final int indexType = 1;
@@ -52,7 +52,7 @@ public class HsqlProperties
     this.stringProps = new Properties();
     this.fileName = paramString1;
     this.fileExtension = paramString2;
-    this.fa = FileUtil.getFileUtil();
+    this.field_1710 = FileUtil.getFileUtil();
   }
   
   public HsqlProperties(HashMap paramHashMap, String paramString, FileAccess paramFileAccess, boolean paramBoolean)
@@ -60,7 +60,7 @@ public class HsqlProperties
     this.stringProps = new Properties();
     this.fileName = paramString;
     this.fileExtension = ".properties";
-    this.fa = paramFileAccess;
+    this.field_1710 = paramFileAccess;
     this.metaData = paramHashMap;
   }
   
@@ -178,7 +178,7 @@ public class HsqlProperties
       return false;
     }
     String str = this.fileName + this.fileExtension;
-    return this.fa.isStreamElement(str);
+    return this.field_1710.isStreamElement(str);
   }
   
   public boolean load()
@@ -194,7 +194,7 @@ public class HsqlProperties
     String str = this.fileName + this.fileExtension;
     try
     {
-      localInputStream = this.fa.openInputStreamElement(str);
+      localInputStream = this.field_1710.openInputStreamElement(str);
       this.stringProps.load(localInputStream);
     }
     finally
@@ -219,9 +219,9 @@ public class HsqlProperties
   public void save(String paramString)
     throws Exception
   {
-    this.fa.createParentDirs(paramString);
-    OutputStream localOutputStream = this.fa.openOutputStreamElement(paramString);
-    FileAccess.FileSync localFileSync = this.fa.getFileSync(localOutputStream);
+    this.field_1710.createParentDirs(paramString);
+    OutputStream localOutputStream = this.field_1710.openOutputStreamElement(paramString);
+    FileAccess.FileSync localFileSync = this.field_1710.getFileSync(localOutputStream);
     JavaSystem.saveProperties(this.stringProps, "HSQL Database Engine 2.2.9", localOutputStream);
     localOutputStream.flush();
     localFileSync.sync();
@@ -448,7 +448,7 @@ public class HsqlProperties
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.persist.HsqlProperties
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

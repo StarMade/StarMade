@@ -1,14 +1,14 @@
 package org.schema.game.common.controller.elements;
 
-import le;
+import class_796;
 
 public abstract interface BlockActivationListenerInterface
 {
-  public abstract void onActivate(le paramle, boolean paramBoolean);
+  public abstract void onActivate(class_796 paramclass_796, boolean paramBoolean);
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.schema.game.common.controller.elements.BlockActivationListenerInterface
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

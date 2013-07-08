@@ -1,221 +1,452 @@
-/*   1:    */package it.unimi.dsi.fastutil.doubles;
-/*   2:    */
-/*   3:    */import it.unimi.dsi.fastutil.objects.ObjectSortedSet;
-/*   4:    */import it.unimi.dsi.fastutil.objects.ObjectSortedSets;
-/*   5:    */import java.io.Serializable;
-/*   6:    */import java.util.Comparator;
-/*   7:    */import java.util.Map.Entry;
-/*   8:    */import java.util.NoSuchElementException;
-/*   9:    */
-/*  60:    */public class Double2DoubleSortedMaps
-/*  61:    */{
-/*  62:    */  public static Comparator<? super Map.Entry<Double, ?>> entryComparator(DoubleComparator comparator)
-/*  63:    */  {
-/*  64: 64 */    new Comparator() {
-/*  65:    */      public int compare(Map.Entry<Double, ?> x, Map.Entry<Double, ?> y) {
-/*  66: 66 */        return this.val$comparator.compare(x.getKey(), y.getKey());
-/*  67:    */      }
-/*  68:    */    };
-/*  69:    */  }
-/*  70:    */  
-/*  72:    */  public static class EmptySortedMap
-/*  73:    */    extends Double2DoubleMaps.EmptyMap
-/*  74:    */    implements Double2DoubleSortedMap, Serializable, Cloneable
-/*  75:    */  {
-/*  76:    */    public static final long serialVersionUID = -7046029254386353129L;
-/*  77:    */    
-/*  78: 78 */    public DoubleComparator comparator() { return null; }
-/*  79:    */    
-/*  80: 80 */    public ObjectSortedSet<Double2DoubleMap.Entry> double2DoubleEntrySet() { return ObjectSortedSets.EMPTY_SET; }
-/*  81:    */    
-/*  82: 82 */    public ObjectSortedSet<Map.Entry<Double, Double>> entrySet() { return ObjectSortedSets.EMPTY_SET; }
-/*  83:    */    
-/*  84: 84 */    public DoubleSortedSet keySet() { return DoubleSortedSets.EMPTY_SET; }
-/*  85:    */    
-/*  86: 86 */    public Double2DoubleSortedMap subMap(double from, double to) { return Double2DoubleSortedMaps.EMPTY_MAP; }
-/*  87:    */    
-/*  88: 88 */    public Double2DoubleSortedMap headMap(double to) { return Double2DoubleSortedMaps.EMPTY_MAP; }
-/*  89:    */    
-/*  90: 90 */    public Double2DoubleSortedMap tailMap(double from) { return Double2DoubleSortedMaps.EMPTY_MAP; }
-/*  91: 91 */    public double firstDoubleKey() { throw new NoSuchElementException(); }
-/*  92: 92 */    public double lastDoubleKey() { throw new NoSuchElementException(); }
-/*  93: 93 */    public Double2DoubleSortedMap headMap(Double oto) { return headMap(oto.doubleValue()); }
-/*  94: 94 */    public Double2DoubleSortedMap tailMap(Double ofrom) { return tailMap(ofrom.doubleValue()); }
-/*  95: 95 */    public Double2DoubleSortedMap subMap(Double ofrom, Double oto) { return subMap(ofrom.doubleValue(), oto.doubleValue()); }
-/*  96: 96 */    public Double firstKey() { return Double.valueOf(firstDoubleKey()); }
-/*  97: 97 */    public Double lastKey() { return Double.valueOf(lastDoubleKey()); }
-/*  98:    */  }
-/*  99:    */  
-/* 103:103 */  public static final EmptySortedMap EMPTY_MAP = new EmptySortedMap();
-/* 104:    */  
-/* 107:    */  public static class Singleton
-/* 108:    */    extends Double2DoubleMaps.Singleton
-/* 109:    */    implements Double2DoubleSortedMap, Serializable, Cloneable
-/* 110:    */  {
-/* 111:    */    public static final long serialVersionUID = -7046029254386353129L;
-/* 112:    */    
-/* 114:    */    protected final DoubleComparator comparator;
-/* 115:    */    
-/* 117:    */    protected Singleton(double key, double value, DoubleComparator comparator)
-/* 118:    */    {
-/* 119:119 */      super(value);
-/* 120:120 */      this.comparator = comparator;
-/* 121:    */    }
-/* 122:    */    
-/* 123:    */    protected Singleton(double key, double value) {
-/* 124:124 */      this(key, value, null);
-/* 125:    */    }
-/* 126:    */    
-/* 127:    */    final int compare(double k1, double k2)
-/* 128:    */    {
-/* 129:129 */      return this.comparator == null ? 1 : k1 == k2 ? 0 : k1 < k2 ? -1 : this.comparator.compare(k1, k2);
-/* 130:    */    }
-/* 131:    */    
-/* 132:132 */    public DoubleComparator comparator() { return this.comparator; }
-/* 133:    */    
-/* 134:    */    public ObjectSortedSet<Double2DoubleMap.Entry> double2DoubleEntrySet() {
-/* 135:135 */      if (this.entries == null) this.entries = ObjectSortedSets.singleton(new Double2DoubleMaps.Singleton.SingletonEntry(this), Double2DoubleSortedMaps.entryComparator(this.comparator)); return (ObjectSortedSet)this.entries; }
-/* 136:    */    
-/* 137:137 */    public ObjectSortedSet<Map.Entry<Double, Double>> entrySet() { return double2DoubleEntrySet(); }
-/* 138:    */    
-/* 139:139 */    public DoubleSortedSet keySet() { if (this.keys == null) this.keys = DoubleSortedSets.singleton(this.key, this.comparator); return (DoubleSortedSet)this.keys;
-/* 140:    */    }
-/* 141:    */    
-/* 142:142 */    public Double2DoubleSortedMap subMap(double from, double to) { if ((compare(from, this.key) <= 0) && (compare(this.key, to) < 0)) return this; return Double2DoubleSortedMaps.EMPTY_MAP;
-/* 143:    */    }
-/* 144:    */    
-/* 145:145 */    public Double2DoubleSortedMap headMap(double to) { if (compare(this.key, to) < 0) return this; return Double2DoubleSortedMaps.EMPTY_MAP;
-/* 146:    */    }
-/* 147:    */    
-/* 148:148 */    public Double2DoubleSortedMap tailMap(double from) { if (compare(from, this.key) <= 0) return this; return Double2DoubleSortedMaps.EMPTY_MAP; }
-/* 149:    */    
-/* 150:150 */    public double firstDoubleKey() { return this.key; }
-/* 151:151 */    public double lastDoubleKey() { return this.key; }
-/* 152:    */    
-/* 154:154 */    public Double2DoubleSortedMap headMap(Double oto) { return headMap(oto.doubleValue()); }
-/* 155:155 */    public Double2DoubleSortedMap tailMap(Double ofrom) { return tailMap(ofrom.doubleValue()); }
-/* 156:156 */    public Double2DoubleSortedMap subMap(Double ofrom, Double oto) { return subMap(ofrom.doubleValue(), oto.doubleValue()); }
-/* 157:    */    
-/* 158:158 */    public Double firstKey() { return Double.valueOf(firstDoubleKey()); }
-/* 159:159 */    public Double lastKey() { return Double.valueOf(lastDoubleKey()); }
-/* 160:    */  }
-/* 161:    */  
-/* 171:    */  public static Double2DoubleSortedMap singleton(Double key, Double value)
-/* 172:    */  {
-/* 173:173 */    return new Singleton(key.doubleValue(), value.doubleValue());
-/* 174:    */  }
-/* 175:    */  
-/* 185:    */  public static Double2DoubleSortedMap singleton(Double key, Double value, DoubleComparator comparator)
-/* 186:    */  {
-/* 187:187 */    return new Singleton(key.doubleValue(), value.doubleValue(), comparator);
-/* 188:    */  }
-/* 189:    */  
-/* 200:    */  public static Double2DoubleSortedMap singleton(double key, double value)
-/* 201:    */  {
-/* 202:202 */    return new Singleton(key, value);
-/* 203:    */  }
-/* 204:    */  
-/* 214:    */  public static Double2DoubleSortedMap singleton(double key, double value, DoubleComparator comparator)
-/* 215:    */  {
-/* 216:216 */    return new Singleton(key, value, comparator);
-/* 217:    */  }
-/* 218:    */  
-/* 220:    */  public static class SynchronizedSortedMap
-/* 221:    */    extends Double2DoubleMaps.SynchronizedMap
-/* 222:    */    implements Double2DoubleSortedMap, Serializable
-/* 223:    */  {
-/* 224:    */    public static final long serialVersionUID = -7046029254386353129L;
-/* 225:    */    
-/* 226:    */    protected final Double2DoubleSortedMap sortedMap;
-/* 227:    */    
-/* 229:    */    protected SynchronizedSortedMap(Double2DoubleSortedMap m, Object sync)
-/* 230:    */    {
-/* 231:231 */      super(sync);
-/* 232:232 */      this.sortedMap = m;
-/* 233:    */    }
-/* 234:    */    
-/* 235:    */    protected SynchronizedSortedMap(Double2DoubleSortedMap m) {
-/* 236:236 */      super();
-/* 237:237 */      this.sortedMap = m;
-/* 238:    */    }
-/* 239:    */    
-/* 240:240 */    public DoubleComparator comparator() { synchronized (this.sync) { return this.sortedMap.comparator(); } }
-/* 241:    */    
-/* 242:242 */    public ObjectSortedSet<Double2DoubleMap.Entry> double2DoubleEntrySet() { if (this.entries == null) this.entries = ObjectSortedSets.synchronize(this.sortedMap.double2DoubleEntrySet(), this.sync); return (ObjectSortedSet)this.entries; }
-/* 243:    */    
-/* 244:244 */    public ObjectSortedSet<Map.Entry<Double, Double>> entrySet() { return double2DoubleEntrySet(); }
-/* 245:245 */    public DoubleSortedSet keySet() { if (this.keys == null) this.keys = DoubleSortedSets.synchronize(this.sortedMap.keySet(), this.sync); return (DoubleSortedSet)this.keys; }
-/* 246:    */    
-/* 247:247 */    public Double2DoubleSortedMap subMap(double from, double to) { return new SynchronizedSortedMap(this.sortedMap.subMap(from, to), this.sync); }
-/* 248:248 */    public Double2DoubleSortedMap headMap(double to) { return new SynchronizedSortedMap(this.sortedMap.headMap(to), this.sync); }
-/* 249:249 */    public Double2DoubleSortedMap tailMap(double from) { return new SynchronizedSortedMap(this.sortedMap.tailMap(from), this.sync); }
-/* 250:    */    
-/* 251:251 */    public double firstDoubleKey() { synchronized (this.sync) { return this.sortedMap.firstDoubleKey(); } }
-/* 252:252 */    public double lastDoubleKey() { synchronized (this.sync) { return this.sortedMap.lastDoubleKey();
-/* 253:    */      } }
-/* 254:    */    
-/* 255:255 */    public Double firstKey() { synchronized (this.sync) { return (Double)this.sortedMap.firstKey(); } }
-/* 256:256 */    public Double lastKey() { synchronized (this.sync) { return (Double)this.sortedMap.lastKey(); } }
-/* 257:    */    
-/* 258:258 */    public Double2DoubleSortedMap subMap(Double from, Double to) { return new SynchronizedSortedMap(this.sortedMap.subMap(from, to), this.sync); }
-/* 259:259 */    public Double2DoubleSortedMap headMap(Double to) { return new SynchronizedSortedMap(this.sortedMap.headMap(to), this.sync); }
-/* 260:260 */    public Double2DoubleSortedMap tailMap(Double from) { return new SynchronizedSortedMap(this.sortedMap.tailMap(from), this.sync); }
-/* 261:    */  }
-/* 262:    */  
-/* 270:    */  public static Double2DoubleSortedMap synchronize(Double2DoubleSortedMap m)
-/* 271:    */  {
-/* 272:272 */    return new SynchronizedSortedMap(m);
-/* 273:    */  }
-/* 274:    */  
-/* 280:    */  public static Double2DoubleSortedMap synchronize(Double2DoubleSortedMap m, Object sync)
-/* 281:    */  {
-/* 282:282 */    return new SynchronizedSortedMap(m, sync);
-/* 283:    */  }
-/* 284:    */  
-/* 286:    */  public static class UnmodifiableSortedMap
-/* 287:    */    extends Double2DoubleMaps.UnmodifiableMap
-/* 288:    */    implements Double2DoubleSortedMap, Serializable
-/* 289:    */  {
-/* 290:    */    public static final long serialVersionUID = -7046029254386353129L;
-/* 291:    */    
-/* 292:    */    protected final Double2DoubleSortedMap sortedMap;
-/* 293:    */    
-/* 294:    */    protected UnmodifiableSortedMap(Double2DoubleSortedMap m)
-/* 295:    */    {
-/* 296:296 */      super();
-/* 297:297 */      this.sortedMap = m;
-/* 298:    */    }
-/* 299:    */    
-/* 300:300 */    public DoubleComparator comparator() { return this.sortedMap.comparator(); }
-/* 301:    */    
-/* 302:302 */    public ObjectSortedSet<Double2DoubleMap.Entry> double2DoubleEntrySet() { if (this.entries == null) this.entries = ObjectSortedSets.unmodifiable(this.sortedMap.double2DoubleEntrySet()); return (ObjectSortedSet)this.entries; }
-/* 303:    */    
-/* 304:304 */    public ObjectSortedSet<Map.Entry<Double, Double>> entrySet() { return double2DoubleEntrySet(); }
-/* 305:305 */    public DoubleSortedSet keySet() { if (this.keys == null) this.keys = DoubleSortedSets.unmodifiable(this.sortedMap.keySet()); return (DoubleSortedSet)this.keys; }
-/* 306:    */    
-/* 307:307 */    public Double2DoubleSortedMap subMap(double from, double to) { return new UnmodifiableSortedMap(this.sortedMap.subMap(from, to)); }
-/* 308:308 */    public Double2DoubleSortedMap headMap(double to) { return new UnmodifiableSortedMap(this.sortedMap.headMap(to)); }
-/* 309:309 */    public Double2DoubleSortedMap tailMap(double from) { return new UnmodifiableSortedMap(this.sortedMap.tailMap(from)); }
-/* 310:    */    
-/* 311:311 */    public double firstDoubleKey() { return this.sortedMap.firstDoubleKey(); }
-/* 312:312 */    public double lastDoubleKey() { return this.sortedMap.lastDoubleKey(); }
-/* 313:    */    
-/* 315:315 */    public Double firstKey() { return (Double)this.sortedMap.firstKey(); }
-/* 316:316 */    public Double lastKey() { return (Double)this.sortedMap.lastKey(); }
-/* 317:    */    
-/* 318:318 */    public Double2DoubleSortedMap subMap(Double from, Double to) { return new UnmodifiableSortedMap(this.sortedMap.subMap(from, to)); }
-/* 319:319 */    public Double2DoubleSortedMap headMap(Double to) { return new UnmodifiableSortedMap(this.sortedMap.headMap(to)); }
-/* 320:320 */    public Double2DoubleSortedMap tailMap(Double from) { return new UnmodifiableSortedMap(this.sortedMap.tailMap(from)); }
-/* 321:    */  }
-/* 322:    */  
-/* 330:    */  public static Double2DoubleSortedMap unmodifiable(Double2DoubleSortedMap m)
-/* 331:    */  {
-/* 332:332 */    return new UnmodifiableSortedMap(m);
-/* 333:    */  }
-/* 334:    */}
+package it.unimi.dsi.fastutil.doubles;
+
+import it.unimi.dsi.fastutil.objects.ObjectSortedSet;
+import it.unimi.dsi.fastutil.objects.ObjectSortedSets;
+import java.io.Serializable;
+import java.util.Comparator;
+import java.util.Map.Entry;
+import java.util.NoSuchElementException;
+
+public class Double2DoubleSortedMaps
+{
+  public static final EmptySortedMap EMPTY_MAP = new EmptySortedMap();
+  
+  public static Comparator<? super Map.Entry<Double, ?>> entryComparator(DoubleComparator comparator)
+  {
+    new Comparator()
+    {
+      public int compare(Map.Entry<Double, ?> local_x, Map.Entry<Double, ?> local_y)
+      {
+        return this.val$comparator.compare(local_x.getKey(), local_y.getKey());
+      }
+    };
+  }
+  
+  public static Double2DoubleSortedMap singleton(Double key, Double value)
+  {
+    return new Singleton(key.doubleValue(), value.doubleValue());
+  }
+  
+  public static Double2DoubleSortedMap singleton(Double key, Double value, DoubleComparator comparator)
+  {
+    return new Singleton(key.doubleValue(), value.doubleValue(), comparator);
+  }
+  
+  public static Double2DoubleSortedMap singleton(double key, double value)
+  {
+    return new Singleton(key, value);
+  }
+  
+  public static Double2DoubleSortedMap singleton(double key, double value, DoubleComparator comparator)
+  {
+    return new Singleton(key, value, comparator);
+  }
+  
+  public static Double2DoubleSortedMap synchronize(Double2DoubleSortedMap local_m)
+  {
+    return new SynchronizedSortedMap(local_m);
+  }
+  
+  public static Double2DoubleSortedMap synchronize(Double2DoubleSortedMap local_m, Object sync)
+  {
+    return new SynchronizedSortedMap(local_m, sync);
+  }
+  
+  public static Double2DoubleSortedMap unmodifiable(Double2DoubleSortedMap local_m)
+  {
+    return new UnmodifiableSortedMap(local_m);
+  }
+  
+  public static class UnmodifiableSortedMap
+    extends Double2DoubleMaps.UnmodifiableMap
+    implements Double2DoubleSortedMap, Serializable
+  {
+    public static final long serialVersionUID = -7046029254386353129L;
+    protected final Double2DoubleSortedMap sortedMap;
+    
+    protected UnmodifiableSortedMap(Double2DoubleSortedMap local_m)
+    {
+      super();
+      this.sortedMap = local_m;
+    }
+    
+    public DoubleComparator comparator()
+    {
+      return this.sortedMap.comparator();
+    }
+    
+    public ObjectSortedSet<Double2DoubleMap.Entry> double2DoubleEntrySet()
+    {
+      if (this.entries == null) {
+        this.entries = ObjectSortedSets.unmodifiable(this.sortedMap.double2DoubleEntrySet());
+      }
+      return (ObjectSortedSet)this.entries;
+    }
+    
+    public ObjectSortedSet<Map.Entry<Double, Double>> entrySet()
+    {
+      return double2DoubleEntrySet();
+    }
+    
+    public DoubleSortedSet keySet()
+    {
+      if (this.keys == null) {
+        this.keys = DoubleSortedSets.unmodifiable(this.sortedMap.keySet());
+      }
+      return (DoubleSortedSet)this.keys;
+    }
+    
+    public Double2DoubleSortedMap subMap(double from, double local_to)
+    {
+      return new UnmodifiableSortedMap(this.sortedMap.subMap(from, local_to));
+    }
+    
+    public Double2DoubleSortedMap headMap(double local_to)
+    {
+      return new UnmodifiableSortedMap(this.sortedMap.headMap(local_to));
+    }
+    
+    public Double2DoubleSortedMap tailMap(double from)
+    {
+      return new UnmodifiableSortedMap(this.sortedMap.tailMap(from));
+    }
+    
+    public double firstDoubleKey()
+    {
+      return this.sortedMap.firstDoubleKey();
+    }
+    
+    public double lastDoubleKey()
+    {
+      return this.sortedMap.lastDoubleKey();
+    }
+    
+    public Double firstKey()
+    {
+      return (Double)this.sortedMap.firstKey();
+    }
+    
+    public Double lastKey()
+    {
+      return (Double)this.sortedMap.lastKey();
+    }
+    
+    public Double2DoubleSortedMap subMap(Double from, Double local_to)
+    {
+      return new UnmodifiableSortedMap(this.sortedMap.subMap(from, local_to));
+    }
+    
+    public Double2DoubleSortedMap headMap(Double local_to)
+    {
+      return new UnmodifiableSortedMap(this.sortedMap.headMap(local_to));
+    }
+    
+    public Double2DoubleSortedMap tailMap(Double from)
+    {
+      return new UnmodifiableSortedMap(this.sortedMap.tailMap(from));
+    }
+  }
+  
+  public static class SynchronizedSortedMap
+    extends Double2DoubleMaps.SynchronizedMap
+    implements Double2DoubleSortedMap, Serializable
+  {
+    public static final long serialVersionUID = -7046029254386353129L;
+    protected final Double2DoubleSortedMap sortedMap;
+    
+    protected SynchronizedSortedMap(Double2DoubleSortedMap local_m, Object sync)
+    {
+      super(sync);
+      this.sortedMap = local_m;
+    }
+    
+    protected SynchronizedSortedMap(Double2DoubleSortedMap local_m)
+    {
+      super();
+      this.sortedMap = local_m;
+    }
+    
+    public DoubleComparator comparator()
+    {
+      synchronized (this.sync)
+      {
+        return this.sortedMap.comparator();
+      }
+    }
+    
+    public ObjectSortedSet<Double2DoubleMap.Entry> double2DoubleEntrySet()
+    {
+      if (this.entries == null) {
+        this.entries = ObjectSortedSets.synchronize(this.sortedMap.double2DoubleEntrySet(), this.sync);
+      }
+      return (ObjectSortedSet)this.entries;
+    }
+    
+    public ObjectSortedSet<Map.Entry<Double, Double>> entrySet()
+    {
+      return double2DoubleEntrySet();
+    }
+    
+    public DoubleSortedSet keySet()
+    {
+      if (this.keys == null) {
+        this.keys = DoubleSortedSets.synchronize(this.sortedMap.keySet(), this.sync);
+      }
+      return (DoubleSortedSet)this.keys;
+    }
+    
+    public Double2DoubleSortedMap subMap(double from, double local_to)
+    {
+      return new SynchronizedSortedMap(this.sortedMap.subMap(from, local_to), this.sync);
+    }
+    
+    public Double2DoubleSortedMap headMap(double local_to)
+    {
+      return new SynchronizedSortedMap(this.sortedMap.headMap(local_to), this.sync);
+    }
+    
+    public Double2DoubleSortedMap tailMap(double from)
+    {
+      return new SynchronizedSortedMap(this.sortedMap.tailMap(from), this.sync);
+    }
+    
+    public double firstDoubleKey()
+    {
+      synchronized (this.sync)
+      {
+        return this.sortedMap.firstDoubleKey();
+      }
+    }
+    
+    public double lastDoubleKey()
+    {
+      synchronized (this.sync)
+      {
+        return this.sortedMap.lastDoubleKey();
+      }
+    }
+    
+    public Double firstKey()
+    {
+      synchronized (this.sync)
+      {
+        return (Double)this.sortedMap.firstKey();
+      }
+    }
+    
+    public Double lastKey()
+    {
+      synchronized (this.sync)
+      {
+        return (Double)this.sortedMap.lastKey();
+      }
+    }
+    
+    public Double2DoubleSortedMap subMap(Double from, Double local_to)
+    {
+      return new SynchronizedSortedMap(this.sortedMap.subMap(from, local_to), this.sync);
+    }
+    
+    public Double2DoubleSortedMap headMap(Double local_to)
+    {
+      return new SynchronizedSortedMap(this.sortedMap.headMap(local_to), this.sync);
+    }
+    
+    public Double2DoubleSortedMap tailMap(Double from)
+    {
+      return new SynchronizedSortedMap(this.sortedMap.tailMap(from), this.sync);
+    }
+  }
+  
+  public static class Singleton
+    extends Double2DoubleMaps.Singleton
+    implements Double2DoubleSortedMap, Serializable, Cloneable
+  {
+    public static final long serialVersionUID = -7046029254386353129L;
+    protected final DoubleComparator comparator;
+    
+    protected Singleton(double key, double value, DoubleComparator comparator)
+    {
+      super(value);
+      this.comparator = comparator;
+    }
+    
+    protected Singleton(double key, double value)
+    {
+      this(key, value, null);
+    }
+    
+    final int compare(double local_k1, double local_k2)
+    {
+      return this.comparator == null ? 1 : local_k1 == local_k2 ? 0 : local_k1 < local_k2 ? -1 : this.comparator.compare(local_k1, local_k2);
+    }
+    
+    public DoubleComparator comparator()
+    {
+      return this.comparator;
+    }
+    
+    public ObjectSortedSet<Double2DoubleMap.Entry> double2DoubleEntrySet()
+    {
+      if (this.entries == null) {
+        this.entries = ObjectSortedSets.singleton(new Double2DoubleMaps.Singleton.SingletonEntry(this), Double2DoubleSortedMaps.entryComparator(this.comparator));
+      }
+      return (ObjectSortedSet)this.entries;
+    }
+    
+    public ObjectSortedSet<Map.Entry<Double, Double>> entrySet()
+    {
+      return double2DoubleEntrySet();
+    }
+    
+    public DoubleSortedSet keySet()
+    {
+      if (this.keys == null) {
+        this.keys = DoubleSortedSets.singleton(this.key, this.comparator);
+      }
+      return (DoubleSortedSet)this.keys;
+    }
+    
+    public Double2DoubleSortedMap subMap(double from, double local_to)
+    {
+      if ((compare(from, this.key) <= 0) && (compare(this.key, local_to) < 0)) {
+        return this;
+      }
+      return Double2DoubleSortedMaps.EMPTY_MAP;
+    }
+    
+    public Double2DoubleSortedMap headMap(double local_to)
+    {
+      if (compare(this.key, local_to) < 0) {
+        return this;
+      }
+      return Double2DoubleSortedMaps.EMPTY_MAP;
+    }
+    
+    public Double2DoubleSortedMap tailMap(double from)
+    {
+      if (compare(from, this.key) <= 0) {
+        return this;
+      }
+      return Double2DoubleSortedMaps.EMPTY_MAP;
+    }
+    
+    public double firstDoubleKey()
+    {
+      return this.key;
+    }
+    
+    public double lastDoubleKey()
+    {
+      return this.key;
+    }
+    
+    public Double2DoubleSortedMap headMap(Double oto)
+    {
+      return headMap(oto.doubleValue());
+    }
+    
+    public Double2DoubleSortedMap tailMap(Double ofrom)
+    {
+      return tailMap(ofrom.doubleValue());
+    }
+    
+    public Double2DoubleSortedMap subMap(Double ofrom, Double oto)
+    {
+      return subMap(ofrom.doubleValue(), oto.doubleValue());
+    }
+    
+    public Double firstKey()
+    {
+      return Double.valueOf(firstDoubleKey());
+    }
+    
+    public Double lastKey()
+    {
+      return Double.valueOf(lastDoubleKey());
+    }
+  }
+  
+  public static class EmptySortedMap
+    extends Double2DoubleMaps.EmptyMap
+    implements Double2DoubleSortedMap, Serializable, Cloneable
+  {
+    public static final long serialVersionUID = -7046029254386353129L;
+    
+    public DoubleComparator comparator()
+    {
+      return null;
+    }
+    
+    public ObjectSortedSet<Double2DoubleMap.Entry> double2DoubleEntrySet()
+    {
+      return ObjectSortedSets.EMPTY_SET;
+    }
+    
+    public ObjectSortedSet<Map.Entry<Double, Double>> entrySet()
+    {
+      return ObjectSortedSets.EMPTY_SET;
+    }
+    
+    public DoubleSortedSet keySet()
+    {
+      return DoubleSortedSets.EMPTY_SET;
+    }
+    
+    public Double2DoubleSortedMap subMap(double from, double local_to)
+    {
+      return Double2DoubleSortedMaps.EMPTY_MAP;
+    }
+    
+    public Double2DoubleSortedMap headMap(double local_to)
+    {
+      return Double2DoubleSortedMaps.EMPTY_MAP;
+    }
+    
+    public Double2DoubleSortedMap tailMap(double from)
+    {
+      return Double2DoubleSortedMaps.EMPTY_MAP;
+    }
+    
+    public double firstDoubleKey()
+    {
+      throw new NoSuchElementException();
+    }
+    
+    public double lastDoubleKey()
+    {
+      throw new NoSuchElementException();
+    }
+    
+    public Double2DoubleSortedMap headMap(Double oto)
+    {
+      return headMap(oto.doubleValue());
+    }
+    
+    public Double2DoubleSortedMap tailMap(Double ofrom)
+    {
+      return tailMap(ofrom.doubleValue());
+    }
+    
+    public Double2DoubleSortedMap subMap(Double ofrom, Double oto)
+    {
+      return subMap(ofrom.doubleValue(), oto.doubleValue());
+    }
+    
+    public Double firstKey()
+    {
+      return Double.valueOf(firstDoubleKey());
+    }
+    
+    public Double lastKey()
+    {
+      return Double.valueOf(lastDoubleKey());
+    }
+  }
+}
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     it.unimi.dsi.fastutil.doubles.Double2DoubleSortedMaps
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

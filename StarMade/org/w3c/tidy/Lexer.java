@@ -30,7 +30,7 @@ public class Lexer
   private static final short LEX_JSTE = 11;
   private static final short LEX_PHP = 12;
   private static final short LEX_XMLDECL = 13;
-  protected StreamIn in;
+  protected StreamIn field_1662;
   protected PrintWriter errout;
   protected short badAccess;
   protected short badLayout;
@@ -74,7 +74,7 @@ public class Lexer
   public Lexer(StreamIn paramStreamIn, Configuration paramConfiguration, Report paramReport)
   {
     this.report = paramReport;
-    this.in = paramStreamIn;
+    this.field_1662 = paramStreamIn;
     this.lines = 1;
     this.columns = 1;
     this.state = 0;
@@ -102,7 +102,7 @@ public class Lexer
   
   public Node newNode(short paramShort, byte[] paramArrayOfByte, int paramInt1, int paramInt2, String paramString)
   {
-    Node localNode = new Node(paramShort, paramArrayOfByte, paramInt1, paramInt2, paramString, this.configuration.tt);
+    Node localNode = new Node(paramShort, paramArrayOfByte, paramInt1, paramInt2, paramString, this.configuration.field_1881);
     this.nodeList.add(localNode);
     return localNode;
   }
@@ -161,7 +161,7 @@ public class Lexer
   
   public boolean endOfInput()
   {
-    return this.in.isEndOfStream();
+    return this.field_1662.isEndOfStream();
   }
   
   public void addByte(int paramInt)
@@ -227,9 +227,9 @@ public class Lexer
     int j = 1;
     int k = 0;
     int i = this.lexsize - 1;
-    int i1 = this.in.getCurcol() - 1;
+    int i1 = this.field_1662.getCurcol() - 1;
     int m;
-    while ((m = this.in.readChar()) != -1) {
+    while ((m = this.field_1662.readChar()) != -1) {
       if (m == 59)
       {
         k = 1;
@@ -238,7 +238,7 @@ public class Lexer
       {
         if ((!this.configuration.ncr) || ("BIG5".equals(this.configuration.getInCharEncodingName())) || ("SHIFTJIS".equals(this.configuration.getInCharEncodingName())))
         {
-          this.in.ungetChar(m);
+          this.field_1662.ungetChar(m);
           return;
         }
         addCharToLexer(m);
@@ -250,7 +250,7 @@ public class Lexer
         if (TidyUtils.isNamechar((char)m)) {
           addCharToLexer(m);
         } else {
-          this.in.ungetChar(m);
+          this.field_1662.ungetChar(m);
         }
       }
     }
@@ -261,7 +261,7 @@ public class Lexer
     int n = EntityTable.getDefaultEntityTable().entityCode(str);
     if ((n <= 0) || ((n >= 256) && (m != 59)))
     {
-      this.lines = this.in.getCurline();
+      this.lines = this.field_1662.getCurline();
       this.columns = i1;
       if (this.lexsize > i + 1)
       {
@@ -307,7 +307,7 @@ public class Lexer
     {
       if (m != 59)
       {
-        this.lines = this.in.getCurline();
+        this.lines = this.field_1662.getCurline();
         this.columns = i1;
         this.report.entityError(this, (short)1, str, m);
       }
@@ -334,7 +334,7 @@ public class Lexer
       i = TidyUtils.toLower((char)i);
       this.lexbuf[this.txtstart] = ((byte)i);
     }
-    while (((i = this.in.readChar()) != -1) && (TidyUtils.isNamechar((char)i)))
+    while (((i = this.field_1662.readChar()) != -1) && (TidyUtils.isNamechar((char)i)))
     {
       if ((!this.configuration.xmlTags) && (TidyUtils.isUpper((char)i))) {
         i = TidyUtils.toLower((char)i);
@@ -404,12 +404,12 @@ public class Lexer
   
   public boolean addGenerator(Node paramNode)
   {
-    Node localNode2 = paramNode.findHEAD(this.configuration.tt);
+    Node localNode2 = paramNode.findHEAD(this.configuration.field_1881);
     if (localNode2 != null)
     {
       String str = "HTML Tidy for Java (vers. " + Report.RELEASE_DATE_STRING + "), see jtidy.sourceforge.net";
       for (Node localNode1 = localNode2.content; localNode1 != null; localNode1 = localNode1.next) {
-        if (localNode1.tag == this.configuration.tt.tagMeta)
+        if (localNode1.tag == this.configuration.field_1881.tagMeta)
         {
           AttVal localAttVal = localNode1.getAttrByName("name");
           if ((localAttVal != null) && (localAttVal.value != null) && ("generator".equalsIgnoreCase(localAttVal.value)))
@@ -501,7 +501,7 @@ public class Lexer
   
   public void fixHTMLNameSpace(Node paramNode, String paramString)
   {
-    for (Node localNode = paramNode.content; (localNode != null) && (localNode.tag != this.configuration.tt.tagHtml); localNode = localNode.next) {}
+    for (Node localNode = paramNode.content; (localNode != null) && (localNode.tag != this.configuration.field_1881.tagHtml); localNode = localNode.next) {}
     if (localNode != null)
     {
       for (AttVal localAttVal = localNode.attributes; (localAttVal != null) && (!localAttVal.attribute.equals("xmlns")); localAttVal = localAttVal.next) {}
@@ -524,7 +524,7 @@ public class Lexer
   
   Node newXhtmlDocTypeNode(Node paramNode)
   {
-    Node localNode1 = paramNode.findHTML(this.configuration.tt);
+    Node localNode1 = paramNode.findHTML(this.configuration.field_1881);
     if (localNode1 == null) {
       return null;
     }
@@ -889,13 +889,13 @@ public class Lexer
     int n = 1;
     boolean bool = false;
     int i1 = paramNode.getAttrByName("src") != null ? 1 : 0;
-    this.lines = this.in.getCurline();
-    this.columns = this.in.getCurcol();
+    this.lines = this.field_1662.getCurline();
+    this.columns = this.field_1662.getCurcol();
     this.waswhite = false;
     this.txtstart = this.lexsize;
     this.txtend = this.lexsize;
     int m;
-    while ((m = this.in.readChar()) != -1)
+    while ((m = this.field_1662.readChar()) != -1)
     {
       addCharToLexer(m);
       this.txtend = this.lexsize;
@@ -909,14 +909,14 @@ public class Lexer
         }
         else
         {
-          m = this.in.readChar();
+          m = this.field_1662.readChar();
           if (TidyUtils.isLetter((char)m))
           {
-            if ((i1 != 0) && (n != 0) && (paramNode.tag == this.configuration.tt.tagScript))
+            if ((i1 != 0) && (n != 0) && (paramNode.tag == this.configuration.field_1881.tagScript))
             {
               this.lexsize = this.txtstart;
-              this.in.ungetChar(m);
-              this.in.ungetChar(60);
+              this.field_1662.ungetChar(m);
+              this.field_1662.ungetChar(60);
               return null;
             }
             addCharToLexer(m);
@@ -926,14 +926,14 @@ public class Lexer
           else if (m == 47)
           {
             addCharToLexer(m);
-            m = this.in.readChar();
+            m = this.field_1662.readChar();
             if (!TidyUtils.isLetter((char)m))
             {
-              this.in.ungetChar(m);
+              this.field_1662.ungetChar(m);
             }
             else
             {
-              this.in.ungetChar(m);
+              this.field_1662.ungetChar(m);
               i = this.lexsize;
               k = 2;
             }
@@ -941,22 +941,22 @@ public class Lexer
           else if (m == 92)
           {
             addCharToLexer(m);
-            m = this.in.readChar();
+            m = this.field_1662.readChar();
             if (m != 47)
             {
-              this.in.ungetChar(m);
+              this.field_1662.ungetChar(m);
             }
             else
             {
               addCharToLexer(m);
-              m = this.in.readChar();
+              m = this.field_1662.readChar();
               if (!TidyUtils.isLetter((char)m))
               {
-                this.in.ungetChar(m);
+                this.field_1662.ungetChar(m);
               }
               else
               {
-                this.in.ungetChar(m);
+                this.field_1662.ungetChar(m);
                 i = this.lexsize;
                 k = 2;
               }
@@ -964,7 +964,7 @@ public class Lexer
           }
           else
           {
-            this.in.ungetChar(m);
+            this.field_1662.ungetChar(m);
           }
         }
       }
@@ -986,26 +986,26 @@ public class Lexer
         if ((n != 0) && (!bool))
         {
           for (i2 = this.lexsize - 1; i2 >= i; i2--) {
-            this.in.ungetChar(this.lexbuf[i2]);
+            this.field_1662.ungetChar(this.lexbuf[i2]);
           }
-          this.in.ungetChar(47);
-          this.in.ungetChar(60);
+          this.field_1662.ungetChar(47);
+          this.field_1662.ungetChar(60);
           break;
         }
         if ((bool) && (j-- <= 0))
         {
           for (i2 = this.lexsize - 1; i2 >= i; i2--) {
-            this.in.ungetChar(this.lexbuf[i2]);
+            this.field_1662.ungetChar(this.lexbuf[i2]);
           }
-          this.in.ungetChar(47);
-          this.in.ungetChar(60);
+          this.field_1662.ungetChar(47);
+          this.field_1662.ungetChar(60);
           this.lexsize -= this.lexsize - i + 2;
           break;
         }
         if (this.lexbuf[(i - 2)] != 92)
         {
-          this.lines = this.in.getCurline();
-          this.columns = this.in.getCurcol();
+          this.lines = this.field_1662.getCurline();
+          this.columns = this.field_1662.getCurcol();
           this.columns -= 3;
           this.report.error(this, null, null, (short)32);
           if (paramNode.isJavaScript())
@@ -1051,12 +1051,12 @@ public class Lexer
     if ((this.insert != -1) || (this.inode != null)) {
       return insertedToken();
     }
-    this.lines = this.in.getCurline();
-    this.columns = this.in.getCurcol();
+    this.lines = this.field_1662.getCurline();
+    this.columns = this.field_1662.getCurcol();
     this.waswhite = false;
     this.txtstart = this.lexsize;
     this.txtend = this.lexsize;
-    while ((i = this.in.readChar()) != -1)
+    while ((i = this.field_1662.readChar()) != -1)
     {
       if ((this.insertspace) && (paramShort != 0)) {
         addCharToLexer(32);
@@ -1068,9 +1068,9 @@ public class Lexer
       }
       if (i == 13)
       {
-        i = this.in.readChar();
+        i = this.field_1662.readChar();
         if (i != 10) {
-          this.in.ungetChar(i);
+          this.field_1662.ungetChar(i);
         }
         i = 10;
       }
@@ -1082,8 +1082,8 @@ public class Lexer
         {
           this.lexsize -= 1;
           this.waswhite = false;
-          this.lines = this.in.getCurline();
-          this.columns = this.in.getCurcol();
+          this.lines = this.field_1662.getCurline();
+          this.columns = this.field_1662.getCurcol();
         }
         else if (i == 60)
         {
@@ -1096,8 +1096,8 @@ public class Lexer
             if ((paramShort != 2) && (paramShort != 3))
             {
               this.lexsize -= 1;
-              this.lines = this.in.getCurline();
-              this.columns = this.in.getCurcol();
+              this.lines = this.field_1662.getCurline();
+              this.columns = this.field_1662.getCurcol();
             }
           }
           else
@@ -1122,10 +1122,10 @@ public class Lexer
       case 1: 
         if (i == 47)
         {
-          i = this.in.readChar();
+          i = this.field_1662.readChar();
           if (i == -1)
           {
-            this.in.ungetChar(i);
+            this.field_1662.ungetChar(i);
           }
           else
           {
@@ -1134,7 +1134,7 @@ public class Lexer
             {
               this.lexsize -= 3;
               this.txtend = this.lexsize;
-              this.in.ungetChar(i);
+              this.field_1662.ungetChar(i);
               this.state = 2;
               this.lexbuf[this.lexsize] = 0;
               this.columns -= 2;
@@ -1163,10 +1163,10 @@ public class Lexer
         }
         else if (i == 33)
         {
-          i = this.in.readChar();
+          i = this.field_1662.readChar();
           if (i == 45)
           {
-            i = this.in.readChar();
+            i = this.field_1662.readChar();
             if (i == 45)
             {
               this.state = 4;
@@ -1192,23 +1192,23 @@ public class Lexer
             paramShort = 0;
             do
             {
-              i = this.in.readChar();
+              i = this.field_1662.readChar();
               if ((i == -1) || (i == 62))
               {
-                this.in.ungetChar(i);
+                this.field_1662.ungetChar(i);
                 break;
               }
             } while (!TidyUtils.isWhite((char)i));
             do
             {
-              i = this.in.readChar();
+              i = this.field_1662.readChar();
               if ((i == -1) || (i == 62))
               {
-                this.in.ungetChar(i);
+                this.field_1662.ungetChar(i);
                 break;
               }
             } while (TidyUtils.isWhite((char)i));
-            this.in.ungetChar(i);
+            this.field_1662.ungetChar(i);
             if (this.txtend > this.txtstart)
             {
               this.token = newNode((short)4, this.lexbuf, this.txtstart, this.txtend);
@@ -1232,12 +1232,12 @@ public class Lexer
           {
             do
             {
-              i = this.in.readChar();
+              i = this.field_1662.readChar();
               if (i == 62) {
                 break;
               }
             } while (i != -1);
-            this.in.ungetChar(i);
+            this.field_1662.ungetChar(i);
             this.lexsize -= 2;
             this.lexbuf[this.lexsize] = 0;
             this.state = 0;
@@ -1281,7 +1281,7 @@ public class Lexer
         }
         else if (TidyUtils.isLetter((char)i))
         {
-          this.in.ungetChar(i);
+          this.field_1662.ungetChar(i);
           this.lexsize -= 2;
           this.txtend = this.lexsize;
           this.state = 3;
@@ -1305,18 +1305,18 @@ public class Lexer
         this.lexsize = this.txtstart;
         this.txtend = this.txtstart;
         while (TidyUtils.isWhite((char)i)) {
-          i = this.in.readChar();
+          i = this.field_1662.readChar();
         }
         if (i == -1)
         {
-          this.in.ungetChar(i);
+          this.field_1662.ungetChar(i);
           this.report.attrError(this, this.token, null, (short)52);
         }
         else
         {
           if (i != 62)
           {
-            this.in.ungetChar(i);
+            this.field_1662.ungetChar(i);
             i = 62;
             this.report.attrError(this, this.token, null, (short)52);
           }
@@ -1334,7 +1334,7 @@ public class Lexer
         if (i != 62)
         {
           if (i == 47) {
-            this.in.ungetChar(i);
+            this.field_1662.ungetChar(i);
           }
           localObject = parseAttrs(arrayOfBoolean);
         }
@@ -1344,19 +1344,19 @@ public class Lexer
         this.token.attributes = ((AttVal)localObject);
         this.lexsize = this.txtstart;
         this.txtend = this.txtstart;
-        if (((paramShort != 2) || (preContent(this.token))) && ((this.token.expectsContent()) || (this.token.tag == this.configuration.tt.tagBr)))
+        if (((paramShort != 2) || (preContent(this.token))) && ((this.token.expectsContent()) || (this.token.tag == this.configuration.field_1881.tagBr)))
         {
-          i = this.in.readChar();
+          i = this.field_1662.readChar();
           if (i == 13)
           {
-            i = this.in.readChar();
+            i = this.field_1662.readChar();
             if (i != 10) {
-              this.in.ungetChar(i);
+              this.field_1662.ungetChar(i);
             }
           }
           else if ((i != 10) && (i != 12))
           {
-            this.in.ungetChar(i);
+            this.field_1662.ungetChar(i);
           }
           this.waswhite = true;
         }
@@ -1373,7 +1373,7 @@ public class Lexer
         {
           constrainVersion(this.token.tag.versions);
           if (TidyUtils.toBoolean(this.token.tag.versions & 0x1C0)) {
-            if ((this.configuration.makeClean) && (this.token.tag != this.configuration.tt.tagNobr) && (this.token.tag != this.configuration.tt.tagWbr)) {
+            if ((this.configuration.makeClean) && (this.token.tag != this.configuration.field_1881.tagNobr) && (this.token.tag != this.configuration.field_1881.tagWbr)) {
               this.report.warning(this, null, this.token, (short)21);
             } else if (!this.configuration.makeClean) {
               this.report.warning(this, null, this.token, (short)21);
@@ -1390,13 +1390,13 @@ public class Lexer
       case 4: 
         if (i == 45)
         {
-          i = this.in.readChar();
+          i = this.field_1662.readChar();
           addCharToLexer(i);
           if (i == 45)
           {
             for (;;)
             {
-              i = this.in.readChar();
+              i = this.field_1662.readChar();
               if (i == 62)
               {
                 if (j != 0) {
@@ -1407,10 +1407,10 @@ public class Lexer
                 this.state = 0;
                 this.waswhite = false;
                 this.token = newNode((short)2, this.lexbuf, this.txtstart, this.txtend);
-                i = this.in.readChar();
+                i = this.field_1662.readChar();
                 if (i == 13)
                 {
-                  i = this.in.readChar();
+                  i = this.field_1662.readChar();
                   if (i != 10) {
                     this.token.linebreak = true;
                   }
@@ -1418,14 +1418,14 @@ public class Lexer
                 if (i == 10) {
                   this.token.linebreak = true;
                 } else {
-                  this.in.ungetChar(i);
+                  this.field_1662.ungetChar(i);
                 }
                 return this.token;
               }
               if (j == 0)
               {
-                this.lines = this.in.getCurline();
-                this.columns = (this.in.getCurcol() - 3);
+                this.lines = this.field_1662.getCurline();
+                this.columns = (this.field_1662.getCurcol() - 3);
               }
               j++;
               if (this.configuration.fixComments) {
@@ -1487,11 +1487,11 @@ public class Lexer
         {
           if (i == 63)
           {
-            i = this.in.readChar();
+            i = this.field_1662.readChar();
             if (i == -1)
             {
               this.report.warning(this, null, null, (short)36);
-              this.in.ungetChar(i);
+              this.field_1662.ungetChar(i);
             }
             else
             {
@@ -1513,10 +1513,10 @@ public class Lexer
       case 10: 
         if (i == 37)
         {
-          i = this.in.readChar();
+          i = this.field_1662.readChar();
           if (i != 62)
           {
-            this.in.ungetChar(i);
+            this.field_1662.ungetChar(i);
           }
           else
           {
@@ -1533,10 +1533,10 @@ public class Lexer
       case 11: 
         if (i == 35)
         {
-          i = this.in.readChar();
+          i = this.field_1662.readChar();
           if (i != 62)
           {
-            this.in.ungetChar(i);
+            this.field_1662.ungetChar(i);
           }
           else
           {
@@ -1553,10 +1553,10 @@ public class Lexer
       case 12: 
         if (i == 63)
         {
-          i = this.in.readChar();
+          i = this.field_1662.readChar();
           if (i != 62)
           {
-            this.in.ungetChar(i);
+            this.field_1662.ungetChar(i);
           }
           else
           {
@@ -1580,7 +1580,7 @@ public class Lexer
             AttVal localAttVal = new AttVal();
             int[] arrayOfInt = new int[1];
             arrayOfBoolean[0] = false;
-            this.in.ungetChar(i);
+            this.field_1662.ungetChar(i);
             String str = parseAttribute(arrayOfBoolean, arrayOfNode1, arrayOfNode2);
             localAttVal.attribute = str;
             localAttVal.value = parseValue(str, true, arrayOfBoolean, arrayOfInt);
@@ -1588,10 +1588,10 @@ public class Lexer
             localAttVal.next = ((AttVal)localObject);
             localObject = localAttVal;
           }
-          i = this.in.readChar();
+          i = this.field_1662.readChar();
           if (i != 62)
           {
-            this.in.ungetChar(i);
+            this.field_1662.ungetChar(i);
           }
           else
           {
@@ -1614,10 +1614,10 @@ public class Lexer
         }
         else if (i == 93)
         {
-          i = this.in.readChar();
+          i = this.field_1662.readChar();
           if (i != 62)
           {
-            this.in.ungetChar(i);
+            this.field_1662.ungetChar(i);
           }
           else
           {
@@ -1634,17 +1634,17 @@ public class Lexer
       case 8: 
         if (i == 93)
         {
-          i = this.in.readChar();
+          i = this.field_1662.readChar();
           if (i != 93)
           {
-            this.in.ungetChar(i);
+            this.field_1662.ungetChar(i);
           }
           else
           {
-            i = this.in.readChar();
+            i = this.field_1662.readChar();
             if (i != 62)
             {
-              this.in.ungetChar(i);
+              this.field_1662.ungetChar(i);
             }
             else
             {
@@ -1666,7 +1666,7 @@ public class Lexer
       this.txtend = this.lexsize;
       if (this.txtend > this.txtstart)
       {
-        this.in.ungetChar(i);
+        this.field_1662.ungetChar(i);
         if (this.lexbuf[(this.lexsize - 1)] == 32)
         {
           this.lexsize -= 1;
@@ -1696,11 +1696,11 @@ public class Lexer
     Node localNode = null;
     this.txtstart = this.lexsize;
     int i;
-    while ((i = this.in.readChar()) != -1)
+    while ((i = this.field_1662.readChar()) != -1)
     {
       addCharToLexer(i);
       if (i == 37) {
-        if ((i = this.in.readChar()) != -1)
+        if ((i = this.field_1662.readChar()) != -1)
         {
           addCharToLexer(i);
           if (i == 62) {
@@ -1723,11 +1723,11 @@ public class Lexer
     Node localNode = null;
     this.txtstart = this.lexsize;
     int i;
-    while ((i = this.in.readChar()) != -1)
+    while ((i = this.field_1662.readChar()) != -1)
     {
       addCharToLexer(i);
       if (i == 63) {
-        if ((i = this.in.readChar()) != -1)
+        if ((i = this.field_1662.readChar()) != -1)
         {
           addCharToLexer(i);
           if (i == 62) {
@@ -1754,16 +1754,16 @@ public class Lexer
     paramArrayOfNode2[0] = null;
     for (;;)
     {
-      j = this.in.readChar();
+      j = this.field_1662.readChar();
       if (j == 47)
       {
-        j = this.in.readChar();
+        j = this.field_1662.readChar();
         if (j == 62)
         {
           paramArrayOfBoolean[0] = true;
           return null;
         }
-        this.in.ungetChar(j);
+        this.field_1662.ungetChar(j);
         j = 47;
       }
       else
@@ -1773,7 +1773,7 @@ public class Lexer
         }
         if (j == 60)
         {
-          j = this.in.readChar();
+          j = this.field_1662.readChar();
           if (j == 37)
           {
             paramArrayOfNode1[0] = parseAsp();
@@ -1784,9 +1784,9 @@ public class Lexer
             paramArrayOfNode2[0] = parsePhp();
             return null;
           }
-          this.in.ungetChar(j);
+          this.field_1662.ungetChar(j);
           if (this.state != 13) {
-            this.in.ungetChar(60);
+            this.field_1662.ungetChar(60);
           }
           this.report.attrError(this, this.token, null, (short)52);
           return null;
@@ -1804,7 +1804,7 @@ public class Lexer
           if (j == -1)
           {
             this.report.attrError(this, this.token, null, (short)36);
-            this.in.ungetChar(j);
+            this.field_1662.ungetChar(j);
             return null;
           }
           if (!TidyUtils.isWhite((char)j)) {
@@ -1819,18 +1819,18 @@ public class Lexer
     {
       if ((j == 61) || (j == 62))
       {
-        this.in.ungetChar(j);
+        this.field_1662.ungetChar(j);
         break;
       }
       if ((j == 60) || (j == -1))
       {
-        this.in.ungetChar(j);
+        this.field_1662.ungetChar(j);
         break;
       }
       if ((k == 45) && ((j == 34) || (j == 39)))
       {
         this.lexsize -= 1;
-        this.in.ungetChar(j);
+        this.field_1662.ungetChar(j);
         break;
       }
       if (TidyUtils.isWhite((char)j)) {
@@ -1841,7 +1841,7 @@ public class Lexer
       }
       addCharToLexer(j);
       k = j;
-      j = this.in.readChar();
+      j = this.field_1662.readChar();
     }
     int m = this.lexsize - i;
     String str = m > 0 ? TidyUtils.getString(this.lexbuf, i, m) : null;
@@ -1853,14 +1853,14 @@ public class Lexer
   {
     int j = 34;
     int k = 0;
-    int i = this.in.readChar();
+    int i = this.field_1662.readChar();
     addCharToLexer(i);
     if ((i == 37) || (i == 63) || (i == 64)) {
       k = 1;
     }
     for (;;)
     {
-      i = this.in.readChar();
+      i = this.field_1662.readChar();
       if (i == -1) {
         break;
       }
@@ -1871,7 +1871,7 @@ public class Lexer
           addCharToLexer(i);
           break;
         }
-        this.in.ungetChar(i);
+        this.field_1662.ungetChar(i);
         break;
       }
       if ((k == 0) && (TidyUtils.isWhite((char)i))) {
@@ -1882,16 +1882,16 @@ public class Lexer
       {
         do
         {
-          i = this.in.readChar();
+          i = this.field_1662.readChar();
           if (endOfInput())
           {
             this.report.attrError(this, this.token, null, (short)36);
-            this.in.ungetChar(i);
+            this.field_1662.ungetChar(i);
             return 0;
           }
           if (i == 62)
           {
-            this.in.ungetChar(i);
+            this.field_1662.ungetChar(i);
             this.report.attrError(this, this.token, null, (short)52);
             return 0;
           }
@@ -1903,16 +1903,16 @@ public class Lexer
       {
         do
         {
-          i = this.in.readChar();
+          i = this.field_1662.readChar();
           if (endOfInput())
           {
             this.report.attrError(this, this.token, null, (short)36);
-            this.in.ungetChar(i);
+            this.field_1662.ungetChar(i);
             return 0;
           }
           if (i == 62)
           {
-            this.in.ungetChar(i);
+            this.field_1662.ungetChar(i);
             this.report.attrError(this, this.token, null, (short)52);
             return 0;
           }
@@ -1936,23 +1936,23 @@ public class Lexer
     }
     for (;;)
     {
-      n = this.in.readChar();
+      n = this.field_1662.readChar();
       if (n == -1) {
-        this.in.ungetChar(n);
+        this.field_1662.ungetChar(n);
       } else if (!TidyUtils.isWhite((char)n)) {
         break;
       }
     }
     if ((n != 61) && (n != 34) && (n != 39))
     {
-      this.in.ungetChar(n);
+      this.field_1662.ungetChar(n);
       return null;
     }
     for (;;)
     {
-      n = this.in.readChar();
+      n = this.field_1662.readChar();
       if (n == -1) {
-        this.in.ungetChar(n);
+        this.field_1662.ungetChar(n);
       } else if (!TidyUtils.isWhite((char)n)) {
         break;
       }
@@ -1972,7 +1972,7 @@ public class Lexer
         this.lexsize = j;
         return i > 0 ? TidyUtils.getString(this.lexbuf, j, i) : null;
       }
-      this.in.ungetChar(n);
+      this.field_1662.ungetChar(n);
     }
     int i3 = 0;
     int j = this.lexsize;
@@ -1980,52 +1980,52 @@ public class Lexer
     for (;;)
     {
       int i1 = n;
-      n = this.in.readChar();
+      n = this.field_1662.readChar();
       if (n == -1)
       {
         this.report.attrError(this, this.token, null, (short)36);
-        this.in.ungetChar(n);
+        this.field_1662.ungetChar(n);
         break;
       }
       if (i2 == 0)
       {
         if (n == 62)
         {
-          this.in.ungetChar(n);
+          this.field_1662.ungetChar(n);
           break;
         }
         if ((n == 34) || (n == 39))
         {
           int i4 = n;
           this.report.attrError(this, this.token, null, (short)59);
-          n = this.in.readChar();
+          n = this.field_1662.readChar();
           if (n == 62)
           {
             addCharToLexer(i4);
-            this.in.ungetChar(n);
+            this.field_1662.ungetChar(n);
             break;
           }
-          this.in.ungetChar(n);
+          this.field_1662.ungetChar(n);
           n = i4;
         }
         if (n == 60)
         {
-          this.in.ungetChar(n);
+          this.field_1662.ungetChar(n);
           n = 62;
-          this.in.ungetChar(n);
+          this.field_1662.ungetChar(n);
           this.report.attrError(this, this.token, null, (short)52);
           break;
         }
         if (n == 47)
         {
-          n = this.in.readChar();
+          n = this.field_1662.readChar();
           if ((n == 62) && (!AttributeTable.getDefaultAttributeTable().isUrl(paramString)))
           {
             paramArrayOfBoolean[0] = true;
-            this.in.ungetChar(n);
+            this.field_1662.ungetChar(n);
             break;
           }
-          this.in.ungetChar(n);
+          this.field_1662.ungetChar(n);
           n = 47;
         }
       }
@@ -2036,9 +2036,9 @@ public class Lexer
         }
         if (n == 13)
         {
-          n = this.in.readChar();
+          n = this.field_1662.readChar();
           if (n != 10) {
-            this.in.ungetChar(n);
+            this.field_1662.ungetChar(n);
           }
           n = 10;
         }
@@ -2065,10 +2065,10 @@ public class Lexer
       {
         if (n == 92)
         {
-          n = this.in.readChar();
+          n = this.field_1662.readChar();
           if (n != 10)
           {
-            this.in.ungetChar(n);
+            this.field_1662.ungetChar(n);
             n = 92;
           }
         }
@@ -2247,7 +2247,7 @@ public class Lexer
     if (TidyUtils.toBoolean(paramNode.tag.model & 0x800)) {
       return;
     }
-    if ((paramNode.tag != this.configuration.tt.tagFont) && (isPushed(paramNode))) {
+    if ((paramNode.tag != this.configuration.field_1881.tagFont) && (isPushed(paramNode))) {
       return;
     }
     IStack localIStack = new IStack();
@@ -2273,12 +2273,12 @@ public class Lexer
       if (TidyUtils.toBoolean(paramNode.tag.model & 0x800)) {
         return;
       }
-      if (paramNode.tag == this.configuration.tt.tagA)
+      if (paramNode.tag == this.configuration.field_1881.tagA)
       {
         while (this.istack.size() > 0)
         {
           localIStack = (IStack)this.istack.pop();
-          if (localIStack.tag == this.configuration.tt.tagA) {
+          if (localIStack.tag == this.configuration.field_1881.tagA) {
             break;
           }
         }
@@ -2330,8 +2330,8 @@ public class Lexer
     }
     if (this.inode == null)
     {
-      this.lines = this.in.getCurline();
-      this.columns = this.in.getCurcol();
+      this.lines = this.field_1662.getCurline();
+      this.columns = this.field_1662.getCurcol();
     }
     Node localNode = newNode((short)5, this.lexbuf, this.txtstart, this.txtend);
     localNode.implicit = true;
@@ -2359,10 +2359,10 @@ public class Lexer
     if (paramNode.content != null) {
       return false;
     }
-    if ((paramNode.tag == this.configuration.tt.tagA) && (paramNode.attributes != null)) {
+    if ((paramNode.tag == this.configuration.field_1881.tagA) && (paramNode.attributes != null)) {
       return false;
     }
-    if ((paramNode.tag == this.configuration.tt.tagP) && (!this.configuration.dropEmptyParas)) {
+    if ((paramNode.tag == this.configuration.field_1881.tagP) && (!this.configuration.dropEmptyParas)) {
       return false;
     }
     if (paramNode.tag == null) {
@@ -2374,19 +2374,19 @@ public class Lexer
     if (TidyUtils.toBoolean(paramNode.tag.model & 0x1)) {
       return false;
     }
-    if (paramNode.tag == this.configuration.tt.tagApplet) {
+    if (paramNode.tag == this.configuration.field_1881.tagApplet) {
       return false;
     }
-    if (paramNode.tag == this.configuration.tt.tagObject) {
+    if (paramNode.tag == this.configuration.field_1881.tagObject) {
       return false;
     }
-    if ((paramNode.tag == this.configuration.tt.tagScript) && (paramNode.getAttrByName("src") != null)) {
+    if ((paramNode.tag == this.configuration.field_1881.tagScript) && (paramNode.getAttrByName("src") != null)) {
       return false;
     }
-    if (paramNode.tag == this.configuration.tt.tagTitle) {
+    if (paramNode.tag == this.configuration.field_1881.tagTitle) {
       return false;
     }
-    if (paramNode.tag == this.configuration.tt.tagIframe) {
+    if (paramNode.tag == this.configuration.field_1881.tagIframe) {
       return false;
     }
     return (paramNode.getAttrByName("id") == null) && (paramNode.getAttrByName("name") == null);
@@ -2422,10 +2422,10 @@ public class Lexer
   
   protected boolean preContent(Node paramNode)
   {
-    if (paramNode.tag == this.configuration.tt.tagP) {
+    if (paramNode.tag == this.configuration.field_1881.tagP) {
       return true;
     }
-    return (paramNode.tag != null) && (paramNode.tag != this.configuration.tt.tagP) && (TidyUtils.toBoolean(paramNode.tag.model & 0x100010));
+    return (paramNode.tag != null) && (paramNode.tag != this.configuration.field_1881.tagP) && (TidyUtils.toBoolean(paramNode.tag.model & 0x100010));
   }
   
   private static class W3CVersionInfo
@@ -2446,7 +2446,7 @@ public class Lexer
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.w3c.tidy.Lexer
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */

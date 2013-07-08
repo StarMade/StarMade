@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class MainInvoker
 {
   private static String[] emptyStringArray = new String[0];
-  public static String LS = System.getProperty("line.separator");
+  public static String field_2123 = System.getProperty("line.separator");
   private static String SYNTAX_MSG = "    java org.hsqldb.util.MainInvoker [package1.Class1 [arg1a arg1b...] \"\"]... \\\n    packageX.ClassX [argXa argXb...]\nOR\n    java org.hsqldb.util.MainInvoker --help\n\nNote that you can only invoke classes in 'named' (non-default) packages.  Delimit multiple classes with empty strings.";
   
   private static void syntaxFailure()
@@ -71,14 +71,14 @@ public class MainInvoker
   
   static
   {
-    if (!LS.equals("\n")) {
-      SYNTAX_MSG = SYNTAX_MSG.replaceAll("\n", LS);
+    if (!field_2123.equals("\n")) {
+      SYNTAX_MSG = SYNTAX_MSG.replaceAll("\n", field_2123);
     }
   }
 }
 
 
-/* Location:           C:\Users\Raul\Desktop\StarMade\StarMade.jar
+/* Location:           C:\Users\Raul\Desktop\StarMadeDec\StarMadeR.zip
  * Qualified Name:     org.hsqldb.util.MainInvoker
  * JD-Core Version:    0.7.0-SNAPSHOT-20130630
  */
