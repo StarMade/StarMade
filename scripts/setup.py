@@ -5,8 +5,10 @@
 """
 
 import os
+import sys
 import shutil
 import zipfile
+import subprocess
 
 def main():
 	print '-------------------'
@@ -24,19 +26,24 @@ def main():
 	unzip("starmade-build_20130707_170345.zip", workingDir + '\instance')
 	print 'Decompiling StarMade'
 	print '*   Deobfuscating... (Stage #1)'
+	os.chdir('..')
+        os.chdir(workingDir + "/runtime")
+        print sys.path.append(os.path.realpath('..'))
+        print sys.path.append(os.path.realpath('..')) + '\\instance\\StarMade.jar'
+	subprocess.call(['java', '-jar', 'JRename.jar', os.path.realpath() + '\\instance\\StarMade.jar', workingDir + '\\tmp\\deobf.zip'])
 	print '*   Decompiling...   (Stage #2)'
 	os.chdir('..')
 	if not os.path.exists('sources') and not os.path.isdir('sources'):
 		os.makedirs('sources')
-	print '    *   We are going to copy sources as we can not decompile yet!\n'
+	#print '    *   We are going to copy sources as we can not decompile yet!\n'
+	#unzip("sources.zip", workingDir + '\sources')
 	os.chdir(workingDir + '\install')
-	unzip("sources.zip", workingDir + '\sources')
 	print 'Setting up Eclipse workspace\n'
 	unzip("EclipseWorkspace.zip", workingDir)
 	os.chdir(workingDir)
 	if os.path.exists('tmp'):
 		print 'Deleting temporary files'
-		shutil.rmtree('tmp')
+		#shutil.rmtree('tmp')
 	print '-----------------------------------------'
 	print '- SMCP Is now ready for mod development -'
 	print '-----------------------------------------'
