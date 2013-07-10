@@ -21,7 +21,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ReadShips
+public class ReadBlueprints
 {
     private File mBaseDir;
 
