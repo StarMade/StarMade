@@ -7,9 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jo.sm.logic.DebugLogic;
+import jo.sm.ship.data.Data;
 import jo.sm.ship.data.Header;
 import jo.sm.ship.data.Logic;
 import jo.sm.ship.data.Meta;
+import jo.sm.ship.logic.DataLogic;
 import jo.sm.ship.logic.HeaderLogic;
 import jo.sm.ship.logic.LogicLogic;
 import jo.sm.ship.logic.MetaLogic;
@@ -64,6 +66,10 @@ public class ReadShips
             testLogic(logic);
             File meta = new File(f, "meta.smbpm");
             testMeta(meta);
+            File dataDir = new File(f, "DATA");
+            for (File data : dataDir.listFiles())
+                if (data.getName().endsWith(".smd2"))
+                    testData(data);
         }
         catch (Exception e)
         {
@@ -108,6 +114,21 @@ public class ReadShips
         {
             InputStream fis = new FileInputStream(f);
             return MetaLogic.readFile(fis, true);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            Assert.fail("Cannot read "+f.toString());
+            return null;
+        }
+    }
+    
+    protected Data testData(File f)
+    {
+        try
+        {
+            InputStream fis = new FileInputStream(f);
+            return DataLogic.readFile(fis, true);
         }
         catch (Exception e)
         {
