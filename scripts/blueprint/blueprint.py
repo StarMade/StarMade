@@ -5,6 +5,8 @@ import struct
 import time
 import zlib
 
+from sets import Set
+
 import binary
 
 # This was to indicate the latest version where this file works properly
@@ -174,9 +176,15 @@ def readDataFile(fileName):
     
      start     type
         0         int                       unknown int
-        4         int[8192]                 unknown 32KB section
-        32772     int[8192]                 unknown 32KB section
+        4         chunkIndex[16][16][16]      chunkIndex struct (see below) arranged in a 16x16x16 array
+        32772     long[16][16][16]          chunk timestamp information arranged in a 16x16x16 array
         65540     chunkData[]               5120 byte chunks
+
+        Note that there may exist chunk timestamps and chunks that are not referenced in the chunkIndex table and seemingly serve no purpose.
+        
+        chunkIndex is an 8 byte struct
+            int     chunkId     Index into the chunkData[] array.  If no chunk exists for this point in the array, chunkId = -1
+            int     chunklen    The total chunk size in bytes (excluding the zero padding).  Equal to the chunk's "inlen" field plus 25 (the chunk header size)
         
         chunkData is a 5120 byte structure
             long    timestamp   Unix timestamp in milliseconds
@@ -207,15 +215,32 @@ def readDataFile(fileName):
         
         retval['int_a'] = bs.readInt32()
         
+        retval['chunk_index'] = {}
+        retval['chunk_timestamps'] = {}
+        
         # First 32KB area
-        for i in range(0, 0x8000, 8):
-            int_a = bs.readInt32()
-            int_b = bs.readInt32()
+        for i in range(0, 4096):
+            chunkId = bs.readInt32()
+            chunkLen = bs.readInt32()
+            
+            if chunkId != -1:
+                pos = (i % 16, (i / 16) % 16, i / 256)
+                pos = (16 * (pos[0] - 8), 16 * (pos[1] - 8), 16 * (pos[2] - 8))
+                
+                retval['chunk_index'][pos] = {
+                    'id': chunkId,
+                    'len': chunkLen
+                }
                 
         # Second 32KB area
-        for i in range(0, 0x8000, 8):
-            int_a = bs.readInt32()
-            int_b = bs.readInt32()
+        for i in range(0, 4096):
+            timestamp = bs.readInt64()
+            
+            if timestamp:
+                pos = (i % 16, (i / 16) % 16, i / 256)
+                pos = (16 * (pos[0] - 8), 16 * (pos[1] - 8), 16 * (pos[2] - 8))
+            
+                retval['chunk_timestamps'][pos] = timestamp
         
         retval['chunks'] = []
         for chunk in range(0, numChunks):
