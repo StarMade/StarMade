@@ -28,13 +28,13 @@ def main():
 	print '*   Deobfuscating... (Stage #1)'
 	os.chdir('..')
         os.chdir(workingDir + "/runtime")
-        print sys.path.append(os.path.realpath('..'))
-        print sys.path.append(os.path.realpath('..')) + '\\instance\\StarMade.jar'
-	subprocess.call(['java', '-jar', 'JRename.jar', os.path.realpath() + '\\instance\\StarMade.jar', workingDir + '\\tmp\\deobf.zip'])
+        subprocess.call(['java', '-jar', 'JRename.jar', workingDir + '\instance\StarMade.jar', workingDir + '/tmp\deobf.zip'])
 	print '*   Decompiling...   (Stage #2)'
 	os.chdir('..')
 	if not os.path.exists('sources') and not os.path.isdir('sources'):
 		os.makedirs('sources')
+	os.chdir(workingDir + '/runtime')
+	subprocess.call(['java', '-jar', 'fernflower.jar', workingDir + '/tmp/deobf.zip', workingDir + '/sources'])
 	#print '    *   We are going to copy sources as we can not decompile yet!\n'
 	#unzip("sources.zip", workingDir + '\sources')
 	os.chdir(workingDir + '\install')
