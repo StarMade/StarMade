@@ -34,7 +34,7 @@ def main():
 	if not os.path.exists('sources') and not os.path.isdir('sources'):
 		os.makedirs('sources')
 	os.chdir(workingDir + '/runtime')
-	subprocess.call(['java', '-jar', 'fernflower.jar', workingDir + '/tmp/deobf.zip', workingDir + '/sources'])
+	subprocess.call(['java', '-Xms2G', '-jar', 'fernflower.jar', workingDir + '/tmp/deobf.zip', workingDir + '/sources'])
 	#print '    *   We are going to copy sources as we can not decompile yet!\n'
 	#unzip("sources.zip", workingDir + '\sources')
 	os.chdir(workingDir + '\install')
