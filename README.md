@@ -3,7 +3,7 @@ StarMade
 
 Open source repository of StarMade code deobfuscated and kept updated by community.
 
-CURRENT DECOMPILED VERSION: 0.09377
+CURRENT DECOMPILABLE VERSION: 0.09378
 
 StarMade: [http://star-made.org/](http://star-made.org/)
 
@@ -17,7 +17,7 @@ What we need contributions for:
 For opening sources in Eclipse:
 * Fork the project
 * Download your fork to your HD somewhere
-* Run setup.bat (or setup.sh accordingly)
+* Run setup.bat (or setup.sh accordingly), decompile may take hours for accuracy will be fixed soon!
 * Open created workspace in Eclipse
 
 Compiling
