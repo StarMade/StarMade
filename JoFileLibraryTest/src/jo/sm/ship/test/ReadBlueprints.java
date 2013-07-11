@@ -2,9 +2,11 @@ package jo.sm.ship.test;
 
 import java.io.IOException;
 
+import jo.sm.data.Vector3i;
 import jo.sm.logic.BlueprintLogic;
 import jo.sm.logic.StarMadeLogic;
 import jo.sm.ship.data.Blueprint;
+import jo.sm.ship.logic.ShipLogic;
 
 import org.junit.After;
 import org.junit.Before;
@@ -26,6 +28,14 @@ public class ReadBlueprints
     {
     }
 
+    private void testBlueprint(Blueprint bp)
+    {
+        Vector3i lower = new Vector3i();
+        Vector3i upper = new Vector3i();
+        ShipLogic.getBounds(bp.getData(), lower, upper);
+        System.out.println("  Bounds: "+lower+" -> "+upper);
+    }
+    
     @Test
     public void testBlueprints() throws IOException
     {
@@ -33,6 +43,7 @@ public class ReadBlueprints
         {
             Blueprint bp = BlueprintLogic.readBlueprint(name);
             System.out.println("Read " + bp.getName());
+            testBlueprint(bp);
         }
     }
 
@@ -43,6 +54,7 @@ public class ReadBlueprints
         {
             Blueprint bp = BlueprintLogic.readBlueprint(name);
             System.out.println("Read default " + bp.getName());
+            testBlueprint(bp);
         }
     }
 }

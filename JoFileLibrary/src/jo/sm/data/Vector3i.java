@@ -41,21 +41,21 @@ public class Vector3i
         c = q1.c;
     }
 
-    public final void a(int i, int j, int k)
+    public final void incr(int i, int j, int k)
     {
         a += i;
         b += j;
         c += k;
     }
 
-    public final void a(Vector3i q1)
+    public final void incr(Vector3i q1)
     {
         a += q1.a;
         b += q1.b;
         c += q1.c;
     }
 
-    public final void a()
+    public final void halve()
     {
         a /= 2;
         b /= 2;
@@ -101,40 +101,40 @@ public class Vector3i
         c *= i;
     }
 
-    public final void b(int i, int j, int k)
+    public final void set(int i, int j, int k)
     {
         a = i;
         b = j;
         c = k;
     }
 
-    public final void b(Vector3i q1)
+    public final void set(Vector3i q1)
     {
-        b(q1.a, q1.b, q1.c);
+        set(q1.a, q1.b, q1.c);
     }
 
-    public final void c(int i, int j, int k)
+    public final void decr(int i, int j, int k)
     {
         a -= i;
         b -= j;
         c -= k;
     }
 
-    public final void c(Vector3i q1)
+    public final void decr(Vector3i q1)
     {
         a -= q1.a;
         b -= q1.b;
         c -= q1.c;
     }
 
-    public final void a(Vector3i q1, Vector3i q2)
+    public final void sub(Vector3i q1, Vector3i q2)
     {
         a = q1.a - q2.a;
         b = q1.b - q2.b;
         c = q1.c - q2.c;
     }
 
-    public final void b(Vector3i q1, Vector3i q2)
+    public final void add(Vector3i q1, Vector3i q2)
     {
         a = q1.a + q2.a;
         b = q1.b + q2.b;
@@ -146,7 +146,7 @@ public class Vector3i
         return (new StringBuilder("(")).append(a).append(", ").append(b).append(", ").append(c).append(")").toString();
     }
 
-    public final int a(int i)
+    public final int index(int i)
     {
         switch(i)
         {
@@ -171,14 +171,14 @@ public class Vector3i
             return new Vector3i(Integer.parseInt(s2[0].trim()), Integer.parseInt(s2[1].trim()), Integer.parseInt(s2[2].trim()));
     }
 
-    public final void b()
+    public final void neg()
     {
         a = -a;
         b = -b;
         c = -c;
     }
 
-    public final void c()
+    public final void abs()
     {
         a = Math.abs(a);
         b = Math.abs(b);

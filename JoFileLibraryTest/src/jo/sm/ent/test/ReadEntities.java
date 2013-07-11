@@ -3,9 +3,11 @@ package jo.sm.ent.test;
 import java.io.IOException;
 
 import jo.sm.data.Entity;
+import jo.sm.data.Vector3i;
 import jo.sm.logic.EntityLogic;
 import jo.sm.logic.StarMadeLogic;
 import jo.sm.ship.data.Data;
+import jo.sm.ship.logic.ShipLogic;
 
 import org.junit.After;
 import org.junit.Before;
@@ -40,8 +42,21 @@ public class ReadEntities
             System.out.println();
             EntityLogic.readEntityData(ent);
             System.out.println("  "+ent.getData().size()+" big chunks");
-            for (Data data : ent.getData().values())
-                System.out.println("    "+data.getChunks().length+" little chunks");
+            if (ent.getData().size() > 0)
+            {
+                for (Vector3i o : ent.getData().keySet())
+                {
+                    Data data = ent.getData().get(o);
+                    Vector3i lower = new Vector3i();
+                    Vector3i upper = new Vector3i();
+                    ShipLogic.getBounds(data, lower, upper);
+                    System.out.println("    "+o+": "+data.getChunks().length+" little chunks, Bounds: "+lower+" -> "+upper);
+                }
+                Vector3i lower = new Vector3i();
+                Vector3i upper = new Vector3i();
+                ShipLogic.getBounds(ent.getData(), lower, upper);
+                System.out.println("  Overall Bounds: "+lower+" -> "+upper);
+            }
             ent.setData(null); // free memory
         }
     }
