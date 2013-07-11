@@ -16,11 +16,18 @@ def startProcess(command):
 	p = subprocess.Popen(args)
 	p.communicate()[0]
 
+def getVersion(line):
+	cfg = open(os.getcwd() + "/conf/smcp.cfg", "r")
+	lines = cfg.readlines()
+	line = lines[line].strip()
+	ver = line.split('=', 1)[1]
+	return ver
+
 def main():
-	print '-------------------'
-	print '- Welcome to SMCP -'
-	print '-------------------\n'
-	print 'Extracting StarMade (build_20130707_170345)\n'
+	print '---------------------------'
+	print '- Welcome to SMCP v%s ' % getVersion(0)
+	print '---------------------------\n'
+	print 'Extracting StarMade v%(0)s (%(1)s)\n' % {"0" : getVersion(1), "1" : getVersion(2)}
 	if not os.path.exists('instance') and not os.path.isdir('instance'):
 		os.makedirs('instance')
 	if not os.path.exists('tmp') and not os.path.isdir('tmp'):
@@ -29,7 +36,7 @@ def main():
 		os.makedirs('conf')
 	workingDir = os.getcwd()
 	os.chdir(workingDir + '\install')
-	unzip("starmade-build_20130707_170345.zip", workingDir + '\instance')
+	unzip("starmade-%s.zip", workingDir + '\instance') % getVersion(2)
 	os.chdir(workingDir)
 	print 'Decompiling StarMade'
 	print '*   Deobfuscating... (Stage #1)'
@@ -39,15 +46,13 @@ def main():
 		os.makedirs('sources')
 	startProcess("java -Xmx1G -jar runtime/fernflower.jar tmp/deobf.zip sources")
 	#subprocess.call(['java', '-Xms2G', '-jar', 'fernflower.jar', workingDir + '/tmp/deobf.zip', workingDir + '/sources'])
-	#print '    *   We are going to copy sources as we can not decompile yet!\n'
-	#unzip("sources.zip", workingDir + '\sources')
 	os.chdir(workingDir + '\install')
 	print 'Setting up Eclipse workspace\n'
 	unzip("EclipseWorkspace.zip", workingDir)
 	os.chdir(workingDir)
 	if os.path.exists('tmp'):
 		print 'Deleting temporary files'
-		#shutil.rmtree('tmp')
+		shutil.rmtree('tmp')
 	print '-----------------------------------------'
 	print '- SMCP Is now ready for mod development -'
 	print '-----------------------------------------'
@@ -57,12 +62,10 @@ def unzip(zipFilePath, destDir):
     for name in zfile.namelist():
         (dirName, fileName) = os.path.split(name)
         if fileName == '':
-            # directory
             newDir = destDir + '/' + dirName
             if not os.path.exists(newDir):
                 os.mkdir(newDir)
         else:
-            # file
             fd = open(destDir + '/' + name, 'wb')
             fd.write(zfile.read(name))
             fd.close()
