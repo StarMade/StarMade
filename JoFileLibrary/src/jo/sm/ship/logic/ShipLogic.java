@@ -2,7 +2,9 @@ package jo.sm.ship.logic;
 
 import java.util.Map;
 
+import jo.sm.data.SparseMatrix;
 import jo.sm.data.Vector3i;
+import jo.sm.ship.data.Block;
 import jo.sm.ship.data.Chunk;
 import jo.sm.ship.data.Data;
 
@@ -70,6 +72,25 @@ public class ShipLogic
                 upper.c = Math.max(upper.c, u.c);
             }
         }
+    }
+    
+    public static SparseMatrix<Block> getBlocks(Map<Vector3i, Data> data)
+    {
+        SparseMatrix<Block> blocks = new SparseMatrix<Block>();
+        for (Data datum : data.values())
+            for (Chunk c : datum.getChunks())
+            {
+                Vector3i p = c.getPosition();
+                for (int z = 0; z < 16; z++)
+                    for (int y = 0; y < 16; y++)
+                        for (int x = 0; x < 16; x++)
+                        {
+                            Block b = c.getBlocks()[x][y][z];
+                            if (b.getBlockID() > 0)
+                                blocks.set(p.a + x, p.b + y, p.c + z, b);
+                        }
+            }
+        return blocks;
     }
     
     private static void adjustByBigChunk(Vector3i v, Vector3i mod)
