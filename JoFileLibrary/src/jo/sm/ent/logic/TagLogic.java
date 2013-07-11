@@ -18,7 +18,7 @@ import jo.sm.ent.data.Tag;
 import jo.sm.ent.data.TagType;
 import jo.sm.logic.DebugLogic;
 
-public class EntityLogic
+public class TagLogic
 {
     public static Tag readFile(InputStream is, boolean closeStream)
             throws IOException
@@ -46,7 +46,7 @@ public class EntityLogic
         Tag input = null;
         if (type == TagType.FINISH)
         {
-            input = new Tag(TagType.FINISH, null,  ((EntityLogic[])(null)));
+            input = new Tag(TagType.FINISH, null,  ((TagLogic[])(null)));
         }
         else
         {

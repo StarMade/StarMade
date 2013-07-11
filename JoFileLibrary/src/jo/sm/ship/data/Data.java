@@ -3,8 +3,8 @@ package jo.sm.ship.data;
 public class Data
 {
     private int     mUnknown1;
-    private byte[]  mUnknown2;
-    private byte[]  mUnknown3;
+    private byte[]  mOffsetSizeTable;
+    private byte[]  mTimestampTable;
     private Chunk[] mChunks;
 
     public int getUnknown1()
@@ -17,24 +17,24 @@ public class Data
         mUnknown1 = unknown1;
     }
 
-    public byte[] getUnknown2()
+    public byte[] getOffsetSizeTable()
     {
-        return mUnknown2;
+        return mOffsetSizeTable;
     }
 
-    public void setUnknown2(byte[] unknown2)
+    public void setOffsetSizeTable(byte[] unknown2)
     {
-        mUnknown2 = unknown2;
+        mOffsetSizeTable = unknown2;
     }
 
-    public byte[] getUnknown3()
+    public byte[] getTimestampTable()
     {
-        return mUnknown3;
+        return mTimestampTable;
     }
 
-    public void setUnknown3(byte[] unknown3)
+    public void setTimestampTable(byte[] unknown3)
     {
-        mUnknown3 = unknown3;
+        mTimestampTable = unknown3;
     }
 
     public Chunk[] getChunks()

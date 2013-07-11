@@ -3,13 +3,17 @@ package jo.sm.ship.logic;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.InflaterInputStream;
 
-import jo.sm.logic.ByteUtils;
+import jo.sm.data.Vector3i;
 import jo.sm.logic.IOLogic;
 import jo.sm.ship.data.Block;
 import jo.sm.ship.data.Chunk;
@@ -17,6 +21,22 @@ import jo.sm.ship.data.Data;
 
 public class DataLogic 
 {
+    public static Map<Vector3i, Data> readFiles(File dataDir, String prefix) throws IOException
+    {
+        Map<Vector3i, Data> data = new HashMap<Vector3i, Data>();
+        for (File dataFile : dataDir.listFiles())
+            if (dataFile.getName().endsWith(".smd2") && dataFile.getName().startsWith(prefix))
+            {
+                String[] parts = dataFile.getName().split("\\.");
+                Vector3i position = new Vector3i(Integer.parseInt(parts[1]),
+                        Integer.parseInt(parts[2]),
+                        Integer.parseInt(parts[3]));
+                Data datum = DataLogic.readFile(new FileInputStream(dataFile), true);
+                data.put(position, datum);
+            }
+        return data;
+    }
+    
     public static Data readFile(InputStream is, boolean close) throws IOException
 	{
 		DataInputStream dis;
@@ -28,12 +48,10 @@ public class DataLogic
 		data.setUnknown1(dis.readInt());
 		byte[] unknown2 = new byte[32768];
 		dis.readFully(unknown2);
-		data.setUnknown2(unknown2);
-		//System.out.println(ByteUtils.toStringDump(unknown2));
+		//data.setOffsetSizeTable(unknown2);
         byte[] unknown3 = new byte[32768];
         dis.readFully(unknown3);
-        data.setUnknown3(unknown3);
-        //System.out.println(ByteUtils.toStringDump(unknown3));
+        //data.setTimestampTable(unknown3);
         List<Chunk> chunks = new ArrayList<Chunk>();
         for (;;)
         {
@@ -77,6 +95,25 @@ public class DataLogic
         data.setChunks(chunks.toArray(new Chunk[0]));
         if (close)
             dis.close();
+        // cross check
+        /*
+        DataInputStream dis4 = new DataInputStream(new ByteArrayInputStream(data.getUnknown2()));
+        DataInputStream dis5 = new DataInputStream(new ByteArrayInputStream(data.getUnknown3()));
+        for (int z = 0; z < 16; z++)
+            for (int y = 0; y < 16; y++)
+                for (int x = 0; x < 16; x++)
+                {
+                    int off = dis4.readInt();
+                    int siz = dis4.readInt();
+                    long ts = dis5.readLong();
+                    if (off < 0)
+                        continue;
+                    System.out.print(off+" x"+siz+" ");
+                    Chunk chunk = data.getChunks()[off];
+                    System.out.println("idx="+x+","+y+","+z+" -> "+chunk.getPosition());
+                    System.out.println("     "+ts+" -> "+chunk.getTimestamp());
+                }
+                */
 		return data;
 	}
     

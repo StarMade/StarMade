@@ -1,6 +1,6 @@
 package jo.sm.ent.data;
 
-import jo.sm.ent.logic.EntityLogic;
+import jo.sm.ent.logic.TagLogic;
 
 
 public class Tag
@@ -21,7 +21,7 @@ public class Tag
     {
         mType = type;
         mName = name;
-        EntityLogic.setValue(this, value); // validation is here
+        TagLogic.setValue(this, value); // validation is here
     }
     
     public String toString()
