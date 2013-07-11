@@ -9,6 +9,12 @@ import sys
 import shutil
 import zipfile
 import subprocess
+import shlex
+
+def startProcess(command):
+	args = shlex.split(command)
+	p = subprocess.Popen(args)
+	p.communicate()[0]
 
 def main():
 	print '-------------------'
@@ -24,17 +30,15 @@ def main():
 	workingDir = os.getcwd()
 	os.chdir(workingDir + '\install')
 	unzip("starmade-build_20130707_170345.zip", workingDir + '\instance')
+	os.chdir(workingDir)
 	print 'Decompiling StarMade'
 	print '*   Deobfuscating... (Stage #1)'
-	os.chdir('..')
-        os.chdir(workingDir + "/runtime")
-        subprocess.call(['java', '-jar', 'JRename.jar', workingDir + '\instance\StarMade.jar', workingDir + '/tmp\deobf.zip'])
+	startProcess("java -Xmx1G -jar runtime/N3Remapper.jar conf/remapper.cfg pre instance/StarMade.jar tmp/deobf.zip")
 	print '*   Decompiling...   (Stage #2)'
-	os.chdir('..')
 	if not os.path.exists('sources') and not os.path.isdir('sources'):
 		os.makedirs('sources')
-	os.chdir(workingDir + '/runtime')
-	subprocess.call(['java', '-Xms2G', '-jar', 'fernflower.jar', workingDir + '/tmp/deobf.zip', workingDir + '/sources'])
+	startProcess("java -Xmx1G -jar runtime/fernflower.jar tmp/deobf.zip sources")
+	#subprocess.call(['java', '-Xms2G', '-jar', 'fernflower.jar', workingDir + '/tmp/deobf.zip', workingDir + '/sources'])
 	#print '    *   We are going to copy sources as we can not decompile yet!\n'
 	#unzip("sources.zip", workingDir + '\sources')
 	os.chdir(workingDir + '\install')
