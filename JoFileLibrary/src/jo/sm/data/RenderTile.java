@@ -3,6 +3,8 @@ package jo.sm.data;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
+import jo.sm.ship.data.Block;
+
 public class RenderTile
 {
     public static final int XP = 0;
@@ -13,6 +15,7 @@ public class RenderTile
     public static final int ZM = 5;
 
     private int             mFacing;
+    private Block           mBlock;
     private Point3i        mCenter;
     private Point3f        mVisual;
 
@@ -44,5 +47,15 @@ public class RenderTile
     public void setVisual(Point3f visual)
     {
         mVisual = visual;
+    }
+
+    public Block getBlock()
+    {
+        return mBlock;
+    }
+
+    public void setBlock(Block block)
+    {
+        mBlock = block;
     }
 }
