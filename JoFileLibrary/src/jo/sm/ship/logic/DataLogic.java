@@ -13,7 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.InflaterInputStream;
 
-import jo.sm.data.Vector3i;
+import javax.vecmath.Point3i;
+
 import jo.sm.logic.IOLogic;
 import jo.sm.ship.data.Block;
 import jo.sm.ship.data.Chunk;
@@ -21,14 +22,14 @@ import jo.sm.ship.data.Data;
 
 public class DataLogic 
 {
-    public static Map<Vector3i, Data> readFiles(File dataDir, String prefix) throws IOException
+    public static Map<Point3i, Data> readFiles(File dataDir, String prefix) throws IOException
     {
-        Map<Vector3i, Data> data = new HashMap<Vector3i, Data>();
+        Map<Point3i, Data> data = new HashMap<Point3i, Data>();
         for (File dataFile : dataDir.listFiles())
             if (dataFile.getName().endsWith(".smd2") && dataFile.getName().startsWith(prefix))
             {
                 String[] parts = dataFile.getName().split("\\.");
-                Vector3i position = new Vector3i(Integer.parseInt(parts[1]),
+                Point3i position = new Point3i(Integer.parseInt(parts[1]),
                         Integer.parseInt(parts[2]),
                         Integer.parseInt(parts[3]));
                 Data datum = DataLogic.readFile(new FileInputStream(dataFile), true);
@@ -68,7 +69,7 @@ public class DataLogic
             DataInputStream dis2 = new DataInputStream(new ByteArrayInputStream(chunkData));
             Chunk chunk = new Chunk();
             chunk.setTimestamp(dis2.readLong());
-            chunk.setPosition(IOLogic.readVector3i(dis2));
+            chunk.setPosition(IOLogic.readPoint3i(dis2));
             chunk.setType(dis2.readByte());
             int compressedLen = dis2.readInt();
             //System.out.println("CompressedLen="+compressedLen);

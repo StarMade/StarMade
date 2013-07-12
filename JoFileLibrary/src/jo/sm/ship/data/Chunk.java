@@ -1,11 +1,11 @@
 package jo.sm.ship.data;
 
-import jo.sm.data.Vector3i;
+import javax.vecmath.Point3i;
 
 public class Chunk
 {
     private long        mTimestamp;
-    private Vector3i    mPosition;
+    private Point3i    mPosition;
     private int         mType;
     private Block[][][] mBlocks;
     public long getTimestamp()
@@ -16,11 +16,11 @@ public class Chunk
     {
         mTimestamp = timestamp;
     }
-    public Vector3i getPosition()
+    public Point3i getPosition()
     {
         return mPosition;
     }
-    public void setPosition(Vector3i position)
+    public void setPosition(Point3i position)
     {
         mPosition = position;
     }

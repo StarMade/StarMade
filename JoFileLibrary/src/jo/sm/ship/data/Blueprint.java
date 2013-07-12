@@ -3,7 +3,7 @@ package jo.sm.ship.data;
 import java.util.HashMap;
 import java.util.Map;
 
-import jo.sm.data.Vector3i;
+import javax.vecmath.Point3i;
 
 public class Blueprint
 {
@@ -11,11 +11,11 @@ public class Blueprint
     private Header  mHeader;
     private Logic   mLogic;
     private Meta    mMeta;
-    private Map<Vector3i, Data> mData;
+    private Map<Point3i, Data> mData;
     
     public Blueprint()
     {
-        mData = new HashMap<Vector3i, Data>();
+        mData = new HashMap<Point3i, Data>();
     }
     
     public String getName()
@@ -50,11 +50,11 @@ public class Blueprint
     {
         mMeta = meta;
     }
-    public Map<Vector3i, Data> getData()
+    public Map<Point3i, Data> getData()
     {
         return mData;
     }
-    public void setData(Map<Vector3i, Data> data)
+    public void setData(Map<Point3i, Data> data)
     {
         mData = data;
     }

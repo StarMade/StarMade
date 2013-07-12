@@ -6,9 +6,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.vecmath.Point3i;
+
 import jo.sm.data.Entity;
 import jo.sm.data.StarMade;
-import jo.sm.data.Vector3i;
 import jo.sm.ent.data.Tag;
 import jo.sm.ent.logic.TagLogic;
 import jo.sm.ship.logic.DataLogic;
@@ -71,7 +72,7 @@ public class EntityLogic
             entity.setUNID(name.substring(o + 1)); // valid if result is -1
             name = name.substring(0, o);
             String[] coords = name.split("_");
-            Vector3i pos = new Vector3i(Integer.parseInt(coords[0]),
+            Point3i pos = new Point3i(Integer.parseInt(coords[0]),
                     Integer.parseInt(coords[1]),
                     Integer.parseInt(coords[2]));
             entity.setLocation(pos);

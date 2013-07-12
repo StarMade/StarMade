@@ -11,9 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
-import jo.sm.data.Vector3b;
-import jo.sm.data.Vector3f;
-import jo.sm.data.Vector3i;
+import javax.vecmath.Point3b;
+import javax.vecmath.Point3i;
+import javax.vecmath.Vector3f;
+
 import jo.sm.ent.data.Tag;
 import jo.sm.ent.data.TagType;
 import jo.sm.logic.DebugLogic;
@@ -137,13 +138,13 @@ public class TagLogic
                         dis.readFloat(),
                         dis.readFloat());
                 break;
-            case VECTOR3i:
-                value = new Vector3i(dis.readInt(),
+            case Point3i:
+                value = new Point3i(dis.readInt(),
                         dis.readInt(), dis.readInt());
                 break;
             case VECTOR3b:
-                value = new Vector3b(dis.read(),
-                        dis.read(), dis.read());
+                value = new Point3b((byte)dis.read(),
+                        (byte)dis.read(), (byte)dis.read());
                 break;
             case LIST:
             {
@@ -251,15 +252,15 @@ public class TagLogic
                 dos.writeFloat(((Vector3f)tag.getValue()).y);
                 dos.writeFloat(((Vector3f)tag.getValue()).z);
                 return;
-            case VECTOR3i:
-                dos.writeInt(((Vector3i)tag.getValue()).a);
-                dos.writeInt(((Vector3i)tag.getValue()).b);
-                dos.writeInt(((Vector3i)tag.getValue()).c);
+            case Point3i:
+                dos.writeInt(((Point3i)tag.getValue()).x);
+                dos.writeInt(((Point3i)tag.getValue()).y);
+                dos.writeInt(((Point3i)tag.getValue()).z);
                 return;
             case VECTOR3b:
-                dos.write(((Vector3b)tag.getValue()).a);
-                dos.write(((Vector3b)tag.getValue()).b);
-                dos.write(((Vector3b)tag.getValue()).c);
+                dos.write(((Point3b)tag.getValue()).x);
+                dos.write(((Point3b)tag.getValue()).y);
+                dos.write(((Point3b)tag.getValue()).z);
                 return;
             case LIST:
             {
@@ -361,12 +362,12 @@ public class TagLogic
                 if (!(value instanceof Vector3f))
                     throw new IllegalArgumentException();
                 break;
-            case VECTOR3i:
-                if (!(value instanceof Vector3i))
+            case Point3i:
+                if (!(value instanceof Point3i))
                     throw new IllegalArgumentException();
                 break;
             case VECTOR3b:
-                if (!(value instanceof Vector3b))
+                if (!(value instanceof Point3b))
                     throw new IllegalArgumentException();
                 break;
             case LIST:

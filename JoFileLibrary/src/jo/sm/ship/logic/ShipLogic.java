@@ -2,56 +2,53 @@ package jo.sm.ship.logic;
 
 import java.util.Map;
 
+import javax.vecmath.Point3i;
+
+import jo.sm.data.CubeIterator;
 import jo.sm.data.SparseMatrix;
-import jo.sm.data.Vector3i;
 import jo.sm.ship.data.Block;
 import jo.sm.ship.data.Chunk;
 import jo.sm.ship.data.Data;
 
 public class ShipLogic
 {
-    public static void getBounds(Data datum, Vector3i lower, Vector3i upper)
+    public static void getBounds(Data datum, Point3i lower, Point3i upper)
     {
         boolean first = true;
         for (Chunk c : datum.getChunks())
         {
-            Vector3i pos = c.getPosition();
-            for (int z = 0; z < 16; z++)
-                for (int y = 0; y < 16; y++)
-                    for (int x = 0; x < 16; x++)
-                    {
-                        if (c.getBlocks()[x][y][z].getBlockID() < 0)
-                            continue;
-                        if (first)
-                        {
-                            lower.a = pos.a + x;
-                            lower.b = pos.b + y;
-                            lower.c = pos.c + z;
-                            upper.a = pos.a + x;
-                            upper.b = pos.b + y;
-                            upper.c = pos.c + z;
-                            first = false;
-                        }
-                        else
-                        {
-                            lower.a = Math.min(lower.a, pos.a + x);
-                            lower.b = Math.min(lower.b, pos.b + y);
-                            lower.c = Math.min(lower.c, pos.c + z);
-                            upper.a = Math.max(upper.a, pos.a + x);
-                            upper.b = Math.max(upper.b, pos.b + y);
-                            upper.c = Math.max(upper.c, pos.c + z);
-                        }
-                    }
+            Point3i pos = c.getPosition();
+            for (CubeIterator i = new CubeIterator(new Point3i(0,0,0), new Point3i(15,15,15)); i.hasNext(); )
+            {
+                Point3i xyz = i.next();
+                if (c.getBlocks()[xyz.x][xyz.y][xyz.z].getBlockID() <= 0)
+                    continue;
+                if (first)
+                {
+                    lower.add(pos, xyz);
+                    upper.add(pos, xyz);
+                    first = false;
+                }
+                else
+                {
+                    lower.x = Math.min(lower.x, pos.x + xyz.x);
+                    lower.y = Math.min(lower.y, pos.y + xyz.y);
+                    lower.z = Math.min(lower.z, pos.z + xyz.z);
+                    upper.x = Math.max(upper.x, pos.x + xyz.x);
+                    upper.y = Math.max(upper.y, pos.y + xyz.y);
+                    upper.z = Math.max(upper.z, pos.z + xyz.z);
+                }
+            }
         }
     }
     
-    public static void getBounds(Map<Vector3i,Data> data, Vector3i lower, Vector3i upper)
+    public static void getBounds(Map<Point3i,Data> data, Point3i lower, Point3i upper)
     {
         boolean first = true;
-        for (Vector3i o : data.keySet())
+        for (Point3i o : data.keySet())
         {
-            Vector3i l = new Vector3i();
-            Vector3i u = new Vector3i();
+            Point3i l = new Point3i();
+            Point3i u = new Point3i();
             Data datum = data.get(o);
             getBounds(datum, l, u);
             adjustByBigChunk(l, o);
@@ -64,36 +61,35 @@ public class ShipLogic
             }
             else
             {
-                lower.a = Math.min(lower.a, l.a);
-                lower.b = Math.min(lower.b, l.b);
-                lower.c = Math.min(lower.c, l.c);
-                upper.a = Math.max(upper.a, u.a);
-                upper.b = Math.max(upper.b, u.b);
-                upper.c = Math.max(upper.c, u.c);
+                lower.x = Math.min(lower.x, l.x);
+                lower.y = Math.min(lower.y, l.y);
+                lower.z = Math.min(lower.z, l.z);
+                upper.x = Math.max(upper.x, u.x);
+                upper.y = Math.max(upper.y, u.y);
+                upper.z = Math.max(upper.z, u.z);
             }
         }
     }
     
-    public static SparseMatrix<Block> getBlocks(Map<Vector3i, Data> data)
+    public static SparseMatrix<Block> getBlocks(Map<Point3i, Data> data)
     {
         SparseMatrix<Block> blocks = new SparseMatrix<Block>();
         for (Data datum : data.values())
             for (Chunk c : datum.getChunks())
             {
-                Vector3i p = c.getPosition();
-                for (int z = 0; z < 16; z++)
-                    for (int y = 0; y < 16; y++)
-                        for (int x = 0; x < 16; x++)
-                        {
-                            Block b = c.getBlocks()[x][y][z];
-                            if (b.getBlockID() > 0)
-                                blocks.set(p.a + x, p.b + y, p.c + z, b);
-                        }
+                Point3i p = c.getPosition();
+                for (CubeIterator i = new CubeIterator(new Point3i(0,0,0), new Point3i(15,15,15)); i.hasNext(); )
+                {
+                    Point3i xyz = i.next();
+                    Block b = c.getBlocks()[xyz.x][xyz.y][xyz.z];
+                    if (b.getBlockID() > 0)
+                        blocks.set(p.x + xyz.x, p.y + xyz.y, p.z + xyz.z, b);
+                }
             }
         return blocks;
     }
     
-    private static void adjustByBigChunk(Vector3i v, Vector3i mod)
+    private static void adjustByBigChunk(Point3i v, Point3i mod)
     {
         // looks like no mod is needed
 //        v.a += mod.a*16*16;

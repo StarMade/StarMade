@@ -2,9 +2,10 @@ package jo.sm.ship.test;
 
 import java.io.IOException;
 
+import javax.vecmath.Point3i;
+
 import jo.sm.data.BlockTypes;
 import jo.sm.data.SparseMatrix;
-import jo.sm.data.Vector3i;
 import jo.sm.logic.BlueprintLogic;
 import jo.sm.logic.StarMadeLogic;
 import jo.sm.ship.data.Block;
@@ -33,22 +34,23 @@ public class ReadBlueprints
 
     private void testBlueprint(Blueprint bp)
     {
-        Vector3i lower = new Vector3i();
-        Vector3i upper = new Vector3i();
+        Point3i lower = new Point3i();
+        Point3i upper = new Point3i();
         ShipLogic.getBounds(bp.getData(), lower, upper);
         System.out.println("  Bounds: "+lower+" -> "+upper);
         SparseMatrix<Block> grid = ShipLogic.getBlocks(bp.getData());
-        grid.getBounds(lower, upper);
-        for (int z = lower.c; z <= upper.c; z++)
+        for (int z = lower.z; z <= upper.z; z++)
         {
             System.out.println("--"+z+"---------------------------------");
-            for (int y = lower.b; y <= upper.b; y++)
+            for (int y = lower.y; y <= upper.y; y++)
             {
-                for (int x = lower.a; x <= upper.a; x++)
+                for (int x = lower.x; x <= upper.x; x++)
                 {
                     Block b = grid.get(x, y, z);
-                    if ((b == null) || (b.getBlockID() <= 0))
+                    if (b == null)
                         System.out.print(" ");
+                    else if (b.getBlockID() <= 0)
+                        System.out.print("0");
                     else
                         System.out.print(BlockTypes.BLOCK_ABBR.get(b.getBlockID()));
                 }

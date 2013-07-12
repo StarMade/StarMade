@@ -3,6 +3,8 @@ package jo.sm.data;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.vecmath.Point3i;
+
 public class SparseMatrix<T>
 {
     private Map<Integer,Map<Integer,Map<Integer,T>>> mMatrix;
@@ -43,33 +45,58 @@ public class SparseMatrix<T>
         return yrow.get(z);        
     }
     
-    public void set(Vector3i v, T val)
+    public boolean contains(int x, int y, int z)
     {
-        set(v.a, v.b, v.c, val);
+        return get(x, y, z) != null;
     }
     
-    public T get(Vector3i v)
+    public void set(Point3i v, T val)
     {
-        return get(v.a, v.b, v.c);
+        set(v.x, v.y, v.z, val);
     }
     
-    public void getBounds(Vector3i lower, Vector3i upper)
+    public T get(Point3i v)
     {
+        return get(v.x, v.y, v.z);
+    }
+    
+    public boolean contains(Point3i v)
+    {
+        return get(v.x, v.y, v.z) != null;
+    }
+    
+    public void getBounds(Point3i lower, Point3i upper)
+    {
+        boolean first = true;
         for (Integer x : mMatrix.keySet())
         {
-            lower.a = Math.min(lower.a, x);
-            upper.a = Math.max(upper.a, x);
             Map<Integer,Map<Integer,T>> xrow = mMatrix.get(x);
             for (Integer y : xrow.keySet())
             {
-                lower.b = Math.min(lower.b, y);
-                upper.b = Math.max(upper.b, y);
                 Map<Integer,T> yrow = xrow.get(y);
                 for (Integer z : yrow.keySet())
-                {
-                    lower.c = Math.min(lower.c, z);
-                    upper.c = Math.max(upper.c, z);
-                }
+                    if (contains(x, y, z))
+                    {
+                        if (first)
+                        {
+                            lower.x = x;
+                            upper.x = x;
+                            lower.y = y;
+                            upper.y = y;
+                            lower.z = z;
+                            upper.z = z;
+                            first = false;
+                        }
+                        else
+                        {
+                            lower.x = Math.min(lower.x, x);
+                            upper.x = Math.max(upper.x, x);
+                            lower.y = Math.min(lower.y, y);
+                            upper.y = Math.max(upper.y, y);
+                            lower.z = Math.min(lower.z, z);
+                            upper.z = Math.max(upper.z, z);
+                        }
+                    }
             }
         }
     }

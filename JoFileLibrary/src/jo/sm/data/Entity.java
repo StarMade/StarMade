@@ -3,6 +3,8 @@ package jo.sm.data;
 import java.io.File;
 import java.util.Map;
 
+import javax.vecmath.Point3i;
+
 import jo.sm.ent.data.Tag;
 import jo.sm.ship.data.Data;
 
@@ -12,9 +14,9 @@ public class Entity
     private String              mName;
     private String              mUNID;
     private String              mType;
-    private Vector3i            mLocation;
+    private Point3i            mLocation;
     private Tag                 mTag;
-    private Map<Vector3i, Data> mData;
+    private Map<Point3i, Data> mData;
     
     public String getName()
     {
@@ -40,11 +42,11 @@ public class Entity
     {
         mType = type;
     }
-    public Vector3i getLocation()
+    public Point3i getLocation()
     {
         return mLocation;
     }
-    public void setLocation(Vector3i location)
+    public void setLocation(Point3i location)
     {
         mLocation = location;
     }
@@ -56,11 +58,11 @@ public class Entity
     {
         mTag = tag;
     }
-    public Map<Vector3i, Data> getData()
+    public Map<Point3i, Data> getData()
     {
         return mData;
     }
-    public void setData(Map<Vector3i, Data> data)
+    public void setData(Map<Point3i, Data> data)
     {
         mData = data;
     }
