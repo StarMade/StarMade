@@ -181,6 +181,7 @@ def readMetaFile(fileName):
             4       wchar[N]        ship subfolder string given in modified UTF-8 encoding
             vary    int[3]          q vector, the location of the dock block
             vary    float[3]        a vector, ???
+            vary    short           block ID of the dock block
             
         tagStruct encodes variety of data types in a tree structure
         start       type
