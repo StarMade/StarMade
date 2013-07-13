@@ -13,21 +13,28 @@ import binary
 _smVersion = '0.09375'
 _baseDir = os.path.dirname(os.path.abspath(__file__))
 
-def printBlueprint(dirName):
+def readBlueprint(dirName):
     '''
     Read a blueprint directory.  Parse all the files inside the directory.
     '''
     if not os.path.isdir(dirName):
         raise Exception('%s is not a directory' % dirName)
     
-    pprint.pprint(readHeaderFile('%s/header.smbph' % dirName))
-    pprint.pprint(readLogicFile('%s/logic.smbpl' % dirName))
-    pprint.pprint(readMetaFile('%s/meta.smbpm' % dirName))
+    data = {}
+    
+    data['header'] = readHeaderFile('%s/header.smbph' % dirName)
+    data['logic'] = readLogicFile('%s/logic.smbpl' % dirName)
+    data['meta'] = readMetaFile('%s/meta.smbpm' % dirName)
     
     dataDir = '%s/DATA' % dirName
     
     for df in os.listdir(dataDir):
-        pprint.pprint(readDataFile('%s/%s' % (dataDir, df)))
+        data[df] = readDataFile('%s/%s' % (dataDir, df))
+    
+    return data
+
+def printBlueprint(dirName):
+    pprint.pprint(readBlueprint(dirName))
     
 def readHeaderFile(fileName):
     '''
