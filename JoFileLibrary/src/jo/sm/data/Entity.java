@@ -18,6 +18,27 @@ public class Entity
     private Tag                 mTag;
     private Map<Point3i, Data> mData;
     
+    public String toString()
+    {
+        if ("SPACESTATION".equals(mType))
+            return "Station "+mUNID;
+        if ("SHOP".equals(mType))
+            return "Shop "+mUNID;
+        if ("PLANET".equals(mType))
+            return "Planet "+mLocation;
+        if ("SHIP".equals(mType))
+        {
+            if (mName.equals("AITURRET"))
+                return "AI Turret "+mUNID;
+            if (mName.startsWith("MOB_SIM_"))
+                return "Enemy "+mName.substring(7);
+            if (mName.startsWith("MOB_"))
+                return "Enemy "+mName.substring(4);
+            return "Ship "+mName;
+        }
+        return mType+" "+mUNID;
+    }
+    
     public String getName()
     {
         return mName;
