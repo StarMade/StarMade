@@ -1,6 +1,6 @@
 package jo.sm.ship.data;
 
-import jo.sm.data.Vector3f;
+import javax.vecmath.Vector3f;
 
 /*
  * +        0         int                       unknown int

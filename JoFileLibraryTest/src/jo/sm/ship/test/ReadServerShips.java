@@ -7,9 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jo.sm.logic.DebugLogic;
+import jo.sm.ship.data.Data;
 import jo.sm.ship.data.Header;
 import jo.sm.ship.data.Logic;
 import jo.sm.ship.data.Meta;
+import jo.sm.ship.logic.DataLogic;
 import jo.sm.ship.logic.HeaderLogic;
 import jo.sm.ship.logic.LogicLogic;
 import jo.sm.ship.logic.MetaLogic;
@@ -19,7 +21,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ReadShips
+public class ReadServerShips
 {
     private File mBaseDir;
 
@@ -35,16 +37,12 @@ public class ReadShips
     protected List<File> findShips()
     {
         List<File> files = new ArrayList<File>();
-        doFindShips(new File(mBaseDir, "blueprints"), files);
-        doFindShips(new File(mBaseDir, "blueprints-default"), files);
-        return files;
-    }
-
-    private void doFindShips(File baseDir, List<File> files)
-    {
-        for (File f : baseDir.listFiles())
-            if (f.isDirectory())
+        File serverDatabase = new File(mBaseDir, "server-database");
+        File data = new File(serverDatabase, "DATA");
+        for (File f : data.listFiles())
+            if (f.getName().endsWith(".smd2"))
                 files.add(f);
+        return files;
     }
     
     protected void testFiles(List<File> files)
@@ -58,12 +56,7 @@ public class ReadShips
         DebugLogic.debug(f.getName());
         try
         {
-            File header = new File(f, "header.smbph");
-            testHeader(header);
-            File logic = new File(f, "logic.smbpl");
-            testLogic(logic);
-            File meta = new File(f, "meta.smbpm");
-            testMeta(meta);
+            testData(f);
         }
         catch (Exception e)
         {
@@ -108,6 +101,21 @@ public class ReadShips
         {
             InputStream fis = new FileInputStream(f);
             return MetaLogic.readFile(fis, true);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            Assert.fail("Cannot read "+f.toString());
+            return null;
+        }
+    }
+    
+    protected Data testData(File f)
+    {
+        try
+        {
+            InputStream fis = new FileInputStream(f);
+            return DataLogic.readFile(fis, true);
         }
         catch (Exception e)
         {
