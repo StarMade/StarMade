@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jo.sm.ent.data.Tag;
-import jo.sm.ent.logic.EntityLogic;
+import jo.sm.ent.logic.TagLogic;
 import jo.sm.logic.DebugLogic;
 import junit.framework.Assert;
 
@@ -55,7 +55,7 @@ public class ReadBase
         try
         {
             InputStream fis = new FileInputStream(f);
-            return EntityLogic.readFile(fis, true);
+            return TagLogic.readFile(fis, true);
         }
         catch (Exception e)
         {

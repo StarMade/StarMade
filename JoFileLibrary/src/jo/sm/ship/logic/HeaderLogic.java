@@ -4,7 +4,8 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import jo.sm.data.Vector3f;
+import javax.vecmath.Vector3f;
+
 import jo.sm.ship.data.BlockEntry;
 import jo.sm.ship.data.Header;
 
