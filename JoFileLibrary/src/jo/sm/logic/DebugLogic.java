@@ -17,7 +17,7 @@ public class DebugLogic
     
     public static void debug(String msg)
     {
-        System.out.println(mIndent+msg);
+        //System.out.println(mIndent+msg);
     }
 
 }

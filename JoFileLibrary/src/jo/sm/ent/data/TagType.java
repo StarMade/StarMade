@@ -17,7 +17,7 @@ public enum TagType
     BYTE_ARRAY, // Af_h
     STRING, // Af_i
     VECTOR3f, // Af_j
-    VECTOR3i, // Af_k
+    Point3i, // Af_k
     VECTOR3b, // Af_l
     LIST, // Af_m
     STRUCT, // Af_n

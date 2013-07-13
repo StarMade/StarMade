@@ -1,16 +1,17 @@
 package jo.sm.ship.data;
 
-import jo.sm.data.Vector3s;
+import javax.vecmath.Point3s;
+
 
 public class ControllerEntry
 {
-    private Vector3s     mPosition;
+    private Point3s     mPosition;
     private GroupEntry[] mGroups;
-    public Vector3s getPosition()
+    public Point3s getPosition()
     {
         return mPosition;
     }
-    public void setPosition(Vector3s position)
+    public void setPosition(Point3s position)
     {
         mPosition = position;
     }

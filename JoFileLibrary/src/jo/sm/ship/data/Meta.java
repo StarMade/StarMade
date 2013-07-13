@@ -1,6 +1,5 @@
 package jo.sm.ship.data;
 
-import jo.sm.data.Vector3f;
 
 /*
  * +        0         int                       unknown int

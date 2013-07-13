@@ -3,7 +3,7 @@ package jo.sm.ent.logic;
 import jo.sm.ent.data.Tag;
 import jo.sm.ent.data.TagType;
 
-public class EntityUtils {
+public class TagUtils {
 	
 	public static void dump(Tag obj, String prefix) 
 	{

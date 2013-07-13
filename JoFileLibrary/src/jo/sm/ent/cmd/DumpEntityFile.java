@@ -5,8 +5,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import jo.sm.ent.data.Tag;
-import jo.sm.ent.logic.EntityLogic;
-import jo.sm.ent.logic.EntityUtils;
+import jo.sm.ent.logic.TagLogic;
+import jo.sm.ent.logic.TagUtils;
 
 public class DumpEntityFile 
 {
@@ -26,13 +26,13 @@ public class DumpEntityFile
 		try
 		{
 			FileInputStream fis = new FileInputStream(mTestFile);
-			Tag obj = EntityLogic.readFile(fis, true);
-			Tag sub = EntityUtils.lookup(obj, mIdent);
+			Tag obj = TagLogic.readFile(fis, true);
+			Tag sub = TagUtils.lookup(obj, mIdent);
 			if (sub == null)
 				System.err.println("Cannot find '"+mIdent+"'");
 			else
 				obj = sub;
-			EntityUtils.dump(obj, "");
+			TagUtils.dump(obj, "");
 		}
 		catch (IOException e)
 		{

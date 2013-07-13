@@ -4,7 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 import jo.sm.ent.data.Tag;
-import jo.sm.ent.logic.EntityLogic;
+import jo.sm.ent.logic.TagLogic;
 import jo.util.utils.io.FileUtils;
 import jo.util.utils.obj.ByteUtils;
 import junit.framework.Assert;
@@ -26,7 +26,7 @@ public class WriteBase extends ReadBase
         try
         {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            EntityLogic.writeFile(entity, baos, true);
+            TagLogic.writeFile(entity, baos, true);
             byte[] output = baos.toByteArray();
             byte[] input = FileUtils.readFile(f.toString());
             System.out.println("INPUT:");

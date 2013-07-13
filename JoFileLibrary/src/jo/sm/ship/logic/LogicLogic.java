@@ -4,7 +4,8 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import jo.sm.data.Vector3s;
+import javax.vecmath.Point3s;
+
 import jo.sm.logic.IOLogic;
 import jo.sm.ship.data.ControllerEntry;
 import jo.sm.ship.data.GroupEntry;
@@ -26,7 +27,7 @@ public class LogicLogic
 		for (int i = 0; i < controllers.length; i++)
 		{
 		    controllers[i] = new ControllerEntry();
-		    controllers[i].setPosition(IOLogic.readVector3s(dis));
+		    controllers[i].setPosition(IOLogic.readPoint3s(dis));
 		    int numGroups = dis.readInt();
 		    GroupEntry[] groups = new GroupEntry[numGroups];
 		    for (int j = 0; j < groups.length; j++)
@@ -34,9 +35,9 @@ public class LogicLogic
 		        groups[j] = new GroupEntry();
 		        groups[j].setBlockID(dis.readShort());
 		        int numBlocks = dis.readInt();
-		        Vector3s[] blocks = new Vector3s[numBlocks];
+		        Point3s[] blocks = new Point3s[numBlocks];
 		        for (int k = 0; k < blocks.length; k++)
-		            blocks[k] = IOLogic.readVector3s(dis);
+		            blocks[k] = IOLogic.readPoint3s(dis);
 		        groups[j].setBlocks(blocks);
 		    }
 		    controllers[i].setGroups(groups);
