@@ -13,21 +13,28 @@ import binary
 _smVersion = '0.09375'
 _baseDir = os.path.dirname(os.path.abspath(__file__))
 
-def printBlueprint(dirName):
+def readBlueprint(dirName):
     '''
     Read a blueprint directory.  Parse all the files inside the directory.
     '''
     if not os.path.isdir(dirName):
         raise Exception('%s is not a directory' % dirName)
     
-    pprint.pprint(readHeaderFile('%s/header.smbph' % dirName))
-    pprint.pprint(readLogicFile('%s/logic.smbpl' % dirName))
-    pprint.pprint(readMetaFile('%s/meta.smbpm' % dirName))
+    data = {}
+    
+    data['header'] = readHeaderFile('%s/header.smbph' % dirName)
+    data['logic'] = readLogicFile('%s/logic.smbpl' % dirName)
+    data['meta'] = readMetaFile('%s/meta.smbpm' % dirName)
     
     dataDir = '%s/DATA' % dirName
     
     for df in os.listdir(dataDir):
-        pprint.pprint(readDataFile('%s/%s' % (dataDir, df)))
+        data[df] = readDataFile('%s/%s' % (dataDir, df))
+    
+    return data
+
+def printBlueprint(dirName):
+    pprint.pprint(readBlueprint(dirName))
     
 def readHeaderFile(fileName):
     '''
@@ -158,13 +165,153 @@ def readMetaFile(fileName):
     '''
     Read a blueprint meta file (.smbpm)
     
-    not implemented
+    start     type
+        0       int             unknown int
+        4       byte            unknown byte
+        5       int             number of dockEntry (docked ship/turrets)
+        9       dockEntry[N]    data about each docked ship/turret
+        vary    byte            unknown byte
+        vary    short           specifies if GZIP compression is used on the tagStruct
+        vary    tagStruct[]     additional metadata in a tag structure
+        
+        
+        dockEntry is a variable length struct
+        start       type
+            0       int             length of the string giving attached ship's subfolder
+            4       wchar[N]        ship subfolder string given in modified UTF-8 encoding
+            vary    int[3]          q vector, the location of the dock block
+            vary    float[3]        a vector, ???
+            vary    short           block ID of the dock block
+            
+        tagStruct encodes variety of data types in a tree structure
+        start       type
+            0       byte            tag type
+            1       int             length of the tag name string
+            5       wchar[N]        tag name string in modified UTF-8 encoding
+            vary    vary            tag data
+            
+        special tag types (see code for full list and encoding):
+            0x0     End of tag struct marker -- no tag name or data follows this
+            0xD     Start of new tag struct
+            0xE     Serialized object (not yet implemented here)
     
     '''
+
+    TAG_BYTE = 0x1
+    TAG_SHORT = 0x2
+    TAG_INT = 0x3
+    TAG_LONG = 0x4
+    TAG_FLOAT = 0x5
+    TAG_DOUBLE = 0x6
+    TAG_BYTEARRAY = 0x7
+    TAG_STRING = 0x8
+    TAG_FLOAT3 = 0x9
+    TAG_INT3 = 0xA
+    TAG_BYTE3 = 0xB
+    TAG_LIST = 0xC
+    TAG_STRUCT = 0xD
+    # TAG_SERIALIZABLE = 0xE
+    
+    def parseTagData(bs, type):
+      
+        data = None
+        if type == TAG_BYTE:
+            data = bs.readChar()
+        elif type == TAG_SHORT:
+            data = bs.readInt16()
+        elif type == TAG_INT:
+            data = bs.readInt32()
+        elif type == TAG_LONG:
+            data = bs.readInt64()
+        elif type == TAG_FLOAT:
+            data = bs.readFloat()
+        elif type == TAG_DOUBLE:
+            data = bs.readDouble()
+        elif type == TAG_BYTEARRAY:
+            data = []
+            len = bs.readInt32()
+            for i in range(0, len):
+                data.append(bs.readChar())
+        elif type == TAG_STRING:
+            data = bs.readString()
+        elif type == TAG_FLOAT3:
+            data = (bs.readFloat(), bs.readFloat(), bs.readFloat())
+        elif type == TAG_INT3:
+            data = (bs.readInt32(), bs.readInt32(), bs.readInt32())
+        elif type == TAG_BYTE3:
+            data = (bs.readChar(), bs.readChar(), bs.readChar())
+        elif type == TAG_LIST:
+            data = []
+            next = bs.readChar()
+            len = bs.readInt32()
+            
+            for i in range(0, len):
+                data.append(parseTagData(bs, next))
+            
+        elif type == TAG_STRUCT:
+            data = []
+            while True:
+                next = bs.readChar()
+                #print 'next',next
+                if next:
+                    data.append({
+                        'name': bs.readString(),
+                        'data': parseTagData(bs, next)
+                    })
+                else:
+                    break
+        else:
+            print 'WARNING: Unrecognized tag type %d' % type
+
+        return data
+
     retval = {}
     
     with open(fileName, 'rb') as f:
-        pass
+        print 'Parsing %s' % fileName
+        
+        bs = binary.BinaryStream(f)
+        
+        retval['int_a'] = bs.readInt32()
+        retval['byte_a'] = bs.readChar()
+        
+        numDocked = bs.readInt32()
+        
+        retval['docked'] = []
+        
+        for i in range(0, numDocked):
+            name = bs.readString()
+            q = (bs.readInt32(), bs.readInt32(), bs.readInt32())
+            a = (bs.readFloat(), bs.readFloat(), bs.readFloat())
+            docking = bs.readInt16()
+            end = bs.readChar()
+            
+            retval['docked'].append({
+                'name': name,
+                'q': q,
+                'a': a,
+                'dockID': docking,
+            })
+        
+        retval['byte_b'] = bs.readChar()
+        retval['short_b'] = bs.readInt16()
+        
+        
+        type = bs.readChar()
+        data = {}
+        name = None
+        if type:
+            name = bs.readString()
+            data = parseTagData(bs, type)
+        
+        retval['data'] = {
+            'name': name,
+            'data': data
+        }
+        
+        eof = bs.readByte()
+        if eof != '':
+            print 'Warning: EOF not reached'
     
     return retval
 
