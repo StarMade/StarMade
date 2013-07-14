@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Path2D;
 import java.util.List;
 
@@ -26,7 +27,8 @@ import jo.vecmath.logic.Matrix4fLogic;
 @SuppressWarnings("serial")
 public class RenderPanel extends JPanel
 {
-    private static final float  PIXEL_TO_RADIANS = (1f/3.14159f/4f);
+    private static final float  PIXEL_TO_RADIANS = (1f/3.14159f/16f);
+    private static final float  ROLL_SCALE = 1.1f;
     
     private Point               mMouseDownAt;
     
@@ -64,9 +66,14 @@ public class RenderPanel extends JPanel
             {
                 doMouseMove(ev.getPoint());
             }
+            public void mouseWheelMoved(MouseWheelEvent e)
+            {
+                doMouseWheel(e.getWheelRotation());
+            }
         };
         addMouseListener(ma);
         addMouseMotionListener(ma);
+        addMouseWheelListener(ma);
     }
     
     private void updateTransform()
@@ -125,6 +132,21 @@ public class RenderPanel extends JPanel
         mMouseDownAt = null;
     }
 
+    private void doMouseWheel(int roll)
+    {
+        if (roll > 0)
+        {
+            while (roll-- > 0)
+                mScale /= ROLL_SCALE;
+        }
+        else if (roll < 0)
+        {
+            while (roll++ < 0)
+                mScale *= ROLL_SCALE;
+        }
+        updateTransform();
+    }
+    
     public void paint(Graphics g)
     {
         if (mTiles == null)
@@ -191,9 +213,9 @@ public class RenderPanel extends JPanel
         Point3i lower = new Point3i();
         Point3i upper = new Point3i();
         mGrid.getBounds(lower, upper);
-        mPreTranslate.x = (lower.x - upper.x)/2;
-        mPreTranslate.y = (lower.y - upper.y)/2;
-        mPreTranslate.z = (lower.z - upper.z)/2;
+        mPreTranslate.x = -(lower.x + upper.x)/2;
+        mPreTranslate.y = -(lower.y + upper.y)/2;
+        mPreTranslate.z = -(lower.z + upper.z)/2;
         float maxModel = Math.max(Math.max(upper.x - lower.x, upper.y - lower.y), upper.z - lower.z);
         Dimension s = getSize();
         float maxScreen = Math.max(s.width, s.height);

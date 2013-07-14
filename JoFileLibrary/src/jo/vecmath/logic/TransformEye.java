@@ -20,8 +20,7 @@ public class TransformEye extends Matrix4f
     private Vector3f    mForward = new Vector3f(0, 0, -1);
     private Vector3f    mUp = new Vector3f(0, 1, 0);
     private Vector3f    mRight = new Vector3f(1, 0, 0);
-    private float       mScale = 1.0f;
-
+    
     public TransformEye()
     {
         super();
@@ -177,7 +176,6 @@ public class TransformEye extends Matrix4f
     
     public void scale(float s)
     {
-        mScale *= s;
         assemble();
     }
 
