@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JApplet;
-import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.vecmath.Point3i;
 
@@ -26,12 +25,12 @@ public class RenderApplet extends JApplet
 
     public void init()
     {
-    	JOptionPane.showMessageDialog(null, "Hello");
     	setNativeLookAndFeel();
         // instantiate
         mClient = new RenderPanel();
         // layout
         getContentPane().add(BorderLayout.CENTER, mClient);
+        getContentPane().add(BorderLayout.SOUTH, new BegPanel());
     }
     
     public void start()
@@ -43,10 +42,8 @@ public class RenderApplet extends JApplet
         	String url = getParameter("data"+i);
         	if (url == null)
         	{
-                JOptionPane.showMessageDialog(null, "Can't find data"+i);
         		break;
         	}
-            JOptionPane.showMessageDialog(null, "Loading "+url);
         	try
         	{
         		URL u = new URL(url);

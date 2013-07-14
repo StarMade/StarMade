@@ -62,6 +62,7 @@ public class RenderFrame extends JFrame implements WindowListener
         buttonBar.add(loadRock);
         getContentPane().add(BorderLayout.NORTH, buttonBar);
         getContentPane().add(BorderLayout.CENTER, mClient);
+        getContentPane().add(BorderLayout.SOUTH, new BegPanel());
         // link
         this.addWindowListener(this);
         loadBlueprint.addActionListener(new ActionListener(){
@@ -224,6 +225,7 @@ public class RenderFrame extends JFrame implements WindowListener
     {
         this.setVisible(false);
         this.dispose();
+        System.exit(0);
     }
 
     public void windowOpened(WindowEvent evt)
