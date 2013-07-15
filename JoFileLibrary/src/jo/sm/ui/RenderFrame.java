@@ -61,6 +61,7 @@ public class RenderFrame extends JFrame implements WindowListener
         buttonBar.add(loadPlanet);
         buttonBar.add(loadRock);
         getContentPane().add(BorderLayout.NORTH, buttonBar);
+        getContentPane().add(BorderLayout.WEST, new EditPanel(mClient));
         getContentPane().add(BorderLayout.CENTER, mClient);
         getContentPane().add(BorderLayout.SOUTH, new BegPanel());
         // link

@@ -881,4 +881,21 @@ public class BlockTypes
         BLOCK_ABBR.put(DECORATIVE_PANEL_4, "D");
         BLOCK_ABBR.put(LIGHT_BULB_YELLOW, "L");
     }
+    public static boolean isHull(short blockID)
+    {
+        switch (blockID)
+        {
+                case HULL_COLOR_GREY_ID:
+                case HULL_COLOR_PURPLE_ID:
+                case HULL_COLOR_BROWN_ID:
+                case HULL_COLOR_BLACK_ID:
+                case HULL_COLOR_RED_ID:
+                case HULL_COLOR_BLUE_ID:
+                case HULL_COLOR_GREEN_ID:
+                case HULL_COLOR_YELLOW_ID:
+                case HULL_COLOR_WHITE_ID:
+                    return true;
+        }
+        return false;
+    }
 }

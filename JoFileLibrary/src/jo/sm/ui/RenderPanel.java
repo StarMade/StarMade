@@ -8,9 +8,11 @@ import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
@@ -56,15 +58,18 @@ public class RenderPanel extends JPanel
         MouseAdapter ma =  new MouseAdapter(){
             public void mousePressed(MouseEvent ev)
             {
-                doMouseDown(ev.getPoint());
+                if (ev.getButton() == MouseEvent.BUTTON1)
+                    doMouseDown(ev.getPoint());
             }
             public void mouseReleased(MouseEvent ev)
             {
-                doMouseUp(ev.getPoint());
+                if (ev.getButton() == MouseEvent.BUTTON1)
+                    doMouseUp(ev.getPoint());
             }
             public void mouseDragged(MouseEvent ev)
             {
-                doMouseMove(ev.getPoint());
+                if (mMouseDownAt != null)
+                    doMouseMove(ev.getPoint());
             }
             public void mouseWheelMoved(MouseWheelEvent e)
             {
@@ -155,39 +160,74 @@ public class RenderPanel extends JPanel
         g.setColor(Color.black);
         g.fillRect(0, 0, s.width, s.height);
         Graphics2D g2 = (Graphics2D)g;
+        float[][] corners = new float[4][2];
         for (RenderTile tile : mTiles)
         {
             Point3f corner = tile.getVisual();
             if (corner == null)
                 break;
-            Path2D p = new Path2D.Float();
-            p.moveTo(corner.x, corner.y);
-            switch (tile.getFacing())
+            getCorners(tile, corner, corners);
+            ImageIcon icon = BlockTypeColors.getBlockImage(tile.getBlock().getBlockID());
+            if ((icon != null) && (tile.getFacing() >= RenderTile.XP))
             {
-                case RenderTile.XP:
-                case RenderTile.XM:
-                    p.lineTo(corner.x + mUnitY.x,        corner.y + mUnitY.y);
-                    p.lineTo(corner.x + mUnitY.x + mUnitZ.x, corner.y + mUnitY.y + mUnitZ.y);
-                    p.lineTo(corner.x +      + mUnitZ.x, corner.y +      + mUnitZ.y);
-                    break;
-                case RenderTile.YP:
-                case RenderTile.YM:
-                    p.lineTo(corner.x + mUnitX.x,        corner.y + mUnitX.y);
-                    p.lineTo(corner.x + mUnitX.x + mUnitZ.x, corner.y + mUnitX.y + mUnitZ.y);
-                    p.lineTo(corner.x +      + mUnitZ.x, corner.y +      + mUnitZ.y);
-                    break;
-                case RenderTile.ZP:
-                case RenderTile.ZM:
-                    p.lineTo(corner.x + mUnitX.x,        corner.y + mUnitX.y);
-                    p.lineTo(corner.x + mUnitX.x + mUnitY.x, corner.y + mUnitX.y + mUnitY.y);
-                    p.lineTo(corner.x +      + mUnitY.x, corner.y +      + mUnitY.y);
-                    break;
+                float m00 = (corners[1][0] - corners[0][0])/64f;
+                float m10 = (corners[1][1] - corners[0][1])/64f;
+                float m01 = (corners[3][0] - corners[0][0])/64f;
+                float m11 = (corners[3][1] - corners[0][1])/64f;
+                float m02 = corners[0][0];
+                float m12 = corners[0][1];
+                AffineTransform t = new AffineTransform(m00, m10, m01, m11, m02, m12);
+                g2.drawImage(icon.getImage(), t, null);
             }
-            p.lineTo(corner.x, corner.y);
-            g2.setPaint(BlockTypeColors.getFillColor(tile.getBlock().getBlockID()));
-            g2.fill(p);
-            g2.setPaint(BlockTypeColors.getOutlineColor(tile.getBlock().getBlockID()));
-            g2.draw(p);
+            else
+            {
+                Path2D p = new Path2D.Float();
+                p.moveTo(corners[0][0], corners[0][1]);
+                p.lineTo(corners[1][0], corners[1][1]);
+                p.lineTo(corners[2][0], corners[2][1]);
+                p.lineTo(corners[3][0], corners[3][1]);
+                p.lineTo(corners[0][0], corners[0][1]);
+                g2.setPaint(BlockTypeColors.getFillColor(tile.getBlock().getBlockID()));
+                g2.fill(p);
+                g2.setPaint(BlockTypeColors.getOutlineColor(tile.getBlock().getBlockID()));
+                g2.draw(p);
+            }
+        }
+    }
+
+    private void getCorners(RenderTile tile, Point3f corner, float[][] corners)
+    {
+        corners[0][0] = corner.x;
+        corners[0][1] = corner.y;
+        switch (tile.getFacing())
+        {
+            case RenderTile.XP:
+            case RenderTile.XM:
+                corners[1][0] = corner.x + mUnitY.x;
+                corners[1][1] = corner.y + mUnitY.y;
+                corners[2][0] = corner.x + mUnitY.x + mUnitZ.x;
+                corners[2][1] = corner.y + mUnitY.y + mUnitZ.y;
+                corners[3][0] = corner.x +      + mUnitZ.x;
+                corners[3][1] = corner.y +      + mUnitZ.y;
+                break;
+            case RenderTile.YP:
+            case RenderTile.YM:
+                corners[1][0] = corner.x + mUnitZ.x;
+                corners[1][1] = corner.y + mUnitZ.y;
+                corners[2][0] = corner.x + mUnitZ.x + mUnitX.x;
+                corners[2][1] = corner.y + mUnitZ.y + mUnitX.y;
+                corners[3][0] = corner.x +      + mUnitX.x;
+                corners[3][1] = corner.y +      + mUnitX.y;
+                break;
+            case RenderTile.ZP:
+            case RenderTile.ZM:
+                corners[1][0] = corner.x + mUnitX.x;
+                corners[1][1] = corner.y + mUnitX.y;
+                corners[2][0] = corner.x + mUnitX.x + mUnitY.x;
+                corners[2][1] = corner.y + mUnitX.y + mUnitY.y;
+                corners[3][0] = corner.x +      + mUnitY.x;
+                corners[3][1] = corner.y +      + mUnitY.y;
+                break;
         }
     }
     
@@ -224,5 +264,27 @@ public class RenderPanel extends JPanel
         //mTransform.setTranslation(new Vector3f(s.width/2f, s.height/2f, 0));
         mTiles = RenderLogic.getRender(grid);
         updateTransform();
+    }
+    
+    public RenderTile getTileAt(double x, double y)
+    {
+        float[][] corners = new float[4][2];
+        for (int i = mTiles.size() - 1; i >= 0; i--)
+        {
+            RenderTile tile = mTiles.get(i);
+            Point3f corner = tile.getVisual();
+            if (corner == null)
+                continue;
+            getCorners(tile, corner, corners);
+            Path2D p = new Path2D.Float();
+            p.moveTo(corners[0][0], corners[0][1]);
+            p.lineTo(corners[1][0], corners[1][1]);
+            p.lineTo(corners[2][0], corners[2][1]);
+            p.lineTo(corners[3][0], corners[3][1]);
+            p.lineTo(corners[0][0], corners[0][1]);
+            if (p.contains(x, y))
+                return tile;
+        }
+        return null;
     }
 }

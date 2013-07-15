@@ -23,12 +23,14 @@ public class BegPanel extends JPanel
     private static final String THE_RAIDERS_LAMENT = "http://podiobooks.com/title/the-raiders-lament";
     
     private int mMessageOffset;
+    private int mRepeats;
     
     private JLabel  mStatus;
     private JButton mGoto;
     
     public BegPanel()
     {
+        mRepeats = 3;
         // instantiate
         mStatus = new JLabel(MESSAGE.substring(0, CHOP));
         setBackground(Color.cyan);
@@ -73,7 +75,12 @@ public class BegPanel extends JPanel
             }
             mMessageOffset++;
             if (mMessageOffset == MESSAGE.length())
+            {
                 mMessageOffset = 0;
+                mRepeats--;
+                if (mRepeats < 0)
+                    return;
+            }
             String msg = MESSAGE.substring(mMessageOffset) + MESSAGE.substring(0, mMessageOffset);
             msg = msg.substring(0, CHOP);
             mStatus.setText(msg);

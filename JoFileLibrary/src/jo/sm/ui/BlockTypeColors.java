@@ -1,13 +1,23 @@
 package jo.sm.ui;
 
 import java.awt.Color;
+import java.awt.Paint;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+
 import jo.sm.data.BlockTypes;
+import jo.sm.logic.StarMadeLogic;
 
 public class BlockTypeColors
 {
+    public static final Paint HULL_RED = Color.red;
+    
     public static final Map<Short,Color> BLOCK_FILL = new HashMap<Short, Color>();
     static
     {
@@ -606,5 +616,62 @@ public class BlockTypeColors
         if (BLOCK_FILL.containsKey(blockType))
             return BLOCK_FILL.get(blockType);
         return Color.gray;
+    }
+    
+
+    public static final Map<Short,Integer> BLOCK_ICON = new HashMap<Short, Integer>();
+    static
+    {
+        BLOCK_ICON.put(BlockTypes.HULL_COLOR_GREY_ID, 16);
+        BLOCK_ICON.put(BlockTypes.HULL_COLOR_BLACK_ID, 17);
+        BLOCK_ICON.put(BlockTypes.HULL_COLOR_RED_ID, 18);
+        BLOCK_ICON.put(BlockTypes.HULL_COLOR_PURPLE_ID, 19);
+        BLOCK_ICON.put(BlockTypes.HULL_COLOR_BLUE_ID, 20);
+        BLOCK_ICON.put(BlockTypes.HULL_COLOR_GREEN_ID, 21);
+        BLOCK_ICON.put(BlockTypes.HULL_COLOR_BROWN_ID, 22);
+        BLOCK_ICON.put(BlockTypes.HULL_COLOR_YELLOW_ID, 23);
+        BLOCK_ICON.put(BlockTypes.HULL_COLOR_WHITE_ID, 24);
+    }
+    
+    private static boolean     mBlockIconsLoaded = false;
+    private static ImageIcon[] mBlockIcons;
+
+    public static ImageIcon getBlockImage(short blockID)
+    {
+        if (!BLOCK_ICON.containsKey(blockID))
+            return null;
+        if (!mBlockIconsLoaded)
+        {
+            try
+            {
+                mBlockIcons = new ImageIcon[768];
+                BufferedImage[] localObject = new BufferedImage[3];
+                localObject[0] = ImageIO.read(new File(
+                        StarMadeLogic.getInstance().getBaseDir(),
+                        "data/textures/block/t000.png"));
+                localObject[1] = ImageIO.read(new File(
+                        StarMadeLogic.getInstance().getBaseDir(),
+                        "/data/textures/block/t001.png"));
+                localObject[2] = ImageIO.read(new File(
+                        StarMadeLogic.getInstance().getBaseDir(),
+                        "/data/textures/block/t002.png"));
+                for (int i = 0; i < mBlockIcons.length; i++)
+                {
+                    int j = i % 256 % 16;
+                    int k = i % 256 / 16;
+                    BufferedImage localBufferedImage = localObject[(i / 256)]
+                            .getSubimage(j << 6, k << 6, 64, 64);
+                    mBlockIcons[i] = new ImageIcon(localBufferedImage);
+                }
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+            mBlockIconsLoaded = true;
+        }
+        if (mBlockIcons == null)
+            return null;
+        return mBlockIcons[BLOCK_ICON.get(blockID)];
     }
 }
