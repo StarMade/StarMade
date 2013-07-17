@@ -86,9 +86,11 @@ public class DataLogic
                         dis3.readFully(inbuf);
                         int bitfield = toUnsignedInt(inbuf);
                         blocks[x][y][z].setBlockID((short)((bitfield>>0)&0x7ff));
-                        blocks[x][y][z].setActive(((bitfield>>11)&0x1) == 1);
-                        blocks[x][y][z].setHitPoints((short)((bitfield>>12)&0xff));
-                        blocks[x][y][z].setOrientation((short)((bitfield>>20)&0x7));
+                        blocks[x][y][z].setHitPoints((short)((bitfield>>11)&0x1ff));
+                        blocks[x][y][z].setActive(((bitfield>>20)&0x1) == 1);
+                        blocks[x][y][z].setOrientation((short)(((bitfield>>21)&0x7)
+                                | ((bitfield>>(20-3))&0x8)));
+                        blocks[x][y][z].setBitfield(bitfield);
                     }
             chunk.setBlocks(blocks);
             chunks.add(chunk);

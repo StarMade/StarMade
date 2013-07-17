@@ -10,6 +10,7 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
+import jo.sm.data.BlockTypes;
 import jo.sm.data.CubeIterator;
 import jo.sm.data.RenderTile;
 import jo.sm.data.SparseMatrix;
@@ -41,10 +42,16 @@ public class RenderLogic
                 for (int x = lower.x; x <= upper.x; x++)
                 {
                     Block b = blocks.get(x, y, z);
+                    /*
                     if (b == null)
-                        System.out.print(" -");
+                        System.out.print(" ------------------------");
                     else
-                        System.out.print(" "+b.getOrientation());
+                        System.out.print(" "+b.getOrientation()+":"+StringUtils.zeroPrefix(Integer.toBinaryString(b.getBitfield()), 24));
+                        */
+                    if (b == null)
+                        System.out.print(" --");
+                    else
+                        System.out.print(" "+StringUtils.spacePrefix(Integer.toString(b.getOrientation()), 2));
                 }
                 System.out.println();
             }
@@ -54,54 +61,109 @@ public class RenderLogic
             Point3i p = i.next();
             if (!blocks.contains(p))
                 continue;
-            if (!blocks.contains(new Point3i(p.x + 1, p.y, p.z)))
-            {
-                RenderTile rp = new RenderTile();
-                rp.setBlock(blocks.get(p));
-                rp.setFacing(RenderTile.XP);
-                rp.setCenter(new Point3i(p.x + 1, p.y, p.z));
-                polys.add(rp);
-            }
-            if (!blocks.contains(new Point3i(p.x - 1, p.y, p.z)))
-            {
-                RenderTile rp = new RenderTile();
-                rp.setBlock(blocks.get(p));
-                rp.setFacing(RenderTile.XM);
-                rp.setCenter(new Point3i(p));
-                polys.add(rp);
-            }
-            if (!blocks.contains(new Point3i(p.x, p.y + 1, p.z)))
-            {
-                RenderTile rp = new RenderTile();
-                rp.setBlock(blocks.get(p));
-                rp.setFacing(RenderTile.YP);
-                rp.setCenter(new Point3i(p.x, p.y + 1, p.z));
-                polys.add(rp);
-            }
-            if (!blocks.contains(new Point3i(p.x, p.y - 1, p.z)))
-            {
-                RenderTile rp = new RenderTile();
-                rp.setBlock(blocks.get(p));
-                rp.setFacing(RenderTile.YM);
-                rp.setCenter(new Point3i(p));
-                polys.add(rp);
-            }
-            if (!blocks.contains(new Point3i(p.x, p.y, p.z + 1)))
-            {
-                RenderTile rp = new RenderTile();
-                rp.setBlock(blocks.get(p));
-                rp.setFacing(RenderTile.ZP);
-                rp.setCenter(new Point3i(p.x, p.y, p.z + 1));
-                polys.add(rp);
-            }
-            if (!blocks.contains(new Point3i(p.x, p.y, p.z - 1)))
-            {
-                RenderTile rp = new RenderTile();
-                rp.setBlock(blocks.get(p));
-                rp.setFacing(RenderTile.ZM);
-                rp.setCenter(new Point3i(p));
-                polys.add(rp);
-            }
+            Block b = blocks.get(p);
+            if (BlockTypes.isCorner(b.getBlockID()))
+                doCorner(blocks, p, polys);
+            else if (BlockTypes.isWedge(b.getBlockID()))
+                doWedge(blocks, p, polys);
+            else
+               doCube(blocks, p, polys);
+        }
+    }
+    
+    private static void doCorner(SparseMatrix<Block> blocks, Point3i p, List<RenderTile> polys)
+    {
+    }
+
+    private static void doWedge(SparseMatrix<Block> blocks, Point3i p, List<RenderTile> polys)
+    {
+    }
+    
+    private static void doCube(SparseMatrix<Block> blocks, Point3i p, List<RenderTile> polys)
+    {
+        doXPSquare(blocks, p, polys);
+        doXMSquare(blocks, p, polys);
+        doYPSquare(blocks, p, polys);
+        doYMSquare(blocks, p, polys);
+        doZPSquare(blocks, p, polys);
+        doZMSquare(blocks, p, polys);
+    }
+
+    private static void doZMSquare(SparseMatrix<Block> blocks, Point3i p,
+            List<RenderTile> polys)
+    {
+        if (!blocks.contains(new Point3i(p.x, p.y, p.z - 1)))
+        {
+            RenderTile rp = new RenderTile();
+            rp.setBlock(blocks.get(p));
+            rp.setFacing(RenderTile.ZM);
+            rp.setCenter(new Point3i(p));
+            polys.add(rp);
+        }
+    }
+
+    private static void doZPSquare(SparseMatrix<Block> blocks, Point3i p,
+            List<RenderTile> polys)
+    {
+        if (!blocks.contains(new Point3i(p.x, p.y, p.z + 1)))
+        {
+            RenderTile rp = new RenderTile();
+            rp.setBlock(blocks.get(p));
+            rp.setFacing(RenderTile.ZP);
+            rp.setCenter(new Point3i(p.x, p.y, p.z + 1));
+            polys.add(rp);
+        }
+    }
+
+    private static void doYMSquare(SparseMatrix<Block> blocks, Point3i p,
+            List<RenderTile> polys)
+    {
+        if (!blocks.contains(new Point3i(p.x, p.y - 1, p.z)))
+        {
+            RenderTile rp = new RenderTile();
+            rp.setBlock(blocks.get(p));
+            rp.setFacing(RenderTile.YM);
+            rp.setCenter(new Point3i(p));
+            polys.add(rp);
+        }
+    }
+
+    private static void doYPSquare(SparseMatrix<Block> blocks, Point3i p,
+            List<RenderTile> polys)
+    {
+        if (!blocks.contains(new Point3i(p.x, p.y + 1, p.z)))
+        {
+            RenderTile rp = new RenderTile();
+            rp.setBlock(blocks.get(p));
+            rp.setFacing(RenderTile.YP);
+            rp.setCenter(new Point3i(p.x, p.y + 1, p.z));
+            polys.add(rp);
+        }
+    }
+
+    private static void doXMSquare(SparseMatrix<Block> blocks, Point3i p,
+            List<RenderTile> polys)
+    {
+        if (!blocks.contains(new Point3i(p.x - 1, p.y, p.z)))
+        {
+            RenderTile rp = new RenderTile();
+            rp.setBlock(blocks.get(p));
+            rp.setFacing(RenderTile.XM);
+            rp.setCenter(new Point3i(p));
+            polys.add(rp);
+        }
+    }
+
+    private static void doXPSquare(SparseMatrix<Block> blocks, Point3i p,
+            List<RenderTile> polys)
+    {
+        if (!blocks.contains(new Point3i(p.x + 1, p.y, p.z)))
+        {
+            RenderTile rp = new RenderTile();
+            rp.setBlock(blocks.get(p));
+            rp.setFacing(RenderTile.XP);
+            rp.setCenter(new Point3i(p.x + 1, p.y, p.z));
+            polys.add(rp);
         }
     }
     

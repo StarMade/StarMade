@@ -25,8 +25,16 @@ public class RenderTile
     public static final int ZPXM = 15;
     public static final int ZMXP = 16;
     public static final int ZMXM = 17;
+    
+    public static final int SQUARE = 0;
+    public static final int TRI1 = 1;
+    public static final int TRI2 = 2;
+    public static final int TRI3 = 3;
+    public static final int TRI4 = 4;
+    public static final int RECTANGLE = 5;
 
     private int             mFacing;
+    private int             mType;
     private Block           mBlock;
     private Point3i        mCenter;
     private Point3f        mVisual;
@@ -69,5 +77,15 @@ public class RenderTile
     public void setBlock(Block block)
     {
         mBlock = block;
+    }
+
+    public int getType()
+    {
+        return mType;
+    }
+
+    public void setType(int type)
+    {
+        mType = type;
     }
 }

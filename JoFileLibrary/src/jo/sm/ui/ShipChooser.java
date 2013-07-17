@@ -57,7 +57,7 @@ public class ShipChooser extends JDialog
             {
                 doCancel();
             }});
-        pack();
+        setSize(640, 480);
         setLocationRelativeTo(base);
     }
     
