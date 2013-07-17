@@ -168,30 +168,71 @@ public class RenderPanel extends JPanel
                 break;
             getCorners(tile, corner, corners);
             ImageIcon icon = BlockTypeColors.getBlockImage(tile.getBlock().getBlockID());
-            if ((icon != null) && (tile.getFacing() < RenderTile.XP))
-            {
-                float m00 = (corners[1][0] - corners[0][0])/64f;
-                float m10 = (corners[1][1] - corners[0][1])/64f;
-                float m01 = (corners[3][0] - corners[0][0])/64f;
-                float m11 = (corners[3][1] - corners[0][1])/64f;
-                float m02 = corners[0][0];
-                float m12 = corners[0][1];
-                AffineTransform t = new AffineTransform(m00, m10, m01, m11, m02, m12);
-                g2.drawImage(icon.getImage(), t, null);
-            }
-            else
-            {
-                Path2D p = new Path2D.Float();
-                p.moveTo(corners[0][0], corners[0][1]);
-                p.lineTo(corners[1][0], corners[1][1]);
-                p.lineTo(corners[2][0], corners[2][1]);
-                p.lineTo(corners[3][0], corners[3][1]);
-                p.lineTo(corners[0][0], corners[0][1]);
-                g2.setPaint(BlockTypeColors.getFillColor(tile.getBlock().getBlockID()));
-                g2.fill(p);
-                g2.setPaint(BlockTypeColors.getOutlineColor(tile.getBlock().getBlockID()));
-                g2.draw(p);
-            }
+            if (tile.getType() == RenderTile.SQUARE)
+                renderSquare(g2, corners, tile, icon);
+            else if ((tile.getType() >= RenderTile.TRI1) && (tile.getType() <= RenderTile.TRI4))
+                renderTriangle(g2, corners, tile, icon);
+        }
+    }
+
+    private void renderTriangle(Graphics2D g2, float[][] corners,
+            RenderTile tile, ImageIcon icon)
+    {
+        //System.out.println("Render triangle "+tile.getType());
+        int pCenter = (tile.getType() - RenderTile.TRI1);
+        int pLeft = (pCenter + 1)%4;
+        int pRight = (pCenter + 3)%4;
+        if (icon != null && false)
+        {
+            float m00 = (corners[pRight][0] - corners[pCenter][0])/64f;
+            float m10 = (corners[pRight][1] - corners[pCenter][1])/64f;
+            float m01 = (corners[pLeft][0] - corners[pCenter][0])/64f;
+            float m11 = (corners[pLeft][1] - corners[pCenter][1])/64f;
+            float m02 = corners[pCenter][0];
+            float m12 = corners[pCenter][1];
+            AffineTransform t = new AffineTransform(m00, m10, m01, m11, m02, m12);
+            g2.drawImage(icon.getImage(), t, null);
+        }
+        else
+        {
+            Path2D p = new Path2D.Float();
+            p.moveTo(corners[pCenter][0], corners[pCenter][1]);
+            p.lineTo(corners[pLeft][0], corners[pLeft][1]);
+            p.lineTo(corners[pRight][0], corners[pRight][1]);
+            p.lineTo(corners[pCenter][0], corners[pCenter][1]);
+            g2.setPaint(BlockTypeColors.getFillColor(tile.getBlock().getBlockID()));
+            g2.fill(p);
+            g2.setPaint(BlockTypeColors.getOutlineColor(tile.getBlock().getBlockID()));
+            g2.draw(p);
+        }
+    }
+
+    private void renderSquare(Graphics2D g2, float[][] corners,
+            RenderTile tile, ImageIcon icon)
+    {
+        if (icon != null)
+        {
+            float m00 = (corners[1][0] - corners[0][0])/64f;
+            float m10 = (corners[1][1] - corners[0][1])/64f;
+            float m01 = (corners[3][0] - corners[0][0])/64f;
+            float m11 = (corners[3][1] - corners[0][1])/64f;
+            float m02 = corners[0][0];
+            float m12 = corners[0][1];
+            AffineTransform t = new AffineTransform(m00, m10, m01, m11, m02, m12);
+            g2.drawImage(icon.getImage(), t, null);
+        }
+        else
+        {
+            Path2D p = new Path2D.Float();
+            p.moveTo(corners[0][0], corners[0][1]);
+            p.lineTo(corners[1][0], corners[1][1]);
+            p.lineTo(corners[2][0], corners[2][1]);
+            p.lineTo(corners[3][0], corners[3][1]);
+            p.lineTo(corners[0][0], corners[0][1]);
+            g2.setPaint(BlockTypeColors.getFillColor(tile.getBlock().getBlockID()));
+            g2.fill(p);
+            g2.setPaint(BlockTypeColors.getOutlineColor(tile.getBlock().getBlockID()));
+            g2.draw(p);
         }
     }
 
