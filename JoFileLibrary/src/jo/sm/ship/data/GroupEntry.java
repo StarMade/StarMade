@@ -1,6 +1,6 @@
 package jo.sm.ship.data;
 
-import javax.vecmath.Point3s;
+import jo.vecmath.Point3s;
 
 
 public class GroupEntry

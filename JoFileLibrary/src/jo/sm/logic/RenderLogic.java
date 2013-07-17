@@ -5,16 +5,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
-
 import jo.sm.data.BlockTypes;
 import jo.sm.data.CubeIterator;
 import jo.sm.data.RenderTile;
 import jo.sm.data.SparseMatrix;
 import jo.sm.ship.data.Block;
+import jo.vecmath.Matrix3f;
+import jo.vecmath.Matrix4f;
+import jo.vecmath.Point3f;
+import jo.vecmath.Point3i;
 
 public class RenderLogic
 {

@@ -2,7 +2,7 @@ package jo.sm.ent.test;
 
 import java.io.IOException;
 
-import javax.vecmath.Point3i;
+import jo.vecmath.Point3i;
 
 import jo.sm.data.BlockTypes;
 import jo.sm.data.Entity;

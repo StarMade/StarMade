@@ -13,12 +13,12 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.vecmath.Point3i;
 
 import jo.sm.data.BlockTypes;
 import jo.sm.data.RenderTile;
 import jo.sm.data.SparseMatrix;
 import jo.sm.ship.data.Block;
+import jo.vecmath.Point3i;
 
 @SuppressWarnings("serial")
 public class EditPanel extends JPanel

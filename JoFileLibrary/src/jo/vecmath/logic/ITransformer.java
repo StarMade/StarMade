@@ -1,6 +1,6 @@
 package jo.vecmath.logic;
 
-import javax.vecmath.Matrix4f;
+import jo.vecmath.Matrix4f;
 
 public interface ITransformer
 {

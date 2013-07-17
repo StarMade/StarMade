@@ -6,13 +6,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.vecmath.Point3i;
-
 import jo.sm.data.Entity;
 import jo.sm.data.StarMade;
 import jo.sm.ent.data.Tag;
 import jo.sm.ent.logic.TagLogic;
 import jo.sm.ship.logic.DataLogic;
+import jo.vecmath.Point3i;
 
 public class EntityLogic
 {

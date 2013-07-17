@@ -20,7 +20,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.vecmath.Point3i;
 
 import jo.sm.data.SparseMatrix;
 import jo.sm.logic.StarMadeLogic;
@@ -30,6 +29,7 @@ import jo.sm.ship.logic.DataLogic;
 import jo.sm.ship.logic.ShipLogic;
 import jo.sm.ui.logic.ShipSpec;
 import jo.sm.ui.logic.ShipTreeLogic;
+import jo.vecmath.Point3i;
 
 @SuppressWarnings("serial")
 public class RenderFrame extends JFrame implements WindowListener

@@ -4,10 +4,9 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.vecmath.Vector3f;
-
 import jo.sm.ship.data.BlockEntry;
 import jo.sm.ship.data.Header;
+import jo.vecmath.Vector3f;
 
 public class HeaderLogic 
 {

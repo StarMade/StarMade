@@ -3,7 +3,7 @@ package jo.sm.ship.data;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.vecmath.Point3i;
+import jo.vecmath.Point3i;
 
 public class Blueprint
 {

@@ -1,6 +1,6 @@
 package jo.vecmath.logic;
 
-import javax.vecmath.Color4f;
+import jo.vecmath.Color4f;
 
 public class Color4fLogic extends Tuple4fLogic
 {

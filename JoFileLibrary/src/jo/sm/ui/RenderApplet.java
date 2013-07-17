@@ -9,13 +9,13 @@ import java.util.Map;
 
 import javax.swing.JApplet;
 import javax.swing.UIManager;
-import javax.vecmath.Point3i;
 
 import jo.sm.data.SparseMatrix;
 import jo.sm.ship.data.Block;
 import jo.sm.ship.data.Data;
 import jo.sm.ship.logic.DataLogic;
 import jo.sm.ship.logic.ShipLogic;
+import jo.vecmath.Point3i;
 
 @SuppressWarnings("serial")
 public class RenderApplet extends JApplet

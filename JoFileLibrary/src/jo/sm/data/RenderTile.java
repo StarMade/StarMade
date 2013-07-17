@@ -1,9 +1,9 @@
 package jo.sm.data;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
 
 import jo.sm.ship.data.Block;
+import jo.vecmath.Point3f;
+import jo.vecmath.Point3i;
 
 public class RenderTile
 {

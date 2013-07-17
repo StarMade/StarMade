@@ -4,12 +4,11 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.vecmath.Point3s;
-
 import jo.sm.logic.IOLogic;
 import jo.sm.ship.data.ControllerEntry;
 import jo.sm.ship.data.GroupEntry;
 import jo.sm.ship.data.Logic;
+import jo.vecmath.Point3s;
 
 public class LogicLogic 
 {

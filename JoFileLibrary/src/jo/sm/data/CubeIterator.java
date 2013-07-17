@@ -2,7 +2,7 @@ package jo.sm.data;
 
 import java.util.Iterator;
 
-import javax.vecmath.Point3i;
+import jo.vecmath.Point3i;
 
 public class CubeIterator implements Iterator<Point3i>
 {
