@@ -168,7 +168,7 @@ public class RenderPanel extends JPanel
                 break;
             getCorners(tile, corner, corners);
             ImageIcon icon = BlockTypeColors.getBlockImage(tile.getBlock().getBlockID());
-            if ((icon != null) && (tile.getFacing() >= RenderTile.XP))
+            if ((icon != null) && (tile.getFacing() < RenderTile.XP))
             {
                 float m00 = (corners[1][0] - corners[0][0])/64f;
                 float m10 = (corners[1][1] - corners[0][1])/64f;

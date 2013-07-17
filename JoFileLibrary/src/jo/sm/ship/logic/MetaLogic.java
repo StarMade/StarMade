@@ -8,8 +8,7 @@ import jo.sm.ship.data.Meta;
 
 public class MetaLogic 
 {
-	@SuppressWarnings("resource")
-    public static Meta readFile(InputStream is, boolean close) throws IOException
+	public static Meta readFile(InputStream is, boolean close) throws IOException
 	{
 		DataInputStream dis;
 		if (is instanceof DataInputStream)

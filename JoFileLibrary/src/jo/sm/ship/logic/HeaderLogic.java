@@ -11,8 +11,7 @@ import jo.sm.ship.data.Header;
 
 public class HeaderLogic 
 {
-	@SuppressWarnings("resource")
-    public static Header readFile(InputStream is, boolean close) throws IOException
+	public static Header readFile(InputStream is, boolean close) throws IOException
 	{
 		DataInputStream dis;
 		if (is instanceof DataInputStream)
