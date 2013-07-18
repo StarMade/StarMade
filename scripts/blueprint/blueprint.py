@@ -13,6 +13,14 @@ import binary
 _smVersion = '0.09375'
 _baseDir = os.path.dirname(os.path.abspath(__file__))
 
+def bits(x, start, len):
+    '''
+    Used to mask a portion of a bitfield.
+    '''
+    x = x >> start
+    x = x & (2 ** len - 1)
+    return x
+
 def readBlueprint(dirName):
     '''
     Read a blueprint directory.  Parse all the files inside the directory.
@@ -160,43 +168,8 @@ def readLogicFile(fileName):
             print 'Warning: EOF not reached'
     
     return retval
-
-def readMetaFile(fileName):
-    '''
-    Read a blueprint meta file (.smbpm)
     
-    start     type
-        0       int             unknown int
-        4       byte            unknown byte
-        5       int             number of dockEntry (docked ship/turrets)
-        9       dockEntry[N]    data about each docked ship/turret
-        vary    byte            unknown byte
-        vary    short           specifies if GZIP compression is used on the tagStruct
-        vary    tagStruct[]     additional metadata in a tag structure
-        
-        
-        dockEntry is a variable length struct
-        start       type
-            0       int             length of the string giving attached ship's subfolder
-            4       wchar[N]        ship subfolder string given in modified UTF-8 encoding
-            vary    int[3]          q vector, the location of the dock block
-            vary    float[3]        a vector, ???
-            vary    short           block ID of the dock block
-            
-        tagStruct encodes variety of data types in a tree structure
-        start       type
-            0       byte            tag type
-            1       int             length of the tag name string
-            5       wchar[N]        tag name string in modified UTF-8 encoding
-            vary    vary            tag data
-            
-        special tag types (see code for full list and encoding):
-            0x0     End of tag struct marker -- no tag name or data follows this
-            0xD     Start of new tag struct
-            0xE     Serialized object (not yet implemented here)
-    
-    '''
-
+def parseEntity(bs):
     TAG_BYTE = 0x1
     TAG_SHORT = 0x2
     TAG_INT = 0x3
@@ -267,6 +240,60 @@ def readMetaFile(fileName):
 
     retval = {}
     
+    retval['short_a'] = bs.readInt16()
+        
+    type = bs.readChar()
+    data = {}
+    name = None
+    if type:
+        name = bs.readString()
+        data = parseTagData(bs, type)
+    
+    retval['data'] = {
+        'name': name,
+        'data': data
+    }
+    
+    return retval
+        
+def readMetaFile(fileName):
+    '''
+    Read a blueprint meta file (.smbpm)
+    
+    start     type
+        0       int             unknown int
+        4       byte            unknown byte. Currently expecting a 0x03 here.
+        5       int             number of dockEntry (docked ship/turrets)
+        9       dockEntry[N]    data about each docked ship/turret
+        vary    byte            unknown byte
+        vary    short           specifies if GZIP compression is used on the tagStruct
+        vary    tagStruct[]     additional metadata in a tag structure
+        
+        
+        dockEntry is a variable length struct
+        start       type
+            0       int             length of the string giving attached ship's subfolder
+            4       wchar[N]        ship subfolder string given in modified UTF-8 encoding
+            vary    int[3]          q vector, the location of the dock block
+            vary    float[3]        a vector, ???
+            vary    short           block ID of the dock block
+            
+        tagStruct encodes variety of data types in a tree structure
+        start       type
+            0       byte            tag type
+            1       int             length of the tag name string
+            5       wchar[N]        tag name string in modified UTF-8 encoding
+            vary    vary            tag data
+            
+        special tag types (see code for full list and encoding):
+            0x0     End of tag struct marker -- no tag name or data follows this
+            0xD     Start of new tag struct
+            0xE     Serialized object (not yet implemented here)
+    
+    '''
+
+    retval = {}
+    
     with open(fileName, 'rb') as f:
         print 'Parsing %s' % fileName
         
@@ -275,39 +302,28 @@ def readMetaFile(fileName):
         retval['int_a'] = bs.readInt32()
         retval['byte_a'] = bs.readChar()
         
-        numDocked = bs.readInt32()
-        
-        retval['docked'] = []
-        
-        for i in range(0, numDocked):
-            name = bs.readString()
-            q = (bs.readInt32(), bs.readInt32(), bs.readInt32())
-            a = (bs.readFloat(), bs.readFloat(), bs.readFloat())
-            docking = bs.readInt16()
-            end = bs.readChar()
+        if retval['byte_a'] == 3:
+            numDocked = bs.readInt32()
             
-            retval['docked'].append({
-                'name': name,
-                'q': q,
-                'a': a,
-                'dockID': docking,
-            })
-        
-        retval['byte_b'] = bs.readChar()
-        retval['short_b'] = bs.readInt16()
-        
-        
-        type = bs.readChar()
-        data = {}
-        name = None
-        if type:
-            name = bs.readString()
-            data = parseTagData(bs, type)
-        
-        retval['data'] = {
-            'name': name,
-            'data': data
-        }
+            retval['docked'] = []
+            
+            for i in range(0, numDocked):
+                name = bs.readString()
+                q = (bs.readInt32(), bs.readInt32(), bs.readInt32())
+                a = (bs.readFloat(), bs.readFloat(), bs.readFloat())
+                docking = bs.readInt16()
+                end = bs.readChar()
+                
+                retval['docked'].append({
+                    'name': name,
+                    'q': q,
+                    'a': a,
+                    'dockID': docking,
+                })
+            
+            retval['byte_b'] = bs.readChar()
+
+            retval.update(parseEntity(bs))
         
         eof = bs.readByte()
         if eof != '':
@@ -343,10 +359,10 @@ def readDataFile(fileName):
         
         rawChunkData is a 3 byte bitfield
             Bits
-            23-21   orientation
-            20-13   hitpoints
-            12      isActive
-            11-0    blockID
+            23-21   3 lower bits of orientation
+            20      isActive or MSB of the orientation
+            19-11   hitpoints
+            10-0    blockID
         
     '''
     retval = {}
@@ -405,17 +421,34 @@ def readDataFile(fileName):
             for block in range(0,16*16*16):
                 idx = block*3
                 data = struct.unpack('>i', '\x00' + outdata[idx:idx+3])[0]
-                blockId = data & 0x7FF
+                blockId = bits(data, 0, 11)
                 
                 if blockId:
                     pos = (block % 16, (block / 16) % 16, block / 256)
                     chunkDict['blocks'][pos] = {
                         'id': blockId,
-                        'hp': (data >> 12) & 0x1F,
-                        'orient':  (data >> 22) & 0x7
+                        'hp': bits(data, 11, 9),
+                        'active': bits(data, 20, 1),
+                        'orient': bits(data, 21, 3),
                     }
             
             retval['chunks'].append(chunkDict)
+        
+        eof = bs.readByte()
+        if eof != '':
+            print 'Warning: EOF not reached'
+    
+    return retval
+
+def readEntityFile(fileName):
+    retval = {}
+    
+    with open(fileName, 'rb') as f:
+        print 'Parsing %s' % fileName
+        
+        bs = binary.BinaryStream(f)
+        
+        retval = parseEntity(bs)
         
         eof = bs.readByte()
         if eof != '':
