@@ -166,12 +166,14 @@ public class RenderPanel extends JPanel
             Point3f corner = tile.getVisual();
             if (corner == null)
                 break;
-            getCorners(tile, corner, corners);
-            ImageIcon icon = BlockTypeColors.getBlockImage(tile.getBlock().getBlockID());
+            if (!getCorners(tile, corner, corners))
+                continue;
             if (tile.getType() == RenderTile.SQUARE)
-                renderSquare(g2, corners, tile, icon);
+                renderSquare(g2, corners, tile, BlockTypeColors.getBlockImage(tile.getBlock().getBlockID()));
             else if ((tile.getType() >= RenderTile.TRI1) && (tile.getType() <= RenderTile.TRI4))
-                renderTriangle(g2, corners, tile, icon);
+                renderTriangle(g2, corners, tile, BlockTypeColors.getWedgeImage(tile.getBlock().getBlockID()));
+            else if ((tile.getType() == RenderTile.RECTANGLE))
+                renderSquare(g2, corners, tile, BlockTypeColors.getBlockImage(tile.getBlock().getBlockID()));
         }
     }
 
@@ -182,7 +184,7 @@ public class RenderPanel extends JPanel
         int pCenter = (tile.getType() - RenderTile.TRI1);
         int pLeft = (pCenter + 1)%4;
         int pRight = (pCenter + 3)%4;
-        if (icon != null && false)
+        if (icon != null)
         {
             float m00 = (corners[pRight][0] - corners[pCenter][0])/64f;
             float m10 = (corners[pRight][1] - corners[pCenter][1])/64f;
@@ -236,39 +238,95 @@ public class RenderPanel extends JPanel
         }
     }
 
-    private void getCorners(RenderTile tile, Point3f corner, float[][] corners)
+    private boolean getCorners(RenderTile tile, Point3f corner, float[][] corners)
     {
-        corners[0][0] = corner.x;
-        corners[0][1] = corner.y;
         switch (tile.getFacing())
         {
             case RenderTile.XP:
             case RenderTile.XM:
-                corners[1][0] = corner.x + mUnitY.x;
-                corners[1][1] = corner.y + mUnitY.y;
-                corners[2][0] = corner.x + mUnitY.x + mUnitZ.x;
-                corners[2][1] = corner.y + mUnitY.y + mUnitZ.y;
-                corners[3][0] = corner.x +      + mUnitZ.x;
-                corners[3][1] = corner.y +      + mUnitZ.y;
+                setCorner(corners, corner, 0, false, false, false);
+                setCorner(corners, corner, 1, false, true , false);
+                setCorner(corners, corner, 2, false, true , true );
+                setCorner(corners, corner, 3, false, false, true );
                 break;
             case RenderTile.YP:
             case RenderTile.YM:
-                corners[1][0] = corner.x + mUnitZ.x;
-                corners[1][1] = corner.y + mUnitZ.y;
-                corners[2][0] = corner.x + mUnitZ.x + mUnitX.x;
-                corners[2][1] = corner.y + mUnitZ.y + mUnitX.y;
-                corners[3][0] = corner.x +      + mUnitX.x;
-                corners[3][1] = corner.y +      + mUnitX.y;
+                setCorner(corners, corner, 0, false, false, false);
+                setCorner(corners, corner, 1, false, false, true );
+                setCorner(corners, corner, 2, true , false, true );
+                setCorner(corners, corner, 3, true , false, false);
                 break;
             case RenderTile.ZP:
             case RenderTile.ZM:
-                corners[1][0] = corner.x + mUnitX.x;
-                corners[1][1] = corner.y + mUnitX.y;
-                corners[2][0] = corner.x + mUnitX.x + mUnitY.x;
-                corners[2][1] = corner.y + mUnitX.y + mUnitY.y;
-                corners[3][0] = corner.x +      + mUnitY.x;
-                corners[3][1] = corner.y +      + mUnitY.y;
+                setCorner(corners, corner, 0, false, false, false);
+                setCorner(corners, corner, 1, true , false, false);
+                setCorner(corners, corner, 2, true , true , false);
+                setCorner(corners, corner, 3, false, true , false);
                 break;
+            case RenderTile.XPYP:
+            case RenderTile.XMYM:
+                setDiagonalCorners(corners, corner, false, true , false, false, true , true );
+                break;
+            case RenderTile.XPYM:
+            case RenderTile.XMYP:
+                setDiagonalCorners(corners, corner, true , true , false, true , true , true );
+                break;
+                case RenderTile.YPZM:
+              case RenderTile.YMZP:
+                  setDiagonalCorners(corners, corner, false, false, false, true , false, false);
+                  break;
+              case RenderTile.YPZP:
+              case RenderTile.YMZM:
+                  setDiagonalCorners(corners, corner, false, false, true , true , false, true );
+                  break;
+              case RenderTile.ZPXP:
+              case RenderTile.ZMXM:
+                  setDiagonalCorners(corners, corner, false, false, true , true , false, false);
+                  break;
+              case RenderTile.ZPXM:
+              case RenderTile.ZMXP:
+                  setDiagonalCorners(corners, corner, true, true, true , true , false, true);
+                  break;
+            default:
+                return false;
+        }
+        return true;
+    }
+    
+    private void setDiagonalCorners(float[][] corners, Point3f corner, 
+            boolean x0, boolean y0, boolean z0, 
+            boolean x1, boolean y1, boolean z1)
+    {
+        boolean x2 = (x0 == x1) ? !x1 : x1;
+        boolean x3 = (x1 == x2) ? !x2 : x2;
+        boolean y2 = (y0 == y1) ? !y1 : y1;
+        boolean y3 = (y1 == y2) ? !y2 : y2;
+        boolean z2 = (z0 == z1) ? !z1 : z1;
+        boolean z3 = (z1 == z2) ? !z2 : z2;
+        setCorner(corners, corner, 0, x0, y0, z0);
+        setCorner(corners, corner, 1, x1, y1, z1);
+        setCorner(corners, corner, 2, x2, y2, z2);
+        setCorner(corners, corner, 3, x3, y3, z3);
+    }
+    
+    private void setCorner(float[][] corners, Point3f corner, int off, boolean x, boolean y, boolean z)
+    {
+        corners[off][0] = corner.x;
+        corners[off][1] = corner.y;
+        if (x)
+        {
+            corners[off][0] += mUnitX.x;
+            corners[off][1] += mUnitX.y;
+        }
+        if (y)
+        {
+            corners[off][0] += mUnitY.x;
+            corners[off][1] += mUnitY.y;
+        }
+        if (z)
+        {
+            corners[off][0] += mUnitZ.x;
+            corners[off][1] += mUnitZ.y;
         }
     }
     

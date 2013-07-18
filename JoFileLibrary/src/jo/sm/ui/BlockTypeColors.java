@@ -788,6 +788,7 @@ public class BlockTypeColors
     
     private static boolean     mBlockIconsLoaded = false;
     private static ImageIcon[] mBlockIcons;
+    private static ImageIcon[] mWedgeIcons;
 
     public static ImageIcon getBlockImage(short blockID)
     {
@@ -826,5 +827,32 @@ public class BlockTypeColors
         if (mBlockIcons == null)
             return null;
         return mBlockIcons[BLOCK_ICON.get(blockID)];
+    }
+    
+    public static ImageIcon getWedgeImage(short blockID)
+    {
+        ImageIcon block = getBlockImage(blockID);
+        if (block == null)
+            return null;
+        if (mWedgeIcons == null)
+            mWedgeIcons = new ImageIcon[mBlockIcons.length];
+        if (mWedgeIcons[blockID] == null)
+        {
+            BufferedImage rawImg = (BufferedImage)block.getImage();
+            int w = rawImg.getWidth();
+            int h = rawImg.getHeight();
+            int t = (w + h)/2;
+            BufferedImage triImg = new BufferedImage(w, h, BufferedImage.TYPE_4BYTE_ABGR);
+            for (int x = 0; x < w; x++)
+                for (int y = 0; y < h; y++)
+                {
+                    if (x + y > t)
+                        triImg.setRGB(x, y, 0x00000000);
+                    else
+                        triImg.setRGB(x, y, rawImg.getRGB(x, y));
+                }
+            mWedgeIcons[blockID] = new ImageIcon(triImg);
+        }
+        return mWedgeIcons[blockID];
     }
 }

@@ -76,7 +76,6 @@ public class RenderLogic
 
     private static void doWedge(SparseMatrix<Block> blocks, Point3i p, List<RenderTile> polys)
     {
-        System.out.println("Do wedge with a ori="+blocks.get(p).getOrientation());
         switch (blocks.get(p).getOrientation())
         {
             case 0: // YPZM
@@ -86,14 +85,16 @@ public class RenderLogic
                 doYMSquare(blocks, p, polys, RenderTile.SQUARE);
                 doZPSquare(blocks, p, polys, RenderTile.SQUARE);
                 // no ZM face
+                doRect(blocks, p, polys, RenderTile.YPZM);
                 break;
             case 1: // XMYP
                 doXPSquare(blocks, p, polys, RenderTile.SQUARE);
                 // no XM face
                 // no YP face
-              doYMSquare(blocks, p, polys, RenderTile.SQUARE);
+                doYMSquare(blocks, p, polys, RenderTile.SQUARE);
                 doZMSquare(blocks, p, polys, RenderTile.TRI2);
                 doZPSquare(blocks, p, polys, RenderTile.TRI2);
+                doRect(blocks, p, polys, RenderTile.XMYP);
                 break;
             case 2: // YPZP
                 doXMSquare(blocks, p, polys, RenderTile.TRI1);
@@ -102,6 +103,7 @@ public class RenderLogic
                 doYMSquare(blocks, p, polys, RenderTile.SQUARE);
                 // no ZP face
                 doZMSquare(blocks, p, polys, RenderTile.SQUARE);
+                doRect(blocks, p, polys, RenderTile.YPZP);
                 break;
             case 3: // XPYP
                 // no XP face
@@ -110,6 +112,7 @@ public class RenderLogic
                 doYMSquare(blocks, p, polys, RenderTile.SQUARE);
                 doZMSquare(blocks, p, polys, RenderTile.TRI1);
                 doZPSquare(blocks, p, polys, RenderTile.TRI1);
+                doRect(blocks, p, polys, RenderTile.XPYP);
                 break;
             case 4: // YMZM
                 doXMSquare(blocks, p, polys, RenderTile.TRI3);
@@ -118,6 +121,7 @@ public class RenderLogic
                 // no YM face
                 doZPSquare(blocks, p, polys, RenderTile.SQUARE);
                 // no ZM face
+                doRect(blocks, p, polys, RenderTile.YMZM);
                 break;
             case 5: // XPYM
                 // no XP face
@@ -126,6 +130,7 @@ public class RenderLogic
                 // no YM face
                 doZMSquare(blocks, p, polys, RenderTile.TRI4);
                 doZPSquare(blocks, p, polys, RenderTile.TRI4);
+                doRect(blocks, p, polys, RenderTile.XPYM);
                 break;
             case 6: // YMZP
                 doXMSquare(blocks, p, polys, RenderTile.TRI2);
@@ -134,6 +139,7 @@ public class RenderLogic
                 // no YM face
                 // no ZP face
                 doZMSquare(blocks, p, polys, RenderTile.SQUARE);
+                doRect(blocks, p, polys, RenderTile.YMZP);
                 break;
             case 7: // XMYM
                 doXPSquare(blocks, p, polys, RenderTile.SQUARE);
@@ -142,14 +148,17 @@ public class RenderLogic
                 // no YM face
                 doZMSquare(blocks, p, polys, RenderTile.TRI3);
                 doZPSquare(blocks, p, polys, RenderTile.TRI3);
+                doRect(blocks, p, polys, RenderTile.XMYM);
                 break;
             case 8: // XPZM
+            case 12: // ???
                 // no XP face
                 doXMSquare(blocks, p, polys, RenderTile.SQUARE);
                 doYPSquare(blocks, p, polys, RenderTile.TRI2);
                 doYMSquare(blocks, p, polys, RenderTile.TRI2);
                 doZPSquare(blocks, p, polys, RenderTile.SQUARE);
                 // no ZM face
+                doRect(blocks, p, polys, RenderTile.ZMXP);
                 break;
             case 10: // XMZM
                 doXPSquare(blocks, p, polys, RenderTile.SQUARE);
@@ -158,6 +167,7 @@ public class RenderLogic
                 doYMSquare(blocks, p, polys, RenderTile.TRI3);
                 doZPSquare(blocks, p, polys, RenderTile.SQUARE);
                 // no ZM face
+                doRect(blocks, p, polys, RenderTile.ZMXM);
                 break;
             case 11: // XMZP
                 doXPSquare(blocks, p, polys, RenderTile.SQUARE);
@@ -166,6 +176,7 @@ public class RenderLogic
                 doYMSquare(blocks, p, polys, RenderTile.TRI4);
                 // no ZP face
                 doZMSquare(blocks, p, polys, RenderTile.SQUARE);
+                doRect(blocks, p, polys, RenderTile.ZPXM);
                 break;
             case 13: // XPZP
                 // no XP face
@@ -174,6 +185,10 @@ public class RenderLogic
                 doYMSquare(blocks, p, polys, RenderTile.TRI1);
                 // no ZP face
                 doZMSquare(blocks, p, polys, RenderTile.SQUARE);
+                doRect(blocks, p, polys, RenderTile.ZPXP);
+                break;
+            default:
+                System.out.println("Wedge with unknown ori="+blocks.get(p).getOrientation());
                 break;
         }
     }
@@ -186,6 +201,17 @@ public class RenderLogic
         doYMSquare(blocks, p, polys, RenderTile.SQUARE);
         doZPSquare(blocks, p, polys, RenderTile.SQUARE);
         doZMSquare(blocks, p, polys, RenderTile.SQUARE);
+    }
+
+    private static void doRect(SparseMatrix<Block> blocks, Point3i p,
+            List<RenderTile> polys, int facing)
+    {
+        RenderTile rp = new RenderTile();
+        rp.setBlock(blocks.get(p));
+        rp.setFacing(facing);
+        rp.setCenter(new Point3i(p));
+        rp.setType(RenderTile.RECTANGLE);
+        polys.add(rp);
     }
 
     private static void doZMSquare(SparseMatrix<Block> blocks, Point3i p,
@@ -277,19 +303,16 @@ public class RenderLogic
         Matrix3f rot = new Matrix3f();
         transform.get(rot);
 
-        boolean[] showing = new boolean[6];
-        Point3f xp = new Point3f(1, 0, 0);
-        rot.transform(xp);
-        showing[RenderTile.XP] = xp.z < 0;
-        showing[RenderTile.XM] = !showing[RenderTile.XP];
-        Point3f yp = new Point3f(0, 1, 0);
-        rot.transform(yp);
-        showing[RenderTile.YP] = yp.z < 0;
-        showing[RenderTile.YM] = !showing[RenderTile.YP];
-        Point3f zp = new Point3f(0, 0, 1);
-        rot.transform(zp);
-        showing[RenderTile.ZP] = zp.z < 0;
-        showing[RenderTile.ZM] = !showing[RenderTile.ZP];
+        boolean[] showing = new boolean[6+12];
+        calcShowing(showing, rot, 1, 0, 0, RenderTile.XP, RenderTile.XM);
+        calcShowing(showing, rot, 0, 1, 0, RenderTile.YP, RenderTile.YM);
+        calcShowing(showing, rot, 0, 0, 1, RenderTile.ZP, RenderTile.ZM);
+        calcShowing(showing, rot, 1, 1, 0, RenderTile.XPYP, RenderTile.XMYM);
+        calcShowing(showing, rot, -1, 1, 0, RenderTile.XMYP, RenderTile.XPYM);
+        calcShowing(showing, rot, 0, 1, 1, RenderTile.YPZP, RenderTile.YMZM);
+        calcShowing(showing, rot, 0, -1, 1, RenderTile.YMZP, RenderTile.YPZM);
+        calcShowing(showing, rot, 1, 0, 1, RenderTile.ZPXP, RenderTile.ZMXM);
+        calcShowing(showing, rot, 1, 0, -1, RenderTile.ZMXP, RenderTile.ZPXM);
         //System.out.println("Showing +x="+showing[0]+", -x="+showing[1]+", +y="+showing[2]+", -y="+showing[3]+", +z="+showing[4]+", -z="+showing[5]);
         for (RenderTile tile : tiles)
         {
@@ -319,5 +342,13 @@ public class RenderLogic
                         return (int)Math.signum(tile2.getVisual().z - tile1.getVisual().z);
             }            
         });
+    }
+    
+    private static void calcShowing(boolean[] showing, Matrix3f rot, int dx, int dy, int dz, int axis, int naxis)
+    {
+        Point3f xp = new Point3f(dx, dy, dz);
+        rot.transform(xp);
+        showing[axis] = xp.z < 0;
+        showing[naxis] = !showing[axis];
     }
 }
