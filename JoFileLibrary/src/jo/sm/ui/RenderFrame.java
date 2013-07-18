@@ -27,6 +27,7 @@ import jo.sm.ship.data.Block;
 import jo.sm.ship.data.Data;
 import jo.sm.ship.logic.DataLogic;
 import jo.sm.ship.logic.ShipLogic;
+import jo.sm.ship.logic.SmoothLogic;
 import jo.sm.ui.logic.ShipSpec;
 import jo.sm.ui.logic.ShipTreeLogic;
 import jo.vecmath.Point3i;
@@ -43,11 +44,13 @@ public class RenderFrame extends JFrame implements WindowListener
         mClient = new RenderPanel();
         JButton openExisting = new JButton("Open...");
         JButton openFile = new JButton("Open File...");
+        JButton smooth = new JButton("Smooth");
         // layout
         JPanel buttonBar = new JPanel();
         buttonBar.setLayout(new GridLayout(1,6));
         buttonBar.add(openExisting);
         buttonBar.add(openFile);
+        buttonBar.add(smooth);
         getContentPane().add(BorderLayout.NORTH, buttonBar);
         getContentPane().add(BorderLayout.WEST, new EditPanel(mClient));
         getContentPane().add(BorderLayout.CENTER, mClient);
@@ -66,6 +69,13 @@ public class RenderFrame extends JFrame implements WindowListener
             public void actionPerformed(ActionEvent ev)
             {
                 doOpenFile();
+            }            
+        });
+        smooth.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent ev)
+            {
+                doSmooth();
             }            
         });
         setSize(1024, 768);
@@ -107,6 +117,15 @@ public class RenderFrame extends JFrame implements WindowListener
                e.printStackTrace();
            }
         }
+    }
+
+    private void doSmooth()
+    {
+       SparseMatrix<Block> grid = mClient.getGrid();
+       if (grid == null)
+           return;
+       SmoothLogic.smooth(grid);
+       mClient.setGrid(grid);
     }
 
     public void windowClosing(WindowEvent evt)
