@@ -262,7 +262,7 @@ def readMetaFile(fileName):
     
     start     type
         0       int             unknown int
-        4       byte            unknown byte
+        4       byte            unknown byte. Currently expecting a 0x03 here.
         5       int             number of dockEntry (docked ship/turrets)
         9       dockEntry[N]    data about each docked ship/turret
         vary    byte            unknown byte
