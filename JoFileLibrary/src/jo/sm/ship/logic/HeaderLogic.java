@@ -4,15 +4,13 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.vecmath.Vector3f;
-
 import jo.sm.ship.data.BlockEntry;
 import jo.sm.ship.data.Header;
+import jo.vecmath.Vector3f;
 
 public class HeaderLogic 
 {
-	@SuppressWarnings("resource")
-    public static Header readFile(InputStream is, boolean close) throws IOException
+	public static Header readFile(InputStream is, boolean close) throws IOException
 	{
 		DataInputStream dis;
 		if (is instanceof DataInputStream)

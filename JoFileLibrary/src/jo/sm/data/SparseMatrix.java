@@ -1,9 +1,10 @@
 package jo.sm.data;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
-import javax.vecmath.Point3i;
+import jo.vecmath.Point3i;
 
 public class SparseMatrix<T>
 {
@@ -99,5 +100,13 @@ public class SparseMatrix<T>
                     }
             }
         }
+    }
+    
+    public Iterator<Point3i> iterator()
+    {
+        Point3i lower = new Point3i();
+        Point3i upper = new Point3i();
+        getBounds(lower, upper);
+        return new CubeIterator(lower, upper);
     }
 }

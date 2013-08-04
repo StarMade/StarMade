@@ -1,13 +1,13 @@
 package jo.vecmath.logic;
 
-import javax.vecmath.AxisAngle4f;
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Matrix4d;
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Quat4f;
-import javax.vecmath.Tuple3f;
-import javax.vecmath.Vector3f;
+import jo.vecmath.AxisAngle4f;
+import jo.vecmath.Matrix3f;
+import jo.vecmath.Matrix4d;
+import jo.vecmath.Matrix4f;
+import jo.vecmath.Point3f;
+import jo.vecmath.Quat4f;
+import jo.vecmath.Tuple3f;
+import jo.vecmath.Vector3f;
 
 public class TransformEye extends Matrix4f
 {
@@ -20,8 +20,7 @@ public class TransformEye extends Matrix4f
     private Vector3f    mForward = new Vector3f(0, 0, -1);
     private Vector3f    mUp = new Vector3f(0, 1, 0);
     private Vector3f    mRight = new Vector3f(1, 0, 0);
-    private float       mScale = 1.0f;
-
+    
     public TransformEye()
     {
         super();
@@ -177,7 +176,6 @@ public class TransformEye extends Matrix4f
     
     public void scale(float s)
     {
-        mScale *= s;
         assemble();
     }
 

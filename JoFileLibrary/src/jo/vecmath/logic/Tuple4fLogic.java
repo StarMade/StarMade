@@ -1,6 +1,6 @@
 package jo.vecmath.logic;
 
-import javax.vecmath.Tuple4f;
+import jo.vecmath.Tuple4f;
 
 public class Tuple4fLogic extends MathUtils
 {

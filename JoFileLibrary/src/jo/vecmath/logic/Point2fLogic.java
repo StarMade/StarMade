@@ -1,6 +1,6 @@
 package jo.vecmath.logic;
 
-import javax.vecmath.Point2f;
+import jo.vecmath.Point2f;
 
 public class Point2fLogic extends Tuple2fLogic
 {
