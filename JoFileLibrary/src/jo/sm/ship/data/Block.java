@@ -6,6 +6,7 @@ public class Block
     private boolean mActive;
     private short   mHitPoints;
     private short   mOrientation;
+    private int     mBitfield;
     
     public short getBlockID()
     {
@@ -38,5 +39,13 @@ public class Block
     public void setOrientation(short orientation)
     {
         mOrientation = orientation;
+    }
+    public int getBitfield()
+    {
+        return mBitfield;
+    }
+    public void setBitfield(int bitfield)
+    {
+        mBitfield = bitfield;
     }
 }

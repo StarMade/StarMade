@@ -4,10 +4,10 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import javax.vecmath.Point3b;
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
-import javax.vecmath.Point3s;
+import jo.vecmath.Point3b;
+import jo.vecmath.Point3f;
+import jo.vecmath.Point3i;
+import jo.vecmath.Point3s;
 
 public class IOLogic
 {

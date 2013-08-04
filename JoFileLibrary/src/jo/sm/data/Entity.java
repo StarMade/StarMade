@@ -3,10 +3,9 @@ package jo.sm.data;
 import java.io.File;
 import java.util.Map;
 
-import javax.vecmath.Point3i;
-
 import jo.sm.ent.data.Tag;
 import jo.sm.ship.data.Data;
+import jo.vecmath.Point3i;
 
 public class Entity
 {

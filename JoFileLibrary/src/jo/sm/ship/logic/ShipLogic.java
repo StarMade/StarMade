@@ -2,13 +2,12 @@ package jo.sm.ship.logic;
 
 import java.util.Map;
 
-import javax.vecmath.Point3i;
-
 import jo.sm.data.CubeIterator;
 import jo.sm.data.SparseMatrix;
 import jo.sm.ship.data.Block;
 import jo.sm.ship.data.Chunk;
 import jo.sm.ship.data.Data;
+import jo.vecmath.Point3i;
 
 public class ShipLogic
 {

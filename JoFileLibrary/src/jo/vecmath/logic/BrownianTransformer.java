@@ -2,8 +2,8 @@ package jo.vecmath.logic;
 
 import java.util.Random;
 
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Point3f;
+import jo.vecmath.Matrix4f;
+import jo.vecmath.Point3f;
 
 public class BrownianTransformer implements ITransformer
 {

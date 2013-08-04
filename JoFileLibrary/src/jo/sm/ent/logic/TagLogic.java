@@ -11,13 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
-import javax.vecmath.Point3b;
-import javax.vecmath.Point3i;
-import javax.vecmath.Vector3f;
-
 import jo.sm.ent.data.Tag;
 import jo.sm.ent.data.TagType;
 import jo.sm.logic.DebugLogic;
+import jo.vecmath.Point3b;
+import jo.vecmath.Point3i;
+import jo.vecmath.Vector3f;
 
 public class TagLogic
 {

@@ -1,6 +1,6 @@
 package jo.sm.ship.data;
 
-import javax.vecmath.Point3i;
+import jo.vecmath.Point3i;
 
 public class Chunk
 {

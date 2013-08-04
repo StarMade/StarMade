@@ -1,11 +1,11 @@
 package jo.vecmath.logic;
 
-import javax.vecmath.AxisAngle4f;
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Tuple3f;
-import javax.vecmath.Vector3f;
+import jo.vecmath.AxisAngle4f;
+import jo.vecmath.Matrix3f;
+import jo.vecmath.Matrix4f;
+import jo.vecmath.Point3f;
+import jo.vecmath.Tuple3f;
+import jo.vecmath.Vector3f;
 
 public class Matrix4fLogic extends MathUtils
 {

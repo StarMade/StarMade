@@ -1,24 +1,27 @@
 package jo.sm.ship.logic;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
-
-import javax.vecmath.Point3i;
 
 import jo.sm.logic.IOLogic;
 import jo.sm.ship.data.Block;
 import jo.sm.ship.data.Chunk;
 import jo.sm.ship.data.Data;
+import jo.vecmath.Point3i;
 
 public class DataLogic 
 {
@@ -86,9 +89,11 @@ public class DataLogic
                         dis3.readFully(inbuf);
                         int bitfield = toUnsignedInt(inbuf);
                         blocks[x][y][z].setBlockID((short)((bitfield>>0)&0x7ff));
-                        blocks[x][y][z].setActive(((bitfield>>11)&0x1) == 1);
-                        blocks[x][y][z].setHitPoints((short)((bitfield>>12)&0xff));
-                        blocks[x][y][z].setOrientation((short)((bitfield>>20)&0x7));
+                        blocks[x][y][z].setHitPoints((short)((bitfield>>11)&0x1ff));
+                        blocks[x][y][z].setActive(((bitfield>>20)&0x1) == 1);
+                        blocks[x][y][z].setOrientation((short)(((bitfield>>21)&0x7)
+                                | ((bitfield>>(20-3))&0x8)));
+                        blocks[x][y][z].setBitfield(bitfield);
                     }
             chunk.setBlocks(blocks);
             chunks.add(chunk);
@@ -118,6 +123,113 @@ public class DataLogic
 		return data;
 	}
     
+    public static void writeFile(Data data, OutputStream os, boolean close) throws IOException
+    {
+        DataOutputStream dos;
+        if (os instanceof DataOutputStream)
+            dos = (DataOutputStream)os;
+        else
+            dos = new DataOutputStream(os);
+        dos.writeInt(0); // non-comrpessed header
+
+        Integer[][][] chunkLength = new Integer[16][16][16];
+        Integer[][][] chunkIndex = new Integer[16][16][16]; 
+        ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
+        DataOutputStream dos2 = new DataOutputStream(baos2);
+        for (int i = 0; i < data.getChunks().length; i++)
+        {
+            Chunk chunk = data.getChunks()[i];
+            ByteArrayOutputStream baos3 = new ByteArrayOutputStream();
+            DataOutputStream dos3 = new DataOutputStream(new DeflaterOutputStream(baos3));
+            for (int z = 0; z < 16; z++)
+                for (int y = 0; y < 16; y++)
+                    for (int x = 0; x < 16; x++)
+                    {
+                        Block b = chunk.getBlocks()[x][y][z];
+                        int bitfield = 0;
+                        bitfield |= ((b.getBlockID()&0x7ff)<<0);
+                        bitfield |= ((b.getHitPoints()&0x1ff)<<11);
+                        bitfield |= ((b.getOrientation()&0x8)<<(20-3));
+                        bitfield |= ((b.getOrientation()&0x7)<<21);
+                        dos3.write(fromUnsignedInt(bitfield));
+                    }
+            dos3.flush();
+            byte[] compressedData = baos3.toByteArray();
+
+            dos2.writeLong(chunk.getTimestamp());
+            IOLogic.write(dos2, chunk.getPosition());
+            dos.writeByte(chunk.getType());
+            dos2.writeInt(compressedData.length);
+            dos2.write(compressedData);
+            for (int j = 25 + compressedData.length; j < 5120; j++)
+                dos2.writeByte(0);
+            int cx;
+            if (chunk.getPosition().x < 0)
+                cx = Math.abs(16 - chunk.getPosition().x)%16;
+            else
+                cx = chunk.getPosition().x%15;
+            int cy;
+            if (chunk.getPosition().y < 0)
+                cy = Math.abs(16 - chunk.getPosition().y)%16;
+            else
+                cy = chunk.getPosition().y%15;
+            int cz;
+            if (chunk.getPosition().z < 0)
+                cz = Math.abs(16 - chunk.getPosition().z)%16;
+            else
+                cz = chunk.getPosition().z%15;
+            chunkLength[cx][cy][cz] = 25 + compressedData.length;
+            chunkIndex[cx][cy][cz] = i;
+        }
+        dos2.flush();
+
+        // chunk index
+        for (int z = 0; z < 16; z++)
+            for (int y = 0; y < 16; y++)
+                for (int x = 0; x < 16; x++)
+                {
+                    if (chunkIndex[x][y][z] == null)
+                    {
+                        dos.writeInt(-1);
+                        dos.writeInt(0);
+                    }
+                    else
+                    {
+                        dos.writeInt(chunkIndex[x][y][z]);
+                        dos.writeInt(chunkLength[x][y][z]);
+                    }
+                }
+        // chunk times
+        for (int z = 0; z < 16; z++)
+            for (int y = 0; y < 16; y++)
+                for (int x = 0; x < 16; x++)
+                {
+                    if (chunkIndex[x][y][z] == null)
+                        dos.writeLong(0);
+                    else
+                        dos.writeLong(data.getChunks()[chunkIndex[x][y][z]].getTimestamp());
+                }
+
+        dos.write(baos2.toByteArray());
+        
+        if (close)
+            dos.close();
+    }
+
+    private static byte[] fromUnsignedInt(int i)
+    {
+        byte[] outbuf = new byte[4];
+        outbuf[0] = (byte)(i&0xff);
+        i >>= 8;
+        outbuf[1] = (byte)(i&0xff);
+        i >>= 8;
+        outbuf[2] = (byte)(i&0xff);
+        i >>= 8;
+        outbuf[3] = (byte)(i&0xff);
+        return outbuf;
+    }
+    
+ 
     private static int toUnsignedInt(byte[] bytes)
     {
         return toUnsignedInt(bytes, 0, bytes.length);

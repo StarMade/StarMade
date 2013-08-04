@@ -881,4 +881,55 @@ public class BlockTypes
         BLOCK_ABBR.put(DECORATIVE_PANEL_4, "D");
         BLOCK_ABBR.put(LIGHT_BULB_YELLOW, "L");
     }
+    public static boolean isHull(short blockID)
+    {
+        switch (blockID)
+        {
+                case HULL_COLOR_GREY_ID:
+                case HULL_COLOR_PURPLE_ID:
+                case HULL_COLOR_BROWN_ID:
+                case HULL_COLOR_BLACK_ID:
+                case HULL_COLOR_RED_ID:
+                case HULL_COLOR_BLUE_ID:
+                case HULL_COLOR_GREEN_ID:
+                case HULL_COLOR_YELLOW_ID:
+                case HULL_COLOR_WHITE_ID:
+                    return true;
+        }
+        return false;
+    }
+    public static boolean isWedge(short blockID)
+    {
+        switch (blockID)
+        {
+            case HULL_COLOR_WEDGE_GREY_ID: 
+            case HULL_COLOR_WEDGE_PURPLE_ID: 
+            case HULL_COLOR_WEDGE_BROWN_ID: 
+            case HULL_COLOR_WEDGE_BLACK_ID: 
+            case HULL_COLOR_WEDGE_RED_ID: 
+            case HULL_COLOR_WEDGE_BLUE_ID: 
+            case HULL_COLOR_WEDGE_GREEN_ID: 
+            case HULL_COLOR_WEDGE_YELLOW_ID: 
+            case HULL_COLOR_WEDGE_WHITE_ID: 
+                    return true;
+        }
+        return false;
+    }
+    public static boolean isCorner(short blockID)
+    {
+        switch (blockID)
+        {
+            case HULL_COLOR_CORNER_GREY_ID: 
+            case HULL_COLOR_CORNER_PURPLE_ID: 
+            case HULL_COLOR_CORNER_BROWN_ID: 
+            case HULL_COLOR_CORNER_BLACK_ID: 
+            case HULL_COLOR_CORNER_RED_ID: 
+            case HULL_COLOR_CORNER_BLUE_ID: 
+            case HULL_COLOR_CORNER_GREEN_ID: 
+            case HULL_COLOR_CORNER_YELLOW_ID: 
+            case HULL_COLOR_CORNER_WHITE_ID: 
+                    return true;
+        }
+        return false;
+    }
 }

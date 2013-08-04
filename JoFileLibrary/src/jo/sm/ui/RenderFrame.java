@@ -10,24 +10,27 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
-import jo.sm.data.Entity;
 import jo.sm.data.SparseMatrix;
-import jo.sm.logic.BlueprintLogic;
-import jo.sm.logic.EntityLogic;
 import jo.sm.logic.StarMadeLogic;
 import jo.sm.ship.data.Block;
-import jo.sm.ship.data.Blueprint;
+import jo.sm.ship.data.Data;
+import jo.sm.ship.logic.DataLogic;
 import jo.sm.ship.logic.ShipLogic;
+import jo.sm.ship.logic.SmoothLogic;
+import jo.sm.ui.logic.ShipSpec;
+import jo.sm.ui.logic.ShipTreeLogic;
+import jo.vecmath.Point3i;
 
 @SuppressWarnings("serial")
 public class RenderFrame extends JFrame implements WindowListener
@@ -39,191 +42,97 @@ public class RenderFrame extends JFrame implements WindowListener
         super("StarMade Ship Preview");
         // instantiate
         mClient = new RenderPanel();
-        JButton loadBlueprint = new JButton("Blueprint");
-        JButton loadDefaultBlueprint = new JButton("Default Blueprint");
-        JButton loadPlayerShip = new JButton("Player Ship");
-        JButton loadOtherShip = new JButton("Other Ship");
-        JButton loadTurret = new JButton("Turret");
-        JButton loadSpaceStation = new JButton("Station");
-        JButton loadShop = new JButton("Shop");
-        JButton loadPlanet = new JButton("Planet");
-        JButton loadRock = new JButton("Rock");
+        JButton openExisting = new JButton("Open...");
+        JButton openFile = new JButton("Open File...");
+        JButton smooth = new JButton("Smooth");
         // layout
         JPanel buttonBar = new JPanel();
-        buttonBar.setLayout(new GridLayout(1,8));
-        buttonBar.add(loadBlueprint);
-        buttonBar.add(loadDefaultBlueprint);
-        buttonBar.add(loadPlayerShip);
-        buttonBar.add(loadOtherShip);
-        buttonBar.add(loadTurret);
-        buttonBar.add(loadSpaceStation);
-        buttonBar.add(loadShop);
-        buttonBar.add(loadPlanet);
-        buttonBar.add(loadRock);
+        buttonBar.setLayout(new GridLayout(1,6));
+        buttonBar.add(openExisting);
+        buttonBar.add(openFile);
+        buttonBar.add(smooth);
         getContentPane().add(BorderLayout.NORTH, buttonBar);
+        getContentPane().add(BorderLayout.WEST, new EditPanel(mClient));
         getContentPane().add(BorderLayout.CENTER, mClient);
+        getContentPane().add(BorderLayout.SOUTH, new BegPanel());
         // link
         this.addWindowListener(this);
-        loadBlueprint.addActionListener(new ActionListener(){
+        openExisting.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent ev)
             {
-                doLoadBlueprint(false);
+                doOpenExisting();
             }            
         });
-        loadDefaultBlueprint.addActionListener(new ActionListener(){
+        openFile.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent ev)
             {
-                doLoadBlueprint(true);
+                doOpenFile();
             }            
         });
-        loadPlayerShip.addActionListener(new ActionListener(){
+        smooth.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent ev)
             {
-                doLoadEntity("SHIP", "Player");
-            }            
-        });
-        loadOtherShip.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent ev)
-            {
-                doLoadEntity("SHIP", "MOB_");
-            }            
-        });
-        loadTurret.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent ev)
-            {
-                doLoadEntity("SHIP", "AITURRET");
-            }            
-        });
-        loadSpaceStation.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent ev)
-            {
-                doLoadEntity("SPACESTATION", null);
-            }            
-        });
-        loadShop.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent ev)
-            {
-                doLoadEntity("SHOP", null);
-            }            
-        });
-        loadPlanet.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent ev)
-            {
-                doLoadEntity("PLANET", null);
-            }            
-        });
-        loadRock.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent ev)
-            {
-                doLoadEntity("FLOATINGROCK", null);
+                doSmooth();
             }            
         });
         setSize(1024, 768);
     }
 
-    protected void doLoadBlueprint(boolean def)
+    private void doOpenExisting()
     {
-        String[] options;
-        if (def)
-            options = BlueprintLogic.getDefaultBlueprintNames().toArray(new String[0]);
-        else
-            options = BlueprintLogic.getBlueprintNames().toArray(new String[0]);
-        int choice = JOptionPane.showOptionDialog(this, "Pick blueprint to view", "Starmade Utils", 
-                JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
-        if (choice < 0)
+        ShipChooser chooser = new ShipChooser(this);
+        chooser.setVisible(true);
+        ShipSpec spec = chooser.getSelected();
+        if (spec == null)
             return;
-        try
-        {
-            Blueprint blueprint;
-            if (def)
-                blueprint = BlueprintLogic.readDefaultBlueprint(options[choice]);
-            else
-                blueprint = BlueprintLogic.readBlueprint(options[choice]);
-            SparseMatrix<Block> grid = ShipLogic.getBlocks(blueprint.getData());
+        SparseMatrix<Block> grid = ShipTreeLogic.loadShip(spec);
+        if (grid != null)
             mClient.setGrid(grid);
-        }
-        catch (Exception e)
+    }
+
+    private void doOpenFile()
+    {
+        JFileChooser chooser = new JFileChooser(StarMadeLogic.getInstance().getBaseDir());
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+            "Starmade Ship File", "smd2");
+        chooser.setFileFilter(filter);
+        int returnVal = chooser.showOpenDialog(this);
+        if(returnVal == JFileChooser.APPROVE_OPTION) 
         {
-            e.printStackTrace();
+           File smb2 = chooser.getSelectedFile();
+           try
+           {
+               FileInputStream fis = new FileInputStream(smb2);
+               Data datum = DataLogic.readFile(fis, true);
+               Map<Point3i, Data> data = new HashMap<Point3i, Data>();
+               data.put(new Point3i(), datum);
+               SparseMatrix<Block> grid = ShipLogic.getBlocks(data);
+               mClient.setGrid(grid);
+           }
+           catch (IOException e)
+           {
+               e.printStackTrace();
+           }
         }
     }
 
-    protected void doLoadEntity(String typeFilter, String nameFilter)
+    private void doSmooth()
     {
-        try
-        {
-            List<Entity> entities = new ArrayList<Entity>();
-            entities.addAll(EntityLogic.getEntities());
-            for (Iterator<Entity> i = entities.iterator(); i.hasNext(); )
-            {
-                Entity e = i.next();
-                System.out.println(e.getType()+" - "+e.getName());
-                if ((typeFilter != null) && !e.getType().equals(typeFilter))
-                {
-                    i.remove();
-                    continue;
-                }
-                if (nameFilter != null)
-                {
-                    if ("Player".equals(nameFilter))
-                    {
-                        if (!e.toString().startsWith("Ship "))
-                        {
-                            i.remove();
-                            continue;
-                        }
-                    }
-                    else if (!e.getName().startsWith(nameFilter))
-                    {
-                        i.remove();
-                        continue;
-                    }
-                }
-                System.out.println(e.getType()+" ("+e.getName()+")");
-            }
-            if (entities.size() == 0)
-                return;
-            int choice = JOptionPane.showOptionDialog(this, "Pick object to view", "Starmade Utils", 
-                    JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, entities.toArray(), entities.get(0));
-            if (choice < 0)
-                return;
-            Entity e = entities.get(choice);
-            EntityLogic.readEntityData(e);
-            SparseMatrix<Block> grid = ShipLogic.getBlocks(e.getData());
-            e.setData(null); // conserve memory
-            mClient.setGrid(grid);
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-    }
-
-    protected void doLoadShop()
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    protected void doLoadPlanet()
-    {
-        // TODO Auto-generated method stub
-        
+       SparseMatrix<Block> grid = mClient.getGrid();
+       if (grid == null)
+           return;
+       SmoothLogic.smooth(grid);
+       mClient.setGrid(grid);
     }
 
     public void windowClosing(WindowEvent evt)
     {
         this.setVisible(false);
         this.dispose();
+        System.exit(0);
     }
 
     public void windowOpened(WindowEvent evt)

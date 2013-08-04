@@ -1,9 +1,9 @@
 package jo.vecmath.logic;
 
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Tuple3f;
-import javax.vecmath.Vector3f;
+import jo.vecmath.Matrix4f;
+import jo.vecmath.Point3f;
+import jo.vecmath.Tuple3f;
+import jo.vecmath.Vector3f;
 
 public class MoveTransformer implements ITransformer
 {

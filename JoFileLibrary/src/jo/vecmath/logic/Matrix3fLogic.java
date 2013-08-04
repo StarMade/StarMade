@@ -1,8 +1,8 @@
 package jo.vecmath.logic;
 
-import javax.vecmath.AxisAngle4f;
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Tuple3f;
+import jo.vecmath.AxisAngle4f;
+import jo.vecmath.Matrix3f;
+import jo.vecmath.Tuple3f;
 
 public class Matrix3fLogic extends MathUtils
 {
