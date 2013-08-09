@@ -17,17 +17,18 @@ def startProcess(command):
 	p.communicate()[0]
 
 def getVersion(line):
-	cfg = open(os.getcwd() + "/conf/smcp.cfg", "r")
+	cfg = open(os.getcwd() + "\conf\smcp.cfg", "r")
 	lines = cfg.readlines()
 	line = lines[line].strip()
 	ver = line.split('=', 1)[1]
 	return ver
 
 def main():
+        buildnum = getVersion(2)
 	print '---------------------------'
 	print '- Welcome to SMCP v%s ' % getVersion(0)
 	print '---------------------------\n'
-	print 'Extracting StarMade v%(0)s (%(1)s)\n' % {"0" : getVersion(1), "1" : getVersion(2)}
+	print 'Extracting StarMade v%(0)s (%(1)s)\n' % {"0" : getVersion(1), "1" : buildnum}
 	if not os.path.exists('instance') and not os.path.isdir('instance'):
 		os.makedirs('instance')
 	if not os.path.exists('tmp') and not os.path.isdir('tmp'):
@@ -36,7 +37,7 @@ def main():
 		os.makedirs('conf')
 	workingDir = os.getcwd()
 	os.chdir(workingDir + '\install')
-	unzip("starmade-%s.zip", workingDir + '\instance') % getVersion(2)
+	unzip("starmade-" + buildnum +".zip", workingDir + '\instance')
 	os.chdir(workingDir)
 	print 'Decompiling StarMade'
 	print '*   Deobfuscating... (Stage #1)'
