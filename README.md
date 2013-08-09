@@ -3,7 +3,8 @@ StarMade
 
 Open source repository of StarMade code deobfuscated and kept updated by community.
 
-CURRENT DECOMPILABLE VERSION: 0.09378
+Version Map:
+1 = starmade-build_20130805_213109.zip - 05-Aug-2013 21:33
 
 StarMade: [http://star-made.org/](http://star-made.org/)
 
