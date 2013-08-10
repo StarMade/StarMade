@@ -18,18 +18,6 @@ def startProcess(command):
 	p = subprocess.Popen(args)
 	p.communicate()[0]
 
-def getSMBuild():
-        #urlopen
-        builds = urllib.request.urlopen("http://files.star-made.org/build/list.php");
-        web_pg = builds.read();
-
-        pattern = "to be added" * 4
-        #m = re.search(pattern, web_pg)
-        #if m:
-        #        print ("Found a build!")
-        #else:
-        #        print ("Error: Cant connect to server")
-
 def getVersion(line):
 	cfg = open(os.getcwd() + "\conf\smcp.cfg", "r")
 	lines = cfg.readlines()
@@ -38,12 +26,10 @@ def getVersion(line):
 	return ver
 
 def main():
-        getSMBuild()
-        buildnum = getVersion(2)
         print ("---------------------------")
-        print ('- Welcome to SMCP v%s ' % getVersion(0))
+        print ('-- Welcome to SMCP v%s --' % getVersion(0))
         print ('---------------------------\n')
-        print ('Extracting StarMade v%(0)s (%(1)s)\n' % {"0" : getVersion(1), "1" : buildnum})
+        print ('Extracting StarMade v%s\n' % getVersion(1))
         if not os.path.exists('instance') and not os.path.isdir('instance'):
                 os.makedirs('instance')
         if not os.path.exists('tmp') and not os.path.isdir('tmp'):
@@ -52,7 +38,7 @@ def main():
                 os.makedirs('conf')
         workingDir = os.getcwd()
         os.chdir(workingDir + '\install')
-        unzip("starmade-" + buildnum +".zip", workingDir + '\instance')
+        unzip("StarMade.zip", workingDir + '\instance')
         os.chdir(workingDir)
         print ('Decompiling StarMade')
         print ('*   Deobfuscating... (Stage #1)')
@@ -60,14 +46,14 @@ def main():
         print ('*   Decompiling...   (Stage #2)')
         if not os.path.exists('sources') and not os.path.isdir('sources'):
                 os.makedirs('sources')
-        startProcess("java -Xmx1G -jar runtime/fernflower.jar tmp/deobf.zip sources")
-        #subprocess.call(['java', '-Xms2G', '-jar', 'fernflower.jar', workingDir + '/tmp/deobf.zip', workingDir + '/sources'])
+        #tmp/deobf.zip when implemnted SpecialSource
+        startProcess("java -Xmx1G -jar runtime/fernflower.jar install/StarMade.zip sources")
         os.chdir(workingDir + '\install')
         print ('Setting up Eclipse workspace\n')
         unzip("EclipseWorkspace.zip", workingDir)
         os.chdir(workingDir)
         if os.path.exists('tmp'):
-                print ('Deleting temporary files')
+                print ('Deleting temporary files\n')
                 shutil.rmtree('tmp')
         print ('-----------------------------------------')
         print ('- SMCP Is now ready for mod development -')
