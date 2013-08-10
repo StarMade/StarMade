@@ -6,6 +6,7 @@
 
 import os
 import sys
+import getopt
 import shutil
 import zipfile
 import subprocess
@@ -25,7 +26,17 @@ def getVersion(line):
 	ver = line.split('=', 1)[1]
 	return ver
 
-def main():
+def main(argv):
+        ignoreupdates = False
+        try:
+                opts, args = getopt.getopt(argv, "iu", ["ignoreupdates"])
+        except getopt.GetoptError:
+                #TO-DO: Add usage printout
+                print ("Failed to parse arguments")
+                sys.exit()
+        for opt, arg in opts:
+                if opt in ("-iu", "--ignoreupdates"):
+                        ignoreupdates = True
         print ("---------------------------")
         print ('-- Welcome to SMCP v%s --' % getVersion(0))
         print ('---------------------------\n')
@@ -73,5 +84,5 @@ def unzip(zipFilePath, destDir):
             fd.close()
     zfile.close()
 	
-if __name__ == '__main__':
-	main()
+if __name__ == "__main__":
+	main(sys.argv[1:])
