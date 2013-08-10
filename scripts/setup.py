@@ -37,9 +37,16 @@ def main(argv):
         for opt, arg in opts:
                 if opt in ("-iu", "--ignoreupdates"):
                         ignoreupdates = True
-        print ("---------------------------")
+        print ('---------------------------')
         print ('-- Welcome to SMCP v%s --' % getVersion(0))
         print ('---------------------------\n')
+        if ignoreupdates == False:
+                print ('Checking for updates...')
+                print ('*   Checking StarMade for update...')
+                starmademdweb = urllib.request.urlopen("http://smcp.n3network.co.uk/files/StarMade.md5");
+                starmademdraw = starmademdweb.read()
+                starmademdweb.close()
+                print (starmademdraw)
         print ('Extracting StarMade v%s\n' % getVersion(1))
         if not os.path.exists('instance') and not os.path.isdir('instance'):
                 os.makedirs('instance')
