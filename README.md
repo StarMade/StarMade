@@ -1,19 +1,15 @@
 StarMade
 ========
 
-Open source repository of StarMade code deobfuscated and kept updated by community.
+Open source repository of StarMade Coders Pack.
 
 Version Map:
 No official versions yet
 
 StarMade: [http://star-made.org/](http://star-made.org/)
 
-Contributing
+Modding
 -----------
-
-What we need contributions for:
-* Naming of fields, classes, methods, etc
-* Documentation of all the stuff! (saving/writing ship files, map formats, etc)
 
 For opening sources in Eclipse:
 * Fork the project
@@ -27,3 +23,5 @@ Compiling
 For compiling:
 * Click you project in Eclipse and click Export and export it as .jar
 * You should be able to replace default StarMade.jar, or classes you modified with your own modified ones
+
+Better compiling options coming in future!
