@@ -4,7 +4,7 @@ StarMade
 Open source repository of StarMade code deobfuscated and kept updated by community.
 
 Version Map:
-1 = starmade-build_20130805_213109.zip - 05-Aug-2013 21:33
+No official versions yet
 
 StarMade: [http://star-made.org/](http://star-made.org/)
 
