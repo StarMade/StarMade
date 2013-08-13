@@ -12,6 +12,7 @@ import zipfile
 import subprocess
 import shlex
 import urllib.request
+import urllib.error
 import re
 
 def startProcess(command):
@@ -42,9 +43,23 @@ def main(argv):
         print ('---------------------------\n')
         if ignoreupdates == False:
                 print ('Checking for updates...')
-                print ('*   Checking StarMade for update...')
-                starmademdweb = urllib.request.urlopen("http://smcp.n3network.co.uk/files/StarMade.md5");
-                starmademdraw = starmademdweb.read()
+                try:
+                        starmademdweb = urllib.request.urlopen("http://smcp.n3network.co.uk/files/StarMade.txt");
+                        starmademdraw = starmademdweb.read()
+                except urllib.error.HTTPError as exception:
+                        print ('    *   Unable to get latest version info - HTTPError =  ' + str(exception.reason))
+                        sys.exit(2)
+                except urllib.error.URLError as exception:
+                        print ('    *   Unable to get latest version info - URLError = ' + str(exception.reason))
+                        sys.exit(2)
+                except urllib.error.HTTPException as exception:
+                        print ('    *   Unable to get latest version info - HTTPException')
+                        sys.exit(2)
+                except Exception as exception:
+                        import traceback
+                        print ('    *   Unable to get latest version info - Exception = ' + traceback.format_exc())
+                        sys.exit(2)
+                print ('*   Checking StarMade for an update...')
                 starmademdweb.close()
                 print (starmademdraw)
         print ('Extracting StarMade v%s\n' % getVersion(1))
@@ -64,7 +79,7 @@ def main(argv):
         print ('*   Decompiling...   (Stage #2)')
         if not os.path.exists('sources') and not os.path.isdir('sources'):
                 os.makedirs('sources')
-        #tmp/deobf.zip when implemnted SpecialSource
+        #tmp/deobf.zip when we have implemented SpecialSource
         startProcess("java -Xmx1G -jar runtime/fernflower.jar install/StarMade.zip sources")
         os.chdir(workingDir + '\install')
         print ('Setting up Eclipse workspace\n')
