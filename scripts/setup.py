@@ -29,6 +29,7 @@ def getVersion(line):
 
 def main(argv):
         ignoreupdates = False
+        hasfailed = False
         try:
                 opts, args = getopt.getopt(argv, "iu", ["ignoreupdates"])
         except getopt.GetoptError:
@@ -88,23 +89,31 @@ def main(argv):
         if os.path.exists('tmp'):
                 print ('Deleting temporary files\n')
                 shutil.rmtree('tmp')
-        print ('-----------------------------------------')
-        print ('- SMCP Is now ready for mod development -')
-        print ('-----------------------------------------')
+        endMessage(hasfailed)
+
+def endMessage(failed):
+        if failed:
+                print ('---------------------')
+                print ('- SMCP setup failed -')
+                print ('---------------------')
+        else:
+                print ('-----------------------------------------')
+                print ('- SMCP Is now ready for mod development -')
+                print ('-----------------------------------------')
 	
 def unzip(zipFilePath, destDir):
-    zfile = zipfile.ZipFile(zipFilePath)
-    for name in zfile.namelist():
-        (dirName, fileName) = os.path.split(name)
-        if fileName == '':
-            newDir = destDir + '/' + dirName
-            if not os.path.exists(newDir):
-                os.mkdir(newDir)
-        else:
-            fd = open(destDir + '/' + name, 'wb')
-            fd.write(zfile.read(name))
-            fd.close()
-    zfile.close()
+        zfile = zipfile.ZipFile(zipFilePath)
+        for name in zfile.namelist():
+                (dirName, fileName) = os.path.split(name)
+                if fileName == '':
+                        newDir = destDir + '/' + dirName
+                        if not os.path.exists(newDir):
+                                os.mkdir(newDir)
+                else:
+                        fd = open(destDir + '/' + name, 'wb')
+                        fd.write(zfile.read(name))
+                        fd.close()
+        zfile.close()
 	
 if __name__ == "__main__":
 	main(sys.argv[1:])
