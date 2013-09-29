@@ -28,7 +28,7 @@ def getVersion(line):
 	return ver
 
 def main(argv):
-        ignoreupdates = False
+        ignoreupdates = True
         hasfailed = False
         try:
                 opts, args = getopt.getopt(argv, "iu", ["ignoreupdates"])
