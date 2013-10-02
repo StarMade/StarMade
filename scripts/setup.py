@@ -49,7 +49,7 @@ def main(argv):
                         starmademdraw = starmademdweb.read()
                 except urllib.error.HTTPError as exception:
                         print ('    *   Unable to get latest version info - HTTPError =  ' + str(exception.reason))
-                        sys.exit(2)
+                        #sys.exit(2)
                 except urllib.error.URLError as exception:
                         print ('    *   Unable to get latest version info - URLError = ' + str(exception.reason))
                         sys.exit(2)
