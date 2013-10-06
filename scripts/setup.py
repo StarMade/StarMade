@@ -24,6 +24,16 @@ def getVersion(line):
 	ver = line.split('=', 1)[1]
 	return ver
 
+def getMD5(file, block_size=2**20):
+        import hashlib
+        md5 = hashlib.md5()
+        while True:
+                data = file.read(block_size)
+                if not data:
+                        break
+                md5.update(data)
+        return md5.digest()
+
 def main(argv):
         import urllib.request
         import urllib.error
@@ -41,12 +51,19 @@ def main(argv):
         print ('-----------------------------------------')
         print ('--------- Welcome to SMCP v%s ---------' % getVersion(0))
         print ('-----------------------------------------\n')
+        workingDir = os.getcwd()
         if ignoreupdates == False:
                 print ('Checking for updates...')
                 try:
                         import hashlib
                         starmademdweb = urllib.request.urlopen("http://smcp.pingu.pw/file.md5");
                         starmademdraw = starmademdweb.read()
+                        print (hashlib.md5(open(workingDir + '\install\StarMade.zip').read()).hexdigest)
+                        #file = open(workingDir + '\install\StarMade.zip', 'r')
+                        #md5 = getMD5(file)
+                        #print (md5)
+                        #print (hashlib.md5(file).hexdigest())
+                        #print(getMD5(open('StarMade.zip')))
                 except urllib.error.HTTPError as exception:
                         print ('    *   Unable to get latest version info - HTTPError =  ' + str(exception.reason))
                         #sys.exit(2)
@@ -70,7 +87,6 @@ def main(argv):
                 os.makedirs('tmp')
         if not os.path.exists('conf') and not os.path.isdir('conf'):
                 os.makedirs('conf')
-        workingDir = os.getcwd()
         os.chdir(workingDir + '\install')
         unzip("StarMade.zip", workingDir + '\instance')
         os.chdir(workingDir)
