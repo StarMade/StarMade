@@ -9,15 +9,13 @@ import sys
 import getopt
 import shutil
 import subprocess
-import shlex
-import urllib.request
-import urllib.error
 import re
 
 def startProcess(command):
-	args = shlex.split(command)
-	p = subprocess.Popen(args)
-	p.communicate()[0]
+        import shlex
+        args = shlex.split(command)
+        p = subprocess.Popen(args)
+        p.communicate()[0]
 
 def getVersion(line):
 	cfg = open(os.getcwd() + "\conf\smcp.cfg", "r")
@@ -27,6 +25,8 @@ def getVersion(line):
 	return ver
 
 def main(argv):
+        import urllib.request
+        import urllib.error
         ignoreupdates = False
         hasfailed = False
         try:
