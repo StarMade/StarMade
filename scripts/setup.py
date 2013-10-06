@@ -76,6 +76,7 @@ def main(argv):
         os.chdir(workingDir)
         print ('Decompiling StarMade')
         print ('*   Deobfuscating... (Stage #1)')
+        print ('*       Not here yet, skipping')
         #startProcess("java -Xmx1G -jar runtime/N3Remapper.jar conf/remapper.cfg pre instance/StarMade.jar tmp/deobf.zip")
         print ('*   Decompiling...   (Stage #2)')
         if not os.path.exists('sources') and not os.path.isdir('sources'):
