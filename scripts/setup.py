@@ -39,13 +39,13 @@ def main(argv):
         for opt, arg in opts:
                 if opt in ("-iu", "--ignoreupdates"):
                         ignoreupdates = True
-        print ('---------------------------')
-        print ('-- Welcome to SMCP v%s --' % getVersion(0))
-        print ('---------------------------\n')
+        print ('-----------------------------------------')
+        print ('--------- Welcome to SMCP v%s ---------' % getVersion(0))
+        print ('-----------------------------------------\n')
         if ignoreupdates == False:
                 print ('Checking for updates...')
                 try:
-                        starmademdweb = urllib.request.urlopen("http://smcp.n3network.co.uk/files/StarMade.txt");
+                        starmademdweb = urllib.request.urlopen("http://smcp.pingu.pw/file.md5");
                         starmademdraw = starmademdweb.read()
                 except urllib.error.HTTPError as exception:
                         print ('    *   Unable to get latest version info - HTTPError =  ' + str(exception.reason))
