@@ -6,8 +6,8 @@ Open source repository of StarMade Coders Pack.
 Version Map:
 No official versions yet
 
-StarMade: [http://star-made.org/](http://star-made.org/)
-SMCP: [http://smcp.n3network.co.uk/](http://smcp.n3network.co.uk/)
+StarMade: [http://star-made.org/](http://star-made.org/)                                                                   
+SMCP: [http://smcp.pingu.pw/](http://smcp.pingu.pw/)
 
 Modding
 -----------
