@@ -9,11 +9,18 @@ import shutil
 import platform
 import subprocess
 
+def getVersion(line):
+	cfg = open(os.getcwd() + "\conf\smcp.cfg", "r")
+	lines = cfg.readlines()
+	line = lines[line].strip()
+	ver = line.split('=', 1)[1]
+	return ver
+
 def main():
 	hasDeletedAnything = False
-	print ('-------------------')
-	print ('- Welcome to SMCP -')
-	print ('-------------------\n')
+	print ('-------------------------')
+	print ('- Welcome to SMCP v%s -' % getVersion(0))
+	print ('-------------------------\n')
 	answer = input('If you really want to clean up, enter "Yes" ')
 	if answer.lower() not in ['yes']:
 		print ('You have not entered "Yes", aborting the clean up process\n')
@@ -23,9 +30,9 @@ def main():
 			subprocess.call("cls", shell=True)
 		else:
 			subprocess.call("clear")
-		print ('-------------------')
-		print ('- Welcome to SMCP -')
-		print ('-------------------\n')
+		print ('-------------------------')
+		print ('- Welcome to SMCP v%s -' % getVersion(0))
+		print ('-------------------------\n')
 	if os.path.exists('sources'):
 		print ('Deleting sources')
 		shutil.rmtree('sources')
