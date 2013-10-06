@@ -8,7 +8,6 @@ import os
 import sys
 import getopt
 import shutil
-import zipfile
 import subprocess
 import shlex
 import urllib.request
@@ -45,6 +44,7 @@ def main(argv):
         if ignoreupdates == False:
                 print ('Checking for updates...')
                 try:
+                        import hashlib
                         starmademdweb = urllib.request.urlopen("http://smcp.pingu.pw/file.md5");
                         starmademdraw = starmademdweb.read()
                 except urllib.error.HTTPError as exception:
@@ -102,6 +102,7 @@ def endMessage(failed):
                 print ('-----------------------------------------')
 	
 def unzip(zipFilePath, destDir):
+        import zipfile
         zfile = zipfile.ZipFile(zipFilePath)
         for name in zfile.namelist():
                 (dirName, fileName) = os.path.split(name)
