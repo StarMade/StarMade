@@ -68,7 +68,7 @@ def main(argv):
                         #import hashlib
                         starmademdweb = urllib.request.urlopen("http://smcp.pingu.pw/file.md5");
                         starmademdraw = starmademdweb.read()
-                        print (sumfile(open(workingDir + '\install\StarMade.zip')))
+                        #print (sumfile(open(workingDir + '\install\StarMade.zip')))
                 except urllib.error.HTTPError as exception:
                         print ('    *   Unable to get latest version info - HTTPError =  ' + str(exception.reason))
                 except urllib.error.URLError as exception:
