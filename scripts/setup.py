@@ -9,6 +9,8 @@ import sys
 import getopt
 import shutil
 import subprocess
+import urllib.request
+import urllib.error
 import re
 
 def startProcess(command):
@@ -34,9 +36,17 @@ def getMD5(file, block_size=2**20):
                 md5.update(data)
         return md5.digest()
 
+def sumfile(fobj):
+    '''Returns an md5 hash for an object with read() method.'''
+    m = md5.new()
+    while True:
+        d = fobj.read(8096)
+        if not d:
+            break
+        m.update(d)
+    return m.hexdigest()
+
 def main(argv):
-        import urllib.request
-        import urllib.error
         ignoreupdates = False
         hasfailed = False
         try:
@@ -55,18 +65,12 @@ def main(argv):
         if ignoreupdates == False:
                 print ('Checking for updates...')
                 try:
-                        import hashlib
+                        #import hashlib
                         starmademdweb = urllib.request.urlopen("http://smcp.pingu.pw/file.md5");
                         starmademdraw = starmademdweb.read()
-                        print (hashlib.md5(open(workingDir + '\install\StarMade.zip').read()).hexdigest)
-                        #file = open(workingDir + '\install\StarMade.zip', 'r')
-                        #md5 = getMD5(file)
-                        #print (md5)
-                        #print (hashlib.md5(file).hexdigest())
-                        #print(getMD5(open('StarMade.zip')))
+                        print (sumfile(open(workingDir + '\install\StarMade.zip')))
                 except urllib.error.HTTPError as exception:
                         print ('    *   Unable to get latest version info - HTTPError =  ' + str(exception.reason))
-                        #sys.exit(2)
                 except urllib.error.URLError as exception:
                         print ('    *   Unable to get latest version info - URLError = ' + str(exception.reason))
                         sys.exit(2)
