@@ -20,7 +20,7 @@ def startProcess(command):
         p.communicate()[0]
 
 def getVersion(line):
-	cfg = open(os.getcwd() + "\conf\smcp.cfg", "r")
+	cfg = open(os.path.join(os.getcwd(), "conf","smcp.cfg"), "r")
 	lines = cfg.readlines()
 	line = lines[line].strip()
 	ver = line.split('=', 1)[1]
@@ -65,11 +65,11 @@ def main(argv):
                 #starmademdweb.close()
                 #print (starmademdraw)
                 print ('Checking for updates... (DISABLED)')
-                if not os.path.isfile(workingDir + '\install\starmade-build_' + smbuild + '.zip'):
+                if not os.path.isfile(os.path.join(workingDir,'install','starmade-build_' + smbuild + '.zip')):
                         print ('*   Getting new StarMade... (May take a while)\n')
                         url = r'http://files.star-made.org/build/starmade-build_' + smbuild + '.zip'
                         opener = urllib.request.urlopen(url)
-                        starmade_out = open(workingDir + '\install\starmade-build_' + smbuild + '.zip', 'wb')
+                        starmade_out = open(os.path.join(workingDir, 'install','starmade-build_' + smbuild + '.zip'), 'wb')
                         starmade_out.write(opener.readall())
                         starmade_out.close()
                 else:
@@ -81,7 +81,7 @@ def main(argv):
                 os.makedirs('tmp')
         if not os.path.exists('conf') and not os.path.isdir('conf'):
                 os.makedirs('conf')
-        unzip(workingDir + '\install\starmade-build_' + smbuild + '.zip', workingDir + '\instance')
+        unzip(os.path.join(workingDir, 'install', 'starmade-build_' + smbuild + '.zip'), os.path.join(workingDir, 'instance'))
         print ('Decompiling StarMade')
         print ('*   Deobfuscating... (Stage #1) (DISABLED)')
         #print ('*       Not here yet, skipping')
@@ -92,7 +92,7 @@ def main(argv):
         #tmp/deobf.zip when we have implemented SpecialSource
         #startProcess('java -Xmx1G -jar runtime/fernflower.jar' + workingDir + 'install/StarMade.zip sources')
         print ('Setting up Eclipse workspace\n')
-        unzip(workingDir + "\install\EclipseWorkspace.zip", workingDir)
+        unzip(os.path.join(workingDir, "install", "EclipseWorkspace.zip"), workingDir)
         if os.path.exists(workingDir + 'tmp'):
                 print ('Deleting temporary files\n')
                 shutil.rmtree(workingDir + 'tmp')
@@ -114,11 +114,11 @@ def unzip(zipFilePath, destDir):
         for name in zfile.namelist():
                 (dirName, fileName) = os.path.split(name)
                 if fileName == '':
-                        newDir = destDir + '/' + dirName
+                        newDir = os.path.join(destDir, dirName)
                         if not os.path.exists(newDir):
                                 os.mkdir(newDir)
                 else:
-                        fd = open(destDir + '/' + name, 'wb')
+                        fd = open(os.path.join(destDir, name), 'wb')
                         fd.write(zfile.read(name))
                         fd.close()
         zfile.close()
