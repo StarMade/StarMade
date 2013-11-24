@@ -1,4 +1,5 @@
 *.class
+starmade-build_*.zip
 
 instance
 tmp
