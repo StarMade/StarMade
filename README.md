@@ -9,6 +9,11 @@ No official versions yet
 StarMade: [http://star-made.org/](http://star-made.org/)                                                                   
 SMCP: Currently we don't have one...:(
 
+Requirements
+-----------
+
+* Python 3.3
+
 Modding
 -----------
 
