@@ -10,7 +10,7 @@ import platform
 import subprocess
 
 def getArgument(line):
-	cfg = open(os.path.join(os.getcwd() + "conf", "smcp.cfg"), "r")
+	cfg = open(os.path.join(os.getcwd(), "conf", "smcp.cfg"), "r")
 	lines = cfg.readlines()
 	line = lines[line].strip()
 	ver = line.split('=', 1)[1]
@@ -20,7 +20,7 @@ def main():
 	hasDeletedAnything = False
 	smcpversion = getArgument(0)
 	print ('-------------------------')
-	print ('- Welcome to SMCP v%s -' % smcpversion
+	print ('- Welcome to SMCP v%s -' % smcpversion)
 	print ('-------------------------\n')
 	answer = input('If you really want to clean up, enter "Yes" ')
 	if answer.lower() not in ['yes']:
@@ -32,7 +32,7 @@ def main():
 		else:
 			subprocess.call("clear")
 		print ('-------------------------')
-		print ('- Welcome to SMCP v%s -' % smcpversion
+		print ('- Welcome to SMCP v%s -' % smcpversion)
 		print ('-------------------------\n')
 	if os.path.exists('sources'):
 		print ('Deleting sources')
