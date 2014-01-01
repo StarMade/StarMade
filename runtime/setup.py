@@ -54,7 +54,6 @@ def main(argv):
         smver = getArgument(1)
         smbuild = getArgument(2)
         smbuildsize = getArgument(4)
-        #TODO: Better unfinished file download detection
         if ignoreupdates == False:
                 foundUpdates = False
                 print ('Checking for updates...')
