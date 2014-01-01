@@ -3,10 +3,5 @@ starmade-build_*.zip
 
 instance
 tmp
-source
-sources
+src
 workspace
-
-# Package Files #
-*.war
-*.ear
