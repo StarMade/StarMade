@@ -25,7 +25,7 @@ def getArgument(line):
 	return ver
 
 def getStarMadeBuild(file, web, workingDir, smbuild, smbuildsize):
-        #TODO: Fix progress display
+        #TO-DO: Fix progress display
         print ('*   Getting new StarMade... (' + str(os.path.getsize(os.path.join(workingDir, 'install','starmade-build_' + smbuild + '.zip')) / 1024) + 'KB/' + smbuildsize + 'KB)')
         print ('')
         file.write(web.read())
@@ -36,8 +36,9 @@ def main(argv):
         try:
                 opts, args = getopt.getopt(argv, "iu", ["ignoreupdates"])
         except getopt.GetoptError:
-                #TO-DO: Add usage printout
                 print ("Failed to parse arguments")
+                print ("Arguments:")
+                print ("ignoreupdates/iu - Disables updating")
                 sys.exit()
         for opt, arg in opts:
                 if opt in ("-iu", "--ignoreupdates"):
