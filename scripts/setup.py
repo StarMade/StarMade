@@ -9,8 +9,6 @@ import sys
 import getopt
 import shutil
 import subprocess
-import urllib.request
-import urllib.error
 import re
 
 def startProcess(command):
@@ -19,12 +17,18 @@ def startProcess(command):
         p = subprocess.Popen(args)
         p.communicate()[0]
 
-def getVersion(line):
-	cfg = open(os.path.join(os.getcwd(), "conf","smcp.cfg"), "r")
+def getArgument(line):
+	cfg = open(os.path.join(os.getcwd(), "conf", "smcp.cfg"), "r")
 	lines = cfg.readlines()
 	line = lines[line].strip()
 	ver = line.split('=', 1)[1]
 	return ver
+
+def getStarMadeBuild(file, web, workingDir, smbuild, smbuildsize):
+        #TODO: Fix progress display
+        print ('*   Getting new StarMade... (' + str(os.path.getsize(os.path.join(workingDir, 'install','starmade-build_' + smbuild + '.zip')) / 1024) + 'KB/' + smbuildsize + 'KB)')
+        print ('')
+        file.write(web.read())
 
 def main(argv):
         ignoreupdates = False
@@ -39,19 +43,26 @@ def main(argv):
                 if opt in ("-iu", "--ignoreupdates"):
                         ignoreupdates = True
         print ('-----------------------------------------')
-        print ('--------- Welcome to SMCP v%s ---------' % getVersion(0))
+        print ('--------- Welcome to SMCP v%s ---------' % getArgument(0))
         print ('-----------------------------------------\n')
         workingDir = os.getcwd()
-        smbuild = getVersion(2)
-        smver = getVersion(1)
+        smver = getArgument(1)
+        smbuild = getArgument(2)
+        smbuildsize = getArgument(4)
+        #TODO: Better unfinished file download detection
         if ignoreupdates == False:
-                print ('Checking for updates... (DISABLED)')
+                print ('Checking for updates... (DISABLED (NOT REALLY))')
+                import urllib.request
+                import urllib.error
                 if not os.path.isfile(os.path.join(workingDir,'install','starmade-build_' + smbuild + '.zip')):
-                        print ('*   Getting new StarMade... (May take a while)\n')
+                        #print ('*   Getting new StarMade... (May take a while)\n')
                         url = r'http://files.star-made.org/build/starmade-build_' + smbuild + '.zip'
-                        opener = urllib.request.urlopen(url)
+                        file = urllib.request.urlopen(url)
+                        #size = len(file.read())
                         starmade_out = open(os.path.join(workingDir, 'install','starmade-build_' + smbuild + '.zip'), 'wb')
-                        starmade_out.write(opener.readall())
+                        getbuild = getStarMadeBuild(starmade_out, file, workingDir, smbuild, smbuildsize)
+                        #print ('*   Getting new StarMade... (' + os.path.getsize(os.path.join(workingDir, 'install','starmade-build_' + smbuild + '.zip') / 1024 + 'KB/' + smbuildsize + 'KB)', end = '\r')
+                        #starmade_out.write(file.readall())
                         starmade_out.close()
                 else:
                         print ('\n')
