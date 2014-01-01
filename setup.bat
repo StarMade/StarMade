@@ -1,3 +1,3 @@
 @echo off
-runtime\python33 scripts\setup.py %*
+runtime\bin\python\python33 runtime\setup.py %*
 pause

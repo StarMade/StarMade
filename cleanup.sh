@@ -1,2 +1,2 @@
 #!/bin/bash
-python3 scripts/cleanup.py "$@"
+python3 runtime/cleanup.py "$@"

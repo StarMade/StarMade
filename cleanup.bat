@@ -1,3 +1,3 @@
 @echo off
-runtime\python33 scripts\cleanup.py %*
+runtime\bin\python\python33 runtime\cleanup.py %*
 pause

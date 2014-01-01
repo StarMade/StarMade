@@ -1,2 +1,2 @@
 #!/bin/bash
-python3 scripts/setup.py "$@"
+python3 runtime/setup.py "$@"
