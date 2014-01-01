@@ -45,25 +45,6 @@ def main(argv):
         smbuild = getVersion(2)
         smver = getVersion(1)
         if ignoreupdates == False:
-                #try:
-                #        #import hashlib
-                #        starmademdweb = urllib.request.urlopen("http://smcp.pingu.pw/file.md5");
-                #        starmademdraw = starmademdweb.read()
-                #        #print (sumfile(open(workingDir + '\install\StarMade.zip')))
-                #except urllib.error.HTTPError as exception:
-                #        print ('    *   Unable to get latest version info - HTTPError =  ' + str(exception.reason))
-                #except urllib.error.URLError as exception:
-                #        print ('    *   Unable to get latest version info - URLError = ' + str(exception.reason))
-                #        sys.exit(2)
-                #except urllib.error.HTTPException as exception:
-                #        print ('    *   Unable to get latest version info - HTTPException')
-                #       sys.exit(2)
-                #except Exception as exception:
-                #        import traceback
-                #        print ('    *   Unable to get latest version info - Exception = ' + traceback.format_exc())
-                #        sys.exit(2)
-                #starmademdweb.close()
-                #print (starmademdraw)
                 print ('Checking for updates... (DISABLED)')
                 if not os.path.isfile(os.path.join(workingDir,'install','starmade-build_' + smbuild + '.zip')):
                         print ('*   Getting new StarMade... (May take a while)\n')
