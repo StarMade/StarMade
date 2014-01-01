@@ -23,7 +23,7 @@ def main():
 	print ('-------------------------\n')
 	answer = input('If you really want to clean up, enter "Yes" ')
 	if answer.lower() not in ['yes']:
-		print ('You have not entered "Yes", aborting the clean up process\n')
+		print ('You have not entered "Yes", aborting the cleanup process\n')
 		sys.exit(1)
 	else:
 		if platform.system() is 'Windows':
@@ -35,7 +35,7 @@ def main():
 		print ('-------------------------\n')
 	if os.path.exists('sources'):
 		print ('Deleting sources')
-		shutil.rmtree('sources')
+		shutil.rmtree('src')
 		hasDeletedAnything = True
 	if os.path.exists('instance'):
 		print ('Deleting instance folder')

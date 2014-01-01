@@ -68,8 +68,8 @@ def main(argv):
         #print ('*       Not here yet, skipping')
         #startProcess("java -Xmx1G -jar runtime/N3Remapper.jar conf/remapper.cfg pre instance/StarMade.jar tmp/deobf.zip")
         print ('*   Decompiling...   (Stage #2) (DISABLED)')
-        if not os.path.exists('sources') and not os.path.isdir('sources'):
-                os.makedirs('sources')
+        if not os.path.exists('src') and not os.path.isdir('src'):
+                os.makedirs('src')
         #tmp/deobf.zip when we have implemented SpecialSource
         #startProcess('java -Xmx1G -jar runtime/fernflower.jar' + workingDir + 'install/StarMade.zip sources')
         print ('Setting up Eclipse workspace\n')
