@@ -3,11 +3,8 @@ StarMade (StarMade Coders Pack)
 
 Open source repository of StarMade Coders Pack.
 
-Version Map:
-No official versions yet
-
 StarMade: [http://star-made.org/](http://star-made.org/)                                                                   
-SMCP: Currently we don't have one...:(
+SMCP: Currently we don't have one. Wanna host one for us? Contact us!
 
 Requirements
 -----------
@@ -20,7 +17,7 @@ Modding
 For opening sources in Eclipse:
 * Fork the project
 * Download your fork to your HD somewhere
-* Run setup.bat (or setup.sh accordingly), decompile may take hours for accuracy will be fixed soon!
+* Run setup.bat (or setup.sh accordingly), decompiling is not yet implemented completely!
 * Open created workspace in Eclipse
 
 Compiling
