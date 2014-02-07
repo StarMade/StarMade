@@ -1,3 +1,5 @@
+NOTICE: This project is currently unactive. This project is not longer supported or developed my any commiters. If you want to keep this project going you can create pull requests which will be pulled. 
+NOTICE: This project DOES NOT work yet. This is just a place for people to work on this as it is yet to be done.
 StarMade (StarMade Coders Pack)
 ========
 
