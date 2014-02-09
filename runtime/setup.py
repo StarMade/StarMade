@@ -28,7 +28,7 @@ def getArgument(line):
 def getStarMadeBuild(file, web, workingDir, smbuild, smbuildsize, invalid):
         #TO-DO: Fix progress display
         if invalid:
-                print ('*   Found invalid StarMade build zip, downloading new one')
+                print ('*   Found invalid StarMade build, downloading new one')
         print ('*   Getting new StarMade... (' + str(os.path.getsize(os.path.join(workingDir, 'install','starmade-build_' + smbuild + '.zip')) / 1024) + 'KB/' + smbuildsize + 'KB)')
         print ('')
         file.write(web.read())
