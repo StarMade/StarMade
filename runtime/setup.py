@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-@author: tambre
+@author: tambre, Anarchon
 @version: v0.2
 """
 
@@ -25,16 +25,14 @@ def getArgument(line):
 	ver = line.split('=', 1)[1]
 	return ver
 
-def getStarMadeBuild(file, web, workingDir, smbuild, smbuildsize, invalid):
-        #TO-DO: Fix progress display
-        if invalid:
-                print ('*   Found invalid StarMade build, downloading new one')
-        print ('*   Getting new StarMade... (' + str(os.path.getsize(os.path.join(workingDir, 'install','starmade-build_' + smbuild + '.zip')) / 1024) + 'KB/' + smbuildsize + 'KB)')
-        print ('')
-        file.write(web.read())
-        file.close()
+def dlProgress(count, blockSize, totalSize):
+        import math
+        percent = int(count * blockSize * 100 / totalSize)
+        sys.stdout.write("\rGetting new StarMade v" + smver + "... " + "%.1f" % (count * blockSize / 1024 / 1024) + 'MB/' + "%.1f" % (totalSize / 1024 / 1024) + "MB %d%%" % percent)
+        sys.stdout.flush()
 
 def main(argv):
+        global smver
         ignoreupdates = False
         hasfailed = False
         try:
@@ -61,19 +59,19 @@ def main(argv):
                         if not zipfile.is_zipfile(os.path.join(workingDir, 'install', 'starmade-build_' + smbuild + '.zip')):
                                 import urllib.request
                                 import urllib.error
+                                
                                 os.remove(os.path.join(workingDir, 'install', 'starmade-build_' + smbuild + '.zip'))
                                 url = r'http://files.star-made.org/build/starmade-build_' + smbuild + '.zip'
-                                file = urllib.request.urlopen(url)
-                                starmade_out = open(os.path.join(workingDir, 'install', 'starmade-build_' + smbuild + '.zip'), 'wb')
-                                getbuild = getStarMadeBuild(starmade_out, file, workingDir, smbuild, smbuildsize, True)
+                                spath = os.path.join(workingDir, 'install', 'starmade-build_' + smbuild + '.zip')
+                                urllib.request.urlretrieve(url, spath, reporthook = dlProgress)
                                 foundUpdates = True
                 else:
                         import urllib.request
                         import urllib.error
+                        
                         url = r'http://files.star-made.org/build/starmade-build_' + smbuild + '.zip'
-                        file = urllib.request.urlopen(url)
-                        starmade_out = open(os.path.join(workingDir, 'install', 'starmade-build_' + smbuild + '.zip'), 'wb')
-                        getbuild = getStarMadeBuild(starmade_out, file, workingDir, smbuild, smbuildsize, False)
+                        spath = os.path.join(workingDir, 'install', 'starmade-build_' + smbuild + '.zip')
+                        urllib.request.urlretrieve(url, spath, reporthook = dlProgress)
                         foundUpdates = True
                 if foundUpdates == False:
                         print ('')
