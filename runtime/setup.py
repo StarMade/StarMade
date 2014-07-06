@@ -1,6 +1,7 @@
-# -*- coding: utf-8 -*-
+# -*- encoding: utf-8 without BOM -*-
 """
-@author: tambre, Anarchon
+@author: tambre
+@help: Anarchon
 @version: v0.2
 """
 
