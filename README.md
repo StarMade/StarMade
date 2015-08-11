@@ -1,5 +1,4 @@
-NOTICE: This project is currently inactive. This project is no longer developed by most original creators, tambry is currently maintaining the project. If you want to keep this project going you can create pull requests which will be pulled if it helps us to reach our objective. 
-NOTICE: This project DOES NOT work yet. This is just a place for people to work on this as it is yet to be done.
+NOTICE: This project is an old attempt at modding, please check out the new attempt that works. [StarMade Modding Tools](http://starmadedock.net/threads/smt-starmade-modding-tools.20255/)
 
 StarMade (StarMade Coders Pack)
 ========
